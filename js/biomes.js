@@ -270,9 +270,7 @@ window.BIOMES = {
         { name: "Earthshaker Whale", xp: 40000, gold: 20000, desc: "When this massive beast moves, the entire mountain trembles. It is the heart of the grotto." }
       ]
     }
-  }
-},
-{
+  },
   6: {
     name: "Frosthollow Fjord",
     unlockLevel: 100,
