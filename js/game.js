@@ -209,26 +209,8 @@ const FishingGame = () => {
     const randomFish = allFish[Math.floor(Math.random() * allFish.length)];
     
     const funnyLines = [
-      "You prayed to the ocean gods and caught:",
-      "You accidentally farted underwater and caught:",
-      "You threw a gold coin for good luck and caught:",
       `You hoped to catch ${randomFish.name} but you caught:`,
-      "You sang a sea shanty terribly and caught:",
-      "You told a bad joke to the fish and caught:",
-      "Your bait smelled like pizza and you caught:",
-      "You sneezed at the perfect moment and caught:",
-      "You whispered sweet nothings to the ocean and caught:",
-      "You did a little dance on the boat and caught:",
-      "Your fishing rod sneezed (yes, really) and caught:",
-      "You blinked three times and magically caught:",
-      "A seagull judged your technique but you still caught:",
-      "You forgot what you were doing and somehow caught:",
-      "You yelled 'YOLO!' into the void and caught:",
-      "Your hat flew off and startled you into catching:",
-      "You dropped your phone (it's waterproof) and caught:",
-      "A dolphin gave you a thumbs up and you caught:",
-      "You were daydreaming about lunch and caught:",
-      "Pure dumb luck blessed you with:"
+      `The ${window.BIOMES[player.currentBiome].name} waters blessed you with:`
     ];
     
     return funnyLines[Math.floor(Math.random() * funnyLines.length)];
@@ -498,37 +480,6 @@ const FishingGame = () => {
           >
             {Icons.X()}
           </button>
-
-          <div className="p-6 border-b border-blue-700">
-            <h1 className="text-2xl font-bold text-yellow-400">⚡ Arcane<br/>Angler</h1>
-          </div>
-
-          <div className="p-4 border-b border-blue-700">
-            <div className="space-y-3">
-              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
-                <div className="text-xs text-blue-300">Level</div>
-                <div className="text-lg font-bold">{player.level}</div>
-              </div>
-              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
-                <div className="text-xs text-blue-300">XP</div>
-                <div className="text-sm font-bold">{player.xp}/{player.xpToNext}</div>
-                <div className="bg-blue-950 rounded-full h-2 mt-1">
-                  <div 
-                    className="bg-green-400 h-2 rounded-full transition-all"
-                    style={{ width: `${(player.xp / player.xpToNext) * 100}%` }}
-                  />
-                </div>
-              </div>
-              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
-                <div className="text-xs text-yellow-300">Gold</div>
-                <div className="text-lg font-bold text-yellow-400">{player.gold.toLocaleString()}</div>
-              </div>
-              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
-                <div className="text-xs text-purple-300">Relics</div>
-                <div className="text-lg font-bold text-purple-400">{player.relics}</div>
-              </div>
-            </div>
-          </div>
 
           <nav className="flex-1 overflow-y-auto py-4">
             {menuItems.map(({ id, icon: Icon, label }) => (
