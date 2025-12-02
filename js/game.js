@@ -481,6 +481,19 @@ const FishingGame = () => {
             {Icons.X()}
           </button>
 
+          <div className="p-4 border-b border-blue-700">
+            <div className="space-y-3">
+              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
+                <div className="text-xs text-yellow-300">Gold</div>
+                <div className="text-lg font-bold text-yellow-400">{player.gold.toLocaleString()}</div>
+              </div>
+              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
+                <div className="text-xs text-purple-300">Relics</div>
+                <div className="text-lg font-bold text-purple-400">{player.relics}</div>
+              </div>
+            </div>
+          </div>
+
           <nav className="flex-1 overflow-y-auto py-4">
             {menuItems.map(({ id, icon: Icon, label }) => (
               <button
