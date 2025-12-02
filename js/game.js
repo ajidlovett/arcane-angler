@@ -1,0 +1,1234 @@
+window.Icons = {
+  Fish: () => '🎣',
+  Package: () => '📦',
+  TrendingUp: () => '📊',
+  Target: () => '🎯',
+  Users: () => '👥',
+  User: () => '👤',
+  Trophy: () => '🏆',
+  Award: () => '🏅',
+  Menu: () => '☰',
+  X: () => '✕',
+  Lock: () => '🔒',
+  Unlock: () => '🔓',
+  ChevronRight: () => '›',
+  Trash2: () => '🗑️' // Added missing icon
+};
+
+const { useState, useEffect } = React;
+const Icons = window.Icons;
+
+// *** FIX APPLIED: REMOVED THE FOLLOWING DESTRUCTURING LINE TO PREVENT ReferenceError: ***
+// const { Fish, Package, TrendingUp, Target, Users, User, Trophy, Award, Menu, X, Lock, Unlock, ChevronRight } = Icons; 
+
+const FishingGame = () => {
+  // State
+  const [currentPage, setCurrentPage] = useState('fishing');
+  const [player, setPlayer] = useState(() => {
+    const defaultPlayerState = {
+      level: 1,
+      xp: 0,
+      xpToNext: 150,
+      gold: 0,
+      relics: 0,
+      stats: { strength: 0, intelligence: 0, luck: 0, stamina: 0 },
+      inventory: [],
+      lockedFish: [],
+      currentBiome: 1,
+      equippedRod: 'Willow Branch', // Default Rod from equipment.js
+      equippedBait: 'Stale Bread Crust',
+      ownedRods: ['Willow Branch'], // Start with the free rod
+      baitInventory: { 'Stale Bread Crust': 999999 }
+    };
+    
+    const saved = localStorage.getItem('arcaneAnglerSave');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        // Ensure new fields exist and merge with saved data
+        return {
+          ...defaultPlayerState,
+          ...data,
+          baitInventory: { 
+            ...defaultPlayerState.baitInventory, 
+            ...(data.baitInventory || {})
+          },
+          equippedRod: data.equippedRod || defaultPlayerState.equippedRod,
+          ownedRods: data.ownedRods || defaultPlayerState.ownedRods
+        };
+      } catch (e) {
+        console.error('Error loading save:', e);
+      }
+    }
+    return defaultPlayerState;
+  });
+
+  const [fishing, setFishing] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const [lastCatch, setLastCatch] = useState(null);
+  const [selectedRarity, setSelectedRarity] = useState('all');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [funnyLine, setFunnyLine] = useState('');
+
+  // Constants
+  const rarities = ['Common', 'Uncommon', 'Fine', 'Rare', 'Epic', 'Legendary', 'Mythic'];
+  const rarityColors = {
+    'Common': '#9ca3af',
+    'Uncommon': '#84cc16',
+    'Fine': '#3b82f6',
+    'Rare': '#8b5cf6',
+    'Epic': '#d946ef',
+    'Legendary': '#f59e0b',
+    'Mythic': '#ef4444',
+    'Treasure Chest': '#fbbf24'
+  };
+
+  // Auto-save
+  useEffect(() => {
+    localStorage.setItem('arcaneAnglerSave', JSON.stringify(player));
+  }, [player]);
+
+  // Cooldown timer
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
+
+  // Helper functions
+  const getCurrentBiomeFish = () => window.BIOMES[player.currentBiome].fish;
+  
+  const getAllCurrentBiomeFish = () => {
+    const biomeFish = getCurrentBiomeFish();
+    return Object.values(biomeFish).flat();
+  };
+
+  const getTotalStats = () => {
+    // Relying on global window.RODS and window.BAITS from external files
+    const rod = player.equippedRod ? window.RODS[player.equippedRod] : null;
+    const bait = player.equippedBait ? window.BAITS[player.equippedBait] : null;
+    
+    return {
+      strength: player.stats.strength + (rod?.str || 0) + (bait?.str || 0),
+      intelligence: player.stats.intelligence + (rod?.int || 0) + (bait?.int || 0),
+      luck: player.stats.luck + (rod?.luck || 0) + (bait?.luck || 0),
+      stamina: player.stats.stamina + (rod?.stam || 0) + (bait?.stam || 0)
+    };
+  };
+
+  const getBiomeRelicRange = (biome) => {
+    if (biome <= 5) return { min: 1, max: 5 };
+    if (biome <= 10) return { min: 5, max: 12 };
+    if (biome <= 15) return { min: 12, max: 25 };
+    if (biome <= 20) return { min: 25, max: 45 };
+    if (biome <= 25) return { min: 45, max: 70 };
+    return { min: 70, max: 100 };
+  };
+
+  const calculateRarity = () => {
+    const totalStats = getTotalStats();
+    const totalLuck = totalStats.luck;
+    
+    const baseWeights = {
+      'Common': 49500,
+      'Uncommon': 28000,
+      'Fine': 15000,
+      'Rare': 5000,
+      'Epic': 1500,
+      'Treasure Chest': 500,
+      'Legendary': 450,
+      'Mythic': 50
+    };
+
+    const effectiveWeights = {};
+    let poolSize = 0;
+    
+    for (const [tier, baseWeight] of Object.entries(baseWeights)) {
+      if (tier === 'Common') {
+        effectiveWeights[tier] = baseWeight;
+      } else {
+        effectiveWeights[tier] = baseWeight * (1 + (totalLuck / 100));
+      }
+      poolSize += effectiveWeights[tier];
+    }
+
+    const roll = Math.random() * poolSize;
+    let cumulative = 0;
+    
+    for (const [tier, weight] of Object.entries(effectiveWeights)) {
+      cumulative += weight;
+      if (roll <= cumulative) return tier;
+    }
+    
+    return 'Common';
+  };
+
+  const calculateFishCount = (rarity) => {
+    const totalStats = getTotalStats();
+    const totalStrength = totalStats.strength;
+    
+    if (rarity === 'Mythic' || rarity === 'Treasure Chest') return 1;
+    
+    const guaranteedExtra = Math.floor(totalStrength / 100);
+    const remainder = totalStrength % 100;
+    const chanceForBonus = remainder * 2.5;
+    const bonusFish = Math.random() * 100 < chanceForBonus ? 1 : 0;
+    
+    return 1 + guaranteedExtra + bonusFish;
+  };
+
+  const calculateTitanBonus = () => {
+    const totalStats = getTotalStats();
+    const totalStrength = totalStats.strength;
+    const guaranteedExtra = Math.floor(totalStrength / 100);
+    const remainder = totalStrength % 100;
+    const avgBonus = remainder / 100;
+    const wouldHaveCaught = guaranteedExtra + avgBonus;
+    
+    return 1 + (0.5 * wouldHaveCaught);
+  };
+
+  const generateTreasureChest = () => {
+    const totalStats = getTotalStats();
+    const totalLuck = totalStats.luck;
+    const avgCommonValue = 5;
+    const biomeRelicRange = getBiomeRelicRange(player.currentBiome);
+    
+    const baseGold = avgCommonValue * 50;
+    const goldReward = Math.floor(baseGold * (1 + (totalLuck / 100)));
+    
+    const baseRelics = Math.floor(Math.random() * (biomeRelicRange.max - biomeRelicRange.min + 1)) + biomeRelicRange.min;
+    const relicReward = Math.floor(baseRelics * (1 + (totalLuck / 100)));
+    
+    return { gold: goldReward, relics: relicReward };
+  };
+
+  const getFunnyLine = () => {
+    const allFish = getAllCurrentBiomeFish();
+    const randomFish = allFish[Math.floor(Math.random() * allFish.length)];
+    
+    const funnyLines = [
+      "You prayed to the ocean gods and caught:",
+      "You accidentally farted underwater and caught:",
+      "You threw a gold coin for good luck and caught:",
+      `You hoped to catch ${randomFish.name} but you caught:`,
+      "You sang a sea shanty terribly and caught:",
+      "You told a bad joke to the fish and caught:",
+      "Your bait smelled like pizza and you caught:",
+      "You sneezed at the perfect moment and caught:",
+      "You whispered sweet nothings to the ocean and caught:",
+      "You did a little dance on the boat and caught:",
+      "Your fishing rod sneezed (yes, really) and caught:",
+      "You blinked three times and magically caught:",
+      "A seagull judged your technique but you still caught:",
+      "You forgot what you were doing and somehow caught:",
+      "You yelled 'YOLO!' into the void and caught:",
+      "Your hat flew off and startled you into catching:",
+      "You dropped your phone (it's waterproof) and caught:",
+      "A dolphin gave you a thumbs up and you caught:",
+      "You were daydreaming about lunch and caught:",
+      "Pure dumb luck blessed you with:"
+    ];
+    
+    return funnyLines[Math.floor(Math.random() * funnyLines.length)];
+  };
+
+  const handleFish = () => {
+    if (cooldown > 0 || fishing) return;
+
+    // Check if bait is required and available
+    if (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) {
+      alert("You need to buy or equip a different bait!");
+      return;
+    }
+
+    setFishing(true);
+    setCooldown(4);
+    setFunnyLine(getFunnyLine());
+
+    setTimeout(() => {
+      const rarity = calculateRarity();
+      
+      if (rarity === 'Treasure Chest') {
+        const treasure = generateTreasureChest();
+        
+        setLastCatch({
+          fish: 'Treasure Chest',
+          rarity: 'Treasure Chest',
+          count: 1,
+          xp: 50,
+          relics: treasure.relics,
+          gold: treasure.gold,
+          isTreasure: true
+        });
+        
+        const newXP = player.xp + 50;
+        const levelUp = newXP >= player.xpToNext;
+        
+        setPlayer(prev => ({
+          ...prev,
+          xp: levelUp ? newXP - prev.xpToNext : newXP,
+          level: levelUp ? prev.level + 1 : prev.level,
+          xpToNext: levelUp ? prev.xpToNext + 150 : prev.xpToNext,
+          relics: prev.relics + treasure.relics + (levelUp ? 1 : 0),
+          gold: prev.gold + treasure.gold
+        }));
+
+        setFishing(false);
+        return;
+      }
+      
+      const biomeFish = getCurrentBiomeFish();
+      const fishList = biomeFish[rarity];
+      const selectedFish = fishList[Math.floor(Math.random() * fishList.length)];
+      const fishName = selectedFish.name;
+      
+      const fishCount = calculateFishCount(rarity);
+      const baseXP = selectedFish.xp;
+      const baseGold = selectedFish.gold;
+      
+      let titanBonus = 1;
+      if (rarity === 'Mythic') {
+        titanBonus = calculateTitanBonus();
+      }
+
+      setLastCatch({
+        fish: fishName,
+        rarity,
+        count: fishCount,
+        xp: baseXP,
+        gold: baseGold,
+        relics: 0,
+        titanBonus: titanBonus > 1 ? titanBonus : null
+      });
+      
+      const newInventory = [...player.inventory];
+      const existing = newInventory.find(f => f.name === fishName);
+      if (existing) {
+        existing.count += fishCount;
+        if (titanBonus > 1) {
+          existing.titanBonus = titanBonus;
+        }
+      } else {
+        newInventory.push({ 
+          name: fishName, 
+          rarity, 
+          count: fishCount,
+          baseGold: baseGold,
+          titanBonus: titanBonus > 1 ? titanBonus : 1
+        });
+      }
+
+      const newXP = player.xp + baseXP;
+      const levelUp = newXP >= player.xpToNext;
+      
+      // Consume bait
+      const newBaitInventory = { ...player.baitInventory };
+      if (player.equippedBait && player.equippedBait !== 'Stale Bread Crust') {
+        newBaitInventory[player.equippedBait] = (newBaitInventory[player.equippedBait] || 0) - 1;
+        
+        if (newBaitInventory[player.equippedBait] <= 0) {
+          delete newBaitInventory[player.equippedBait];
+        }
+      }
+      
+      setPlayer(prev => ({
+        ...prev,
+        xp: levelUp ? newXP - prev.xpToNext : newXP,
+        level: levelUp ? prev.level + 1 : prev.level,
+        xpToNext: levelUp ? prev.xpToNext + 150 : prev.xpToNext,
+        relics: prev.relics + (levelUp ? 1 : 0),
+        inventory: newInventory,
+        baitInventory: newBaitInventory,
+        equippedBait: (newBaitInventory[prev.equippedBait] && newBaitInventory[prev.equippedBait] > 0) ? prev.equippedBait : 'Stale Bread Crust'
+      }));
+
+      setFishing(false);
+    }, 1000);
+  };
+
+  const toggleLock = (fishName) => {
+    setPlayer(prev => ({
+      ...prev,
+      lockedFish: prev.lockedFish.includes(fishName)
+        ? prev.lockedFish.filter(f => f !== fishName)
+        : [...prev.lockedFish, fishName]
+    }));
+  };
+
+  const sellFish = (fishItem) => {
+    if (player.lockedFish.includes(fishItem.name)) return;
+    
+    const totalStats = getTotalStats();
+    const intelligenceBonus = 1 + (totalStats.intelligence * 0.025);
+    const titanBonus = fishItem.titanBonus || 1;
+    const goldEarned = Math.floor(fishItem.baseGold * fishItem.count * intelligenceBonus * titanBonus);
+    
+    setPlayer(prev => ({
+      ...prev,
+      gold: prev.gold + goldEarned,
+      inventory: prev.inventory.filter(f => f.name !== fishItem.name)
+    }));
+  };
+
+  const sellAll = () => {
+    const unlockedFish = player.inventory.filter(f => !player.lockedFish.includes(f.name));
+    const totalStats = getTotalStats();
+    const intelligenceBonus = 1 + (totalStats.intelligence * 0.025);
+    
+    const totalGold = unlockedFish.reduce((sum, fish) => {
+      const titanBonus = fish.titanBonus || 1;
+      return sum + Math.floor(fish.baseGold * fish.count * intelligenceBonus * titanBonus);
+    }, 0);
+
+    setPlayer(prev => ({
+      ...prev,
+      gold: prev.gold + totalGold,
+      inventory: prev.inventory.filter(f => prev.lockedFish.includes(f.name))
+    }));
+  };
+
+  const sellByRarity = (rarity) => {
+    const fishToSell = player.inventory.filter(
+      f => f.rarity === rarity && !player.lockedFish.includes(f.name)
+    );
+    const totalStats = getTotalStats();
+    const intelligenceBonus = 1 + (totalStats.intelligence * 0.025);
+    
+    const totalGold = fishToSell.reduce((sum, fish) => {
+      const titanBonus = fish.titanBonus || 1;
+      return sum + Math.floor(fish.baseGold * fish.count * intelligenceBonus * titanBonus);
+    }, 0);
+
+    setPlayer(prev => ({
+      ...prev,
+      gold: prev.gold + totalGold,
+      inventory: prev.inventory.filter(f => 
+        f.rarity !== rarity || prev.lockedFish.includes(f.name)
+      )
+    }));
+  };
+
+  const upgradeStat = (stat) => {
+    const cost = 3;
+    if (player.relics >= cost) {
+      setPlayer(prev => ({
+        ...prev,
+        relics: prev.relics - cost,
+        stats: {
+          ...prev.stats,
+          [stat]: prev.stats[stat] + 1
+        }
+      }));
+    }
+  };
+
+  const getFilteredInventory = () => {
+    if (selectedRarity === 'all') return player.inventory;
+    return player.inventory.filter(f => f.rarity === selectedRarity);
+  };
+
+  // Equipment functions
+  const buyRod = (rodName) => {
+    const rod = window.RODS[rodName];
+    if (player.gold >= rod.price && !player.ownedRods.includes(rodName)) {
+      setPlayer(prev => ({
+        ...prev,
+        gold: prev.gold - rod.price,
+        ownedRods: [...prev.ownedRods, rodName],
+        equippedRod: rodName
+      }));
+    }
+  };
+
+  const equipRod = (rodName) => {
+    setPlayer(prev => ({ ...prev, equippedRod: rodName }));
+  };
+
+  const buyBait = (baitName, quantity = 10) => {
+    const bait = window.BAITS[baitName];
+    // Use the bait's stackSize as the purchase quantity if available, otherwise use 10
+    const purchaseStackSize = window.BAITS[baitName].stackSize && window.BAITS[baitName].stackSize > 1 ? window.BAITS[baitName].stackSize : quantity;
+    const totalCost = bait.price * purchaseStackSize;
+    
+    if (player.gold >= totalCost) {
+      setPlayer(prev => ({
+        ...prev,
+        gold: prev.gold - totalCost,
+        baitInventory: {
+          ...prev.baitInventory,
+          [baitName]: (prev.baitInventory[baitName] || 0) + purchaseStackSize
+        }
+      }));
+    }
+  };
+
+  const equipBait = (baitName) => {
+    setPlayer(prev => ({ ...prev, equippedBait: baitName }));
+  };
+
+  // Components
+  const Sidebar = () => {
+    const menuItems = [
+      { id: 'fishing', icon: Icons.Fish, label: 'Fishing' },
+      { id: 'equipment', icon: Icons.Award, label: 'Equipment' },
+      { id: 'biomes', icon: Icons.Target, label: 'Biomes' },
+      { id: 'inventory', icon: Icons.Package, label: 'Inventory' },
+      { id: 'stats', icon: Icons.TrendingUp, label: 'Stats' },
+      { id: 'quests', icon: Icons.Target, label: 'Quests' },
+      { id: 'guilds', icon: Icons.Users, label: 'Guilds' },
+      { id: 'profile', icon: Icons.User, label: 'Profile' },
+      { id: 'achievements', icon: Icons.Trophy, label: 'Achievements' }
+    ];
+
+    return (
+      <>
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+        
+        <div className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-blue-900 border-r-2 border-blue-700 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden absolute top-4 right-4 p-2 text-white hover:bg-blue-800 rounded"
+          >
+            {Icons.X()}
+          </button>
+
+          <div className="p-6 border-b border-blue-700">
+            <h1 className="text-2xl font-bold text-yellow-400">⚡ Arcane<br/>Angler</h1>
+          </div>
+
+          <div className="p-4 border-b border-blue-700">
+            <div className="space-y-3">
+              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
+                <div className="text-xs text-blue-300">Level</div>
+                <div className="text-lg font-bold">{player.level}</div>
+              </div>
+              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
+                <div className="text-xs text-blue-300">XP</div>
+                <div className="text-sm font-bold">{player.xp}/{player.xpToNext}</div>
+                <div className="bg-blue-950 rounded-full h-2 mt-1">
+                  <div 
+                    className="bg-green-400 h-2 rounded-full transition-all"
+                    style={{ width: `${(player.xp / player.xpToNext) * 100}%` }}
+                  />
+                </div>
+              </div>
+              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
+                <div className="text-xs text-yellow-300">Gold</div>
+                <div className="text-lg font-bold text-yellow-400">{player.gold.toLocaleString()}</div>
+              </div>
+              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
+                <div className="text-xs text-purple-300">Relics</div>
+                <div className="text-lg font-bold text-purple-400">{player.relics}</div>
+              </div>
+            </div>
+          </div>
+
+          <nav className="flex-1 overflow-y-auto py-4">
+            {menuItems.map(({ id, icon: Icon, label }) => (
+              <button
+                key={id}
+                onClick={() => {
+                  setCurrentPage(id);
+                  setSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-6 py-3 font-bold transition-colors text-left ${currentPage === id ? 'bg-blue-700 text-white border-l-4 border-yellow-400' : 'text-blue-300 hover:bg-blue-800 hover:text-white'}`}
+              >
+                <span className="w-5 flex-shrink-0">{Icon()}</span>
+                <span>{label}</span>
+              </button>
+            ))}
+          </nav>
+
+          <div className="p-4 border-t border-blue-700">
+            <div className="text-sm font-bold text-yellow-400 mb-1">
+              {window.BIOMES[player.currentBiome].name}
+            </div>
+            <div className="text-xs text-blue-300 mb-3">
+              Biome {player.currentBiome} of {Object.keys(window.BIOMES).length}
+            </div>
+            
+            <button
+              onClick={() => {
+                if (confirm('Are you sure you want to reset your save? This cannot be undone!')) {
+                  localStorage.removeItem('arcaneAnglerSave');
+                  window.location.reload();
+                }
+              }}
+              className="w-full px-3 py-2 bg-red-900 hover:bg-red-800 rounded text-xs font-bold text-red-200"
+            >
+              {Icons.Trash2()} Reset Save
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  const FishingPage = () => (
+    <div className="max-w-2xl mx-auto">
+      <div className="hidden lg:block mb-6">
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 text-center">
+            <div className="text-sm text-blue-300">Level</div>
+            <div className="text-3xl font-bold">{player.level}</div>
+          </div>
+          <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 text-center">
+            <div className="text-sm text-yellow-300">Gold</div>
+            <div className="text-3xl font-bold text-yellow-400">{player.gold.toLocaleString()}</div>
+          </div>
+          <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 text-center">
+            <div className="text-sm text-purple-300">Relics</div>
+            <div className="text-3xl font-bold text-purple-400">{player.relics}</div>
+          </div>
+        </div>
+        
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm text-blue-300">Experience Progress</div>
+            <div className="text-sm font-bold text-white">{player.xp} / {player.xpToNext}</div>
+          </div>
+          <div className="bg-blue-950 rounded-full h-4">
+            <div 
+              className="bg-gradient-to-r from-green-400 to-green-500 h-4 rounded-full transition-all duration-300 flex items-center justify-center"
+              style={{ width: `${(player.xp / player.xpToNext) * 100}%` }}
+            >
+              <span className="text-xs font-bold text-white px-2">
+                {Math.floor((player.xp / player.xpToNext) * 100)}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+            <span>{Icons.Fish()}</span>
+            {window.BIOMES[player.currentBiome].name}
+          </h2>
+          <button
+            onClick={() => setCurrentPage('biomes')}
+            className="hidden lg:flex items-center gap-1 px-3 py-2 bg-blue-700 hover:bg-blue-600 rounded text-sm font-bold"
+          >
+            Change Biome {Icons.ChevronRight()}
+          </button>
+        </div>
+        
+        <p className="text-xs sm:text-sm text-blue-300 mb-4 italic">
+          {window.BIOMES[player.currentBiome].description}
+        </p>
+
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          <div className="bg-blue-950 p-3 rounded">
+            <div className="text-xs text-blue-400 mb-1">🎣 Rod</div>
+            <div className="text-sm font-bold">{player.equippedRod || 'None'}</div>
+            {player.equippedRod && window.RODS[player.equippedRod] && (
+              <div className="text-xs text-green-400 mt-1">
+                {window.RODS[player.equippedRod].str > 0 && `+${window.RODS[player.equippedRod].str} STR `}
+                {window.RODS[player.equippedRod].int > 0 && `+${window.RODS[player.equippedRod].int} INT `}
+                {window.RODS[player.equippedRod].luck > 0 && `+${window.RODS[player.equippedRod].luck} LUCK `}
+                {window.RODS[player.equippedRod].stam > 0 && `+${window.RODS[player.equippedRod].stam} STAM`}
+              </div>
+            )}
+          </div>
+          <div className="bg-blue-950 p-3 rounded">
+            <div className="text-xs text-blue-400 mb-1">🪱 Bait</div>
+            <div className="text-sm font-bold">{player.equippedBait}</div>
+            {player.equippedBait && player.equippedBait !== 'Stale Bread Crust' && (
+              <div className="text-xs text-blue-300 mt-1">
+                {player.baitInventory[player.equippedBait] || 0} left
+              </div>
+            )}
+            {player.equippedBait && window.BAITS[player.equippedBait] && (
+              <div className="text-xs text-green-400 mt-1">
+                {window.BAITS[player.equippedBait].str > 0 && `+${window.BAITS[player.equippedBait].str} STR `}
+                {window.BAITS[player.equippedBait].int > 0 && `+${window.BAITS[player.equippedBait].int} INT `}
+                {window.BAITS[player.equippedBait].luck > 0 && `+${window.BAITS[player.equippedBait].luck} LUCK`}
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <button
+          onClick={handleFish}
+          disabled={cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0)}
+          className={`w-full py-4 sm:py-6 rounded-lg font-bold text-lg sm:text-xl transition-all ${cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 active:scale-95 shadow-lg'}`}
+        >
+          {fishing ? '🎣 Fishing...' : cooldown > 0 ? `⏱️ Cooldown: ${cooldown}s` : '🎣 Cast Line'}
+        </button>
+
+        {lastCatch && (
+          <div className="mt-6 p-4 sm:p-6 bg-blue-950 rounded-lg border-4 shadow-xl" style={{ borderColor: rarityColors[lastCatch.rarity] }}>
+            <div className="text-center mb-4 pb-4 border-b border-blue-800">
+              <p className="text-sm sm:text-base text-blue-300 italic">{funnyLine}</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-xs sm:text-sm uppercase tracking-wide mb-1" style={{ color: rarityColors[lastCatch.rarity] }}>
+                {lastCatch.rarity}
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold mb-2">{lastCatch.fish}</div>
+              
+              {lastCatch.isTreasure ? (
+                <div className="space-y-2">
+                  <div className="text-lg sm:text-xl text-yellow-400">🎁 Treasure Found!</div>
+<div className="flex justify-center gap-4 text-base sm:text-lg">
+<span className="text-yellow-400">+{lastCatch.gold} Gold</span>
+<span className="text-purple-400">+{lastCatch.relics} Relics</span>
+</div>
+<div className="text-sm text-green-400">+{lastCatch.xp} XP</div>
+</div>
+) : (
+<div>
+<div className="text-lg sm:text-xl text-blue-200 mb-3">Caught: {lastCatch.count}x</div>
+{lastCatch.titanBonus && (
+<div className="text-xs sm:text-sm text-orange-400 mb-2">
+⚡ Titan Bonus: {lastCatch.titanBonus.toFixed(2)}x Gold Value!
+</div>
+)}
+<div className="flex justify-center gap-4 text-sm">
+<span className="text-green-400">+{lastCatch.xp} XP</span>
+</div>
+</div>
+)}
+</div>
+</div>
+)}
+    <div className="mt-6 p-4 bg-blue-950 rounded-lg">
+      <h3 className="font-bold mb-2 text-sm sm:text-base">Total Fishing Stats</h3>
+      <div className="text-xs sm:text-sm text-blue-300 space-y-1">
+        <div>Base Stats: STR {player.stats.strength} | INT {player.stats.intelligence} | LUCK {player.stats.luck} | STAM {player.stats.stamina}</div>
+        <div className="text-green-400">Total Stats: STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
+        <div className="border-t border-blue-800 my-2 pt-2">
+          <div>Fish per catch: {1 + Math.floor(getTotalStats().strength / 100)} - {2 + Math.floor(getTotalStats().strength / 100)} fish</div>
+          <div>Next guaranteed: {100 - (getTotalStats().strength % 100)} Strength needed</div>
+          <div>Gold bonus: +{(getTotalStats().intelligence * 2.5).toFixed(1)}%</div>
+          <div>Luck bonus: +{getTotalStats().luck}%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+);
+
+  const EquipmentPage = () => {
+    const [shopTab, setShopTab] = useState('rods');
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">Equipment Shop</h2>
+          
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => setShopTab('rods')}
+              className={`flex-1 py-3 rounded font-bold ${shopTab === 'rods' ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+            >
+              {Icons.Fish()} Rods
+            </button>
+            <button
+              onClick={() => setShopTab('baits')}
+              className={`flex-1 py-3 rounded font-bold ${shopTab === 'baits' ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+            >
+              🪱 Baits
+            </button>
+          </div>
+
+          {shopTab === 'rods' && (
+            <div className="space-y-3">
+              {Object.entries(window.RODS).map(([name, rod]) => {
+                const isOwned = player.ownedRods.includes(name);
+                const isEquipped = player.equippedRod === name;
+                const canAfford = player.gold >= rod.price;
+
+                return (
+                  <div key={name} className={`p-4 rounded-lg border-2 ${isEquipped ? 'bg-blue-700 border-yellow-400' : 'bg-blue-950 border-blue-800'}`}>
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1">
+                        <div className="font-bold text-base">{name}</div>
+                        <div className="text-xs text-blue-300 italic mt-1">{rod.desc}</div>
+                      </div>
+                      {isEquipped && <span className="text-xs bg-yellow-500 text-black px-2 py-1 rounded font-bold ml-2">EQUIPPED</span>}
+                    </div>
+                    
+                    <div className="text-sm text-green-400 mb-3">
+                      {rod.str > 0 && `+${rod.str} STR `}
+                      {rod.int > 0 && `+${rod.int} INT `}
+                      {rod.luck > 0 && `+${rod.luck} LUCK `}
+                      {rod.stam > 0 && `+${rod.stam} STAM`}
+                    </div>
+
+                    {isOwned ? (
+                      <button
+                        onClick={() => equipRod(name)}
+                        disabled={isEquipped}
+                        className={`w-full py-2 rounded font-bold text-sm ${isEquipped ? 'bg-gray-700 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
+                      >
+                        {isEquipped ? 'Equipped' : 'Equip'}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => buyRod(name)}
+                        disabled={!canAfford}
+                        className={`w-full py-2 rounded font-bold text-sm ${canAfford ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-gray-700 cursor-not-allowed'}`}
+                      >
+                        Buy for {rod.price.toLocaleString()} Gold
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {shopTab === 'baits' && (
+            <div className="space-y-3">
+              {Object.entries(window.BAITS).map(([name, bait]) => {
+                const owned = player.baitInventory[name] || 0;
+                const isEquipped = player.equippedBait === name;
+                const isFree = bait.price === 0;
+
+                return (
+                  <div key={name} className={`p-4 rounded-lg border-2 ${isEquipped ? 'bg-blue-700 border-yellow-400' : 'bg-blue-950 border-blue-800'}`}>
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1">
+                        <div className="font-bold text-base">{name}</div>
+                        <div className="text-xs text-blue-300 italic mt-1">{bait.desc}</div>
+                      </div>
+                      <div className="text-right ml-2">
+                        {isEquipped && <span className="text-xs bg-yellow-500 text-black px-2 py-1 rounded font-bold block mb-1">EQUIPPED</span>}
+                        {!isFree && <span className="text-xs text-blue-400">Owned: {owned}</span>}
+                      </div>
+                    </div>
+                    
+                    <div className="text-sm text-green-400 mb-3">
+                      {bait.str > 0 && `+${bait.str} STR `}
+                      {bait.int > 0 && `+${bait.int} INT `}
+                      {bait.luck > 0 && `+${bait.luck} LUCK `}
+                      {bait.stam > 0 && `+${bait.stam} STAM`}
+                    </div>
+
+                    <div className="flex gap-2">
+                      {!isFree && (
+                        <button
+                          onClick={() => buyBait(name, 1)}
+                          disabled={player.gold < bait.price * (window.BAITS[name].stackSize || 10)}
+                          className={`flex-1 py-2 rounded font-bold text-sm ${player.gold >= bait.price * (window.BAITS[name].stackSize || 10) ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-gray-700 cursor-not-allowed'}`}
+                        >
+                          Buy x{window.BAITS[name].stackSize || 10} ({(bait.price * (window.BAITS[name].stackSize || 10)).toLocaleString()}g)
+                        </button>
+                      )}
+                      <button
+                        onClick={() => equipBait(name)}
+                        disabled={isEquipped || (!isFree && owned === 0)}
+                        className={`flex-1 py-2 rounded font-bold text-sm ${isEquipped ? 'bg-gray-700 cursor-not-allowed' : (!isFree && owned === 0) ? 'bg-gray-700 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
+                      >
+                        {isEquipped ? 'Equipped' : 'Equip'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const BiomesPage = () => {
+    const canUnlockBiome = (biomeId) => {
+      const biome = window.BIOMES[biomeId];
+      return player.level >= biome.unlockLevel && player.gold >= biome.unlockGold;
+    };
+    const unlockBiome = (biomeId) => {
+      const biome = window.BIOMES[biomeId];
+      if (!canUnlockBiome(biomeId)) return;
+      
+      setPlayer(prev => ({
+        ...prev,
+        gold: prev.gold - biome.unlockGold,
+        currentBiome: biomeId
+      }));
+      setCurrentPage('fishing');
+    };
+
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+          <h2 className="text-xl sm:text-2xl font-bold mb-6">Select Biome</h2>
+          
+          <div className="space-y-4">
+            {Object.entries(window.BIOMES).map(([id, biome]) => {
+              const biomeId = parseInt(id);
+              const isUnlocked = canUnlockBiome(biomeId) || biomeId <= player.currentBiome;
+              const isCurrent = biomeId === player.currentBiome;
+              const isLocked = !isUnlocked && biomeId > player.currentBiome;
+              
+              return (
+                <div 
+                  key={id}
+                  className={`p-4 sm:p-5 rounded-lg border-2 ${isCurrent ? 'bg-blue-700 border-yellow-400' : isLocked ? 'bg-blue-950 border-gray-700 opacity-60' : 'bg-blue-900 border-blue-700 hover:border-blue-500 cursor-pointer'}`}
+                  onClick={() => isUnlocked && !isCurrent && unlockBiome(biomeId)}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-bold">{biome.name}</h3>
+                        {isCurrent && <span className="text-xs bg-yellow-500 text-black px-2 py-1 rounded font-bold">CURRENT</span>}
+                      </div>
+                      <div className="text-sm text-blue-300 mt-1">Biome {id}</div>
+                    </div>
+                    
+                    {isLocked && (
+                      <div className="text-right">
+                        <div className="text-xs text-blue-300">Requires:</div>
+                        <div className="text-sm font-bold">Level {biome.unlockLevel}</div>
+                        {biome.unlockGold > 0 && (
+                          <div className="text-sm text-yellow-400">{biome.unlockGold.toLocaleString()} Gold</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <p className="text-xs sm:text-sm text-blue-300 italic mb-3">
+                    {biome.description}
+                  </p>
+                  
+                  {biome.boatRequired && (
+                    <div className="text-xs text-blue-400 mb-2">
+                      🚣 Requires: {biome.boatRequired}
+                    </div>
+                  )}
+                  
+                  <div className="flex flex-wrap gap-1">
+                    {Object.keys(biome.fish).map(rarity => (
+                      <span 
+                        key={rarity}
+                        className="text-xs px-2 py-1 rounded"
+                        style={{ 
+                          backgroundColor: `${rarityColors[rarity]}20`,
+                          color: rarityColors[rarity],
+                          border: `1px solid ${rarityColors[rarity]}`
+                        }}
+                      >
+                        {biome.fish[rarity].length} {rarity}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  const InventoryPage = () => {
+    const filteredInventory = getFilteredInventory();
+    const unlockedCount = filteredInventory.filter(f => !player.lockedFish.includes(f.name)).length;
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <span className="w-5 flex-shrink-0">{Icons.Package()}</span>
+              Inventory ({player.inventory.length})
+            </h2>
+            <button
+              onClick={sellAll}
+              disabled={unlockedCount === 0}
+              className={`w-full sm:w-auto px-4 py-2 rounded font-bold text-sm ${unlockedCount > 0 ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-gray-600 cursor-not-allowed'}`}
+            >
+              Sell All Unlocked ({unlockedCount})
+            </button>
+          </div>
+
+          <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+            <button
+              onClick={() => setSelectedRarity('all')}
+              className={`px-3 sm:px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${selectedRarity === 'all' ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+            >
+              All
+            </button>
+            {rarities.map(rarity => {
+              const count = player.inventory.filter(f => f.rarity === rarity).length;
+              return (
+                <button
+                  key={rarity}
+                  onClick={() => setSelectedRarity(rarity)}
+                  className={`px-3 sm:px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${selectedRarity === rarity ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+                  style={{ borderLeft: `4px solid ${rarityColors[rarity]}` }}
+                >
+                  {rarity} ({count})
+                </button>
+              );
+            })}
+          </div>
+
+          {selectedRarity !== 'all' && (
+            <div className="mb-4">
+              <button
+                onClick={() => sellByRarity(selectedRarity)}
+                className="w-full bg-yellow-700 hover:bg-yellow-600 py-2 rounded font-bold text-sm"
+              >
+                Sell All {selectedRarity} Fish
+              </button>
+            </div>
+          )}
+
+          {filteredInventory.length === 0 ? (
+            <p className="text-center text-blue-300 py-12 text-sm sm:text-base">
+              {selectedRarity === 'all' ? 'No fish caught yet. Start fishing!' : `No ${selectedRarity} fish in inventory.`}
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              {filteredInventory.map((fish, idx) => {
+                const isLocked = player.lockedFish.includes(fish.name);
+                const totalStats = getTotalStats();
+                const intelligenceBonus = 1 + (totalStats.intelligence * 0.025);
+                const titanBonus = fish.titanBonus || 1;
+                const sellValue = Math.floor(fish.baseGold * fish.count * intelligenceBonus * titanBonus);
+
+                return (
+                  <div key={idx} className="bg-blue-950 p-3 sm:p-4 rounded-lg border-2 relative" style={{ borderColor: rarityColors[fish.rarity] }}>
+                    <button
+                      onClick={() => toggleLock(fish.name)}
+                      className="absolute top-2 right-2 p-1.5 sm:p-2 bg-blue-900 rounded hover:bg-blue-800"
+                    >
+                      {isLocked ? Icons.Lock() : Icons.Unlock()}
+                    </button>
+                    
+                    <div className="font-bold text-xs sm:text-sm" style={{ color: rarityColors[fish.rarity] }}>
+                      {fish.rarity}
+                    </div>
+                    <div className="text-base sm:text-lg font-bold mt-1">{fish.name}</div>
+                    <div className="text-xs sm:text-sm text-blue-300 mb-1">Quantity: {fish.count}</div>
+                    {titanBonus > 1 && (
+                      <div className="text-xs text-orange-400 mb-2">⚡ {titanBonus.toFixed(2)}x Value</div>
+                    )}
+                    <button
+                      onClick={() => sellFish(fish)}
+                      disabled={isLocked}
+                      className={`w-full py-2 rounded font-bold text-xs sm:text-sm ${isLocked ? 'bg-gray-700 cursor-not-allowed text-gray-400' : 'bg-yellow-600 hover:bg-yellow-500'}`}
+                    >
+                      {isLocked ? '🔒 Locked' : `Sell for ${sellValue.toLocaleString()} Gold`}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const StatsPage = () => {
+    const totalStats = getTotalStats();
+    
+    const statDescriptions = {
+      strength: {
+        title: "Strength",
+        current: `${1 + Math.floor(totalStats.strength / 100)}-${2 + Math.floor(totalStats.strength / 100)} fish per catch`,
+        perPoint: "+2.5% chance to catch an additional fish per point",
+        detail: `Every 100 points guarantees +1 fish. You currently have a ${totalStats.strength % 100}% chance for a bonus fish.`
+      },
+      intelligence: {
+        title: "Intelligence", 
+        current: `+${(totalStats.intelligence * 2.5).toFixed(1)}% gold when selling`,
+        perPoint: "+2.5% bonus gold from selling fish per point",
+        detail: `Increases the amount of gold earned when selling fish. Works multiplicatively with Titan Bonus.`
+      },
+      luck: {
+        title: "Luck",
+        current: `${totalStats.luck}% increased weight for rare fish`,
+        perPoint: "+1% weight multiplier for all rarities except Common per point",
+        detail: `Increases the probability weight of all fish rarities except Common. Higher Luck = better drop rates for rare fish.`
+      },
+      stamina: {
+        title: "Stamina",
+        current: `${totalStats.stamina * 3} minutes offline progression`,
+        perPoint: "+3 minutes of offline progression per point",
+        detail: `Allows you to earn fish and XP while offline. The game continues fishing automatically based on your stats.`
+      }
+    };
+
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+          <h2 className="text-xl sm:text-2xl font-bold mb-6 flex items-center gap-2">
+            <span className="w-5 flex-shrink-0">{Icons.TrendingUp()}</span>
+            Character Stats
+          </h2>
+          
+          <div className="space-y-4">
+            {/* Display player's base stats for upgrading */}
+            {Object.entries(player.stats).map(([stat, value]) => {
+              const info = statDescriptions[stat];
+              return (
+                <div key={stat} className="bg-blue-950 p-4 sm:p-5 rounded-lg">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
+                    <div>
+                      <div className="font-bold text-base sm:text-lg">{info.title}</div>
+                      <div className="text-sm text-blue-300">Base Level {value}</div>
+                      {totalStats[stat] !== value && <div className="text-xs text-green-400">Total: {totalStats[stat]} (Equipment)</div>}
+                    </div>
+                    <button
+                      onClick={() => upgradeStat(stat)}
+                      disabled={player.relics < 3}
+                      className={`w-full sm:w-auto px-6 py-3 rounded font-bold text-sm ${
+                        player.relics >= 3
+                          ? 'bg-purple-600 hover:bg-purple-500'
+                          : 'bg-gray-600 cursor-not-allowed'
+                      }`}
+                    >
+                      Upgrade (3 💎)
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-2 text-xs sm:text-sm">
+                    <div className="text-green-400 font-bold">
+                      Current Total Effect: {info.current}
+                    </div>
+                    <div className="text-blue-300">
+                      Per Point: {info.perPoint}
+                    </div>
+                    <div className="text-blue-400 italic">
+                      {info.detail}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  const ProfilePage = () => (
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-blue-800 bg-opacity-50 rounded-lg p-8 sm:p-12">
+        <div className="text-center mb-8">
+           <div className="flex justify-center mb-4 text-6xl">
+             {Icons.User()}
+           </div>
+           <h2 className="text-2xl sm:text-3xl font-bold mb-2">Angler Profile</h2>
+           <p className="text-blue-300">Manage your account and settings.</p>
+        </div>
+
+        <div className="bg-blue-950 p-6 rounded-lg border border-blue-700">
+           <h3 className="text-xl font-bold text-red-400 mb-4 flex items-center gap-2">
+             <span className="text-xl">⚠️</span> Danger Zone
+           </h3>
+           <p className="text-sm text-blue-300 mb-4">
+             If you want to restart the game completely, use the button below. This will delete your local save file and reset all progress.
+           </p>
+           <button 
+             onClick={() => {
+                if (confirm('Are you sure you want to reset your save? This cannot be undone!')) {
+                    localStorage.removeItem('arcaneAnglerSave');
+                    window.location.reload();
+                }
+             }}
+             className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded transition-colors"
+           >
+             {Icons.Trash2()} Reset Save Data
+           </button>
+        </div>
+      </div>
+    </div>
+  );
+  
+  const PlaceholderPage = ({ title, icon }) => (
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-blue-800 bg-opacity-50 rounded-lg p-8 sm:p-12 text-center">
+        <div className="text-6xl mb-4"><span className="text-5xl">{icon()}</span></div>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-2">{title}</h2>
+        <p className="text-sm sm:text-base text-blue-300">Coming soon! This feature is under development.</p>
+      </div>
+    </div>
+  );
+  
+  // Main render
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-900 via-blue-800 to-blue-950 text-white flex">
+      <Sidebar />
+      <div className="flex-1 flex flex-col min-w-0">
+        <div className="lg:hidden bg-blue-900 border-b-2 border-blue-700 p-4">
+          <div className="flex items-center justify-between mb-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 hover:bg-blue-800 rounded"
+            >
+              {Icons.Menu()}
+            </button>
+            <h1 className="text-xl font-bold text-yellow-400">⚡ Arcane Angler</h1>
+            <div className="w-10"></div>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-2 mb-3">
+            <div className="bg-blue-800 bg-opacity-50 rounded p-2 text-center">
+              <div className="text-xs text-blue-300">Lvl</div>
+              <div className="text-sm font-bold">{player.level}</div>
+            </div>
+            <div className="bg-blue-800 bg-opacity-50 rounded p-2 text-center">
+              <div className="text-xs text-yellow-300">Gold</div>
+              <div className="text-sm font-bold text-yellow-400">{player.gold >= 1000 ? `${(player.gold / 1000).toFixed(1)}k` : player.gold}</div>
+            </div>
+            <div className="bg-blue-800 bg-opacity-50 rounded p-2 text-center">
+              <div className="text-xs text-purple-300">Relic</div>
+              <div className="text-sm font-bold text-purple-400">{player.relics}</div>
+            </div>
+          </div>
+          
+          <div className="bg-blue-800 bg-opacity-50 rounded p-2">
+            <div className="flex items-center justify-between mb-1">
+              <div className="text-xs text-blue-300">XP</div>
+              <div className="text-xs font-bold">{player.xp}/{player.xpToNext}</div>
+            </div>
+            <div className="bg-blue-950 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full transition-all"
+                style={{ width: `${(player.xp / player.xpToNext) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="hidden lg:block bg-blue-900 border-b-2 border-blue-700 p-4">
+          <h1 className="text-2xl font-bold text-yellow-400 text-center mb-4">⚡ Arcane Angler</h1>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto p-4">
+          {currentPage === 'fishing' && <FishingPage />}
+          {currentPage === 'equipment' && <EquipmentPage />}
+          {currentPage === 'biomes' && <BiomesPage />}
+          {currentPage === 'inventory' && <InventoryPage />}
+          {currentPage === 'stats' && <StatsPage />}
+          
+          {currentPage === 'quests' && <PlaceholderPage title="Quests" icon={Icons.Target} />}
+          {currentPage === 'guilds' && <PlaceholderPage title="Guilds" icon={Icons.Users} />}
+          {currentPage === 'profile' && <ProfilePage />}
+          {currentPage === 'achievements' && <PlaceholderPage title="Achievements" icon={Icons.Trophy} />}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Render the app
+try {
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(<FishingGame />);
+} catch (err) {
+  document.body.innerHTML = '<div style="color: red; padding: 20px;"><h1>Game Error</h1><p>' + err.message + '</p></div>';
+}
