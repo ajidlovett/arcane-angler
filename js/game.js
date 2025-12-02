@@ -208,30 +208,21 @@ const FishingGame = () => {
     const allFish = getAllCurrentBiomeFish();
     const randomFish = allFish[Math.floor(Math.random() * allFish.length)];
     
-    const funnyLines = [
-      "You prayed to the ocean gods and caught:",
-      "You accidentally farted underwater and caught:",
-      "You threw a gold coin for good luck and caught:",
-      `You hoped to catch ${randomFish.name} but you caught:`,
-      "You sang a sea shanty terribly and caught:",
-      "You told a bad joke to the fish and caught:",
-      "Your bait smelled like pizza and you caught:",
-      "You sneezed at the perfect moment and caught:",
-      "You whispered sweet nothings to the ocean and caught:",
-      "You did a little dance on the boat and caught:",
-      "Your fishing rod sneezed (yes, really) and caught:",
-      "You blinked three times and magically caught:",
-      "A seagull judged your technique but you still caught:",
-      "You forgot what you were doing and somehow caught:",
-      "You yelled 'YOLO!' into the void and caught:",
-      "Your hat flew off and startled you into catching:",
-      "You dropped your phone (it's waterproof) and caught:",
-      "A dolphin gave you a thumbs up and you caught:",
-      "You were daydreaming about lunch and caught:",
-      "Pure dumb luck blessed you with:"
-    ];
-    
-    return funnyLines[Math.floor(Math.random() * funnyLines.length)];
+    // Use the funny lines from the external funnylines.js file
+    const lines = [...window.FUNNY_LINES];
+
+    // Add the dynamic line with a random fish name
+    lines.push(`You hoped to catch ${randomFish.name} but you caught:`);
+    lines.push(`You hoped to catch ${randomFish.name} but you caught:`);
+    lines.push(`You were 100% sure it was ${randomFish.name} but it was:`);
+    lines.push(`You bet your soul on catching ${randomFish.name} and got:`);
+    lines.push(`The manual said this spot has ${randomFish.name}, you got:`);
+    lines.push(`You visualized catching ${randomFish.name} but reality gave you:`);
+    lines.push(`You prepared a speech for ${randomFish.name} but caught:`);
+    lines.push(`You bought specific bait for ${randomFish.name} and caught:`);
+    lines.push(`The prophecy foretold of ${randomFish.name}, instead you got:`);
+
+    return lines[Math.floor(Math.random() * lines.length)];
   };
 
   const handleFish = () => {
@@ -499,35 +490,28 @@ const FishingGame = () => {
             {Icons.X()}
           </button>
 
-          <div className="p-6 border-b border-blue-700">
-            <h1 className="text-2xl font-bold text-yellow-400">⚡ Arcane<br/>Angler</h1>
-          </div>
-
           <div className="p-4 border-b border-blue-700">
+
             <div className="space-y-3">
+
               <div className="bg-blue-800 bg-opacity-50 rounded p-2">
-                <div className="text-xs text-blue-300">Level</div>
-                <div className="text-lg font-bold">{player.level}</div>
-              </div>
-              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
-                <div className="text-xs text-blue-300">XP</div>
-                <div className="text-sm font-bold">{player.xp}/{player.xpToNext}</div>
-                <div className="bg-blue-950 rounded-full h-2 mt-1">
-                  <div 
-                    className="bg-green-400 h-2 rounded-full transition-all"
-                    style={{ width: `${(player.xp / player.xpToNext) * 100}%` }}
-                  />
-                </div>
-              </div>
-              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
+
                 <div className="text-xs text-yellow-300">Gold</div>
+
                 <div className="text-lg font-bold text-yellow-400">{player.gold.toLocaleString()}</div>
+
               </div>
+
               <div className="bg-blue-800 bg-opacity-50 rounded p-2">
+
                 <div className="text-xs text-purple-300">Relics</div>
+
                 <div className="text-lg font-bold text-purple-400">{player.relics}</div>
+
               </div>
+
             </div>
+
           </div>
 
           <nav className="flex-1 overflow-y-auto py-4">
@@ -720,12 +704,20 @@ const FishingGame = () => {
 
   const EquipmentPage = () => {
     const [shopTab, setShopTab] = useState('rods');
+    const [tierTab, setTierTab] = useState('all');
+
+    const getFilteredEquipment = () => {
+      const equipment = shopTab === 'rods' ? window.RODS : window.BAITS;
+      if (tierTab === 'all') return Object.entries(equipment);
+      return Object.entries(equipment).filter(([name, item]) => item.tier === parseInt(tierTab));
+    };
+
     return (
       <div className="max-w-6xl mx-auto">
         <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
           <h2 className="text-xl sm:text-2xl font-bold mb-4">Equipment Shop</h2>
           
-          <div className="flex gap-2 mb-6">
+          <div className="flex gap-2 mb-4">
             <button
               onClick={() => setShopTab('rods')}
               className={`flex-1 py-3 rounded font-bold ${shopTab === 'rods' ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'}`}
@@ -740,9 +732,43 @@ const FishingGame = () => {
             </button>
           </div>
 
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+            <button
+              onClick={() => setTierTab('all')}
+              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === 'all' ? 'bg-purple-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+            >
+              All Tiers
+            </button>
+            <button
+              onClick={() => setTierTab('1')}
+              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === '1' ? 'bg-purple-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+            >
+              Tier 1
+            </button>
+            <button
+              onClick={() => setTierTab('2')}
+              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === '2' ? 'bg-purple-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+            >
+              Tier 2
+            </button>
+            <button
+              onClick={() => setTierTab('3')}
+              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === '3' ? 'bg-purple-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+            >
+              Tier 3
+            </button>
+            <button
+              onClick={() => setTierTab('4')}
+              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === '4' ? 'bg-purple-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+            >
+              Tier 4
+            </button>
+          </div>
+
+          
           {shopTab === 'rods' && (
             <div className="space-y-3">
-              {Object.entries(window.RODS).map(([name, rod]) => {
+              {getFilteredEquipment().map(([name, rod]) => {
                 const isOwned = player.ownedRods.includes(name);
                 const isEquipped = player.equippedRod === name;
                 const canAfford = player.gold >= rod.price;
@@ -789,7 +815,7 @@ const FishingGame = () => {
 
           {shopTab === 'baits' && (
             <div className="space-y-3">
-              {Object.entries(window.BAITS).map(([name, bait]) => {
+              {getFilteredEquipment().map(([name, bait]) => {
                 const owned = player.baitInventory[name] || 0;
                 const isEquipped = player.equippedBait === name;
                 const isFree = bait.price === 0;
