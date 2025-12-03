@@ -132,10 +132,15 @@ React.useEffect(() => {
 
   // Check and unlock achievements
   const checkAchievements = () => {
+    // Safety check: ensure ACHIEVEMENTS is loaded
+    if (!window.ACHIEVEMENTS || !Array.isArray(window.ACHIEVEMENTS)) {
+      return;
+    }
+
     const newAchievements = [];
     window.ACHIEVEMENTS.forEach(achievement => {
       if (!player.achievements.includes(achievement.id)) {
-        const currentValue = player[achievement.stat] || 0;
+        const currentValue = Number(player[achievement.stat]) || 0;
         if (currentValue >= achievement.requirement) {
           newAchievements.push(achievement.id);
         }
@@ -427,37 +432,37 @@ React.useEffect(() => {
     if (player.lockedFish.includes(fishItem.name)) return;
 
     const totalStats = getTotalStats();
-    const intelligenceBonus = 1 + (totalStats.intelligence * 0.02);
-    const titanBonus = fishItem.titanBonus || 1;
-    const goldEarned = Math.floor(fishItem.baseGold * fishItem.count * intelligenceBonus * titanBonus);
+    const intelligenceBonus = 1 + (Number(totalStats.intelligence) * 0.02);
+    const titanBonus = Number(fishItem.titanBonus) || 1;
+    const goldEarned = Math.floor(Number(fishItem.baseGold) * Number(fishItem.count) * intelligenceBonus * titanBonus);
 
     setPlayer(prev => ({
       ...prev,
-      gold: prev.gold + goldEarned,
+      gold: Number(prev.gold) + goldEarned,
       inventory: prev.inventory.filter(f => f.name !== fishItem.name),
-      totalFishSold: prev.totalFishSold + fishItem.count,
-      totalGoldEarned: prev.totalGoldEarned + goldEarned
+      totalFishSold: Number(prev.totalFishSold) + Number(fishItem.count),
+      totalGoldEarned: Number(prev.totalGoldEarned) + goldEarned
     }));
   };
 
   const sellAll = () => {
     const unlockedFish = player.inventory.filter(f => !player.lockedFish.includes(f.name));
     const totalStats = getTotalStats();
-    const intelligenceBonus = 1 + (totalStats.intelligence * 0.02);
+    const intelligenceBonus = 1 + (Number(totalStats.intelligence) * 0.02);
 
     const totalGold = unlockedFish.reduce((sum, fish) => {
-      const titanBonus = fish.titanBonus || 1;
-      return sum + Math.floor(fish.baseGold * fish.count * intelligenceBonus * titanBonus);
+      const titanBonus = Number(fish.titanBonus) || 1;
+      return sum + Math.floor(Number(fish.baseGold) * Number(fish.count) * intelligenceBonus * titanBonus);
     }, 0);
 
-    const totalFishCount = unlockedFish.reduce((sum, fish) => sum + fish.count, 0);
+    const totalFishCount = unlockedFish.reduce((sum, fish) => sum + Number(fish.count), 0);
 
     setPlayer(prev => ({
       ...prev,
-      gold: prev.gold + totalGold,
+      gold: Number(prev.gold) + totalGold,
       inventory: prev.inventory.filter(f => prev.lockedFish.includes(f.name)),
-      totalFishSold: prev.totalFishSold + totalFishCount,
-      totalGoldEarned: prev.totalGoldEarned + totalGold
+      totalFishSold: Number(prev.totalFishSold) + totalFishCount,
+      totalGoldEarned: Number(prev.totalGoldEarned) + totalGold
     }));
   };
 
@@ -466,23 +471,23 @@ React.useEffect(() => {
       f => f.rarity === rarity && !player.lockedFish.includes(f.name)
     );
     const totalStats = getTotalStats();
-    const intelligenceBonus = 1 + (totalStats.intelligence * 0.02);
+    const intelligenceBonus = 1 + (Number(totalStats.intelligence) * 0.02);
 
     const totalGold = fishToSell.reduce((sum, fish) => {
-      const titanBonus = fish.titanBonus || 1;
-      return sum + Math.floor(fish.baseGold * fish.count * intelligenceBonus * titanBonus);
+      const titanBonus = Number(fish.titanBonus) || 1;
+      return sum + Math.floor(Number(fish.baseGold) * Number(fish.count) * intelligenceBonus * titanBonus);
     }, 0);
 
-    const totalFishCount = fishToSell.reduce((sum, fish) => sum + fish.count, 0);
+    const totalFishCount = fishToSell.reduce((sum, fish) => sum + Number(fish.count), 0);
 
     setPlayer(prev => ({
       ...prev,
-      gold: prev.gold + totalGold,
+      gold: Number(prev.gold) + totalGold,
       inventory: prev.inventory.filter(f =>
         f.rarity !== rarity || prev.lockedFish.includes(f.name)
       ),
-      totalFishSold: prev.totalFishSold + totalFishCount,
-      totalGoldEarned: prev.totalGoldEarned + totalGold
+      totalFishSold: Number(prev.totalFishSold) + totalFishCount,
+      totalGoldEarned: Number(prev.totalGoldEarned) + totalGold
     }));
   };
 
@@ -1331,6 +1336,17 @@ React.useEffect(() => {
   );
 
   const AchievementsPage = () => {
+    // Safety check for ACHIEVEMENTS
+    if (!window.ACHIEVEMENTS || !Array.isArray(window.ACHIEVEMENTS)) {
+      return (
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6 text-center">
+            <p className="text-blue-300">Loading achievements...</p>
+          </div>
+        </div>
+      );
+    }
+
     const unlockedAchievements = window.ACHIEVEMENTS.filter(a => player.achievements.includes(a.id));
     const lockedAchievements = window.ACHIEVEMENTS.filter(a => !player.achievements.includes(a.id));
 
