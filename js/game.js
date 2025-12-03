@@ -1089,9 +1089,9 @@ React.useEffect(() => {
               {filteredInventory.map((fish, idx) => {
                 const isLocked = player.lockedFish.includes(fish.name);
                 const totalStats = getTotalStats();
-                const intelligenceBonus = 1 + (totalStats.intelligence * 0.02);
-                const titanBonus = fish.titanBonus || 1;
-                const sellValue = Math.floor(fish.baseGold * fish.count * intelligenceBonus * titanBonus);
+                const intelligenceBonus = 1 + (Number(totalStats.intelligence) * 0.02);
+                const titanBonus = Number(fish.titanBonus) || 1;
+                const sellValue = Math.floor(Number(fish.baseGold) * Number(fish.count) * intelligenceBonus * titanBonus);
 
                 return (
                   <div key={idx} className="bg-blue-950 p-3 sm:p-4 rounded-lg border-2 relative" style={{ borderColor: rarityColors[fish.rarity] }}>
