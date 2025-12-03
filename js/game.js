@@ -1321,8 +1321,8 @@ React.useEffect(() => {
     const [selectedBiome, setSelectedBiome] = useState(1);
     const [selectedRarityFilter, setSelectedRarityFilter] = useState('all');
 
-    // For now, show first 5 biomes (batch 1)
-    const availableBiomes = [1, 2, 3, 4, 5];
+    // Show biomes 1-10 (batch 1-2)
+    const availableBiomes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     const biome = window.BIOMES[selectedBiome];
     if (!biome) return null;
