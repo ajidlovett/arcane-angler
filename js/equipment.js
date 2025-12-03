@@ -250,7 +250,7 @@ window.RODS = {
 };
 
 window.BAITS = {
-  // TIER 1: The Basics (0 - 350 Gold)
+  // TIER 1: The Basics (0 - 750 Gold)
   'Stale Bread Crust': { 
     price: 0, 
     str: 0, int: 0, luck: 0, stam: 0, 
@@ -259,165 +259,165 @@ window.BAITS = {
     stackSize: 999999 
   },
   'Wriggling Garden Worm': { 
-    price: 10, 
+    price: 20, 
     str: 2, int: 0, luck: 0, stam: 0, 
     tier: 1,
     desc: "The classic. Fish can't resist the wiggle.", 
     stackSize: 1 
   },
   'Shiny Pebble': { 
-    price: 25, 
+    price: 40, 
     str: 0, int: 0, luck: 2, stam: 0, 
     tier: 1,
     desc: "Replaces the old foil. Magpies and fish love it.", 
     stackSize: 1 
   },
   'Sticky Dough Ball': { 
-    price: 50, 
+    price: 75, 
     str: 3, int: 0, luck: 0, stam: 0, 
     tier: 1,
     desc: "Expands in water. Good for catching two small fry at once.", 
     stackSize: 1 
   },
   'Neon Cricket': { 
-    price: 75, 
+    price: 100, 
     str: 0, int: 0, luck: 4, stam: 0, 
     tier: 1,
     desc: "Glows faintly. Helps rare fish find the hook in muddy water.", 
     stackSize: 1 
   },
   'Fat Maggot': { 
-    price: 100, 
+    price: 150, 
     str: 5, int: 0, luck: 0, stam: 0, 
     tier: 1,
     desc: "Disgusting, but fish find it irresistible. High protein.", 
     stackSize: 1 
   },
   'Sparkle Fly': { 
-    price: 150, 
+    price: 250, 
     str: 0, int: 0, luck: 6, stam: 0, 
     tier: 1,
     desc: "Fake fly with glittery wings. Attracts the fancy ones.", 
     stackSize: 1 
   },
   'River Snail Meat': { 
-    price: 200, 
+    price: 300, 
     str: 4, int: 0, luck: 2, stam: 0, 
     tier: 1,
     desc: "A crunchy treat for larger river predators.", 
     stackSize: 1 
   },
   'Salmon Roe': { 
-    price: 250, 
+    price: 400, 
     str: 8, int: 0, luck: 0, stam: 0, 
     tier: 1,
     desc: "A cluster of eggs. Often triggers a feeding frenzy.", 
     stackSize: 1 
   },
   'Grotto Crystal Shard': { 
-    price: 300, 
+    price: 550, 
     str: 0, int: 0, luck: 8, stam: 0, 
     tier: 1,
     desc: "Refracts light deep underwater. Grotto fish are drawn to it.", 
     stackSize: 1 
   },
   'Frost Grub': { 
-    price: 350, 
+    price: 750, 
     str: 6, int: 0, luck: 4, stam: 0, 
     tier: 1,
     desc: "Found in the ice. It stays wiggling even in freezing water.", 
     stackSize: 1 
   },
 
-  // TIER 2: The Specialist (500 - 4,000 Gold)
+  // TIER 2: The Specialist (750 - 7,500 Gold)
   'Aged Cheddar Chunk': { 
-    price: 500, 
+    price: 900, 
     str: 10, int: 0, luck: 0, stam: 0, 
     tier: 2,
     desc: "Strong smell triggers aggressive feeding in the Cheddar Gorge.", 
     stackSize: 1 
   },
   'Sand-Worm Segment': { 
-    price: 750, 
+    price: 1100, 
     str: 0, int: 0, luck: 10, stam: 0, 
     tier: 2,
     desc: "Vibrates against the sand. Rare desert fish sense it.", 
     stackSize: 1 
   },
   'Electric Grub': { 
-    price: 1000, 
+    price: 1500, 
     str: 15, int: 0, luck: 0, stam: 0, 
     tier: 2,
     desc: "Shocks the fish when they bite, hooking them instantly.", 
     stackSize: 1 
   },
   'Gilded Wing': { 
-    price: 1250, 
+    price: 1750, 
     str: 0, int: 0, luck: 15, stam: 0, 
     tier: 2,
     desc: "A golden insect wing. It looks valuable, so valuable fish bite it.", 
     stackSize: 1 
   },
   'Ghost Moth Wing': { 
-    price: 1500, 
+    price: 2500, 
     str: 10, int: 0, luck: 10, stam: 0, 
     tier: 2,
     desc: "Phases through water weeds to catch spirit fish.", 
     stackSize: 1 
   },
   'Mangrove Root Sap': { 
-    price: 1800, 
+    price: 3200, 
     str: 20, int: 0, luck: 0, stam: 0, 
     tier: 2,
     desc: "Extremely sticky. Once they bite, they never let go.", 
     stackSize: 1 
   },
   'Moon Dust Vial': { 
-    price: 2200, 
+    price: 3500, 
     str: 0, int: 0, luck: 20, stam: 0, 
     tier: 2,
     desc: "Glows with a soft lunar light. Hypnotic to rare species.", 
     stackSize: 1 
   },
   'Explosive Spore Pod': { 
-    price: 2600, 
+    price: 4250, 
     str: 25, int: 0, luck: 0, stam: 0, 
     tier: 2,
     desc: "Bursts on contact, snagging multiple fish in a cloud of spores.", 
     stackSize: 1 
   },
   'Rusty Gear': { 
-    price: 3000, 
+    price: 5000, 
     str: 15, int: 0, luck: 10, stam: 0, 
     tier: 2,
     desc: "Sunken city fish think it's spare parts. Heavy.", 
     stackSize: 1 
   },
   'Glass Shard Lure': { 
-    price: 3500, 
+    price: 6000, 
     str: 0, int: 0, luck: 25, stam: 0, 
     tier: 2,
     desc: "Invisible in the water until it flashes. Deadly effective.", 
     stackSize: 1 
   },
   'Void-Touched Leech': { 
-    price: 4000, 
+    price: 7500, 
     str: 20, int: 0, luck: 15, stam: 0, 
     tier: 2,
     desc: "It seeks out life in the dead waters of the void.", 
     stackSize: 1 
   },
 
-  // TIER 3: High-Tech & Arcane (5,000 - 75,000 Gold)
+  // TIER 3: High-Tech & Arcane (7,500 - 75,000 Gold)
   'Magnetic Ball Bearing': { 
-    price: 5000, 
+    price: 8000, 
     str: 30, int: 0, luck: 0, stam: 0, 
     tier: 3,
     desc: "Essential for the Quicksilver Canal. Attracts metallic fish.", 
     stackSize: 1 
   },
   'Mana Crystal Shard': { 
-    price: 8000, 
+    price: 10000, 
     str: 0, int: 0, luck: 30, stam: 0, 
     tier: 3,
     desc: "Radiates pure magic. Rare magical fish crave the mana.", 
@@ -445,14 +445,14 @@ window.BAITS = {
     stackSize: 1 
   },
   'Blood-Worm': { 
-    price: 32000, 
+    price: 37500, 
     str: 50, int: 0, luck: 0, stam: 0, 
     tier: 3,
     desc: "Throbs with a heartbeat. Predators go crazy for it.", 
     stackSize: 1 
   },
   'Chronos Sand': { 
-    price: 40000, 
+    price: 45000, 
     str: 0, int: 0, luck: 50, stam: 0, 
     tier: 3,
     desc: "Sands of time. It attracts fish from yesterday.", 
@@ -466,7 +466,7 @@ window.BAITS = {
     stackSize: 1 
   },
   'Neon Battery': { 
-    price: 55000, 
+    price: 57500, 
     str: 30, int: 0, luck: 30, stam: 0, 
     tier: 3,
     desc: "Leaks energy. Neon Reef fish treat it like a snack.", 
