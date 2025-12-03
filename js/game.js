@@ -199,25 +199,25 @@ React.useEffect(() => {
   const calculateFishCount = (rarity) => {
     const totalStats = getTotalStats();
     const totalStrength = totalStats.strength;
-    
+
     if (rarity === 'Mythic' || rarity === 'Treasure Chest') return 1;
-    
-    const guaranteedExtra = Math.floor(totalStrength / 100);
-    const remainder = totalStrength % 100;
-    const chanceForBonus = remainder * 2.5;
+
+    const guaranteedExtra = Math.floor(totalStrength / 50);
+    const remainder = totalStrength % 50;
+    const chanceForBonus = remainder * 2;
     const bonusFish = Math.random() * 100 < chanceForBonus ? 1 : 0;
-    
+
     return 1 + guaranteedExtra + bonusFish;
   };
 
   const calculateTitanBonus = () => {
     const totalStats = getTotalStats();
     const totalStrength = totalStats.strength;
-    const guaranteedExtra = Math.floor(totalStrength / 100);
-    const remainder = totalStrength % 100;
-    const avgBonus = remainder / 100;
+    const guaranteedExtra = Math.floor(totalStrength / 50);
+    const remainder = totalStrength % 50;
+    const avgBonus = remainder / 50;
     const wouldHaveCaught = guaranteedExtra + avgBonus;
-    
+
     return 1 + (0.5 * wouldHaveCaught);
   };
 
@@ -382,12 +382,12 @@ React.useEffect(() => {
 
   const sellFish = (fishItem) => {
     if (player.lockedFish.includes(fishItem.name)) return;
-    
+
     const totalStats = getTotalStats();
-    const intelligenceBonus = 1 + (totalStats.intelligence * 0.025);
+    const intelligenceBonus = 1 + (totalStats.intelligence * 0.02);
     const titanBonus = fishItem.titanBonus || 1;
     const goldEarned = Math.floor(fishItem.baseGold * fishItem.count * intelligenceBonus * titanBonus);
-    
+
     setPlayer(prev => ({
       ...prev,
       gold: prev.gold + goldEarned,
@@ -398,8 +398,8 @@ React.useEffect(() => {
   const sellAll = () => {
     const unlockedFish = player.inventory.filter(f => !player.lockedFish.includes(f.name));
     const totalStats = getTotalStats();
-    const intelligenceBonus = 1 + (totalStats.intelligence * 0.025);
-    
+    const intelligenceBonus = 1 + (totalStats.intelligence * 0.02);
+
     const totalGold = unlockedFish.reduce((sum, fish) => {
       const titanBonus = fish.titanBonus || 1;
       return sum + Math.floor(fish.baseGold * fish.count * intelligenceBonus * titanBonus);
@@ -417,8 +417,8 @@ React.useEffect(() => {
       f => f.rarity === rarity && !player.lockedFish.includes(f.name)
     );
     const totalStats = getTotalStats();
-    const intelligenceBonus = 1 + (totalStats.intelligence * 0.025);
-    
+    const intelligenceBonus = 1 + (totalStats.intelligence * 0.02);
+
     const totalGold = fishToSell.reduce((sum, fish) => {
       const titanBonus = fish.titanBonus || 1;
       return sum + Math.floor(fish.baseGold * fish.count * intelligenceBonus * titanBonus);
@@ -427,7 +427,7 @@ React.useEffect(() => {
     setPlayer(prev => ({
       ...prev,
       gold: prev.gold + totalGold,
-      inventory: prev.inventory.filter(f => 
+      inventory: prev.inventory.filter(f =>
         f.rarity !== rarity || prev.lockedFish.includes(f.name)
       )
     }));
@@ -736,9 +736,9 @@ React.useEffect(() => {
         <div>Base Stats: STR {player.stats.strength} | INT {player.stats.intelligence} | LUCK {player.stats.luck} | STAM {player.stats.stamina}</div>
         <div className="text-green-400">Total Stats: STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
         <div className="border-t border-blue-800 my-2 pt-2">
-          <div>Fish per catch: {1 + Math.floor(getTotalStats().strength / 100)} - {2 + Math.floor(getTotalStats().strength / 100)} fish</div>
-          <div>Next guaranteed: {100 - (getTotalStats().strength % 100)} Strength needed</div>
-          <div>Gold bonus: +{(getTotalStats().intelligence * 2.5).toFixed(1)}%</div>
+          <div>Fish per catch: {1 + Math.floor(getTotalStats().strength / 50)} - {2 + Math.floor(getTotalStats().strength / 50)} fish</div>
+          <div>Next guaranteed: {50 - (getTotalStats().strength % 50)} Strength needed</div>
+          <div>Gold bonus: +{(getTotalStats().intelligence * 2).toFixed(1)}%</div>
           <div>Luck bonus: +{getTotalStats().luck}%</div>
         </div>
       </div>
@@ -1080,7 +1080,7 @@ React.useEffect(() => {
               {filteredInventory.map((fish, idx) => {
                 const isLocked = player.lockedFish.includes(fish.name);
                 const totalStats = getTotalStats();
-                const intelligenceBonus = 1 + (totalStats.intelligence * 0.025);
+                const intelligenceBonus = 1 + (totalStats.intelligence * 0.02);
                 const titanBonus = fish.titanBonus || 1;
                 const sellValue = Math.floor(fish.baseGold * fish.count * intelligenceBonus * titanBonus);
 
@@ -1124,14 +1124,14 @@ React.useEffect(() => {
     const statDescriptions = {
       strength: {
         title: "Strength",
-        current: `${1 + Math.floor(totalStats.strength / 100)}-${2 + Math.floor(totalStats.strength / 100)} fish per catch`,
-        perPoint: "+2.5% chance to catch an additional fish per point",
-        detail: `Every 100 points guarantees +1 fish. You currently have a ${totalStats.strength % 100}% chance for a bonus fish.`
+        current: `${1 + Math.floor(totalStats.strength / 50)}-${2 + Math.floor(totalStats.strength / 50)} fish per catch`,
+        perPoint: "+2% chance to catch an additional fish per point",
+        detail: `Every 50 points guarantees +1 fish. You currently have a ${(totalStats.strength % 50) * 2}% chance for a bonus fish.`
       },
       intelligence: {
-        title: "Intelligence", 
-        current: `+${(totalStats.intelligence * 2.5).toFixed(1)}% gold when selling`,
-        perPoint: "+2.5% bonus gold from selling fish per point",
+        title: "Intelligence",
+        current: `+${(totalStats.intelligence * 2).toFixed(1)}% gold when selling`,
+        perPoint: "+2% bonus gold from selling fish per point",
         detail: `Increases the amount of gold earned when selling fish. Works multiplicatively with Titan Bonus.`
       },
       luck: {
