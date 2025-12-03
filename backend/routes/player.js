@@ -191,18 +191,18 @@ router.post('/save', authenticateToken, async (req, res) => {
             );
         }
 
-        // Update leaderboard stats
-        const totalFishCaught = inventory.reduce((sum, item) => sum + item.count, 0);
+        // Update leaderboard stats (calculate from inventory for leaderboard display)
+        const inventoryFishCount = inventory.reduce((sum, item) => sum + item.count, 0);
         const legendaryCount = inventory.filter(item => item.rarity === 'Legendary').reduce((sum, item) => sum + item.count, 0);
         const mythicCount = inventory.filter(item => item.rarity === 'Mythic').reduce((sum, item) => sum + item.count, 0);
 
         await connection.query(
-            `UPDATE leaderboard_stats 
-             SET level = ?, total_gold = ?, total_relics = ?, 
-                 total_fish_caught = ?, legendary_fish_count = ?, 
+            `UPDATE leaderboard_stats
+             SET level = ?, total_gold = ?, total_relics = ?,
+                 total_fish_caught = ?, legendary_fish_count = ?,
                  mythic_fish_count = ?, highest_biome = ?
              WHERE user_id = ?`,
-            [level, gold, relics, totalFishCaught, legendaryCount, mythicCount, currentBiome, userId]
+            [level, gold, relics, inventoryFishCount, legendaryCount, mythicCount, currentBiome, userId]
         );
 
         await connection.commit();
