@@ -78,7 +78,9 @@ router.get('/data', authenticateToken, async (req, res) => {
         // Parse unlocked_biomes JSON if it exists
         let unlockedBiomes = [];
         try {
-            unlockedBiomes = playerData[0].unlocked_biomes ? JSON.parse(playerData[0].unlocked_biomes) : [1];
+            const parsed = playerData[0].unlocked_biomes ? JSON.parse(playerData[0].unlocked_biomes) : [1];
+            // Ensure it's always an array (fix for corrupted integer data)
+            unlockedBiomes = Array.isArray(parsed) ? parsed : [1];
         } catch (e) {
             unlockedBiomes = [1];
         }

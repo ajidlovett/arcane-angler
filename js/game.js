@@ -316,7 +316,10 @@ React.useEffect(() => {
     const totalStats = getTotalStats();
     const intelligenceBonus = 1 + (Number(totalStats.intelligence) * 0.02);
     const titanBonus = Number(fishItem.titanBonus) || 1;
-    const goldEarned = Math.floor(Number(fishItem.baseGold) * Number(fishItem.count) * intelligenceBonus * titanBonus);
+
+    // Handle both old fish (with 'gold') and new fish (with 'baseGold')
+    const baseGoldValue = Number(fishItem.baseGold) || Number(fishItem.gold) || 0;
+    const goldEarned = Math.floor(baseGoldValue * Number(fishItem.count) * intelligenceBonus * titanBonus);
 
     setPlayer(prev => ({
       ...prev,
@@ -334,7 +337,9 @@ React.useEffect(() => {
 
     const totalGold = unlockedFish.reduce((sum, fish) => {
       const titanBonus = Number(fish.titanBonus) || 1;
-      return sum + Math.floor(Number(fish.baseGold) * Number(fish.count) * intelligenceBonus * titanBonus);
+      // Handle both old fish (with 'gold') and new fish (with 'baseGold')
+      const baseGoldValue = Number(fish.baseGold) || Number(fish.gold) || 0;
+      return sum + Math.floor(baseGoldValue * Number(fish.count) * intelligenceBonus * titanBonus);
     }, 0);
 
     const totalFishCount = unlockedFish.reduce((sum, fish) => sum + Number(fish.count), 0);
@@ -1091,7 +1096,10 @@ React.useEffect(() => {
                 const totalStats = getTotalStats();
                 const intelligenceBonus = 1 + (Number(totalStats.intelligence) * 0.02);
                 const titanBonus = Number(fish.titanBonus) || 1;
-                const sellValue = Math.floor(Number(fish.baseGold) * Number(fish.count) * intelligenceBonus * titanBonus);
+
+                // Handle both old fish (with 'gold') and new fish (with 'baseGold')
+                const baseGoldValue = Number(fish.baseGold) || Number(fish.gold) || 0;
+                const sellValue = Math.floor(baseGoldValue * Number(fish.count) * intelligenceBonus * titanBonus);
 
                 return (
                   <div key={idx} className="bg-blue-950 p-3 sm:p-4 rounded-lg border-2 relative" style={{ borderColor: rarityColors[fish.rarity] }}>
