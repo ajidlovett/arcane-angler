@@ -37,14 +37,14 @@ window.GameHelpers = {
   // Calculate rarity based on luck
   calculateRarity: (totalLuck) => {
     const baseWeights = {
-      'Common': 49500,
+      'Common': 50000,
       'Uncommon': 28000,
       'Fine': 15000,
       'Rare': 5000,
-      'Epic': 1500,
-      'Treasure Chest': 300,
-      'Legendary': 200,
-      'Mythic': 50
+      'Epic': 1575,
+      'Treasure Chest': 250,
+      'Legendary': 150,
+      'Mythic': 25
     };
 
     const effectiveWeights = {};
