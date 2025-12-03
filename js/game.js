@@ -130,22 +130,9 @@ React.useEffect(() => {
     'Treasure Chest': '#fbbf24'
   };
 
-  // Check and unlock achievements
+  // Check and unlock achievements - using window.GameHelpers
   const checkAchievements = () => {
-    // Safety check: ensure ACHIEVEMENTS is loaded
-    if (!window.ACHIEVEMENTS || !Array.isArray(window.ACHIEVEMENTS)) {
-      return;
-    }
-
-    const newAchievements = [];
-    window.ACHIEVEMENTS.forEach(achievement => {
-      if (!player.achievements.includes(achievement.id)) {
-        const currentValue = Number(player[achievement.stat]) || 0;
-        if (currentValue >= achievement.requirement) {
-          newAchievements.push(achievement.id);
-        }
-      }
-    });
+    const newAchievements = window.GameHelpers.checkAchievements(player);
 
     if (newAchievements.length > 0) {
       setPlayer(prev => ({
@@ -173,134 +160,16 @@ React.useEffect(() => {
     }
   }, [cooldown]);
 
-  // Helper functions
-  const getCurrentBiomeFish = () => window.BIOMES[player.currentBiome].fish;
-  
-  const getAllCurrentBiomeFish = () => {
-    const biomeFish = getCurrentBiomeFish();
-    return Object.values(biomeFish).flat();
-  };
-
-  const getTotalStats = () => {
-    // Relying on global window.RODS and window.BAITS from external files
-    const rod = player.equippedRod ? window.RODS[player.equippedRod] : null;
-    const bait = player.equippedBait ? window.BAITS[player.equippedBait] : null;
-    
-    return {
-      strength: player.stats.strength + (rod?.str || 0) + (bait?.str || 0),
-      intelligence: player.stats.intelligence + (rod?.int || 0) + (bait?.int || 0),
-      luck: player.stats.luck + (rod?.luck || 0) + (bait?.luck || 0),
-      stamina: player.stats.stamina + (rod?.stam || 0) + (bait?.stam || 0)
-    };
-  };
-
-  const getBiomeRelicRange = (biome) => {
-    if (biome <= 5) return { min: 1, max: 5 };
-    if (biome <= 10) return { min: 5, max: 12 };
-    if (biome <= 15) return { min: 12, max: 25 };
-    if (biome <= 20) return { min: 25, max: 45 };
-    if (biome <= 25) return { min: 45, max: 70 };
-    return { min: 70, max: 100 };
-  };
-
-  const calculateRarity = () => {
-    const totalStats = getTotalStats();
-    const totalLuck = totalStats.luck;
-    
-    const baseWeights = {
-      'Common': 49500,
-      'Uncommon': 28000,
-      'Fine': 15000,
-      'Rare': 5000,
-      'Epic': 1500,
-      'Treasure Chest': 500,
-      'Legendary': 450,
-      'Mythic': 50
-    };
-
-    const effectiveWeights = {};
-    let poolSize = 0;
-    
-    for (const [tier, baseWeight] of Object.entries(baseWeights)) {
-      if (tier === 'Common') {
-        effectiveWeights[tier] = baseWeight;
-      } else {
-        effectiveWeights[tier] = baseWeight * (1 + (totalLuck / 100));
-      }
-      poolSize += effectiveWeights[tier];
-    }
-
-    const roll = Math.random() * poolSize;
-    let cumulative = 0;
-    
-    for (const [tier, weight] of Object.entries(effectiveWeights)) {
-      cumulative += weight;
-      if (roll <= cumulative) return tier;
-    }
-    
-    return 'Common';
-  };
-
-  const calculateFishCount = (rarity) => {
-    const totalStats = getTotalStats();
-    const totalStrength = totalStats.strength;
-
-    if (rarity === 'Mythic' || rarity === 'Treasure Chest') return 1;
-
-    const guaranteedExtra = Math.floor(totalStrength / 50);
-    const remainder = totalStrength % 50;
-    const chanceForBonus = remainder * 2;
-    const bonusFish = Math.random() * 100 < chanceForBonus ? 1 : 0;
-
-    return 1 + guaranteedExtra + bonusFish;
-  };
-
-  const calculateTitanBonus = () => {
-    const totalStats = getTotalStats();
-    const totalStrength = totalStats.strength;
-    const guaranteedExtra = Math.floor(totalStrength / 50);
-    const remainder = totalStrength % 50;
-    const avgBonus = remainder / 50;
-    const wouldHaveCaught = guaranteedExtra + avgBonus;
-
-    return 1 + (0.5 * wouldHaveCaught);
-  };
-
-  const generateTreasureChest = () => {
-    const totalStats = getTotalStats();
-    const totalLuck = totalStats.luck;
-    const avgCommonValue = 5;
-    const biomeRelicRange = getBiomeRelicRange(player.currentBiome);
-    
-    const baseGold = avgCommonValue * 50;
-    const goldReward = Math.floor(baseGold * (1 + (totalLuck / 100)));
-    
-    const baseRelics = Math.floor(Math.random() * (biomeRelicRange.max - biomeRelicRange.min + 1)) + biomeRelicRange.min;
-    const relicReward = Math.floor(baseRelics * (1 + (totalLuck / 100)));
-    
-    return { gold: goldReward, relics: relicReward };
-  };
-
-  const getFunnyLine = () => {
-    const allFish = getAllCurrentBiomeFish();
-    const randomFish = allFish[Math.floor(Math.random() * allFish.length)];
-    
-    // Use the funny lines from the external funnylines.js file
-    const lines = [...window.FUNNY_LINES];
-
-    // Add the dynamic line with a random fish name
-    lines.push(`You hoped to catch ${randomFish.name} but you caught:`);
-    lines.push(`You hoped to catch ${randomFish.name} but you caught:`);
-    lines.push(`You were 100% sure it was ${randomFish.name} but it was:`);
-    lines.push(`You bet your soul on catching ${randomFish.name} and got:`);
-    lines.push(`The manual said this spot has ${randomFish.name}, you got:`);
-    lines.push(`You visualized catching ${randomFish.name} but reality gave you:`);
-    lines.push(`You prepared a speech for ${randomFish.name} but caught:`);
-    lines.push(`You bought specific bait for ${randomFish.name} and caught:`);
-    lines.push(`The prophecy foretold of ${randomFish.name}, instead you got:`);
-
-    return lines[Math.floor(Math.random() * lines.length)];
-  };
+  // Helper functions - now using window.GameHelpers
+  const getCurrentBiomeFish = () => window.GameHelpers.getCurrentBiomeFish(player.currentBiome);
+  const getAllCurrentBiomeFish = () => window.GameHelpers.getAllCurrentBiomeFish(player.currentBiome);
+  const getTotalStats = () => window.GameHelpers.getTotalStats(player);
+  const getBiomeRelicRange = (biome) => window.GameHelpers.getBiomeRelicRange(biome);
+  const calculateRarity = () => window.GameHelpers.calculateRarity(getTotalStats().luck);
+  const calculateFishCount = (rarity) => window.GameHelpers.calculateFishCount(rarity, getTotalStats().strength);
+  const calculateTitanBonus = () => window.GameHelpers.calculateTitanBonus(getTotalStats().strength);
+  const generateTreasureChest = () => window.GameHelpers.generateTreasureChest(player.currentBiome, getTotalStats().luck);
+  const getFunnyLine = () => window.GameHelpers.getFunnyLine(player.currentBiome);
 
   const handleFish = () => {
     if (cooldown > 0 || fishing) return;
