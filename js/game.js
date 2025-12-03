@@ -38,7 +38,14 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
       equippedRod: 'Willow Branch', // Default Rod from equipment.js
       equippedBait: 'Stale Bread Crust',
       ownedRods: ['Willow Branch'], // Start with the free rod
-      baitInventory: { 'Stale Bread Crust': 999999 }
+      baitInventory: { 'Stale Bread Crust': 999999 },
+      achievements: [],
+      totalFishCaught: 0,
+      totalFishSold: 0,
+      totalGoldEarned: 0,
+      mythicsCaught: 0,
+      legendariesCaught: 0,
+      statsUpgraded: 0
     };
     
     const saved = localStorage.getItem('arcaneAnglerSave');
@@ -114,6 +121,68 @@ React.useEffect(() => {
     'Mythic': '#ef4444',
     'Treasure Chest': '#fbbf24'
   };
+
+  // Achievements definitions
+  const ACHIEVEMENTS = [
+    { id: 'first_catch', name: 'First Catch', desc: 'Catch your first fish', icon: '🎣', requirement: 1, stat: 'totalFishCaught' },
+    { id: 'novice_angler', name: 'Novice Angler', desc: 'Catch 50 fish', icon: '🐟', requirement: 50, stat: 'totalFishCaught' },
+    { id: 'skilled_angler', name: 'Skilled Angler', desc: 'Catch 250 fish', icon: '🎣', requirement: 250, stat: 'totalFishCaught' },
+    { id: 'master_angler', name: 'Master Angler', desc: 'Catch 1000 fish', icon: '🏆', requirement: 1000, stat: 'totalFishCaught' },
+    { id: 'legendary_angler', name: 'Legendary Angler', desc: 'Catch 5000 fish', icon: '⭐', requirement: 5000, stat: 'totalFishCaught' },
+
+    { id: 'first_mythic', name: 'Titan Slayer', desc: 'Catch your first Mythic fish', icon: '🐲', requirement: 1, stat: 'mythicsCaught' },
+    { id: 'mythic_hunter', name: 'Mythic Hunter', desc: 'Catch 10 Mythic fish', icon: '🔱', requirement: 10, stat: 'mythicsCaught' },
+    { id: 'first_legendary', name: 'Legend Hunter', desc: 'Catch your first Legendary fish', icon: '✨', requirement: 1, stat: 'legendariesCaught' },
+    { id: 'legendary_collector', name: 'Legendary Collector', desc: 'Catch 25 Legendary fish', icon: '💫', requirement: 25, stat: 'legendariesCaught' },
+
+    { id: 'level_10', name: 'Getting Started', desc: 'Reach level 10', icon: '📈', requirement: 10, stat: 'level' },
+    { id: 'level_25', name: 'Rising Star', desc: 'Reach level 25', icon: '🌟', requirement: 25, stat: 'level' },
+    { id: 'level_50', name: 'Veteran Angler', desc: 'Reach level 50', icon: '💪', requirement: 50, stat: 'level' },
+    { id: 'level_100', name: 'Century Mark', desc: 'Reach level 100', icon: '💯', requirement: 100, stat: 'level' },
+
+    { id: 'gold_1k', name: 'First Fortune', desc: 'Earn 1,000 total gold', icon: '💰', requirement: 1000, stat: 'totalGoldEarned' },
+    { id: 'gold_10k', name: 'Wealthy Trader', desc: 'Earn 10,000 total gold', icon: '💵', requirement: 10000, stat: 'totalGoldEarned' },
+    { id: 'gold_100k', name: 'Gold Baron', desc: 'Earn 100,000 total gold', icon: '👑', requirement: 100000, stat: 'totalGoldEarned' },
+    { id: 'gold_1m', name: 'Millionaire', desc: 'Earn 1,000,000 total gold', icon: '💎', requirement: 1000000, stat: 'totalGoldEarned' },
+
+    { id: 'merchant_apprentice', name: 'Merchant Apprentice', desc: 'Sell 100 fish', icon: '🏪', requirement: 100, stat: 'totalFishSold' },
+    { id: 'merchant_expert', name: 'Merchant Expert', desc: 'Sell 500 fish', icon: '🛒', requirement: 500, stat: 'totalFishSold' },
+    { id: 'merchant_tycoon', name: 'Merchant Tycoon', desc: 'Sell 2500 fish', icon: '🏦', requirement: 2500, stat: 'totalFishSold' },
+
+    { id: 'stat_upgrade_5', name: 'Power Up', desc: 'Upgrade any stat 5 times', icon: '⚡', requirement: 5, stat: 'statsUpgraded' },
+    { id: 'stat_upgrade_25', name: 'Dedicated Trainer', desc: 'Upgrade any stat 25 times', icon: '💪', requirement: 25, stat: 'statsUpgraded' },
+    { id: 'stat_upgrade_100', name: 'Max Power', desc: 'Upgrade any stat 100 times', icon: '🔥', requirement: 100, stat: 'statsUpgraded' },
+
+    { id: 'biome_explorer', name: 'Biome Explorer', desc: 'Unlock 5 biomes', icon: '🗺️', requirement: 5, stat: 'currentBiome' },
+    { id: 'biome_wanderer', name: 'Biome Wanderer', desc: 'Unlock 10 biomes', icon: '🧭', requirement: 10, stat: 'currentBiome' },
+    { id: 'world_traveler', name: 'World Traveler', desc: 'Unlock 20 biomes', icon: '🌍', requirement: 20, stat: 'currentBiome' },
+    { id: 'realm_master', name: 'Realm Master', desc: 'Unlock all 30 biomes', icon: '🌌', requirement: 30, stat: 'currentBiome' }
+  ];
+
+  // Check and unlock achievements
+  const checkAchievements = () => {
+    const newAchievements = [];
+    ACHIEVEMENTS.forEach(achievement => {
+      if (!player.achievements.includes(achievement.id)) {
+        const currentValue = player[achievement.stat] || 0;
+        if (currentValue >= achievement.requirement) {
+          newAchievements.push(achievement.id);
+        }
+      }
+    });
+
+    if (newAchievements.length > 0) {
+      setPlayer(prev => ({
+        ...prev,
+        achievements: [...prev.achievements, ...newAchievements]
+      }));
+    }
+  };
+
+  // Check achievements whenever player state changes
+  useEffect(() => {
+    checkAchievements();
+  }, [player.totalFishCaught, player.level, player.totalGoldEarned, player.totalFishSold, player.mythicsCaught, player.legendariesCaught, player.statsUpgraded, player.currentBiome]);
 
   // Auto-save
   useEffect(() => {
@@ -364,7 +433,10 @@ React.useEffect(() => {
         relics: prev.relics + (levelUp ? 1 : 0),
         inventory: newInventory,
         baitInventory: newBaitInventory,
-        equippedBait: (newBaitInventory[prev.equippedBait] && newBaitInventory[prev.equippedBait] > 0) ? prev.equippedBait : 'Stale Bread Crust'
+        equippedBait: (newBaitInventory[prev.equippedBait] && newBaitInventory[prev.equippedBait] > 0) ? prev.equippedBait : 'Stale Bread Crust',
+        totalFishCaught: prev.totalFishCaught + fishCount,
+        mythicsCaught: prev.mythicsCaught + (rarity === 'Mythic' ? 1 : 0),
+        legendariesCaught: prev.legendariesCaught + (rarity === 'Legendary' ? 1 : 0)
       }));
 
       setFishing(false);
@@ -391,7 +463,9 @@ React.useEffect(() => {
     setPlayer(prev => ({
       ...prev,
       gold: prev.gold + goldEarned,
-      inventory: prev.inventory.filter(f => f.name !== fishItem.name)
+      inventory: prev.inventory.filter(f => f.name !== fishItem.name),
+      totalFishSold: prev.totalFishSold + fishItem.count,
+      totalGoldEarned: prev.totalGoldEarned + goldEarned
     }));
   };
 
@@ -405,10 +479,14 @@ React.useEffect(() => {
       return sum + Math.floor(fish.baseGold * fish.count * intelligenceBonus * titanBonus);
     }, 0);
 
+    const totalFishCount = unlockedFish.reduce((sum, fish) => sum + fish.count, 0);
+
     setPlayer(prev => ({
       ...prev,
       gold: prev.gold + totalGold,
-      inventory: prev.inventory.filter(f => prev.lockedFish.includes(f.name))
+      inventory: prev.inventory.filter(f => prev.lockedFish.includes(f.name)),
+      totalFishSold: prev.totalFishSold + totalFishCount,
+      totalGoldEarned: prev.totalGoldEarned + totalGold
     }));
   };
 
@@ -424,12 +502,16 @@ React.useEffect(() => {
       return sum + Math.floor(fish.baseGold * fish.count * intelligenceBonus * titanBonus);
     }, 0);
 
+    const totalFishCount = fishToSell.reduce((sum, fish) => sum + fish.count, 0);
+
     setPlayer(prev => ({
       ...prev,
       gold: prev.gold + totalGold,
       inventory: prev.inventory.filter(f =>
         f.rarity !== rarity || prev.lockedFish.includes(f.name)
-      )
+      ),
+      totalFishSold: prev.totalFishSold + totalFishCount,
+      totalGoldEarned: prev.totalGoldEarned + totalGold
     }));
   };
 
@@ -442,7 +524,8 @@ React.useEffect(() => {
         stats: {
           ...prev.stats,
           [stat]: prev.stats[stat] + 1
-        }
+        },
+        statsUpgraded: prev.statsUpgraded + 1
       }));
     }
   };
@@ -1275,7 +1358,98 @@ React.useEffect(() => {
       </div>
     </div>
   );
-  
+
+  const AchievementsPage = () => {
+    const unlockedAchievements = ACHIEVEMENTS.filter(a => player.achievements.includes(a.id));
+    const lockedAchievements = ACHIEVEMENTS.filter(a => !player.achievements.includes(a.id));
+
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <span>{Icons.Trophy()}</span>
+              Achievements
+            </h2>
+            <div className="text-sm text-blue-300">
+              {unlockedAchievements.length} / {ACHIEVEMENTS.length}
+            </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="bg-blue-950 rounded-full h-4 mb-8">
+            <div
+              className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-4 rounded-full transition-all duration-300 flex items-center justify-center"
+              style={{ width: `${(unlockedAchievements.length / ACHIEVEMENTS.length) * 100}%` }}
+            >
+              <span className="text-xs font-bold text-black px-2">
+                {Math.floor((unlockedAchievements.length / ACHIEVEMENTS.length) * 100)}%
+              </span>
+            </div>
+          </div>
+
+          {/* Unlocked Achievements */}
+          {unlockedAchievements.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-bold mb-3 text-yellow-400">Unlocked</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {unlockedAchievements.map(achievement => (
+                  <div key={achievement.id} className="bg-blue-950 p-4 rounded-lg border-2 border-yellow-400">
+                    <div className="flex items-start gap-3">
+                      <div className="text-3xl">{achievement.icon}</div>
+                      <div className="flex-1">
+                        <div className="font-bold text-yellow-400">{achievement.name}</div>
+                        <div className="text-xs text-blue-300 mt-1">{achievement.desc}</div>
+                        <div className="text-xs text-green-400 mt-2">✓ Completed</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Locked Achievements */}
+          {lockedAchievements.length > 0 && (
+            <div>
+              <h3 className="text-lg font-bold mb-3 text-gray-400">Locked</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {lockedAchievements.map(achievement => {
+                  const currentValue = player[achievement.stat] || 0;
+                  const progress = Math.min(100, (currentValue / achievement.requirement) * 100);
+
+                  return (
+                    <div key={achievement.id} className="bg-blue-950 p-4 rounded-lg border-2 border-gray-700 opacity-70">
+                      <div className="flex items-start gap-3">
+                        <div className="text-3xl grayscale">{achievement.icon}</div>
+                        <div className="flex-1">
+                          <div className="font-bold text-gray-300">{achievement.name}</div>
+                          <div className="text-xs text-gray-400 mt-1">{achievement.desc}</div>
+                          <div className="mt-2">
+                            <div className="flex justify-between text-xs text-gray-400 mb-1">
+                              <span>Progress</span>
+                              <span>{currentValue} / {achievement.requirement}</span>
+                            </div>
+                            <div className="bg-gray-700 rounded-full h-2">
+                              <div
+                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${progress}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const PlaceholderPage = ({ title, icon }) => (
     <div className="max-w-4xl mx-auto">
       <div className="bg-blue-800 bg-opacity-50 rounded-lg p-8 sm:p-12 text-center">
@@ -1346,7 +1520,7 @@ React.useEffect(() => {
           {currentPage === 'quests' && <PlaceholderPage title="Quests" icon={Icons.Target} />}
           {currentPage === 'guilds' && <PlaceholderPage title="Guilds" icon={Icons.Users} />}
           {currentPage === 'profile' && <ProfilePage />}
-          {currentPage === 'achievements' && <PlaceholderPage title="Achievements" icon={Icons.Trophy} />}
+          {currentPage === 'achievements' && <AchievementsPage />}
         </div>
       </div>
     </div>
