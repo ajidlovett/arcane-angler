@@ -930,6 +930,11 @@ React.useEffect(() => {
   };
 
   const BiomesPage = () => {
+    const [biomePage, setBiomePage] = useState(1);
+    const biomesPerPage = 5;
+    const totalBiomes = Object.keys(window.BIOMES).length;
+    const totalPages = Math.ceil(totalBiomes / biomesPerPage);
+
     const canUnlockBiome = (biomeId) => {
       const biome = window.BIOMES[biomeId];
       return player.level >= biome.unlockLevel && player.gold >= biome.unlockGold;
@@ -937,7 +942,7 @@ React.useEffect(() => {
     const unlockBiome = (biomeId) => {
       const biome = window.BIOMES[biomeId];
       if (!canUnlockBiome(biomeId)) return;
-      
+
       setPlayer(prev => ({
         ...prev,
         gold: prev.gold - biome.unlockGold,
@@ -946,20 +951,56 @@ React.useEffect(() => {
       setCurrentPage('fishing');
     };
 
+    // Get biomes for the current page
+    const getCurrentPageBiomes = () => {
+      const startIndex = (biomePage - 1) * biomesPerPage + 1;
+      const endIndex = Math.min(startIndex + biomesPerPage - 1, totalBiomes);
+
+      const biomes = [];
+      for (let i = startIndex; i <= endIndex; i++) {
+        if (window.BIOMES[i]) {
+          biomes.push([i.toString(), window.BIOMES[i]]);
+        }
+      }
+      return biomes;
+    };
+
     return (
       <div className="max-w-4xl mx-auto">
         <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
           <h2 className="text-xl sm:text-2xl font-bold mb-6">Select Biome</h2>
-          
+
+          {/* Pagination Tabs */}
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+              const startBiome = (page - 1) * biomesPerPage + 1;
+              const endBiome = Math.min(page * biomesPerPage, totalBiomes);
+
+              return (
+                <button
+                  key={page}
+                  onClick={() => setBiomePage(page)}
+                  className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${
+                    biomePage === page
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-blue-900 hover:bg-blue-800 text-blue-300'
+                  }`}
+                >
+                  Biomes {startBiome}-{endBiome}
+                </button>
+              );
+            })}
+          </div>
+
           <div className="space-y-4">
-            {Object.entries(window.BIOMES).map(([id, biome]) => {
+            {getCurrentPageBiomes().map(([id, biome]) => {
               const biomeId = parseInt(id);
               const isUnlocked = canUnlockBiome(biomeId) || biomeId <= player.currentBiome;
               const isCurrent = biomeId === player.currentBiome;
               const isLocked = !isUnlocked && biomeId > player.currentBiome;
-              
+
               return (
-                <div 
+                <div
                   key={id}
                   className={`p-4 sm:p-5 rounded-lg border-2 ${isCurrent ? 'bg-blue-700 border-yellow-400' : isLocked ? 'bg-blue-950 border-gray-700 opacity-60' : 'bg-blue-900 border-blue-700 hover:border-blue-500 cursor-pointer'}`}
                   onClick={() => isUnlocked && !isCurrent && unlockBiome(biomeId)}
@@ -972,7 +1013,7 @@ React.useEffect(() => {
                       </div>
                       <div className="text-sm text-blue-300 mt-1">Biome {id}</div>
                     </div>
-                    
+
                     {isLocked && (
                       <div className="text-right">
                         <div className="text-xs text-blue-300">Requires:</div>
@@ -983,23 +1024,23 @@ React.useEffect(() => {
                       </div>
                     )}
                   </div>
-                  
+
                   <p className="text-xs sm:text-sm text-blue-300 italic mb-3">
                     {biome.description}
                   </p>
-                  
+
                   {biome.boatRequired && (
                     <div className="text-xs text-blue-400 mb-2">
                       🚣 Requires: {biome.boatRequired}
                     </div>
                   )}
-                  
+
                   <div className="flex flex-wrap gap-1">
                     {Object.keys(biome.fish).map(rarity => (
-                      <span 
+                      <span
                         key={rarity}
                         className="text-xs px-2 py-1 rounded"
-                        style={{ 
+                        style={{
                           backgroundColor: `${rarityColors[rarity]}20`,
                           color: rarityColors[rarity],
                           border: `1px solid ${rarityColors[rarity]}`
