@@ -878,7 +878,9 @@ React.useEffect(() => {
     const totalPages = Math.ceil(totalBiomes / biomesPerPage);
 
     const isBiomeUnlocked = (biomeId) => {
-      return player.unlockedBiomes.includes(biomeId);
+      // Ensure unlockedBiomes is an array (null safety)
+      const unlockedBiomes = player.unlockedBiomes || [1];
+      return unlockedBiomes.includes(biomeId);
     };
 
     const canUnlockBiome = (biomeId) => {
@@ -908,7 +910,7 @@ React.useEffect(() => {
         ...prev,
         gold: prev.gold - biome.unlockGold,
         currentBiome: biomeId,
-        unlockedBiomes: [...prev.unlockedBiomes, biomeId]
+        unlockedBiomes: [...(prev.unlockedBiomes || [1]), biomeId]
       }));
       setCurrentPage('fishing');
     };
@@ -1396,28 +1398,26 @@ React.useEffect(() => {
             </div>
           </div>
 
-          {/* Biome Selection Grid */}
+          {/* Biome Selection Dropdown */}
           <div className="mb-6">
-            <div className="text-sm text-blue-300 mb-2 font-semibold">Select Biome:</div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-2">
+            <label htmlFor="biome-select" className="text-sm text-blue-300 mb-2 font-semibold block">
+              Select Biome:
+            </label>
+            <select
+              id="biome-select"
+              value={selectedBiome}
+              onChange={(e) => {
+                setSelectedBiome(parseInt(e.target.value));
+                setSelectedRarityFilter('all');
+              }}
+              className="w-full sm:w-64 px-4 py-3 rounded-lg font-bold bg-blue-900 text-white border-2 border-blue-700 hover:border-blue-500 focus:border-blue-400 focus:outline-none cursor-pointer"
+            >
               {availableBiomes.map(biomeId => (
-                <button
-                  key={biomeId}
-                  onClick={() => {
-                    setSelectedBiome(biomeId);
-                    setSelectedRarityFilter('all');
-                  }}
-                  className={`px-2 py-2 rounded font-bold text-xs ${
-                    selectedBiome === biomeId
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-blue-900 hover:bg-blue-800 text-blue-300'
-                  }`}
-                  title={window.BIOMES[biomeId]?.name || `Biome ${biomeId}`}
-                >
-                  {biomeId}
-                </button>
+                <option key={biomeId} value={biomeId}>
+                  Biome {biomeId}: {window.BIOMES[biomeId]?.name || `Biome ${biomeId}`}
+                </option>
               ))}
-            </div>
+            </select>
           </div>
 
           {/* Rarity Filter */}
