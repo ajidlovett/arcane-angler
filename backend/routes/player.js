@@ -59,20 +59,36 @@ router.get('/data', authenticateToken, async (req, res) => {
         const formattedOwnedRods = ownedRods.map(r => r.rod_name);
         const formattedLockedFish = lockedFish.map(f => f.fish_name);
 
+        // Parse achievements JSON if it exists
+        let achievements = [];
+        try {
+            achievements = playerData[0].achievements ? JSON.parse(playerData[0].achievements) : [];
+        } catch (e) {
+            achievements = [];
+        }
+
         res.json({
             level: playerData[0].level,
             xp: playerData[0].xp,
             xpToNext: playerData[0].xp_to_next,
-            gold: playerData[0].gold,
-            relics: playerData[0].relics,
-            currentBiome: playerData[0].current_biome,
+            gold: playerData[0].gold || 0,
+            relics: playerData[0].relics || 0,
+            currentBiome: playerData[0].current_biome || 1,
             equippedRod: playerData[0].equipped_rod,
             equippedBait: playerData[0].equipped_bait,
             stats: playerStats[0] || { strength: 0, intelligence: 0, luck: 0, stamina: 0 },
             inventory: formattedInventory,
             lockedFish: formattedLockedFish,
             ownedRods: formattedOwnedRods,
-            baitInventory: formattedBaitInventory
+            baitInventory: formattedBaitInventory,
+            // Achievement tracking fields
+            achievements: achievements,
+            totalFishCaught: playerData[0].total_fish_caught || 0,
+            totalFishSold: playerData[0].total_fish_sold || 0,
+            totalGoldEarned: playerData[0].total_gold_earned || 0,
+            mythicsCaught: playerData[0].mythics_caught || 0,
+            legendariesCaught: playerData[0].legendaries_caught || 0,
+            statsUpgraded: playerData[0].stats_upgraded || 0
         });
     } catch (error) {
         console.error('Get player data error:', error);
@@ -89,18 +105,29 @@ router.post('/save', authenticateToken, async (req, res) => {
         const {
             level, xp, xpToNext, gold, relics, currentBiome,
             equippedRod, equippedBait, stats, inventory,
-            lockedFish, ownedRods, baitInventory
+            lockedFish, ownedRods, baitInventory,
+            achievements, totalFishCaught, totalFishSold,
+            totalGoldEarned, mythicsCaught, legendariesCaught, statsUpgraded
         } = req.body;
 
         await connection.beginTransaction();
 
+        // Convert achievements array to JSON string
+        const achievementsJson = JSON.stringify(achievements || []);
+
         // Update player data
         await connection.query(
-            `UPDATE player_data 
-             SET level = ?, xp = ?, xp_to_next = ?, gold = ?, relics = ?, 
-                 current_biome = ?, equipped_rod = ?, equipped_bait = ?
+            `UPDATE player_data
+             SET level = ?, xp = ?, xp_to_next = ?, gold = ?, relics = ?,
+                 current_biome = ?, equipped_rod = ?, equipped_bait = ?,
+                 achievements = ?, total_fish_caught = ?, total_fish_sold = ?,
+                 total_gold_earned = ?, mythics_caught = ?, legendaries_caught = ?,
+                 stats_upgraded = ?
              WHERE user_id = ?`,
-            [level, xp, xpToNext, gold, relics, currentBiome, equippedRod, equippedBait, userId]
+            [level, xp, xpToNext, gold, relics, currentBiome, equippedRod, equippedBait,
+             achievementsJson, totalFishCaught || 0, totalFishSold || 0,
+             totalGoldEarned || 0, mythicsCaught || 0, legendariesCaught || 0,
+             statsUpgraded || 0, userId]
         );
 
         // Update player stats
