@@ -8,61 +8,61 @@ window.RODS = {
     desc: "Flexible, free, and barely better than using your hands." 
   },
   'Reinforced Bamboo Rod': { 
-    price: 1200, 
+    price: 1500, 
     str: 5, int: 0, luck: 0, stam: 2, 
     tier: 1,
     desc: "Sturdy bamboo allows you to fish longer without getting tired." 
   },
   'Fiberglass Casting Rod': { 
-    price: 2500, 
+    price: 3500, 
     str: 5, int: 5, luck: 0, stam: 0, 
     tier: 1,
     desc: "A smart investment for new anglers looking to maximize profit." 
   },
   'The "Lucky" Stick': { 
-    price: 3000, 
+    price: 5000, 
     str: 0, int: 0, luck: 10, stam: 0, 
     tier: 1,
     desc: "It's just a stick with a four-leaf clover taped to it." 
   },
   'Tinker\'s Mechanical Rod': { 
-    price: 4000, 
+    price: 10000, 
     str: 0, int: 10, luck: 0, stam: 5, 
     tier: 1,
     desc: "Gears and pulleys do the heavy lifting for you." 
   },
   'Carbon-Flex 2000': { 
-    price: 5000, 
+    price: 15000, 
     str: 15, int: 0, luck: 0, stam: 0, 
     tier: 1,
     desc: "Lightweight aerospace material designed for hauling in multiple fish." 
   },
   'Rusty Iron Pipe': { 
-    price: 5500, 
+    price: 20000, 
     str: 18, int: 0, luck: 0, stam: 0, 
     tier: 1,
     desc: "Heavy, crude, and ugly, but it won't break under pressure." 
   },
   'Merchant\'s Ledger Rod': { 
-    price: 5800, 
+    price: 20000, 
     str: 0, int: 18, luck: 0, stam: 0, 
     tier: 1,
     desc: "Calculates the value of the fish as you reel it in." 
   },
   'Mangrove Root Weaver': { 
-    price: 6000, 
+    price: 25000, 
     str: 10, int: 0, luck: 8, stam: 0, 
     tier: 1,
     desc: "Twisted roots formed into a pole. Great for swamp fishing." 
   },
   'The Camper\'s Pole': { 
-    price: 6500, 
+    price: 35000, 
     str: 0, int: 0, luck: 0, stam: 20, 
     tier: 1,
     desc: "Comes with a cup holder. Perfect for long, lazy offline sessions." 
   },
 
-  // TIER 2: The Seasoned Angler (50,000 - 1,200,000 Gold)
+  // TIER 2: The Seasoned Angler (50,000 - 3,000,000 Gold)
   'The Cheese-Master 3000': { 
     price: 50000, 
     str: 0, int: 20, luck: 0, stam: 10, 
@@ -70,55 +70,55 @@ window.RODS = {
     desc: "Bright yellow and smells faintly of cheddar. Great for gold farming." 
   },
   'Thunderbolt Caster': { 
-    price: 150000, 
+    price: 250000, 
     str: 30, int: 0, luck: 10, stam: 0, 
     tier: 2,
     desc: "Harnesses static electricity to pull fish out of the water in groups." 
   },
   'Obsidian Magma Rod': { 
-    price: 300000, 
+    price: 500000, 
     str: 40, int: 0, luck: 0, stam: 0, 
     tier: 2,
     desc: "Forged in a volcano. It can handle the heaviest catches." 
   },
   'Jade Emperor\'s Pole': { 
-    price: 500000, 
+    price: 800000, 
     str: 0, int: 50, luck: 20, stam: 0, 
     tier: 2,
     desc: "An ornate rod inlaid with precious gems. Attracts wealth." 
   },
   'Frost-Bite Rod': { 
-    price: 750000, 
+    price: 1000000, 
     str: 20, int: 0, luck: 0, stam: 40, 
     tier: 2,
     desc: "Cold to the touch. Preserves your energy for long fishing trips." 
   },
   'Spirit-Walker\'s Staff': { 
-    price: 1000000, 
+    price: 1250000, 
     str: 0, int: 20, luck: 50, stam: 0, 
     tier: 2,
     desc: "A ceremonial staff repurposed for fishing in the spirit realm." 
   },
   'Golden Scarab Rod': { 
-    price: 1050000, 
+    price: 1500000, 
     str: 0, int: 60, luck: 0, stam: 0, 
     tier: 2,
     desc: "Ancient desert technology. It seeks out valuable treasures." 
   },
   'Mycelium Spore-Rod': { 
-    price: 1100000, 
+    price: 2000000, 
     str: 20, int: 0, luck: 40, stam: 0, 
     tier: 2,
     desc: "Living fungus that grows stronger in damp environments." 
   },
   'Crystal Shard Pole': { 
-    price: 1150000, 
+    price: 2250000, 
     str: 30, int: 30, luck: 0, stam: 0, 
     tier: 2,
     desc: "Made of jagged glass. Sharp, dangerous, and efficient." 
   },
   'Deep-Sea Harpoon': { 
-    price: 1200000, 
+    price: 3000000, 
     str: 70, int: 0, luck: 0, stam: 0, 
     tier: 2,
     desc: "Less of a fishing rod, more of a weapon. Catches whales." 

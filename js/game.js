@@ -21,7 +21,7 @@ const Icons = window.Icons;
 // *** FIX APPLIED: REMOVED THE FOLLOWING DESTRUCTURING LINE TO PREVENT ReferenceError: ***
 // const { Fish, Package, TrendingUp, Target, Users, User, Trophy, Award, Menu, X, Lock, Unlock, ChevronRight } = Icons; 
 
-const FishingGame = () => {
+const FishingGame = ({ user, onLogout, offlineMode }) => {
   // State
   const [currentPage, setCurrentPage] = useState('fishing');
   const [player, setPlayer] = useState(() => {
@@ -69,6 +69,38 @@ const FishingGame = () => {
   const [selectedRarity, setSelectedRarity] = useState('all');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [funnyLine, setFunnyLine] = useState('');
+
+  // Load player data from cloud
+React.useEffect(() => {
+  const loadData = async () => {
+    if (!offlineMode) {
+      try {
+        const data = await window.ApiService.getPlayerData();
+        setPlayer(data);
+        console.log('✅ Loaded from cloud');
+      } catch (err) {
+        console.error('Failed to load from cloud:', err);
+      }
+    }
+  };
+  loadData();
+}, [offlineMode]);
+
+// Auto-save to cloud every 30 seconds
+React.useEffect(() => {
+  if (!offlineMode) {
+    const saveInterval = setInterval(async () => {
+      try {
+        await window.ApiService.savePlayerData(player);
+        console.log('✅ Saved to cloud');
+      } catch (err) {
+        console.error('Auto-save failed:', err);
+      }
+    }, 30000);
+    
+    return () => clearInterval(saveInterval);
+  }
+}, [player, offlineMode]);
 
   // Constants
   const rarities = ['Common', 'Uncommon', 'Fine', 'Rare', 'Epic', 'Legendary', 'Mythic'];
@@ -538,6 +570,19 @@ const FishingGame = () => {
               Biome {player.currentBiome} of {Object.keys(window.BIOMES).length}
             </div>
             
+            <button
+  onClick={onLogout}
+  className="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+>
+  {offlineMode ? 'Exit Game' : 'Logout'}
+</button>
+
+{!offlineMode && user && (
+  <div className="text-sm text-gray-500 mt-2">
+    Playing as: {user.profileUsername || user.username}
+  </div>
+)}
+
             <button
               onClick={() => {
                 if (confirm('Are you sure you want to reset your save? This cannot be undone!')) {
@@ -1251,10 +1296,61 @@ const FishingGame = () => {
   );
 };
 
+// Main App with Authentication
+const App = () => {
+  const [user, setUser] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [offlineMode, setOfflineMode] = React.useState(false);
+
+  // Check if user is already logged in
+  React.useEffect(() => {
+    const checkAuth = async () => {
+      if (window.ApiService.isLoggedIn()) {
+        try {
+          const result = await window.ApiService.verifyToken();
+          setUser(result.user);
+        } catch (err) {
+          console.error('Token verification failed:', err);
+          window.ApiService.logout();
+        }
+      }
+      setIsLoading(false);
+    };
+    checkAuth();
+  }, []);
+
+  const handleLoginSuccess = (userData) => {
+    if (userData === null) {
+      setOfflineMode(true);
+      setUser({ username: 'OfflinePlayer' });
+    } else {
+      setUser(userData);
+    }
+  };
+
+  const handleLogout = () => {
+    if (!offlineMode) {
+      window.ApiService.logout();
+    }
+    setUser(null);
+    setOfflineMode(false);
+    window.location.reload();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 to-cyan-900">
+        <div className="text-white text-2xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthScreen onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  return <FishingGame user={user} onLogout={handleLogout} offlineMode={offlineMode} />;
+};
+
 // Render the app
-try {
-  const root = ReactDOM.createRoot(document.getElementById('root'));
-  root.render(<FishingGame />);
-} catch (err) {
-  document.body.innerHTML = '<div style="color: red; padding: 20px;"><h1>Game Error</h1><p>' + err.message + '</p></div>';
-}
+ReactDOM.render(<App />, document.getElementById('root'));

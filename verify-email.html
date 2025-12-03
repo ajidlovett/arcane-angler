@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email - Arcane Angler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="js/api-service.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const VerifyEmail = () => {
+            const [status, setStatus] = React.useState('verifying');
+            const [message, setMessage] = React.useState('');
+
+            React.useEffect(() => {
+                const verifyEmail = async () => {
+                    // Get token from URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const token = urlParams.get('token');
+
+                    if (!token) {
+                        setStatus('error');
+                        setMessage('Invalid verification link');
+                        return;
+                    }
+
+                    try {
+                        const result = await window.ApiService.verifyEmail(token);
+                        setStatus('success');
+                        setMessage(result.message || 'Email verified successfully!');
+                        
+                        // Redirect to game after 3 seconds
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 3000);
+                    } catch (error) {
+                        setStatus('error');
+                        setMessage(error.message || 'Verification failed. The link may be expired.');
+                    }
+                };
+
+                verifyEmail();
+            }, []);
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-900 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
+                        <div className="text-6xl mb-4">
+                            {status === 'verifying' && '⏳'}
+                            {status === 'success' && '✅'}
+                            {status === 'error' && '❌'}
+                        </div>
+                        
+                        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                            {status === 'verifying' && 'Verifying Email...'}
+                            {status === 'success' && 'Email Verified!'}
+                            {status === 'error' && 'Verification Failed'}
+                        </h1>
+
+                        <p className="text-gray-600 mb-6">
+                            {message || 'Please wait while we verify your email address...'}
+                        </p>
+
+                        {status === 'success' && (
+                            <p className="text-sm text-gray-500">
+                                Redirecting to game in 3 seconds...
+                            </p>
+                        )}
+
+                        {status === 'error' && (
+                            <a 
+                                href="/"
+                                className="inline-block bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-all"
+                            >
+                                Go to Login
+                            </a>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<VerifyEmail />, document.getElementById('root'));
+    </script>
+</body>
+</html>
