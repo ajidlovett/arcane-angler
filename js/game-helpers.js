@@ -42,8 +42,8 @@ window.GameHelpers = {
       'Fine': 15000,
       'Rare': 5000,
       'Epic': 1500,
-      'Treasure Chest': 500,
-      'Legendary': 450,
+      'Treasure Chest': 300,
+      'Legendary': 200,
       'Mythic': 50
     };
 
@@ -95,11 +95,18 @@ window.GameHelpers = {
   // Generate treasure chest rewards
   generateTreasureChest: (currentBiome, totalLuck) => {
     const biomeRelicRange = window.GameHelpers.getBiomeRelicRange(currentBiome);
+    const biomeData = window.BIOMES[currentBiome];
 
-    // Scale gold rewards with biome level (exponential growth)
-    // Biome 1: ~500-1000, Biome 10: ~5000-10000, Biome 30: ~45000-90000
-    const baseGold = 200 + (currentBiome * currentBiome * 50);
-    const goldVariation = Math.random() * 0.5 + 0.75; // 75% to 125% of base
+    // Find the highest legendary fish gold value in the biome
+    let highestLegendaryGold = 200; // Fallback minimum
+    if (biomeData && biomeData.fish && biomeData.fish.Legendary) {
+      const legendaryFish = biomeData.fish.Legendary;
+      highestLegendaryGold = Math.max(...legendaryFish.map(fish => fish.gold));
+    }
+
+    // Use highest legendary gold as base, with 100-150% variation
+    const baseGold = highestLegendaryGold;
+    const goldVariation = Math.random() * 0.5 + 1.0; // 100% to 150% of base
     const goldReward = Math.floor(baseGold * goldVariation * (1 + (totalLuck / 100)));
 
     // Relics scale with biome (same as before)
