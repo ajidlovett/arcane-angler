@@ -469,19 +469,19 @@ React.useEffect(() => {
     setPlayer(prev => ({ ...prev, equippedRod: rodName }));
   };
 
-  const buyBait = (baitName, quantity = 10) => {
+  const buyBait = (baitName, multiplier = 1) => {
     const bait = window.BAITS[baitName];
-    // Use the bait's stackSize as the purchase quantity if available, otherwise use 10
-    const purchaseStackSize = window.BAITS[baitName].stackSize && window.BAITS[baitName].stackSize > 1 ? window.BAITS[baitName].stackSize : quantity;
-    const totalCost = bait.price * purchaseStackSize;
-    
+    // Buy 'multiplier' number of baits (e.g., 1, 10, or 100)
+    const quantity = multiplier;
+    const totalCost = bait.price * quantity;
+
     if (player.gold >= totalCost) {
       setPlayer(prev => ({
         ...prev,
         gold: prev.gold - totalCost,
         baitInventory: {
           ...prev.baitInventory,
-          [baitName]: (prev.baitInventory[baitName] || 0) + purchaseStackSize
+          [baitName]: (prev.baitInventory[baitName] || 0) + quantity
         }
       }));
     }
@@ -885,20 +885,36 @@ React.useEffect(() => {
                       {bait.stam > 0 && `+${bait.stam} STAM`}
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="space-y-2">
                       {!isFree && (
-                        <button
-                          onClick={() => buyBait(name, 1)}
-                          disabled={player.gold < bait.price * (window.BAITS[name].stackSize || 10)}
-                          className={`flex-1 py-2 rounded font-bold text-sm ${player.gold >= bait.price * (window.BAITS[name].stackSize || 10) ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-gray-700 cursor-not-allowed'}`}
-                        >
-                          Buy x{window.BAITS[name].stackSize || 10} ({(bait.price * (window.BAITS[name].stackSize || 10)).toLocaleString()}g)
-                        </button>
+                        <div className="grid grid-cols-3 gap-2">
+                          <button
+                            onClick={() => buyBait(name, 1)}
+                            disabled={player.gold < bait.price * 1}
+                            className={`py-2 rounded font-bold text-xs ${player.gold >= bait.price * 1 ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-gray-700 cursor-not-allowed'}`}
+                          >
+                            Buy x1<br/>({(bait.price * 1).toLocaleString()}g)
+                          </button>
+                          <button
+                            onClick={() => buyBait(name, 10)}
+                            disabled={player.gold < bait.price * 10}
+                            className={`py-2 rounded font-bold text-xs ${player.gold >= bait.price * 10 ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-gray-700 cursor-not-allowed'}`}
+                          >
+                            Buy x10<br/>({(bait.price * 10).toLocaleString()}g)
+                          </button>
+                          <button
+                            onClick={() => buyBait(name, 100)}
+                            disabled={player.gold < bait.price * 100}
+                            className={`py-2 rounded font-bold text-xs ${player.gold >= bait.price * 100 ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-gray-700 cursor-not-allowed'}`}
+                          >
+                            Buy x100<br/>({(bait.price * 100).toLocaleString()}g)
+                          </button>
+                        </div>
                       )}
                       <button
                         onClick={() => equipBait(name)}
                         disabled={isEquipped || (!isFree && owned === 0)}
-                        className={`flex-1 py-2 rounded font-bold text-sm ${isEquipped ? 'bg-gray-700 cursor-not-allowed' : (!isFree && owned === 0) ? 'bg-gray-700 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
+                        className={`w-full py-2 rounded font-bold text-sm ${isEquipped ? 'bg-gray-700 cursor-not-allowed' : (!isFree && owned === 0) ? 'bg-gray-700 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
                       >
                         {isEquipped ? 'Equipped' : 'Equip'}
                       </button>
