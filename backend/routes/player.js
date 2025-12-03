@@ -67,6 +67,14 @@ router.get('/data', authenticateToken, async (req, res) => {
             achievements = [];
         }
 
+        // Parse discovered_fish JSON if it exists
+        let discoveredFish = [];
+        try {
+            discoveredFish = playerData[0].discovered_fish ? JSON.parse(playerData[0].discovered_fish) : [];
+        } catch (e) {
+            discoveredFish = [];
+        }
+
         res.json({
             level: playerData[0].level,
             xp: playerData[0].xp,
@@ -88,7 +96,9 @@ router.get('/data', authenticateToken, async (req, res) => {
             totalGoldEarned: playerData[0].total_gold_earned || 0,
             mythicsCaught: playerData[0].mythics_caught || 0,
             legendariesCaught: playerData[0].legendaries_caught || 0,
-            statsUpgraded: playerData[0].stats_upgraded || 0
+            statsUpgraded: playerData[0].stats_upgraded || 0,
+            // Fishpedia tracking
+            discoveredFish: discoveredFish
         });
     } catch (error) {
         console.error('Get player data error:', error);
@@ -107,13 +117,17 @@ router.post('/save', authenticateToken, async (req, res) => {
             equippedRod, equippedBait, stats, inventory,
             lockedFish, ownedRods, baitInventory,
             achievements, totalFishCaught, totalFishSold,
-            totalGoldEarned, mythicsCaught, legendariesCaught, statsUpgraded
+            totalGoldEarned, mythicsCaught, legendariesCaught, statsUpgraded,
+            discoveredFish
         } = req.body;
 
         await connection.beginTransaction();
 
         // Convert achievements array to JSON string
         const achievementsJson = JSON.stringify(achievements || []);
+
+        // Convert discoveredFish array to JSON string
+        const discoveredFishJson = JSON.stringify(discoveredFish || []);
 
         // Update player data
         await connection.query(
@@ -122,12 +136,12 @@ router.post('/save', authenticateToken, async (req, res) => {
                  current_biome = ?, equipped_rod = ?, equipped_bait = ?,
                  achievements = ?, total_fish_caught = ?, total_fish_sold = ?,
                  total_gold_earned = ?, mythics_caught = ?, legendaries_caught = ?,
-                 stats_upgraded = ?
+                 stats_upgraded = ?, discovered_fish = ?
              WHERE user_id = ?`,
             [level, xp, xpToNext, gold, relics, currentBiome, equippedRod, equippedBait,
              achievementsJson, totalFishCaught || 0, totalFishSold || 0,
              totalGoldEarned || 0, mythicsCaught || 0, legendariesCaught || 0,
-             statsUpgraded || 0, userId]
+             statsUpgraded || 0, discoveredFishJson, userId]
         );
 
         // Update player stats

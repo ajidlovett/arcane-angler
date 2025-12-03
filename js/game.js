@@ -45,7 +45,8 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
       totalGoldEarned: 0,
       mythicsCaught: 0,
       legendariesCaught: 0,
-      statsUpgraded: 0
+      statsUpgraded: 0,
+      discoveredFish: [] // Track all fish ever caught (even if sold)
     };
     
     const saved = localStorage.getItem('arcaneAnglerSave');
@@ -69,7 +70,8 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
           totalGoldEarned: data.totalGoldEarned || 0,
           mythicsCaught: data.mythicsCaught || 0,
           legendariesCaught: data.legendariesCaught || 0,
-          statsUpgraded: data.statsUpgraded || 0
+          statsUpgraded: data.statsUpgraded || 0,
+          discoveredFish: data.discoveredFish || []
         };
       } catch (e) {
         console.error('Error loading save:', e);
@@ -270,19 +272,27 @@ React.useEffect(() => {
         }
       }
       
-      setPlayer(prev => ({
-        ...prev,
-        xp: levelUp ? newXP - prev.xpToNext : newXP,
-        level: levelUp ? prev.level + 1 : prev.level,
-        xpToNext: levelUp ? prev.xpToNext + 150 : prev.xpToNext,
-        relics: prev.relics + (levelUp ? 1 : 0),
-        inventory: newInventory,
-        baitInventory: newBaitInventory,
-        equippedBait: (newBaitInventory[prev.equippedBait] && newBaitInventory[prev.equippedBait] > 0) ? prev.equippedBait : 'Stale Bread Crust',
-        totalFishCaught: prev.totalFishCaught + fishCount,
-        mythicsCaught: prev.mythicsCaught + (rarity === 'Mythic' ? 1 : 0),
-        legendariesCaught: prev.legendariesCaught + (rarity === 'Legendary' ? 1 : 0)
-      }));
+      setPlayer(prev => {
+        // Add to discovered fish if not already discovered
+        const newDiscoveredFish = prev.discoveredFish.includes(fishName)
+          ? prev.discoveredFish
+          : [...prev.discoveredFish, fishName];
+
+        return {
+          ...prev,
+          xp: levelUp ? newXP - prev.xpToNext : newXP,
+          level: levelUp ? prev.level + 1 : prev.level,
+          xpToNext: levelUp ? prev.xpToNext + 150 : prev.xpToNext,
+          relics: prev.relics + (levelUp ? 1 : 0),
+          inventory: newInventory,
+          baitInventory: newBaitInventory,
+          equippedBait: (newBaitInventory[prev.equippedBait] && newBaitInventory[prev.equippedBait] > 0) ? prev.equippedBait : 'Stale Bread Crust',
+          totalFishCaught: prev.totalFishCaught + fishCount,
+          mythicsCaught: prev.mythicsCaught + (rarity === 'Mythic' ? 1 : 0),
+          legendariesCaught: prev.legendariesCaught + (rarity === 'Legendary' ? 1 : 0),
+          discoveredFish: newDiscoveredFish
+        };
+      });
 
       setFishing(false);
     }, 1000);
@@ -426,6 +436,7 @@ React.useEffect(() => {
       { id: 'equipment', icon: Icons.Award, label: 'Equipment' },
       { id: 'biomes', icon: Icons.Target, label: 'Biomes' },
       { id: 'inventory', icon: Icons.Package, label: 'Inventory' },
+      { id: 'fishpedia', icon: Icons.Fish, label: 'Fishpedia' },
       { id: 'stats', icon: Icons.TrendingUp, label: 'Stats' },
       { id: 'quests', icon: Icons.Target, label: 'Quests' },
       { id: 'guilds', icon: Icons.Users, label: 'Guilds' },
@@ -1306,6 +1317,169 @@ React.useEffect(() => {
     );
   };
 
+  const FishpediaPage = () => {
+    const [selectedBiome, setSelectedBiome] = useState(1);
+    const [selectedRarityFilter, setSelectedRarityFilter] = useState('all');
+
+    // For now, show first 5 biomes (batch 1)
+    const availableBiomes = [1, 2, 3, 4, 5];
+
+    const biome = window.BIOMES[selectedBiome];
+    if (!biome) return null;
+
+    // Get all fish from the selected biome
+    const getAllFishInBiome = () => {
+      const allFish = [];
+      Object.entries(biome.fish).forEach(([rarity, fishList]) => {
+        fishList.forEach(fish => {
+          const isDiscovered = player.discoveredFish.includes(fish.name);
+          const inventoryItem = player.inventory.find(f => f.name === fish.name);
+
+          allFish.push({
+            ...fish,
+            rarity,
+            isDiscovered,
+            count: inventoryItem ? inventoryItem.count : 0
+          });
+        });
+      });
+      return allFish;
+    };
+
+    const fishList = getAllFishInBiome();
+    const filteredFish = selectedRarityFilter === 'all'
+      ? fishList
+      : fishList.filter(f => f.rarity === selectedRarityFilter);
+
+    // Calculate discovery progress
+    const totalFish = fishList.length;
+    const discoveredCount = fishList.filter(f => f.isDiscovered).length;
+    const discoveryPercentage = Math.floor((discoveredCount / totalFish) * 100);
+
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <span>🐟</span>
+              Fishpedia
+            </h2>
+            <div className="text-sm text-blue-300">
+              {discoveredCount} / {totalFish} ({discoveryPercentage}%)
+            </div>
+          </div>
+
+          {/* Biome Selection Tabs */}
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+            {availableBiomes.map(biomeId => (
+              <button
+                key={biomeId}
+                onClick={() => {
+                  setSelectedBiome(biomeId);
+                  setSelectedRarityFilter('all');
+                }}
+                className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${
+                  selectedBiome === biomeId
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-blue-900 hover:bg-blue-800 text-blue-300'
+                }`}
+              >
+                {window.BIOMES[biomeId].name}
+              </button>
+            ))}
+          </div>
+
+          {/* Rarity Filter */}
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+            <button
+              onClick={() => setSelectedRarityFilter('all')}
+              className={`px-3 py-2 rounded font-bold whitespace-nowrap text-xs ${
+                selectedRarityFilter === 'all' ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'
+              }`}
+            >
+              All
+            </button>
+            {rarities.map(rarity => (
+              <button
+                key={rarity}
+                onClick={() => setSelectedRarityFilter(rarity)}
+                className={`px-3 py-2 rounded font-bold whitespace-nowrap text-xs ${
+                  selectedRarityFilter === rarity ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'
+                }`}
+                style={{ borderLeft: `4px solid ${rarityColors[rarity]}` }}
+              >
+                {rarity}
+              </button>
+            ))}
+          </div>
+
+          {/* Fish Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredFish.map((fish, idx) => (
+              <div
+                key={idx}
+                className="bg-blue-950 p-4 rounded-lg border-2"
+                style={{ borderColor: rarityColors[fish.rarity] }}
+              >
+                {fish.isDiscovered ? (
+                  <>
+                    {/* Discovered Fish */}
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <div className="text-xs font-bold" style={{ color: rarityColors[fish.rarity] }}>
+                          {fish.rarity}
+                        </div>
+                        <div className="text-lg font-bold mt-1">{fish.name}</div>
+                      </div>
+                      {fish.count > 0 && (
+                        <div className="text-sm text-blue-300 ml-2">
+                          × {fish.count}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="text-sm text-blue-300 mb-3 italic">
+                      {fish.desc}
+                    </div>
+
+                    <div className="flex gap-4 text-xs">
+                      <div className="text-green-400">
+                        <span className="text-blue-400">XP:</span> {fish.xp}
+                      </div>
+                      <div className="text-yellow-400">
+                        <span className="text-blue-400">Gold:</span> {fish.gold}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Undiscovered Fish */}
+                    <div className="text-center opacity-50">
+                      <div className="text-6xl mb-2">❓</div>
+                      <div className="text-lg font-bold text-gray-400">???</div>
+                      <div className="text-xs text-gray-500 mt-2">
+                        Catch this fish to discover it!
+                      </div>
+                      <div className="text-xs font-bold mt-2" style={{ color: rarityColors[fish.rarity] }}>
+                        {fish.rarity}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {filteredFish.length === 0 && (
+            <div className="text-center text-blue-300 py-12">
+              No {selectedRarityFilter} fish in this biome.
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const PlaceholderPage = ({ title, icon }) => (
     <div className="max-w-4xl mx-auto">
       <div className="bg-blue-800 bg-opacity-50 rounded-lg p-8 sm:p-12 text-center">
@@ -1377,6 +1551,7 @@ React.useEffect(() => {
           {currentPage === 'guilds' && <PlaceholderPage title="Guilds" icon={Icons.Users} />}
           {currentPage === 'profile' && <ProfilePage />}
           {currentPage === 'achievements' && <AchievementsPage />}
+          {currentPage === 'fishpedia' && <FishpediaPage />}
         </div>
       </div>
     </div>
