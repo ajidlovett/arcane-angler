@@ -96,7 +96,7 @@ React.useEffect(() => {
       } catch (err) {
         console.error('Auto-save failed:', err);
       }
-    }, 30000);
+    }, 5000);
     
     return () => clearInterval(saveInterval);
   }
