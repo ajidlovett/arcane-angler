@@ -94,12 +94,15 @@ window.GameHelpers = {
 
   // Generate treasure chest rewards
   generateTreasureChest: (currentBiome, totalLuck) => {
-    const avgCommonValue = 5;
     const biomeRelicRange = window.GameHelpers.getBiomeRelicRange(currentBiome);
 
-    const baseGold = avgCommonValue * 50;
-    const goldReward = Math.floor(baseGold * (1 + (totalLuck / 100)));
+    // Scale gold rewards with biome level (exponential growth)
+    // Biome 1: ~500-1000, Biome 10: ~5000-10000, Biome 30: ~45000-90000
+    const baseGold = 200 + (currentBiome * currentBiome * 50);
+    const goldVariation = Math.random() * 0.5 + 0.75; // 75% to 125% of base
+    const goldReward = Math.floor(baseGold * goldVariation * (1 + (totalLuck / 100)));
 
+    // Relics scale with biome (same as before)
     const baseRelics = Math.floor(Math.random() * (biomeRelicRange.max - biomeRelicRange.min + 1)) + biomeRelicRange.min;
     const relicReward = Math.floor(baseRelics * (1 + (totalLuck / 100)));
 
