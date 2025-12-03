@@ -46,7 +46,8 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
       mythicsCaught: 0,
       legendariesCaught: 0,
       statsUpgraded: 0,
-      discoveredFish: [] // Track all fish ever caught (even if sold)
+      discoveredFish: [], // Track all fish ever caught (even if sold)
+      unlockedBiomes: [1] // Track which biomes have been paid for (start with biome 1 unlocked)
     };
     
     const saved = localStorage.getItem('arcaneAnglerSave');
@@ -71,7 +72,8 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
           mythicsCaught: data.mythicsCaught || 0,
           legendariesCaught: data.legendariesCaught || 0,
           statsUpgraded: data.statsUpgraded || 0,
-          discoveredFish: data.discoveredFish || []
+          discoveredFish: data.discoveredFish || [],
+          unlockedBiomes: data.unlockedBiomes || [1]
         };
       } catch (e) {
         console.error('Error loading save:', e);
@@ -86,6 +88,7 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
   const [selectedRarity, setSelectedRarity] = useState('all');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [funnyLine, setFunnyLine] = useState('');
+  const [shopTab, setShopTab] = useState('rods'); // Persist shop tab selection
 
   // Load player data from cloud
 React.useEffect(() => {
@@ -687,7 +690,7 @@ React.useEffect(() => {
 );
 
   const EquipmentPage = () => {
-    const [shopTab, setShopTab] = useState('rods');
+    // shopTab is now managed at parent level to persist across re-renders
     const [tierTab, setTierTab] = useState('all');
 
     const getFilteredEquipment = () => {
@@ -874,18 +877,38 @@ React.useEffect(() => {
     const totalBiomes = Object.keys(window.BIOMES).length;
     const totalPages = Math.ceil(totalBiomes / biomesPerPage);
 
+    const isBiomeUnlocked = (biomeId) => {
+      return player.unlockedBiomes.includes(biomeId);
+    };
+
     const canUnlockBiome = (biomeId) => {
       const biome = window.BIOMES[biomeId];
       return player.level >= biome.unlockLevel && player.gold >= biome.unlockGold;
     };
-    const unlockBiome = (biomeId) => {
+
+    const visitOrUnlockBiome = (biomeId) => {
       const biome = window.BIOMES[biomeId];
+      const alreadyUnlocked = isBiomeUnlocked(biomeId);
+
+      // If already unlocked, just visit it (no gold cost)
+      if (alreadyUnlocked) {
+        setPlayer(prev => ({
+          ...prev,
+          currentBiome: biomeId
+        }));
+        setCurrentPage('fishing');
+        return;
+      }
+
+      // If not unlocked yet, check if they can afford it
       if (!canUnlockBiome(biomeId)) return;
 
+      // Unlock the biome (pay gold and add to unlocked list)
       setPlayer(prev => ({
         ...prev,
         gold: prev.gold - biome.unlockGold,
-        currentBiome: biomeId
+        currentBiome: biomeId,
+        unlockedBiomes: [...prev.unlockedBiomes, biomeId]
       }));
       setCurrentPage('fishing');
     };
@@ -909,40 +932,44 @@ React.useEffect(() => {
         <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
           <h2 className="text-xl sm:text-2xl font-bold mb-6">Select Biome</h2>
 
-          {/* Pagination Tabs */}
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
-              const startBiome = (page - 1) * biomesPerPage + 1;
-              const endBiome = Math.min(page * biomesPerPage, totalBiomes);
+          {/* Pagination Grid */}
+          <div className="mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                const startBiome = (page - 1) * biomesPerPage + 1;
+                const endBiome = Math.min(page * biomesPerPage, totalBiomes);
 
-              return (
-                <button
-                  key={page}
-                  onClick={() => setBiomePage(page)}
-                  className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${
-                    biomePage === page
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-blue-900 hover:bg-blue-800 text-blue-300'
-                  }`}
-                >
-                  Biomes {startBiome}-{endBiome}
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={page}
+                    onClick={() => setBiomePage(page)}
+                    className={`px-4 py-2 rounded font-bold text-sm ${
+                      biomePage === page
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-blue-900 hover:bg-blue-800 text-blue-300'
+                    }`}
+                  >
+                    {startBiome}-{endBiome}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="space-y-4">
             {getCurrentPageBiomes().map(([id, biome]) => {
               const biomeId = parseInt(id);
-              const isUnlocked = canUnlockBiome(biomeId) || biomeId <= player.currentBiome;
+              const hasBeenUnlocked = isBiomeUnlocked(biomeId);
+              const canAffordToUnlock = canUnlockBiome(biomeId);
               const isCurrent = biomeId === player.currentBiome;
-              const isLocked = !isUnlocked && biomeId > player.currentBiome;
+              const isClickable = hasBeenUnlocked || canAffordToUnlock;
+              const isLocked = !hasBeenUnlocked && !canAffordToUnlock;
 
               return (
                 <div
                   key={id}
                   className={`p-4 sm:p-5 rounded-lg border-2 ${isCurrent ? 'bg-blue-700 border-yellow-400' : isLocked ? 'bg-blue-950 border-gray-700 opacity-60' : 'bg-blue-900 border-blue-700 hover:border-blue-500 cursor-pointer'}`}
-                  onClick={() => isUnlocked && !isCurrent && unlockBiome(biomeId)}
+                  onClick={() => isClickable && !isCurrent && visitOrUnlockBiome(biomeId)}
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div>
@@ -1321,8 +1348,8 @@ React.useEffect(() => {
     const [selectedBiome, setSelectedBiome] = useState(1);
     const [selectedRarityFilter, setSelectedRarityFilter] = useState('all');
 
-    // Show biomes 1-10 (batch 1-2)
-    const availableBiomes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    // Show all 30 biomes
+    const availableBiomes = Array.from({ length: 30 }, (_, i) => i + 1);
 
     const biome = window.BIOMES[selectedBiome];
     if (!biome) return null;
@@ -1369,48 +1396,55 @@ React.useEffect(() => {
             </div>
           </div>
 
-          {/* Biome Selection Tabs */}
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-            {availableBiomes.map(biomeId => (
-              <button
-                key={biomeId}
-                onClick={() => {
-                  setSelectedBiome(biomeId);
-                  setSelectedRarityFilter('all');
-                }}
-                className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${
-                  selectedBiome === biomeId
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-blue-900 hover:bg-blue-800 text-blue-300'
-                }`}
-              >
-                {window.BIOMES[biomeId].name}
-              </button>
-            ))}
+          {/* Biome Selection Grid */}
+          <div className="mb-6">
+            <div className="text-sm text-blue-300 mb-2 font-semibold">Select Biome:</div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-2">
+              {availableBiomes.map(biomeId => (
+                <button
+                  key={biomeId}
+                  onClick={() => {
+                    setSelectedBiome(biomeId);
+                    setSelectedRarityFilter('all');
+                  }}
+                  className={`px-2 py-2 rounded font-bold text-xs ${
+                    selectedBiome === biomeId
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-blue-900 hover:bg-blue-800 text-blue-300'
+                  }`}
+                  title={window.BIOMES[biomeId]?.name || `Biome ${biomeId}`}
+                >
+                  {biomeId}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Rarity Filter */}
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-            <button
-              onClick={() => setSelectedRarityFilter('all')}
-              className={`px-3 py-2 rounded font-bold whitespace-nowrap text-xs ${
-                selectedRarityFilter === 'all' ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'
-              }`}
-            >
-              All
-            </button>
-            {rarities.map(rarity => (
+          <div className="mb-6">
+            <div className="text-sm text-blue-300 mb-2 font-semibold">Filter by Rarity:</div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-8 gap-2">
               <button
-                key={rarity}
-                onClick={() => setSelectedRarityFilter(rarity)}
-                className={`px-3 py-2 rounded font-bold whitespace-nowrap text-xs ${
-                  selectedRarityFilter === rarity ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'
+                onClick={() => setSelectedRarityFilter('all')}
+                className={`px-3 py-2 rounded font-bold text-xs ${
+                  selectedRarityFilter === 'all' ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'
                 }`}
-                style={{ borderLeft: `4px solid ${rarityColors[rarity]}` }}
               >
-                {rarity}
+                All
               </button>
-            ))}
+              {rarities.map(rarity => (
+                <button
+                  key={rarity}
+                  onClick={() => setSelectedRarityFilter(rarity)}
+                  className={`px-3 py-2 rounded font-bold text-xs ${
+                    selectedRarityFilter === rarity ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'
+                  }`}
+                  style={{ borderLeft: `4px solid ${rarityColors[rarity]}` }}
+                >
+                  {rarity}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Fish Grid */}
