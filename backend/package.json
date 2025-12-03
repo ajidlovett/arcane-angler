@@ -1,0 +1,13 @@
+{
+  "name": "arcane-angler-backend",
+  "version": "1.0.0",
+  "description": "Backend for Arcane Angler Fishing MMORPG with email verification",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": ["fishing", "mmorpg", "game", "api"],
+  "author": "",
+  "license": "MIT"
+}
