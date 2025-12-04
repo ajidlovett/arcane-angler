@@ -165,10 +165,12 @@ React.useEffect(() => {
     checkAchievements();
   }, [player.totalFishCaught, player.level, player.totalGoldEarned, player.totalFishSold, player.mythicsCaught, player.legendariesCaught, player.statsUpgraded, player.currentBiome]);
 
-  // Auto-save
+  // Auto-save to localStorage (only after cloud data loads for online mode)
   useEffect(() => {
-    localStorage.setItem('arcaneAnglerSave', JSON.stringify(player));
-  }, [player]);
+    if (offlineMode || dataLoaded) {
+      localStorage.setItem('arcaneAnglerSave', JSON.stringify(player));
+    }
+  }, [player, offlineMode, dataLoaded]);
 
   // Cooldown timer
   useEffect(() => {
