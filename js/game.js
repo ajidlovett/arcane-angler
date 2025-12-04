@@ -89,6 +89,7 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [funnyLine, setFunnyLine] = useState('');
   const [shopTab, setShopTab] = useState('rods'); // Persist shop tab selection
+  const [dataLoaded, setDataLoaded] = useState(false); // Track if initial data loaded
 
   // Load player data from cloud
 React.useEffect(() => {
@@ -97,18 +98,22 @@ React.useEffect(() => {
       try {
         const data = await window.ApiService.getPlayerData();
         setPlayer(data);
+        setDataLoaded(true); // Mark data as loaded
         console.log('✅ Loaded from cloud');
       } catch (err) {
         console.error('Failed to load from cloud:', err);
+        setDataLoaded(true); // Even on error, mark as loaded to prevent saving defaults
       }
+    } else {
+      setDataLoaded(true); // Offline mode doesn't need cloud load
     }
   };
   loadData();
 }, [offlineMode]);
 
-// Auto-save to cloud every 30 seconds
+// Auto-save to cloud every 5 seconds (only after initial data loads)
 React.useEffect(() => {
-  if (!offlineMode) {
+  if (!offlineMode && dataLoaded) { // Only auto-save after data is loaded
     const saveInterval = setInterval(async () => {
       try {
         await window.ApiService.savePlayerData(player);
@@ -117,10 +122,10 @@ React.useEffect(() => {
         console.error('Auto-save failed:', err);
       }
     }, 5000);
-    
+
     return () => clearInterval(saveInterval);
   }
-}, [player, offlineMode]);
+}, [player, offlineMode, dataLoaded]); // Added dataLoaded dependency
 
   // Constants
   const rarities = ['Common', 'Uncommon', 'Fine', 'Rare', 'Epic', 'Legendary', 'Mythic'];
