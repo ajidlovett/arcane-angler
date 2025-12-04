@@ -20,9 +20,9 @@ router.get('/data', authenticateToken, async (req, res) => {
             [userId]
         );
 
-        // Get inventory
+        // Get inventory (including base_gold and titan_bonus)
         const [inventory] = await db.query(
-            'SELECT fish_name, rarity, count FROM player_inventory WHERE user_id = ? AND count > 0',
+            'SELECT fish_name, rarity, count, base_gold, titan_bonus FROM player_inventory WHERE user_id = ? AND count > 0',
             [userId]
         );
 
@@ -48,7 +48,9 @@ router.get('/data', authenticateToken, async (req, res) => {
         const formattedInventory = inventory.map(item => ({
             name: item.fish_name,
             rarity: item.rarity,
-            count: item.count
+            count: item.count,
+            baseGold: item.base_gold || 0,
+            titanBonus: item.titan_bonus || 1
         }));
 
         const formattedBaitInventory = {};
@@ -175,11 +177,13 @@ router.post('/save', authenticateToken, async (req, res) => {
                 userId,
                 item.name,
                 item.rarity,
-                item.count
+                item.count,
+                item.baseGold || 0,
+                item.titanBonus || 1
             ]);
-            
+
             await connection.query(
-                'INSERT INTO player_inventory (user_id, fish_name, rarity, count) VALUES ?',
+                'INSERT INTO player_inventory (user_id, fish_name, rarity, count, base_gold, titan_bonus) VALUES ?',
                 [inventoryValues]
             );
         }
