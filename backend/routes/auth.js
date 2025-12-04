@@ -3,10 +3,28 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../db');
 const emailService = require('../services/email');
+const { authLimiter, passwordResetLimiter } = require('../middleware/rateLimiter');
 const router = express.Router();
 
+// Helper function to validate password strength
+const validatePassword = (password) => {
+    if (password.length < 8) {
+        return { valid: false, error: 'Password must be at least 8 characters long' };
+    }
+    if (!/[A-Z]/.test(password)) {
+        return { valid: false, error: 'Password must contain at least one uppercase letter' };
+    }
+    if (!/[a-z]/.test(password)) {
+        return { valid: false, error: 'Password must contain at least one lowercase letter' };
+    }
+    if (!/[0-9]/.test(password)) {
+        return { valid: false, error: 'Password must contain at least one number' };
+    }
+    return { valid: true };
+};
+
 // Register new user with email verification
-router.post('/register', async (req, res) => {
+router.post('/register', authLimiter, async (req, res) => {
     try {
         const { username, profileUsername, email, password } = req.body;
 
@@ -23,8 +41,10 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ error: 'Profile username must be 3-50 characters' });
         }
 
-        if (password.length < 6) {
-            return res.status(400).json({ error: 'Password must be at least 6 characters' });
+        // Validate password strength
+        const passwordValidation = validatePassword(password);
+        if (!passwordValidation.valid) {
+            return res.status(400).json({ error: passwordValidation.error });
         }
 
         // Email validation - simple regex
@@ -167,7 +187,7 @@ router.post('/resend-verification', async (req, res) => {
 });
 
 // Login user
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
     try {
         const { username, password } = req.body;
 
@@ -217,7 +237,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Forgot password
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
     try {
         const { email } = req.body;
 
@@ -247,7 +267,7 @@ router.post('/forgot-password', async (req, res) => {
 });
 
 // Reset password
-router.post('/reset-password', async (req, res) => {
+router.post('/reset-password', passwordResetLimiter, async (req, res) => {
     try {
         const { token, newPassword } = req.body;
 
@@ -255,8 +275,10 @@ router.post('/reset-password', async (req, res) => {
             return res.status(400).json({ error: 'Token and new password are required' });
         }
 
-        if (newPassword.length < 6) {
-            return res.status(400).json({ error: 'Password must be at least 6 characters' });
+        // Validate password strength
+        const passwordValidation = validatePassword(newPassword);
+        if (!passwordValidation.valid) {
+            return res.status(400).json({ error: passwordValidation.error });
         }
 
         const [users] = await db.query('SELECT id FROM users WHERE reset_token = ? AND reset_token_expires > NOW()', [token]);

@@ -124,7 +124,7 @@ React.useEffect(() => {
   loadData();
 }, [offlineMode]);
 
-// Auto-save to cloud every 5 seconds (only after initial data loads)
+// Auto-save to cloud every 30 seconds (only after initial data loads)
 React.useEffect(() => {
   if (!offlineMode && dataLoaded) { // Only auto-save after data is loaded
     const saveInterval = setInterval(async () => {
@@ -138,80 +138,21 @@ React.useEffect(() => {
       } catch (err) {
         console.error('Auto-save failed:', err);
       }
-    }, 5000);
+    }, 30000);
 
     return () => clearInterval(saveInterval);
   }
 }, [player, offlineMode, dataLoaded]); // Added dataLoaded dependency
 
-  // Constants
-  const rarities = ['Common', 'Uncommon', 'Fine', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Exotic', 'Arcane'];
-  const rarityColors = {
-    'Common': '#9ca3af',
-    'Uncommon': '#84cc16',
-    'Fine': '#3b82f6',
-    'Rare': '#a855f7',      // Changed from #8b5cf6 to brighter purple
-    'Epic': '#ec4899',      // Changed from #d946ef to pink for better distinction
-    'Legendary': '#f59e0b',
-    'Mythic': '#ef4444',
-    'Exotic': 'linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%)',  // Cyan to purple gradient
-    'Arcane': 'linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #f59e0b 100%)',  // Purple to pink to orange gradient
-    'Treasure Chest': '#fbbf24'
-  };
+  // Constants (loaded from gameConstants.js)
+  const rarities = window.RARITIES;
+  const rarityColors = window.RARITY_COLORS;
 
-  // Helper function to get solid color for borders/text from gradients
-  const getRarityColor = (rarity, forBackground = false) => {
-    const color = rarityColors[rarity];
-    if (!color) return '#9ca3af';
-
-    if (forBackground && color.startsWith('linear-gradient')) {
-      return color; // Return gradient for backgrounds
-    }
-
-    // For borders/text, extract first color from gradient
-    if (color.startsWith('linear-gradient')) {
-      const match = color.match(/#[0-9a-fA-F]{6}/);
-      return match ? match[0] : '#9ca3af';
-    }
-
-    return color;
-  };
-
-  // Check if rarity uses a gradient
-  const isGradientRarity = (rarity) => {
-    const color = rarityColors[rarity];
-    return color && color.startsWith('linear-gradient');
-  };
-
-  // Get style object for gradient text
-  const getGradientTextStyle = (rarity) => {
-    if (!isGradientRarity(rarity)) {
-      return { color: getRarityColor(rarity) };
-    }
-
-    return {
-      background: rarityColors[rarity],
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      fontWeight: 'bold'
-    };
-  };
-
-  // Get style object for gradient border
-  const getGradientBorderStyle = (rarity) => {
-    if (!isGradientRarity(rarity)) {
-      return { borderColor: getRarityColor(rarity) };
-    }
-
-    // For gradients, we'll use a box-shadow to simulate border
-    return {
-      borderColor: 'transparent',
-      backgroundImage: rarityColors[rarity],
-      backgroundOrigin: 'border-box',
-      backgroundClip: 'padding-box, border-box'
-    };
-  };
+  // Helper functions (loaded from rarityUtils.js)
+  const getRarityColor = window.getRarityColor;
+  const isGradientRarity = window.isGradientRarity;
+  const getGradientTextStyle = window.getGradientTextStyle;
+  const getGradientBorderStyle = window.getGradientBorderStyle;
 
   // Check and unlock achievements - using window.GameHelpers
   const checkAchievements = () => {
