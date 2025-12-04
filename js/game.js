@@ -24,6 +24,7 @@ const Icons = window.Icons;
 const FishingGame = ({ user, onLogout, offlineMode }) => {
   // State
   const [currentPage, setCurrentPage] = useState('fishing');
+  const [savingProgress, setSavingProgress] = useState(false);
   const [player, setPlayer] = useState(() => {
     const defaultPlayerState = {
       level: 1,
@@ -537,15 +538,20 @@ React.useEffect(() => {
 
   // Save progress and logout
   const handleSaveAndLogout = async () => {
+    setSavingProgress(true);
+
     if (!offlineMode) {
       try {
         // Save player data before logout
         await window.ApiService.savePlayerData(player);
+        // Wait a brief moment to ensure save is fully processed
+        await new Promise(resolve => setTimeout(resolve, 500));
       } catch (err) {
         console.error('Failed to save before logout:', err);
-        // Continue with logout even if save fails
+        alert('Warning: Failed to save your progress. Your recent changes may be lost. Continue with logout?');
       }
     }
+
     // Call the original logout function
     onLogout();
   };
@@ -1681,12 +1687,32 @@ React.useEffect(() => {
       </div>
     </div>
   );
-  
+
+  // Saving Progress Overlay
+  const SavingOverlay = () => {
+    if (!savingProgress) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-80 z-[100] flex items-center justify-center">
+        <div className="bg-blue-900 rounded-lg p-8 text-center border-4 border-blue-600 shadow-2xl">
+          <div className="text-6xl mb-4 animate-pulse">💾</div>
+          <h2 className="text-2xl font-bold mb-2">Saving Your Progress...</h2>
+          <p className="text-blue-300 mb-4">Please wait while we save your game data</p>
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-yellow-400"></div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Main render
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-900 via-blue-800 to-blue-950 text-white flex">
-      <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+    <>
+      <SavingOverlay />
+      <div className="min-h-screen bg-gradient-to-b from-blue-900 via-blue-800 to-blue-950 text-white flex">
+        <Sidebar />
+        <div className="flex-1 flex flex-col min-w-0">
         <div className="lg:hidden bg-blue-900 border-b-2 border-blue-700 p-4">
           <div className="flex items-center justify-between mb-3">
             <button
@@ -1746,7 +1772,8 @@ React.useEffect(() => {
           {currentPage === 'fishpedia' && <FishpediaPage />}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
