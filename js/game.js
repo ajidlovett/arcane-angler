@@ -136,16 +136,36 @@ React.useEffect(() => {
 }, [player, offlineMode, dataLoaded]); // Added dataLoaded dependency
 
   // Constants
-  const rarities = ['Common', 'Uncommon', 'Fine', 'Rare', 'Epic', 'Legendary', 'Mythic'];
+  const rarities = ['Common', 'Uncommon', 'Fine', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Exotic', 'Arcane'];
   const rarityColors = {
     'Common': '#9ca3af',
     'Uncommon': '#84cc16',
     'Fine': '#3b82f6',
-    'Rare': '#8b5cf6',
-    'Epic': '#d946ef',
+    'Rare': '#a855f7',      // Changed from #8b5cf6 to brighter purple
+    'Epic': '#ec4899',      // Changed from #d946ef to pink for better distinction
     'Legendary': '#f59e0b',
     'Mythic': '#ef4444',
+    'Exotic': 'linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%)',  // Cyan to purple gradient
+    'Arcane': 'linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #f59e0b 100%)',  // Purple to pink to orange gradient
     'Treasure Chest': '#fbbf24'
+  };
+
+  // Helper function to get solid color for borders/text from gradients
+  const getRarityColor = (rarity, forBackground = false) => {
+    const color = rarityColors[rarity];
+    if (!color) return '#9ca3af';
+
+    if (forBackground && color.startsWith('linear-gradient')) {
+      return color; // Return gradient for backgrounds
+    }
+
+    // For borders/text, extract first color from gradient
+    if (color.startsWith('linear-gradient')) {
+      const match = color.match(/#[0-9a-fA-F]{6}/);
+      return match ? match[0] : '#9ca3af';
+    }
+
+    return color;
   };
 
   // Check and unlock achievements - using window.GameHelpers
@@ -277,7 +297,7 @@ React.useEffect(() => {
         });
       }
 
-      const newXP = player.xp + baseXP;
+      const newXP = player.xp + (baseXP * fishCount);
       const levelUp = newXP >= player.xpToNext;
       
       // Consume bait
@@ -656,13 +676,13 @@ React.useEffect(() => {
         </button>
 
         {lastCatch && (
-          <div className="mt-6 p-4 sm:p-6 bg-blue-950 rounded-lg border-4 shadow-xl" style={{ borderColor: rarityColors[lastCatch.rarity] }}>
+          <div className="mt-6 p-4 sm:p-6 bg-blue-950 rounded-lg border-4 shadow-xl" style={{ borderColor: getRarityColor(lastCatch.rarity) }}>
             <div className="text-center mb-4 pb-4 border-b border-blue-800">
               <p className="text-sm sm:text-base text-blue-300 italic">{funnyLine}</p>
             </div>
-            
+
             <div className="text-center">
-              <div className="text-xs sm:text-sm uppercase tracking-wide mb-1" style={{ color: rarityColors[lastCatch.rarity] }}>
+              <div className="text-xs sm:text-sm uppercase tracking-wide mb-1" style={{ color: getRarityColor(lastCatch.rarity) }}>
                 {lastCatch.rarity}
               </div>
               <div className="text-2xl sm:text-3xl font-bold mb-2">{lastCatch.fish}</div>
@@ -1029,9 +1049,9 @@ React.useEffect(() => {
                         key={rarity}
                         className="text-xs px-2 py-1 rounded"
                         style={{
-                          backgroundColor: `${rarityColors[rarity]}20`,
-                          color: rarityColors[rarity],
-                          border: `1px solid ${rarityColors[rarity]}`
+                          backgroundColor: `${getRarityColor(rarity)}20`,
+                          color: getRarityColor(rarity),
+                          border: `1px solid ${getRarityColor(rarity)}`
                         }}
                       >
                         {biome.fish[rarity].length} {rarity}
@@ -1081,7 +1101,7 @@ React.useEffect(() => {
                   key={rarity}
                   onClick={() => setSelectedRarity(rarity)}
                   className={`px-3 sm:px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${selectedRarity === rarity ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'}`}
-                  style={{ borderLeft: `4px solid ${rarityColors[rarity]}` }}
+                  style={{ borderLeft: `4px solid ${getRarityColor(rarity)}` }}
                 >
                   {rarity} ({count})
                 </button>
@@ -1117,7 +1137,7 @@ React.useEffect(() => {
                 const sellValue = Math.floor(baseGoldValue * Number(fish.count) * intelligenceBonus * titanBonus);
 
                 return (
-                  <div key={idx} className="bg-blue-950 p-3 sm:p-4 rounded-lg border-2 relative" style={{ borderColor: rarityColors[fish.rarity] }}>
+                  <div key={idx} className="bg-blue-950 p-3 sm:p-4 rounded-lg border-2 relative" style={{ borderColor: getRarityColor(fish.rarity) }}>
                     <button
                       onClick={() => toggleLock(fish.name)}
                       className="absolute top-2 right-2 p-1.5 sm:p-2 bg-blue-900 rounded hover:bg-blue-800"
@@ -1125,7 +1145,7 @@ React.useEffect(() => {
                       {isLocked ? Icons.Lock() : Icons.Unlock()}
                     </button>
                     
-                    <div className="font-bold text-xs sm:text-sm" style={{ color: rarityColors[fish.rarity] }}>
+                    <div className="font-bold text-xs sm:text-sm" style={{ color: getRarityColor(fish.rarity) }}>
                       {fish.rarity}
                     </div>
                     <div className="text-base sm:text-lg font-bold mt-1">{fish.name}</div>
@@ -1462,7 +1482,7 @@ React.useEffect(() => {
                   className={`px-3 py-2 rounded font-bold text-xs ${
                     selectedRarityFilter === rarity ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'
                   }`}
-                  style={{ borderLeft: `4px solid ${rarityColors[rarity]}` }}
+                  style={{ borderLeft: `4px solid ${getRarityColor(rarity)}` }}
                 >
                   {rarity}
                 </button>
@@ -1476,14 +1496,14 @@ React.useEffect(() => {
               <div
                 key={idx}
                 className="bg-blue-950 p-4 rounded-lg border-2"
-                style={{ borderColor: rarityColors[fish.rarity] }}
+                style={{ borderColor: getRarityColor(fish.rarity) }}
               >
                 {fish.isDiscovered ? (
                   <>
                     {/* Discovered Fish */}
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <div className="text-xs font-bold" style={{ color: rarityColors[fish.rarity] }}>
+                        <div className="text-xs font-bold" style={{ color: getRarityColor(fish.rarity) }}>
                           {fish.rarity}
                         </div>
                         <div className="text-lg font-bold mt-1">{fish.name}</div>
@@ -1517,7 +1537,7 @@ React.useEffect(() => {
                       <div className="text-xs text-gray-500 mt-2">
                         Catch this fish to discover it!
                       </div>
-                      <div className="text-xs font-bold mt-2" style={{ color: rarityColors[fish.rarity] }}>
+                      <div className="text-xs font-bold mt-2" style={{ color: getRarityColor(fish.rarity) }}>
                         {fish.rarity}
                       </div>
                     </div>
