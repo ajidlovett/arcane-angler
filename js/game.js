@@ -169,6 +169,42 @@ React.useEffect(() => {
     return color;
   };
 
+  // Check if rarity uses a gradient
+  const isGradientRarity = (rarity) => {
+    const color = rarityColors[rarity];
+    return color && color.startsWith('linear-gradient');
+  };
+
+  // Get style object for gradient text
+  const getGradientTextStyle = (rarity) => {
+    if (!isGradientRarity(rarity)) {
+      return { color: getRarityColor(rarity) };
+    }
+
+    return {
+      background: rarityColors[rarity],
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+      fontWeight: 'bold'
+    };
+  };
+
+  // Get style object for gradient border
+  const getGradientBorderStyle = (rarity) => {
+    if (!isGradientRarity(rarity)) {
+      return { borderColor: getRarityColor(rarity) };
+    }
+
+    // For gradients, we'll use a box-shadow to simulate border
+    return {
+      borderColor: 'transparent',
+      backgroundImage: rarityColors[rarity],
+      backgroundOrigin: 'border-box',
+      backgroundClip: 'padding-box, border-box'
+    };
+  };
+
   // Check and unlock achievements - using window.GameHelpers
   const checkAchievements = () => {
     const newAchievements = window.GameHelpers.checkAchievements(player);
@@ -732,13 +768,19 @@ React.useEffect(() => {
         </button>
 
         {lastCatch && (
-          <div className="mt-6 p-4 sm:p-6 bg-blue-950 rounded-lg border-4 shadow-xl" style={{ borderColor: getRarityColor(lastCatch.rarity) }}>
+          <div
+            className="mt-6 p-4 sm:p-6 bg-blue-950 rounded-lg border-4 shadow-xl"
+            style={isGradientRarity(lastCatch.rarity) ? {
+              borderImage: `${rarityColors[lastCatch.rarity]} 1`,
+              borderImageSlice: 1
+            } : { borderColor: getRarityColor(lastCatch.rarity) }}
+          >
             <div className="text-center mb-4 pb-4 border-b border-blue-800">
               <p className="text-sm sm:text-base text-blue-300 italic">{funnyLine}</p>
             </div>
 
             <div className="text-center">
-              <div className="text-xs sm:text-sm uppercase tracking-wide mb-1" style={{ color: getRarityColor(lastCatch.rarity) }}>
+              <div className="text-xs sm:text-sm uppercase tracking-wide mb-1" style={getGradientTextStyle(lastCatch.rarity)}>
                 {lastCatch.rarity}
               </div>
               <div className="text-2xl sm:text-3xl font-bold mb-2">{lastCatch.fish}</div>
@@ -1214,15 +1256,22 @@ React.useEffect(() => {
                 const sellValue = Math.floor(baseGoldValue * Number(fish.count) * intelligenceBonus * titanBonus);
 
                 return (
-                  <div key={idx} className="bg-blue-950 p-3 sm:p-4 rounded-lg border-2 relative" style={{ borderColor: getRarityColor(fish.rarity) }}>
+                  <div
+                    key={idx}
+                    className="bg-blue-950 p-3 sm:p-4 rounded-lg border-2 relative"
+                    style={isGradientRarity(fish.rarity) ? {
+                      borderImage: `${rarityColors[fish.rarity]} 1`,
+                      borderImageSlice: 1
+                    } : { borderColor: getRarityColor(fish.rarity) }}
+                  >
                     <button
                       onClick={() => toggleLock(fish.name)}
                       className="absolute top-2 right-2 p-1.5 sm:p-2 bg-blue-900 rounded hover:bg-blue-800"
                     >
                       {isLocked ? Icons.Lock() : Icons.Unlock()}
                     </button>
-                    
-                    <div className="font-bold text-xs sm:text-sm" style={{ color: getRarityColor(fish.rarity) }}>
+
+                    <div className="font-bold text-xs sm:text-sm" style={getGradientTextStyle(fish.rarity)}>
                       {fish.rarity}
                     </div>
                     <div className="text-base sm:text-lg font-bold mt-1">{fish.name}</div>
@@ -1573,14 +1622,17 @@ React.useEffect(() => {
               <div
                 key={idx}
                 className="bg-blue-950 p-4 rounded-lg border-2"
-                style={{ borderColor: getRarityColor(fish.rarity) }}
+                style={isGradientRarity(fish.rarity) ? {
+                  borderImage: `${rarityColors[fish.rarity]} 1`,
+                  borderImageSlice: 1
+                } : { borderColor: getRarityColor(fish.rarity) }}
               >
                 {fish.isDiscovered ? (
                   <>
                     {/* Discovered Fish */}
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <div className="text-xs font-bold" style={{ color: getRarityColor(fish.rarity) }}>
+                        <div className="text-xs font-bold" style={getGradientTextStyle(fish.rarity)}>
                           {fish.rarity}
                         </div>
                         <div className="text-lg font-bold mt-1">{fish.name}</div>
@@ -1614,7 +1666,7 @@ React.useEffect(() => {
                       <div className="text-xs text-gray-500 mt-2">
                         Catch this fish to discover it!
                       </div>
-                      <div className="text-xs font-bold mt-2" style={{ color: getRarityColor(fish.rarity) }}>
+                      <div className="text-xs font-bold mt-2" style={getGradientTextStyle(fish.rarity)}>
                         {fish.rarity}
                       </div>
                     </div>
