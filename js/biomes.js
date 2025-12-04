@@ -51,6 +51,12 @@ window.BIOMES = {
       Mythic: [
         { name: "River King Aqualon", xp: 2500, gold: 1200, desc: "The revered monarch of Tinker River, rarely seen by mortals. A bass so large its roar echoes like rushing water. Legends say its arrival foretells major events." },
         { name: "Tinkermaker Carp", xp: 3000, gold: 1500, desc: "An ancient carp believed to craft the river's winding paths. It shifts the currents effortlessly to confuse fishermen. Elders say it appears only to anglers destined for greatness." }
+      ],
+      Exotic: [
+        { name: "Placeholder Exotic River Titan", xp: 5000, gold: 2500, desc: "An ultra-rare placeholder awaiting its true form. Even placeholders have legends." }
+      ],
+      Arcane: [
+        { name: "Placeholder Arcane River God", xp: 10000, gold: 5000, desc: "The rarest of placeholders, born from pure impossibility. A once-in-a-lifetime catch." }
       ]
     }
   },
@@ -105,6 +111,12 @@ window.BIOMES = {
       Mythic: [
         { name: "Mistwalker Catfish", xp: 7000, gold: 3500, desc: "A creature of legend that walks on the surface of the water using massive fin-legs. To catch it is to master the lake itself. It defies physics." },
         { name: "Silent Leviathan", xp: 8000, gold: 4000, desc: "A massive, silent alligator gar that occupies the entire deep trench. It has no predators, only time. Its armor is impenetrable." }
+      ],
+      Exotic: [
+        { name: "Placeholder Exotic Lake Phantom", xp: 12000, gold: 6000, desc: "A spectral placeholder that haunts the deep waters. Rarer than mist itself." }
+      ],
+      Arcane: [
+        { name: "Placeholder Arcane Lake Leviathan", xp: 20000, gold: 10000, desc: "The ultimate lake mystery, wrapped in placeholder form. Beyond comprehension." }
       ]
     }
   },
@@ -159,6 +171,12 @@ window.BIOMES = {
       Mythic: [
         { name: "Hydra Eel", xp: 15000, gold: 7500, desc: "A monstrosity with three heads. It fights with the strength of three fish and the cunning of a demon. If one head sleeps, the others watch." },
         { name: "Moloch The Bog-Catfish", xp: 18000, gold: 9000, desc: "A creature formed of mud, roots, and ancient magic. To catch it is to wrestle the swamp itself. It swallows boats whole." }
+      ],
+      Exotic: [
+        { name: "Placeholder Exotic Swamp Horror", xp: 25000, gold: 12500, desc: "A placeholder born from the darkest depths of the bog. Unspeakably rare." }
+      ],
+      Arcane: [
+        { name: "Placeholder Arcane Bog Ancient", xp: 35000, gold: 17500, desc: "An impossibility made manifest. The swamp's oldest secret in placeholder form." }
       ]
     }
   },
@@ -213,6 +231,12 @@ window.BIOMES = {
     Mythic: [
       { name: "Kraken Spawn (Squid)", xp: 22000, gold: 11000, desc: "Only a baby, but still capable of crushing a boat. Tentacles everywhere. It inks the whole sea black." },
       { name: "Poseidon's Chariot (Seahorse)", xp: 25000, gold: 12500, desc: "A gigantic Seahorse that thunders through the waves. It creates storms where it gallops. The steed of a god." }
+    ],
+    Exotic: [
+      { name: "Placeholder Exotic Ocean Titan", xp: 40000, gold: 20000, desc: "A placeholder forged from ocean currents. Rarer than the deepest pearl." }
+    ],
+    Arcane: [
+      { name: "Placeholder Arcane Sea Primordial", xp: 50000, gold: 25000, desc: "The ocean's ultimate mystery. A placeholder beyond mortal comprehension." }
     ]
   }
 },
@@ -268,6 +292,12 @@ window.BIOMES = {
       Mythic: [
         { name: "Crystal Dragon Serpent", xp: 35000, gold: 17500, desc: "A serpentine dragon with scales of pure sapphire. It breathes blue fire underwater." },
         { name: "Earthshaker Whale", xp: 40000, gold: 20000, desc: "When this massive beast moves, the entire mountain trembles. It is the heart of the grotto." }
+      ],
+      Exotic: [
+        { name: "Placeholder Exotic Crystal Leviathan", xp: 60000, gold: 30000, desc: "A crystalline placeholder of breathtaking beauty. Rarer than any gem." }
+      ],
+      Arcane: [
+        { name: "Placeholder Arcane Grotto Titan", xp: 75000, gold: 37500, desc: "The mountain's deepest secret in placeholder form. Beyond legendary." }
       ]
     }
   },
@@ -321,8 +351,14 @@ window.BIOMES = {
         { name: "Zero Point Entity", xp: 18000, gold: 9000, desc: "A being of absolute zero temperature. The water freezes instantly where it swims." }
       ],
       Mythic: [
-        { name: "Ymir’s Tear Dropfish", xp: 45000, gold: 22000, desc: "A sentient drop of water from the first glacier. It holds the memory of the world's creation." },
+        { name: "Ymir's Tear Dropfish", xp: 45000, gold: 22000, desc: "A sentient drop of water from the first glacier. It holds the memory of the world's creation." },
         { name: "Fenrir Wolf-Fish", xp: 50000, gold: 25000, desc: "A wolf-fish monstrosity chained to the bottom of the fjord. It struggles to break free." }
+      ],
+      Exotic: [
+        { name: "Placeholder Exotic Frost Colossus", xp: 80000, gold: 40000, desc: "A placeholder forged from eternal ice. Even legends fear its rarity." }
+      ],
+      Arcane: [
+        { name: "Placeholder Arcane Fjord Primordial", xp: 100000, gold: 50000, desc: "The fjord's ultimate mystery. A placeholder from the dawn of time." }
       ]
     }
   },
@@ -375,8 +411,14 @@ window.BIOMES = {
         { name: "Primal Instigator Piranha", xp: 22000, gold: 11000, desc: "Its roar causes all nearby animals to go into a frenzy. Pure chaos." }
       ],
       Mythic: [
-        { name: "Gaia’s Leviathan Turtle", xp: 55000, gold: 27500, desc: "An island-sized turtle with an entire ecosystem on its shell, swimming in the canopy river." },
+        { name: "Gaia's Leviathan Turtle", xp: 55000, gold: 27500, desc: "An island-sized turtle with an entire ecosystem on its shell, swimming in the canopy river." },
         { name: "World Tree Root Eel", xp: 60000, gold: 30000, desc: "A sentient root tip of the Yggdrasil. To catch it is to hold the foundation of the world." }
+      ],
+      Exotic: [
+        { name: "Placeholder Exotic Canopy Behemoth", xp: 100000, gold: 50000, desc: "A placeholder dwelling in the highest branches. Rarer than sunlight through the canopy." }
+      ],
+      Arcane: [
+        { name: "Placeholder Arcane Sky Serpent", xp: 120000, gold: 60000, desc: "The canopy's greatest enigma. A placeholder of impossible altitude." }
       ]
     }
   },
@@ -431,6 +473,12 @@ window.BIOMES = {
       Mythic: [
         { name: "Apep Chaos Serpent", xp: 75000, gold: 37500, desc: "The serpent of darkness that tries to swallow the sun. A world-ending catch." },
         { name: "Living Oasis Whale", xp: 80000, gold: 40000, desc: "The fish IS the water. To land it is to drain the oasis dry." }
+      ],
+      Exotic: [
+        { name: "Placeholder Exotic Desert Mirage", xp: 130000, gold: 65000, desc: "A placeholder born from sand and heat. Rarer than water in the wasteland." }
+      ],
+      Arcane: [
+        { name: "Placeholder Arcane Sandstorm Deity", xp: 150000, gold: 75000, desc: "The desert's ultimate secret. A placeholder that bends reality like heat waves." }
       ]
     }
   },
@@ -485,6 +533,12 @@ window.BIOMES = {
       Mythic: [
         { name: "The Moon Slice (Mola Mola)", xp: 100000, gold: 50000, desc: "Proof that the moon is made of cheese. It fell from the sky." },
         { name: "Lactose Intolerant Nightmare", xp: 110000, gold: 55000, desc: "A chaotic swirl of milk and stomach aches. The ultimate bad time." }
+      ],
+      Exotic: [
+        { name: "Placeholder Exotic Dairy Deity", xp: 180000, gold: 90000, desc: "A placeholder crafted from the finest cheddar. Impossibly rare and utterly absurd." }
+      ],
+      Arcane: [
+        { name: "Placeholder Arcane Cheese Singularity", xp: 200000, gold: 100000, desc: "The ultimate cheese paradox. A placeholder that defies all lactose logic." }
       ]
     }
   },
@@ -539,6 +593,12 @@ window.BIOMES = {
       Mythic: [
         { name: "Raijin Drum Sunfish", xp: 150000, gold: 75000, desc: "A massive sunfish that creates thunder by slapping the water." },
         { name: "World Splitter Eel", xp: 160000, gold: 80000, desc: "A beam of concentrated lightning that took the form of an eel. It cuts the horizon in half." }
+      ],
+      Exotic: [
+        { name: "Placeholder Exotic Storm Titan", xp: 250000, gold: 125000, desc: "A placeholder forged from pure electricity. Rarer than lightning striking twice." }
+      ],
+      Arcane: [
+        { name: "Placeholder Arcane Thunder God", xp: 300000, gold: 150000, desc: "The storm's ultimate secret. A placeholder that commands the very heavens." }
       ]
     }
   },
@@ -591,8 +651,14 @@ window.BIOMES = {
         { name: "Starlight Weaver Ray", xp: 90000, gold: 45000, desc: "It weaves beams of light into physical nets to catch prey. Its wingspan rivals the largest sails. A creature of pure elegance and light." }
       ],
       Mythic: [
-        { name: "Pale Night’s Avatar (Manta)", xp: 200000, gold: 100000, desc: "The physical embodiment of the night sky in the form of a giant Manta Ray. Its back contains the map of the entire universe. To look at it is to see eternity." },
+        { name: "Pale Night's Avatar (Manta)", xp: 200000, gold: 100000, desc: "The physical embodiment of the night sky in the form of a giant Manta Ray. Its back contains the map of the entire universe. To look at it is to see eternity." },
         { name: "The Lunar Whale", xp: 220000, gold: 110000, desc: "A whale that floats through the air above the lake, bathing in moonlight. It rarely touches the water, making it nearly impossible to hook. It carries dreams on its back." }
+      ],
+      Exotic: [
+        { name: "Placeholder Exotic Lunar Entity", xp: 350000, gold: 175000, desc: "A placeholder bathed in celestial light. Rarer than a new moon eclipse." }
+      ],
+      Arcane: [
+        { name: "Placeholder Arcane Cosmic Whale", xp: 400000, gold: 200000, desc: "The night's deepest mystery. A placeholder that swims between stars." }
       ]
     }
   },
@@ -647,6 +713,12 @@ window.BIOMES = {
       Mythic: [
         { name: "Parasite God Lamprey", xp: 250000, gold: 125000, desc: "A horrifying entity that tries to infect the world. It is the source of all corruption in the marsh. To catch it is to save the ecosystem." },
         { name: "The World Spore Whale", xp: 280000, gold: 140000, desc: "A massive seed floating in the water, waiting to restart evolution. It carries the genetic code of a new world. It hums with potential energy." }
+      ],
+      Exotic: [
+        { name: "Placeholder Exotic Fungal Colossus", xp: 450000, gold: 225000, desc: "A placeholder born from spores and decay. Rarer than untainted water." }
+      ],
+      Arcane: [
+        { name: "Placeholder Arcane Mycelium Network", xp: 500000, gold: 250000, desc: "The marsh's ultimate corruption. A placeholder that connects all darkness." }
       ]
     }
   },

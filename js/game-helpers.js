@@ -44,7 +44,9 @@ window.GameHelpers = {
       'Epic': 1575,
       'Treasure Chest': 250,
       'Legendary': 150,
-      'Mythic': 25
+      'Mythic': 25,
+      'Exotic': 4,
+      'Arcane': 1
     };
 
     const effectiveWeights = {};
@@ -54,7 +56,7 @@ window.GameHelpers = {
       if (tier === 'Common') {
         effectiveWeights[tier] = baseWeight;
       } else {
-        effectiveWeights[tier] = baseWeight * (1 + (totalLuck / 100));
+        effectiveWeights[tier] = baseWeight * (1 + (totalLuck / 200));
       }
       poolSize += effectiveWeights[tier];
     }
@@ -72,7 +74,7 @@ window.GameHelpers = {
 
   // Calculate fish count based on strength
   calculateFishCount: (rarity, totalStrength) => {
-    if (rarity === 'Mythic' || rarity === 'Treasure Chest') return 1;
+    if (rarity === 'Mythic' || rarity === 'Exotic' || rarity === 'Arcane' || rarity === 'Treasure Chest') return 1;
 
     const guaranteedExtra = Math.floor(totalStrength / 50);
     const remainder = totalStrength % 50;
@@ -107,11 +109,11 @@ window.GameHelpers = {
     // Use highest legendary gold as base, with 100-150% variation
     const baseGold = highestLegendaryGold;
     const goldVariation = Math.random() * 0.5 + 1.0; // 100% to 150% of base
-    const goldReward = Math.floor(baseGold * goldVariation * (1 + (totalLuck / 100)));
+    const goldReward = Math.floor(baseGold * goldVariation * (1 + (totalLuck / 200)));
 
     // Relics scale with biome (same as before)
     const baseRelics = Math.floor(Math.random() * (biomeRelicRange.max - biomeRelicRange.min + 1)) + biomeRelicRange.min;
-    const relicReward = Math.floor(baseRelics * (1 + (totalLuck / 100)));
+    const relicReward = Math.floor(baseRelics * (1 + (totalLuck / 200)));
 
     return { gold: goldReward, relics: relicReward };
   },
