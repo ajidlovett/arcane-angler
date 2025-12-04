@@ -45,7 +45,15 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
       totalGoldEarned: 0,
       mythicsCaught: 0,
       legendariesCaught: 0,
+      exoticsCaught: 0,
+      arcanesCaught: 0,
+      treasureChestsFound: 0,
       statsUpgraded: 0,
+      strUpgraded: 0,
+      intUpgraded: 0,
+      luckUpgraded: 0,
+      staminaUpgraded: 0,
+      totalRelicsEarned: 0,
       discoveredFish: [], // Track all fish ever caught (even if sold)
       unlockedBiomes: [1] // Track which biomes have been paid for (start with biome 1 unlocked)
     };
@@ -220,7 +228,25 @@ React.useEffect(() => {
   // Check achievements whenever player state changes
   useEffect(() => {
     checkAchievements();
-  }, [player.totalFishCaught, player.level, player.totalGoldEarned, player.totalFishSold, player.mythicsCaught, player.legendariesCaught, player.statsUpgraded, player.currentBiome]);
+  }, [
+    player.totalFishCaught,
+    player.level,
+    player.totalGoldEarned,
+    player.totalFishSold,
+    player.mythicsCaught,
+    player.legendariesCaught,
+    player.exoticsCaught,
+    player.arcanesCaught,
+    player.treasureChestsFound,
+    player.statsUpgraded,
+    player.strUpgraded,
+    player.intUpgraded,
+    player.luckUpgraded,
+    player.staminaUpgraded,
+    player.totalRelicsEarned,
+    player.gold, // For totalGoldInPocket achievements
+    player.currentBiome
+  ]);
 
   // Auto-save to localStorage (only after cloud data loads for online mode)
   useEffect(() => {
@@ -286,7 +312,9 @@ React.useEffect(() => {
           level: levelUp ? prev.level + 1 : prev.level,
           xpToNext: levelUp ? prev.xpToNext + 150 : prev.xpToNext,
           relics: prev.relics + treasure.relics + (levelUp ? 1 : 0),
-          gold: prev.gold + treasure.gold
+          gold: prev.gold + treasure.gold,
+          treasureChestsFound: prev.treasureChestsFound + 1,
+          totalRelicsEarned: prev.totalRelicsEarned + treasure.relics + (levelUp ? 1 : 0)
         }));
 
         setFishing(false);
@@ -365,6 +393,9 @@ React.useEffect(() => {
           totalFishCaught: prev.totalFishCaught + fishCount,
           mythicsCaught: prev.mythicsCaught + (rarity === 'Mythic' ? 1 : 0),
           legendariesCaught: prev.legendariesCaught + (rarity === 'Legendary' ? 1 : 0),
+          exoticsCaught: prev.exoticsCaught + (rarity === 'Exotic' ? 1 : 0),
+          arcanesCaught: prev.arcanesCaught + (rarity === 'Arcane' ? 1 : 0),
+          totalRelicsEarned: prev.totalRelicsEarned + (levelUp ? 1 : 0),
           discoveredFish: newDiscoveredFish
         };
       });
@@ -473,6 +504,14 @@ React.useEffect(() => {
   const upgradeStat = (stat) => {
     const cost = 3;
     if (player.relics >= cost) {
+      // Map stat names to tracking fields
+      const statTrackingMap = {
+        'strength': 'strUpgraded',
+        'intelligence': 'intUpgraded',
+        'luck': 'luckUpgraded',
+        'stamina': 'staminaUpgraded'
+      };
+
       setPlayer(prev => ({
         ...prev,
         relics: prev.relics - cost,
@@ -480,7 +519,8 @@ React.useEffect(() => {
           ...prev.stats,
           [stat]: prev.stats[stat] + 1
         },
-        statsUpgraded: prev.statsUpgraded + 1
+        statsUpgraded: prev.statsUpgraded + 1,
+        [statTrackingMap[stat]]: prev[statTrackingMap[stat]] + 1
       }));
     }
   };
