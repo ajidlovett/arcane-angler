@@ -99,6 +99,8 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
   const [funnyLine, setFunnyLine] = useState('');
   const [shopTab, setShopTab] = useState('rods'); // Persist shop tab selection
   const [dataLoaded, setDataLoaded] = useState(false); // Track if initial data loaded
+  const [isSaving, setIsSaving] = useState(false); // Track manual save state
+  const [isLoggingOut, setIsLoggingOut] = useState(false); // Track logout state
 
   // Load player data from cloud
 React.useEffect(() => {
@@ -535,19 +537,96 @@ React.useEffect(() => {
     setPlayer(prev => ({ ...prev, equippedBait: baitName }));
   };
 
+  // Manual save function
+  const handleManualSave = async () => {
+    if (offlineMode || isSaving) return;
+
+    setIsSaving(true);
+    try {
+      await window.ApiService.savePlayerData(player);
+      alert('✅ Progress saved successfully!');
+    } catch (err) {
+      console.error('Failed to save:', err);
+      alert('❌ Failed to save progress. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // Save progress and logout
   const handleSaveAndLogout = async () => {
+    if (isLoggingOut) return; // Prevent double-click
+
+    setIsLoggingOut(true);
+
     if (!offlineMode) {
       try {
         // Save player data before logout
         await window.ApiService.savePlayerData(player);
+        // Small delay to ensure save completes
+        await new Promise(resolve => setTimeout(resolve, 500));
       } catch (err) {
         console.error('Failed to save before logout:', err);
-        // Continue with logout even if save fails
+        alert('⚠️ Failed to save progress. Logout anyway?');
       }
     }
+
     // Call the original logout function
     onLogout();
+  };
+
+  // Reset save (clear both local and cloud data)
+  const handleResetSave = async () => {
+    const confirmed = confirm('⚠️ WARNING: This will delete ALL your progress (local and cloud). This cannot be undone! Are you absolutely sure?');
+    if (!confirmed) return;
+
+    try {
+      // Clear cloud data if online
+      if (!offlineMode) {
+        const emptyPlayerData = {
+          level: 1,
+          xp: 0,
+          xpToNext: 150,
+          gold: 0,
+          relics: 0,
+          stats: { strength: 0, intelligence: 0, luck: 0, stamina: 0 },
+          inventory: [],
+          lockedFish: [],
+          currentBiome: 1,
+          equippedRod: 'Willow Branch',
+          equippedBait: 'Stale Bread Crust',
+          ownedRods: ['Willow Branch'],
+          baitInventory: { 'Stale Bread Crust': 999999 },
+          achievements: [],
+          totalFishCaught: 0,
+          totalFishSold: 0,
+          totalGoldEarned: 0,
+          mythicsCaught: 0,
+          legendariesCaught: 0,
+          exoticsCaught: 0,
+          arcanesCaught: 0,
+          treasureChestsFound: 0,
+          statsUpgraded: 0,
+          strUpgraded: 0,
+          intUpgraded: 0,
+          luckUpgraded: 0,
+          staminaUpgraded: 0,
+          totalRelicsEarned: 0,
+          discoveredFish: [],
+          unlockedBiomes: [1]
+        };
+        await window.ApiService.savePlayerData(emptyPlayerData);
+      }
+
+      // Clear localStorage
+      localStorage.removeItem('arcaneAnglerSave');
+
+      // Reload page
+      window.location.reload();
+    } catch (err) {
+      console.error('Failed to reset save:', err);
+      alert('❌ Failed to reset save. Please try again.');
+    }
   };
 
   // Components
@@ -629,13 +708,32 @@ React.useEffect(() => {
             <div className="text-xs text-blue-300 mb-3">
               Biome {player.currentBiome} of {Object.keys(window.BIOMES).length}
             </div>
-            
+
+            {!offlineMode && (
+              <button
+                onClick={handleManualSave}
+                disabled={isSaving}
+                className={`w-full px-4 py-2 mb-2 rounded font-bold ${
+                  isSaving
+                    ? 'bg-gray-600 cursor-not-allowed'
+                    : 'bg-green-600 hover:bg-green-700 text-white'
+                }`}
+              >
+                {isSaving ? '💾 Saving...' : '💾 Save Progress'}
+              </button>
+            )}
+
             <button
-  onClick={handleSaveAndLogout}
-  className="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
->
-  {offlineMode ? 'Exit Game' : 'Logout'}
-</button>
+              onClick={handleSaveAndLogout}
+              disabled={isLoggingOut}
+              className={`w-full px-4 py-2 rounded font-bold ${
+                isLoggingOut
+                  ? 'bg-gray-600 cursor-not-allowed text-gray-400'
+                  : 'bg-red-600 hover:bg-red-700 text-white'
+              }`}
+            >
+              {isLoggingOut ? '🔄 Saving & Logging out...' : (offlineMode ? 'Exit Game' : 'Logout')}
+            </button>
 
 {!offlineMode && user && (
   <div className="text-sm text-gray-500 mt-2">
@@ -644,12 +742,7 @@ React.useEffect(() => {
 )}
 
             <button
-              onClick={() => {
-                if (confirm('Are you sure you want to reset your save? This cannot be undone!')) {
-                  localStorage.removeItem('arcaneAnglerSave');
-                  window.location.reload();
-                }
-              }}
+              onClick={handleResetSave}
               className="w-full px-3 py-2 bg-red-900 hover:bg-red-800 rounded text-xs font-bold text-red-200"
             >
               {Icons.Trash2()} Reset Save
@@ -1383,13 +1476,8 @@ React.useEffect(() => {
            <p className="text-sm text-blue-300 mb-4">
              If you want to restart the game completely, use the button below. This will delete your local save file and reset all progress.
            </p>
-           <button 
-             onClick={() => {
-                if (confirm('Are you sure you want to reset your save? This cannot be undone!')) {
-                    localStorage.removeItem('arcaneAnglerSave');
-                    window.location.reload();
-                }
-             }}
+           <button
+             onClick={handleResetSave}
              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded transition-colors"
            >
              {Icons.Trash2()} Reset Save Data
