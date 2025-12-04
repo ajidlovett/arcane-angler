@@ -4,21 +4,22 @@
 USE arcane_angler;
 
 -- Add new achievement tracking columns to player_data
+-- Note: If columns already exist, you can safely ignore the error or comment out the ones that exist
 ALTER TABLE player_data
-ADD COLUMN IF NOT EXISTS exotics_caught INT DEFAULT 0,
-ADD COLUMN IF NOT EXISTS arcanes_caught INT DEFAULT 0,
-ADD COLUMN IF NOT EXISTS treasure_chests_found INT DEFAULT 0,
-ADD COLUMN IF NOT EXISTS str_upgraded INT DEFAULT 0,
-ADD COLUMN IF NOT EXISTS int_upgraded INT DEFAULT 0,
-ADD COLUMN IF NOT EXISTS luck_upgraded INT DEFAULT 0,
-ADD COLUMN IF NOT EXISTS stamina_upgraded INT DEFAULT 0,
-ADD COLUMN IF NOT EXISTS total_relics_earned INT DEFAULT 0;
+ADD COLUMN exotics_caught INT DEFAULT 0,
+ADD COLUMN arcanes_caught INT DEFAULT 0,
+ADD COLUMN treasure_chests_found INT DEFAULT 0,
+ADD COLUMN str_upgraded INT DEFAULT 0,
+ADD COLUMN int_upgraded INT DEFAULT 0,
+ADD COLUMN luck_upgraded INT DEFAULT 0,
+ADD COLUMN stamina_upgraded INT DEFAULT 0,
+ADD COLUMN total_relics_earned INT DEFAULT 0;
 
 -- Add indexes for performance on frequently queried columns
-ALTER TABLE player_data
-ADD INDEX IF NOT EXISTS idx_exotics_caught (exotics_caught),
-ADD INDEX IF NOT EXISTS idx_arcanes_caught (arcanes_caught),
-ADD INDEX IF NOT EXISTS idx_treasure_chests_found (treasure_chests_found);
+-- Note: If indexes already exist, you can safely ignore the error
+CREATE INDEX idx_exotics_caught ON player_data (exotics_caught);
+CREATE INDEX idx_arcanes_caught ON player_data (arcanes_caught);
+CREATE INDEX idx_treasure_chests_found ON player_data (treasure_chests_found);
 
 -- Update any existing rows to have default values
 UPDATE player_data
