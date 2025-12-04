@@ -3,18 +3,23 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
+const { authLimiter, passwordResetLimiter, apiLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Security: Request size limits (prevent DoS attacks with large payloads)
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Middleware
 app.use(cors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
     credentials: true
 }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
+// Apply general rate limiting to all API routes
+app.use('/api/', apiLimiter);
 
 // Request logging
 app.use((req, res, next) => {
@@ -22,10 +27,14 @@ app.use((req, res, next) => {
     next();
 });
 
-// Routes
+// Routes with specific rate limiters
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/player', require('./routes/player'));
 app.use('/api/leaderboard', require('./routes/leaderboard'));
+
+// Export rate limiters for use in route files
+app.locals.authLimiter = authLimiter;
+app.locals.passwordResetLimiter = passwordResetLimiter;
 
 // Health check
 app.get('/api/health', (req, res) => {

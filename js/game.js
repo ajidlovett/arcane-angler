@@ -124,7 +124,7 @@ React.useEffect(() => {
   loadData();
 }, [offlineMode]);
 
-// Auto-save to cloud every 5 seconds (only after initial data loads)
+// Auto-save to cloud every 30 seconds (only after initial data loads)
 React.useEffect(() => {
   if (!offlineMode && dataLoaded) { // Only auto-save after data is loaded
     const saveInterval = setInterval(async () => {
@@ -138,7 +138,7 @@ React.useEffect(() => {
       } catch (err) {
         console.error('Auto-save failed:', err);
       }
-    }, 5000);
+    }, 30000);
 
     return () => clearInterval(saveInterval);
   }
