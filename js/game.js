@@ -535,6 +535,21 @@ React.useEffect(() => {
     setPlayer(prev => ({ ...prev, equippedBait: baitName }));
   };
 
+  // Save progress and logout
+  const handleSaveAndLogout = async () => {
+    if (!offlineMode) {
+      try {
+        // Save player data before logout
+        await window.ApiService.savePlayerData(player);
+      } catch (err) {
+        console.error('Failed to save before logout:', err);
+        // Continue with logout even if save fails
+      }
+    }
+    // Call the original logout function
+    onLogout();
+  };
+
   // Components
   const Sidebar = () => {
     const menuItems = [
@@ -616,7 +631,7 @@ React.useEffect(() => {
             </div>
             
             <button
-  onClick={onLogout}
+  onClick={handleSaveAndLogout}
   className="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
 >
   {offlineMode ? 'Exit Game' : 'Logout'}
