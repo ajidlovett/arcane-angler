@@ -127,7 +127,15 @@ router.get('/data', authenticateToken, async (req, res) => {
             totalGoldEarned: playerData[0].total_gold_earned || 0,
             mythicsCaught: playerData[0].mythics_caught || 0,
             legendariesCaught: playerData[0].legendaries_caught || 0,
+            exoticsCaught: playerData[0].exotics_caught || 0,
+            arcanesCaught: playerData[0].arcanes_caught || 0,
+            treasureChestsFound: playerData[0].treasure_chests_found || 0,
             statsUpgraded: playerData[0].stats_upgraded || 0,
+            strUpgraded: playerData[0].str_upgraded || 0,
+            intUpgraded: playerData[0].int_upgraded || 0,
+            luckUpgraded: playerData[0].luck_upgraded || 0,
+            staminaUpgraded: playerData[0].stamina_upgraded || 0,
+            totalRelicsEarned: playerData[0].total_relics_earned || 0,
             // Fishpedia tracking
             discoveredFish: discoveredFish,
             // Biome tracking
@@ -150,7 +158,10 @@ router.post('/save', authenticateToken, async (req, res) => {
             equippedRod, equippedBait, stats, inventory,
             lockedFish, ownedRods, baitInventory,
             achievements, totalFishCaught, totalFishSold,
-            totalGoldEarned, mythicsCaught, legendariesCaught, statsUpgraded,
+            totalGoldEarned, mythicsCaught, legendariesCaught,
+            exoticsCaught, arcanesCaught, treasureChestsFound,
+            statsUpgraded, strUpgraded, intUpgraded, luckUpgraded, staminaUpgraded,
+            totalRelicsEarned,
             discoveredFish, unlockedBiomes
         } = req.body;
 
@@ -172,12 +183,18 @@ router.post('/save', authenticateToken, async (req, res) => {
                  current_biome = ?, equipped_rod = ?, equipped_bait = ?,
                  achievements = ?, total_fish_caught = ?, total_fish_sold = ?,
                  total_gold_earned = ?, mythics_caught = ?, legendaries_caught = ?,
-                 stats_upgraded = ?, discovered_fish = ?, unlocked_biomes = ?
+                 exotics_caught = ?, arcanes_caught = ?, treasure_chests_found = ?,
+                 stats_upgraded = ?, str_upgraded = ?, int_upgraded = ?,
+                 luck_upgraded = ?, stamina_upgraded = ?, total_relics_earned = ?,
+                 discovered_fish = ?, unlocked_biomes = ?
              WHERE user_id = ?`,
             [level, xp, xpToNext, gold, relics, currentBiome, equippedRod, equippedBait,
              achievementsJson, totalFishCaught || 0, totalFishSold || 0,
              totalGoldEarned || 0, mythicsCaught || 0, legendariesCaught || 0,
-             statsUpgraded || 0, discoveredFishJson, unlockedBiomesJson, userId]
+             exoticsCaught || 0, arcanesCaught || 0, treasureChestsFound || 0,
+             statsUpgraded || 0, strUpgraded || 0, intUpgraded || 0,
+             luckUpgraded || 0, staminaUpgraded || 0, totalRelicsEarned || 0,
+             discoveredFishJson, unlockedBiomesJson, userId]
         );
 
         // Update player stats
