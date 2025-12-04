@@ -61,29 +61,48 @@ router.get('/data', authenticateToken, async (req, res) => {
         const formattedOwnedRods = ownedRods.map(r => r.rod_name);
         const formattedLockedFish = lockedFish.map(f => f.fish_name);
 
-        // Parse achievements JSON if it exists
+        // Parse achievements JSON if it exists (handle both string and object)
         let achievements = [];
         try {
-            achievements = playerData[0].achievements ? JSON.parse(playerData[0].achievements) : [];
+            const rawData = playerData[0].achievements;
+            if (Array.isArray(rawData)) {
+                achievements = rawData; // Already an array
+            } else if (typeof rawData === 'string') {
+                achievements = JSON.parse(rawData); // Parse string
+            }
         } catch (e) {
+            console.error('Error parsing achievements:', e);
             achievements = [];
         }
 
-        // Parse discovered_fish JSON if it exists
+        // Parse discovered_fish JSON if it exists (handle both string and object)
         let discoveredFish = [];
         try {
-            discoveredFish = playerData[0].discovered_fish ? JSON.parse(playerData[0].discovered_fish) : [];
+            const rawData = playerData[0].discovered_fish;
+            if (Array.isArray(rawData)) {
+                discoveredFish = rawData; // Already an array
+            } else if (typeof rawData === 'string') {
+                discoveredFish = JSON.parse(rawData); // Parse string
+            }
         } catch (e) {
+            console.error('Error parsing discovered_fish:', e);
             discoveredFish = [];
         }
 
-        // Parse unlocked_biomes JSON if it exists
-        let unlockedBiomes = [];
+        // Parse unlocked_biomes JSON if it exists (handle both string and object)
+        let unlockedBiomes = [1];
         try {
-            const parsed = playerData[0].unlocked_biomes ? JSON.parse(playerData[0].unlocked_biomes) : [1];
-            // Ensure it's always an array (fix for corrupted integer data)
-            unlockedBiomes = Array.isArray(parsed) ? parsed : [1];
+            const rawData = playerData[0].unlocked_biomes;
+            if (Array.isArray(rawData)) {
+                unlockedBiomes = rawData; // Already an array
+            } else if (typeof rawData === 'string') {
+                const parsed = JSON.parse(rawData);
+                unlockedBiomes = Array.isArray(parsed) ? parsed : [1];
+            } else if (typeof rawData === 'number') {
+                unlockedBiomes = [1]; // Corrupted integer data
+            }
         } catch (e) {
+            console.error('Error parsing unlocked_biomes:', e);
             unlockedBiomes = [1];
         }
 
