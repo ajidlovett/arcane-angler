@@ -86,6 +86,7 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
   const [cooldown, setCooldown] = useState(0);
   const [lastCatch, setLastCatch] = useState(null);
   const [selectedRarity, setSelectedRarity] = useState('all');
+  const [inventorySortOrder, setInventorySortOrder] = useState('value-desc'); // Default sort by value descending
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [funnyLine, setFunnyLine] = useState('');
   const [shopTab, setShopTab] = useState('rods'); // Persist shop tab selection
@@ -367,6 +368,26 @@ React.useEffect(() => {
 
   const sellAll = () => {
     const unlockedFish = player.inventory.filter(f => !player.lockedFish.includes(f.name));
+
+    // Check if there are any Mythic, Exotic, or Arcane fish in unlocked inventory
+    const rareRarities = ['Mythic', 'Exotic', 'Arcane'];
+    const hasRareFish = unlockedFish.some(f => rareRarities.includes(f.rarity));
+
+    if (hasRareFish) {
+      const rareFishList = unlockedFish
+        .filter(f => rareRarities.includes(f.rarity))
+        .map(f => `${f.rarity}: ${f.name} (${f.count}x)`)
+        .join('\n');
+
+      const confirmed = window.confirm(
+        `⚠️ WARNING ⚠️\n\nYou have ultra-rare fish that are not locked:\n\n${rareFishList}\n\nAre you sure you want to sell these extremely rare fish?`
+      );
+
+      if (!confirmed) {
+        return; // User cancelled, don't sell
+      }
+    }
+
     const totalStats = getTotalStats();
     const intelligenceBonus = 1 + (Number(totalStats.intelligence) * 0.02);
 
@@ -429,8 +450,43 @@ React.useEffect(() => {
   };
 
   const getFilteredInventory = () => {
-    if (selectedRarity === 'all') return player.inventory;
-    return player.inventory.filter(f => f.rarity === selectedRarity);
+    const totalStats = getTotalStats();
+    const intelligenceBonus = 1 + (Number(totalStats.intelligence) * 0.02);
+
+    let filtered = selectedRarity === 'all'
+      ? [...player.inventory]
+      : player.inventory.filter(f => f.rarity === selectedRarity);
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      const titanBonusA = Number(a.titanBonus) || 1;
+      const titanBonusB = Number(b.titanBonus) || 1;
+      const baseGoldA = Number(a.baseGold) || Number(a.gold) || 0;
+      const baseGoldB = Number(b.baseGold) || Number(b.gold) || 0;
+
+      switch (inventorySortOrder) {
+        case 'value-desc':
+          const valueA = Math.floor(baseGoldA * Number(a.count) * intelligenceBonus * titanBonusA);
+          const valueB = Math.floor(baseGoldB * Number(b.count) * intelligenceBonus * titanBonusB);
+          return valueB - valueA;
+        case 'value-asc':
+          const valueA2 = Math.floor(baseGoldA * Number(a.count) * intelligenceBonus * titanBonusA);
+          const valueB2 = Math.floor(baseGoldB * Number(b.count) * intelligenceBonus * titanBonusB);
+          return valueA2 - valueB2;
+        case 'quantity-desc':
+          return Number(b.count) - Number(a.count);
+        case 'quantity-asc':
+          return Number(a.count) - Number(b.count);
+        case 'name-desc':
+          return b.name.localeCompare(a.name);
+        case 'name-asc':
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
   };
 
   // Equipment functions
@@ -1073,18 +1129,39 @@ React.useEffect(() => {
     return (
       <div className="max-w-6xl mx-auto">
         <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-              <span className="w-5 flex-shrink-0">{Icons.Package()}</span>
-              Inventory ({player.inventory.length})
-            </h2>
-            <button
-              onClick={sellAll}
-              disabled={unlockedCount === 0}
-              className={`w-full sm:w-auto px-4 py-2 rounded font-bold text-sm ${unlockedCount > 0 ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-gray-600 cursor-not-allowed'}`}
-            >
-              Sell All Unlocked ({unlockedCount})
-            </button>
+          <div className="flex flex-col gap-4 mb-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+                <span className="w-5 flex-shrink-0">{Icons.Package()}</span>
+                Inventory ({player.inventory.length})
+              </h2>
+              <button
+                onClick={sellAll}
+                disabled={unlockedCount === 0}
+                className={`w-full sm:w-auto px-4 py-2 rounded font-bold text-sm ${unlockedCount > 0 ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-gray-600 cursor-not-allowed'}`}
+              >
+                Sell All Unlocked ({unlockedCount})
+              </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+              <label htmlFor="sort-select" className="text-sm text-blue-300 font-semibold whitespace-nowrap">
+                Sort by:
+              </label>
+              <select
+                id="sort-select"
+                value={inventorySortOrder}
+                onChange={(e) => setInventorySortOrder(e.target.value)}
+                className="w-full sm:w-64 px-3 py-2 rounded font-bold bg-blue-900 text-white border-2 border-blue-700 hover:border-blue-500 focus:border-blue-400 focus:outline-none cursor-pointer text-sm"
+              >
+                <option value="value-desc">Total Value (High to Low)</option>
+                <option value="value-asc">Total Value (Low to High)</option>
+                <option value="quantity-desc">Quantity (High to Low)</option>
+                <option value="quantity-asc">Quantity (Low to High)</option>
+                <option value="name-asc">Fish Name (A to Z)</option>
+                <option value="name-desc">Fish Name (Z to A)</option>
+              </select>
+            </div>
           </div>
 
           <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
