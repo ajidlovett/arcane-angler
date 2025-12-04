@@ -106,13 +106,8 @@ React.useEffect(() => {
     if (!offlineMode) {
       try {
         const data = await window.ApiService.getPlayerData();
-        console.log('🔍 Cloud data loaded:', {
-          discoveredFish: data.discoveredFish,
-          unlockedBiomes: data.unlockedBiomes
-        });
         setPlayer(data);
         setDataLoaded(true); // Mark data as loaded
-        console.log('✅ Loaded from cloud');
       } catch (err) {
         console.error('Failed to load from cloud:', err);
         setDataLoaded(true); // Even on error, mark as loaded to prevent saving defaults
@@ -129,12 +124,7 @@ React.useEffect(() => {
   if (!offlineMode && dataLoaded) { // Only auto-save after data is loaded
     const saveInterval = setInterval(async () => {
       try {
-        console.log('💾 Saving to cloud:', {
-          discoveredFish: player.discoveredFish,
-          unlockedBiomes: player.unlockedBiomes
-        });
         await window.ApiService.savePlayerData(player);
-        console.log('✅ Saved to cloud');
       } catch (err) {
         console.error('Auto-save failed:', err);
       }
