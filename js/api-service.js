@@ -192,6 +192,13 @@ class ApiService {
         });
     }
 
+    async updateNationality(nationality) {
+        return await this.request('/profile/update-nationality', {
+            method: 'POST',
+            body: JSON.stringify({ nationality })
+        });
+    }
+
     async equipTitle(achievementId) {
         return await this.request('/profile/equip-title', {
             method: 'POST',

@@ -14,7 +14,7 @@ router.get('/me', authenticateToken, async (req, res) => {
         const userId = req.user.userId;
 
         const [users] = await db.query(
-            `SELECT id, username, profile_username, email, bio, equipped_title,
+            `SELECT id, username, profile_username, email, bio, equipped_title, nationality,
              profile_name_changes, achievement_showcase_limit, favorite_fish_limit,
              profile_privacy, allow_comments, profile_views, badges, registration_date
              FROM users WHERE id = ?`,
@@ -217,6 +217,29 @@ router.post('/update-bio', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error updating bio:', error);
         res.status(500).json({ error: 'Failed to update bio' });
+    }
+});
+
+// Update nationality
+router.post('/update-nationality', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const { nationality } = req.body;
+
+        // Validate nationality code (should be 2-letter ISO code or null)
+        if (nationality && (typeof nationality !== 'string' || nationality.length !== 2)) {
+            return res.status(400).json({ error: 'Invalid nationality code. Must be 2-letter ISO code.' });
+        }
+
+        await db.query(
+            'UPDATE users SET nationality = ? WHERE id = ?',
+            [nationality ? nationality.toUpperCase() : null, userId]
+        );
+
+        res.json({ success: true, nationality: nationality ? nationality.toUpperCase() : null });
+    } catch (error) {
+        console.error('Error updating nationality:', error);
+        res.status(500).json({ error: 'Failed to update nationality' });
     }
 });
 

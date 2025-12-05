@@ -7,6 +7,7 @@
 ALTER TABLE users
 ADD COLUMN bio TEXT DEFAULT NULL,
 ADD COLUMN equipped_title VARCHAR(255) DEFAULT NULL,
+ADD COLUMN nationality VARCHAR(10) DEFAULT NULL COMMENT 'ISO 3166-1 alpha-2 country code',
 ADD COLUMN profile_name_changes INT DEFAULT 0,
 ADD COLUMN achievement_showcase_limit INT DEFAULT 6,
 ADD COLUMN favorite_fish_limit INT DEFAULT 3,

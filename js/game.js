@@ -1381,6 +1381,42 @@ React.useEffect(() => {
     const [equippedTitle, setEquippedTitle] = useState(null);
     const [privacy, setPrivacy] = useState('public');
     const [allowComments, setAllowComments] = useState(true);
+    const [nationality, setNationality] = useState(null);
+
+    // Popular countries list with flags (using Unicode flag emojis)
+    const countries = [
+      { code: 'US', name: 'United States', flag: '🇺🇸' },
+      { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
+      { code: 'CA', name: 'Canada', flag: '🇨🇦' },
+      { code: 'AU', name: 'Australia', flag: '🇦🇺' },
+      { code: 'DE', name: 'Germany', flag: '🇩🇪' },
+      { code: 'FR', name: 'France', flag: '🇫🇷' },
+      { code: 'ES', name: 'Spain', flag: '🇪🇸' },
+      { code: 'IT', name: 'Italy', flag: '🇮🇹' },
+      { code: 'NL', name: 'Netherlands', flag: '🇳🇱' },
+      { code: 'SE', name: 'Sweden', flag: '🇸🇪' },
+      { code: 'NO', name: 'Norway', flag: '🇳🇴' },
+      { code: 'DK', name: 'Denmark', flag: '🇩🇰' },
+      { code: 'FI', name: 'Finland', flag: '🇫🇮' },
+      { code: 'PL', name: 'Poland', flag: '🇵🇱' },
+      { code: 'BR', name: 'Brazil', flag: '🇧🇷' },
+      { code: 'MX', name: 'Mexico', flag: '🇲🇽' },
+      { code: 'AR', name: 'Argentina', flag: '🇦🇷' },
+      { code: 'JP', name: 'Japan', flag: '🇯🇵' },
+      { code: 'CN', name: 'China', flag: '🇨🇳' },
+      { code: 'KR', name: 'South Korea', flag: '🇰🇷' },
+      { code: 'IN', name: 'India', flag: '🇮🇳' },
+      { code: 'ID', name: 'Indonesia', flag: '🇮🇩' },
+      { code: 'TH', name: 'Thailand', flag: '🇹🇭' },
+      { code: 'VN', name: 'Vietnam', flag: '🇻🇳' },
+      { code: 'PH', name: 'Philippines', flag: '🇵🇭' },
+      { code: 'MY', name: 'Malaysia', flag: '🇲🇾' },
+      { code: 'SG', name: 'Singapore', flag: '🇸🇬' },
+      { code: 'RU', name: 'Russia', flag: '🇷🇺' },
+      { code: 'TR', name: 'Turkey', flag: '🇹🇷' },
+      { code: 'ZA', name: 'South Africa', flag: '🇿🇦' },
+      { code: 'NZ', name: 'New Zealand', flag: '🇳🇿' },
+    ];
 
     // Load profile data
     useEffect(() => {
@@ -1393,6 +1429,7 @@ React.useEffect(() => {
             setEquippedTitle(data.profile.equipped_title);
             setPrivacy(data.profile.profile_privacy);
             setAllowComments(data.profile.allow_comments);
+            setNationality(data.profile.nationality);
           } catch (err) {
             console.error('Failed to load profile:', err);
           }
@@ -1453,6 +1490,17 @@ React.useEffect(() => {
         setEquippedTitle(achievementId);
         setProfileData(prev => ({ ...prev, equipped_title: achievementId }));
         alert('Title equipped!');
+
+        // Reload profile data to ensure title persists
+        if (!offlineMode) {
+          try {
+            const data = await window.ApiService.getMyProfile();
+            setProfileData(data.profile);
+            setEquippedTitle(data.profile.equipped_title);
+          } catch (loadErr) {
+            console.error('Failed to reload profile:', loadErr);
+          }
+        }
       } catch (err) {
         alert(err.message || 'Failed to equip title');
       }
@@ -1499,6 +1547,27 @@ React.useEffect(() => {
         }
       } catch (err) {
         alert(err.message || 'Failed to toggle comments');
+      }
+    };
+
+    const handleNationalityChange = async (countryCode) => {
+      try {
+        await window.ApiService.updateNationality(countryCode);
+        setNationality(countryCode);
+        alert('Nationality updated!');
+
+        // Reload profile data to ensure persistence
+        if (!offlineMode) {
+          try {
+            const data = await window.ApiService.getMyProfile();
+            setProfileData(data.profile);
+            setNationality(data.profile.nationality);
+          } catch (loadErr) {
+            console.error('Failed to reload profile:', loadErr);
+          }
+        }
+      } catch (err) {
+        alert(err.message || 'Failed to update nationality');
       }
     };
 
@@ -1578,7 +1647,7 @@ React.useEffect(() => {
                   </div>
                 ) : (
                   <div>
-                    <div className="text-blue-200 italic mb-2">
+                    <div className="text-blue-200 italic mb-2 whitespace-pre-wrap">
                       {profileData?.bio || 'No bio yet. Click "Edit Bio" to add one!'}
                     </div>
                     <button
@@ -1738,6 +1807,38 @@ React.useEffect(() => {
                 </button>
               );
             })}
+          </div>
+        </div>
+
+        {/* Nationality/Region */}
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-6 mb-4">
+          <h3 className="text-xl font-bold mb-4">Nationality / Region</h3>
+          <p className="text-sm text-blue-300 mb-4">
+            Select your country for regional leaderboards (optional)
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-64 overflow-y-auto">
+            <button
+              onClick={() => handleNationalityChange(null)}
+              className={`p-2 rounded text-left ${
+                !nationality ? 'bg-gray-600' : 'bg-blue-950 hover:bg-blue-800'
+              }`}
+            >
+              <div className="text-sm font-bold">None</div>
+            </button>
+            {countries.map(country => (
+              <button
+                key={country.code}
+                onClick={() => handleNationalityChange(country.code)}
+                className={`p-2 rounded text-left ${
+                  nationality === country.code
+                    ? 'bg-green-600'
+                    : 'bg-blue-950 hover:bg-blue-800'
+                }`}
+              >
+                <div className="text-lg mb-1">{country.flag}</div>
+                <div className="text-xs font-bold truncate">{country.name}</div>
+              </button>
+            ))}
           </div>
         </div>
 
