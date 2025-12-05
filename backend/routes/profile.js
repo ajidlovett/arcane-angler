@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const { authenticateToken } = require('../middleware/auth');
-const { validateText } = require('../utils/profanityFilter');
+const { validateText } = require('../server/utils/profanityFilter');
 const router = express.Router();
 
 // ==========================================
@@ -132,17 +132,19 @@ router.post('/change-name', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: validation.error });
         }
 
-        // Get user's current data
-        const [users] = await db.query(
-            'SELECT profile_name_changes FROM users WHERE id = ?',
-            [userId]
-        );
-
-        if (users.length === 0) {
-            return res.status(404).json({ error: 'User not found' });
+        // Get user's current data - check if column exists first
+        let changeCount = 0;
+        try {
+            const [users] = await db.query(
+                'SELECT profile_name_changes FROM users WHERE id = ?',
+                [userId]
+            );
+            changeCount = users.length > 0 ? (users[0].profile_name_changes || 0) : 0;
+        } catch (dbError) {
+            console.warn('profile_name_changes column may not exist, defaulting to 0:', dbError.message);
+            changeCount = 0;
         }
 
-        const changeCount = users[0].profile_name_changes;
         const cost = changeCount === 0 ? 0 : 50; // First change free, then 50 relics
 
         // Check if user has enough relics
@@ -163,11 +165,20 @@ router.post('/change-name', authenticateToken, async (req, res) => {
             );
         }
 
-        // Update profile name
-        await db.query(
-            'UPDATE users SET profileUsername = ?, profile_name_changes = profile_name_changes + 1 WHERE id = ?',
-            [validation.cleaned, userId]
-        );
+        // Update profile name and increment counter if column exists
+        try {
+            await db.query(
+                'UPDATE users SET profileUsername = ?, profile_name_changes = profile_name_changes + 1 WHERE id = ?',
+                [validation.cleaned, userId]
+            );
+        } catch (dbError) {
+            // If profile_name_changes column doesn't exist, just update the name
+            console.warn('Could not update profile_name_changes, updating name only:', dbError.message);
+            await db.query(
+                'UPDATE users SET profileUsername = ? WHERE id = ?',
+                [validation.cleaned, userId]
+            );
+        }
 
         res.json({
             success: true,
@@ -176,7 +187,8 @@ router.post('/change-name', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error changing profile name:', error);
-        res.status(500).json({ error: 'Failed to change profile name' });
+        console.error('Error details:', error.message, error.stack);
+        res.status(500).json({ error: `Failed to change profile name: ${error.message}` });
     }
 });
 
@@ -230,16 +242,24 @@ router.post('/equip-title', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: 'Achievement not unlocked' });
         }
 
-        // Update equipped title
-        await db.query(
-            'UPDATE users SET equipped_title = ? WHERE id = ?',
-            [achievementId, userId]
-        );
+        // Update equipped title - handle if column doesn't exist
+        try {
+            await db.query(
+                'UPDATE users SET equipped_title = ? WHERE id = ?',
+                [achievementId, userId]
+            );
+        } catch (dbError) {
+            console.error('Could not update equipped_title column:', dbError.message);
+            return res.status(500).json({
+                error: 'Database column "equipped_title" does not exist. Please run the migration SQL first.'
+            });
+        }
 
         res.json({ success: true, equippedTitle: achievementId });
     } catch (error) {
         console.error('Error equipping title:', error);
-        res.status(500).json({ error: 'Failed to equip title' });
+        console.error('Error details:', error.message, error.stack);
+        res.status(500).json({ error: `Failed to equip title: ${error.message}` });
     }
 });
 
