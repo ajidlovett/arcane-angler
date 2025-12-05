@@ -1407,11 +1407,20 @@ React.useEffect(() => {
 
       try {
         const result = await window.ApiService.changeProfileName(newName);
-        setProfileData(prev => ({ ...prev, profileUsername: result.newProfileName }));
+        setProfileData(prev => ({ ...prev, profile_username: result.newProfileName }));
         setPlayer(prev => ({ ...prev, relics: prev.relics - result.relicsSpent }));
         setEditingName(false);
         setNewName('');
         alert(`Profile name changed! ${result.relicsSpent > 0 ? `Cost: ${result.relicsSpent} relics` : 'First change is free!'}`);
+
+        // Trigger cloud save to persist player data changes
+        if (!offlineMode) {
+          try {
+            await window.ApiService.savePlayerData(player);
+          } catch (saveErr) {
+            console.error('Failed to save after name change:', saveErr);
+          }
+        }
       } catch (err) {
         alert(err.message || 'Failed to change name');
       }
@@ -1423,6 +1432,16 @@ React.useEffect(() => {
         setProfileData(prev => ({ ...prev, bio: result.bio }));
         setEditingBio(false);
         alert('Bio updated successfully!');
+
+        // Reload profile data to ensure persistence
+        if (!offlineMode) {
+          try {
+            const data = await window.ApiService.getMyProfile();
+            setProfileData(data.profile);
+          } catch (loadErr) {
+            console.error('Failed to reload profile:', loadErr);
+          }
+        }
       } catch (err) {
         alert(err.message || 'Failed to update bio');
       }
@@ -1444,6 +1463,18 @@ React.useEffect(() => {
         await window.ApiService.updatePrivacy(newPrivacy, allowComments);
         setPrivacy(newPrivacy);
         alert('Privacy settings updated!');
+
+        // Reload profile data to ensure persistence
+        if (!offlineMode) {
+          try {
+            const data = await window.ApiService.getMyProfile();
+            setProfileData(data.profile);
+            setPrivacy(data.profile.profile_privacy);
+            setAllowComments(data.profile.allow_comments);
+          } catch (loadErr) {
+            console.error('Failed to reload profile:', loadErr);
+          }
+        }
       } catch (err) {
         alert(err.message || 'Failed to update privacy');
       }
@@ -1454,6 +1485,18 @@ React.useEffect(() => {
         await window.ApiService.updatePrivacy(privacy, !allowComments);
         setAllowComments(!allowComments);
         alert(`Comments ${!allowComments ? 'enabled' : 'disabled'}!`);
+
+        // Reload profile data to ensure persistence
+        if (!offlineMode) {
+          try {
+            const data = await window.ApiService.getMyProfile();
+            setProfileData(data.profile);
+            setPrivacy(data.profile.profile_privacy);
+            setAllowComments(data.profile.allow_comments);
+          } catch (loadErr) {
+            console.error('Failed to reload profile:', loadErr);
+          }
+        }
       } catch (err) {
         alert(err.message || 'Failed to toggle comments');
       }
@@ -1488,7 +1531,7 @@ React.useEffect(() => {
                 <div className="text-4xl">{Icons.User()}</div>
                 <div>
                   <h2 className="text-2xl font-bold">
-                    {profileData?.profileUsername || user?.profileUsername || user?.username}
+                    {profileData?.profile_username || user?.profileUsername || user?.username}
                     {titleName && <span className="text-yellow-400"> - {titleName}</span>}
                   </h2>
                   <div className="text-sm text-blue-300">
