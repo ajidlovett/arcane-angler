@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const { authenticateToken } = require('../middleware/auth');
-const { validateText } = require('../server/utils/profanityFilter');
+const { validateText } = require('../utils/profanityFilter');
 const router = express.Router();
 
 // Get comments for a profile
