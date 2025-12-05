@@ -1371,39 +1371,404 @@ React.useEffect(() => {
     );
   };
   
-  const ProfilePage = () => (
-    <div className="max-w-4xl mx-auto">
-      <div className="bg-blue-800 bg-opacity-50 rounded-lg p-8 sm:p-12">
-        <div className="text-center mb-8">
-           <div className="flex justify-center mb-4 text-6xl">
-             {Icons.User()}
-           </div>
-           <h2 className="text-2xl sm:text-3xl font-bold mb-2">Angler Profile</h2>
-           <p className="text-blue-300">Manage your account and settings.</p>
+  const ProfilePage = () => {
+    const [profileData, setProfileData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [editingBio, setEditingBio] = useState(false);
+    const [bioText, setBioText] = useState('');
+    const [editingName, setEditingName] = useState(false);
+    const [newName, setNewName] = useState('');
+    const [equippedTitle, setEquippedTitle] = useState(null);
+    const [privacy, setPrivacy] = useState('public');
+    const [allowComments, setAllowComments] = useState(true);
+
+    // Load profile data
+    useEffect(() => {
+      const loadProfile = async () => {
+        if (!offlineMode) {
+          try {
+            const data = await window.ApiService.getMyProfile();
+            setProfileData(data.profile);
+            setBioText(data.profile.bio || '');
+            setEquippedTitle(data.profile.equipped_title);
+            setPrivacy(data.profile.profile_privacy);
+            setAllowComments(data.profile.allow_comments);
+          } catch (err) {
+            console.error('Failed to load profile:', err);
+          }
+        }
+        setLoading(false);
+      };
+      loadProfile();
+    }, [offlineMode]);
+
+    const handleChangeName = async () => {
+      if (!newName.trim()) return;
+
+      try {
+        const result = await window.ApiService.changeProfileName(newName);
+        setProfileData(prev => ({ ...prev, profileUsername: result.newProfileName }));
+        setPlayer(prev => ({ ...prev, relics: prev.relics - result.relicsSpent }));
+        setEditingName(false);
+        setNewName('');
+        alert(`Profile name changed! ${result.relicsSpent > 0 ? `Cost: ${result.relicsSpent} relics` : 'First change is free!'}`);
+      } catch (err) {
+        alert(err.message || 'Failed to change name');
+      }
+    };
+
+    const handleUpdateBio = async () => {
+      try {
+        const result = await window.ApiService.updateBio(bioText);
+        setProfileData(prev => ({ ...prev, bio: result.bio }));
+        setEditingBio(false);
+        alert('Bio updated successfully!');
+      } catch (err) {
+        alert(err.message || 'Failed to update bio');
+      }
+    };
+
+    const handleEquipTitle = async (achievementId) => {
+      try {
+        await window.ApiService.equipTitle(achievementId);
+        setEquippedTitle(achievementId);
+        setProfileData(prev => ({ ...prev, equipped_title: achievementId }));
+        alert('Title equipped!');
+      } catch (err) {
+        alert(err.message || 'Failed to equip title');
+      }
+    };
+
+    const handlePrivacyChange = async (newPrivacy) => {
+      try {
+        await window.ApiService.updatePrivacy(newPrivacy, allowComments);
+        setPrivacy(newPrivacy);
+        alert('Privacy settings updated!');
+      } catch (err) {
+        alert(err.message || 'Failed to update privacy');
+      }
+    };
+
+    const handleCommentsToggle = async () => {
+      try {
+        await window.ApiService.updatePrivacy(privacy, !allowComments);
+        setAllowComments(!allowComments);
+        alert(`Comments ${!allowComments ? 'enabled' : 'disabled'}!`);
+      } catch (err) {
+        alert(err.message || 'Failed to toggle comments');
+      }
+    };
+
+    if (loading) {
+      return (
+        <div className="max-w-4xl mx-auto text-center py-12">
+          <div className="text-2xl">Loading profile...</div>
+        </div>
+      );
+    }
+
+    // Get equipped title name
+    const getEquippedTitleName = () => {
+      if (!equippedTitle) return null;
+      const achievement = window.ACHIEVEMENTS.find(a => a.id === equippedTitle);
+      return achievement ? achievement.title : null;
+    };
+
+    const titleName = getEquippedTitleName();
+    const nameChangeCount = profileData?.profile_name_changes || 0;
+    const nameChangeCost = nameChangeCount === 0 ? 0 : 50;
+
+    return (
+      <div className="max-w-4xl mx-auto">
+        {/* Profile Header */}
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-6 mb-4">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="text-4xl">{Icons.User()}</div>
+                <div>
+                  <h2 className="text-2xl font-bold">
+                    {profileData?.profileUsername || user?.profileUsername || user?.username}
+                    {titleName && <span className="text-yellow-400"> - {titleName}</span>}
+                  </h2>
+                  <div className="text-sm text-blue-300">
+                    Member since: {profileData?.registration_date ? new Date(profileData.registration_date).toLocaleDateString() : 'N/A'}
+                  </div>
+                  {profileData?.profile_views > 0 && (
+                    <div className="text-xs text-blue-400">Profile views: {profileData.profile_views}</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Bio */}
+              <div className="mt-4">
+                {editingBio ? (
+                  <div>
+                    <textarea
+                      value={bioText}
+                      onChange={(e) => setBioText(e.target.value)}
+                      maxLength={500}
+                      placeholder="Write your bio (max 500 characters)..."
+                      className="w-full p-3 bg-blue-950 rounded border border-blue-700 text-white resize-none"
+                      rows={4}
+                    />
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        onClick={handleUpdateBio}
+                        className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded font-bold text-sm"
+                      >
+                        Save Bio
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingBio(false);
+                          setBioText(profileData?.bio || '');
+                        }}
+                        className="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded font-bold text-sm"
+                      >
+                        Cancel
+                      </button>
+                      <span className="text-xs text-blue-300 self-center ml-auto">
+                        {bioText.length}/500
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="text-blue-200 italic mb-2">
+                      {profileData?.bio || 'No bio yet. Click "Edit Bio" to add one!'}
+                    </div>
+                    <button
+                      onClick={() => setEditingBio(true)}
+                      className="px-3 py-1 bg-blue-700 hover:bg-blue-600 rounded text-sm font-bold"
+                    >
+                      Edit Bio
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-2 mt-4">
+            <button
+              onClick={() => setEditingName(true)}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded font-bold text-sm"
+            >
+              Change Name ({nameChangeCost === 0 ? 'FREE' : `${nameChangeCost} 💎`})
+            </button>
+          </div>
         </div>
 
-        <div className="bg-blue-950 p-6 rounded-lg border border-blue-700">
-           <h3 className="text-xl font-bold text-red-400 mb-4 flex items-center gap-2">
-             <span className="text-xl">⚠️</span> Danger Zone
-           </h3>
-           <p className="text-sm text-blue-300 mb-4">
-             If you want to restart the game completely, use the button below. This will delete your local save file and reset all progress.
-           </p>
-           <button 
-             onClick={() => {
-                if (confirm('Are you sure you want to reset your save? This cannot be undone!')) {
-                    localStorage.removeItem('arcaneAnglerSave');
-                    window.location.reload();
-                }
-             }}
-             className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded transition-colors"
-           >
-             {Icons.Trash2()} Reset Save Data
-           </button>
+        {/* Name Change Modal */}
+        {editingName && (
+          <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+            <div className="bg-blue-900 rounded-lg p-6 max-w-md w-full">
+              <h3 className="text-xl font-bold mb-4">Change Profile Name</h3>
+              <p className="text-sm text-blue-300 mb-4">
+                {nameChangeCost === 0 ? 'Your first name change is FREE!' : `Cost: ${nameChangeCost} Relics (You have: ${player.relics})`}
+              </p>
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Enter new profile name"
+                maxLength={50}
+                className="w-full p-3 bg-blue-950 rounded border border-blue-700 text-white mb-4"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={handleChangeName}
+                  disabled={!newName.trim() || (nameChangeCost > 0 && player.relics < nameChangeCost)}
+                  className={`flex-1 px-4 py-2 rounded font-bold ${
+                    !newName.trim() || (nameChangeCost > 0 && player.relics < nameChangeCost)
+                      ? 'bg-gray-600 cursor-not-allowed'
+                      : 'bg-green-600 hover:bg-green-500'
+                  }`}
+                >
+                  Confirm Change
+                </button>
+                <button
+                  onClick={() => {
+                    setEditingName(false);
+                    setNewName('');
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded font-bold"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Stats Section */}
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-6 mb-4">
+          <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+            {Icons.TrendingUp()} Player Stats
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <div className="bg-blue-950 p-3 rounded">
+              <div className="text-blue-400">Guild</div>
+              <div className="font-bold">Not in a guild (Coming Soon)</div>
+            </div>
+            <div className="bg-blue-950 p-3 rounded">
+              <div className="text-blue-400">Total Stats</div>
+              <div className="font-bold">STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
+            </div>
+            <div className="bg-blue-950 p-3 rounded">
+              <div className="text-blue-400">Gold</div>
+              <div className="font-bold text-yellow-400">{player.gold.toLocaleString()} (Earned: {player.totalGoldEarned.toLocaleString()})</div>
+            </div>
+            <div className="bg-blue-950 p-3 rounded">
+              <div className="text-blue-400">Relics</div>
+              <div className="font-bold text-purple-400">{player.relics} (Earned: {player.totalRelicsEarned})</div>
+            </div>
+            <div className="bg-blue-950 p-3 rounded">
+              <div className="text-blue-400">Fish Caught</div>
+              <div className="font-bold">{player.totalFishCaught.toLocaleString()}</div>
+            </div>
+            <div className="bg-blue-950 p-3 rounded">
+              <div className="text-blue-400">Fish Sold</div>
+              <div className="font-bold">{player.totalFishSold.toLocaleString()}</div>
+            </div>
+            <div className="bg-blue-950 p-3 rounded">
+              <div className="text-blue-400">Treasure Chests</div>
+              <div className="font-bold">💎 {player.treasureChestsFound}</div>
+            </div>
+            <div className="bg-blue-950 p-3 rounded">
+              <div className="text-blue-400">Current Biome</div>
+              <div className="font-bold">Biome {player.currentBiome} - {window.BIOMES[player.currentBiome]?.name}</div>
+            </div>
+            <div className="bg-blue-950 p-3 rounded col-span-1 sm:col-span-2">
+              <div className="text-blue-400 mb-2">Rare Fish Caught</div>
+              <div className="flex flex-wrap gap-3 text-xs">
+                <span className="text-orange-400">⭐ Legendary: {player.legendariesCaught}</span>
+                <span className="text-red-400">🔥 Mythic: {player.mythicsCaught}</span>
+                <span className="text-cyan-400">💠 Exotic: {player.exoticsCaught}</span>
+                <span className="text-purple-400">✨ Arcane: {player.arcanesCaught}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Equipped Title Section */}
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-6 mb-4">
+          <h3 className="text-xl font-bold mb-4">Equipped Title</h3>
+          <div className="mb-4">
+            <div className="bg-blue-950 p-4 rounded border-2 border-yellow-400">
+              <div className="text-lg font-bold text-yellow-400">
+                {titleName || 'No title equipped'}
+              </div>
+              {titleName && (
+                <button
+                  onClick={() => handleEquipTitle(null)}
+                  className="mt-2 px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-sm"
+                >
+                  Unequip Title
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="text-sm font-bold mb-2">Available Titles (from unlocked achievements):</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+            {player.achievements.map(achId => {
+              const ach = window.ACHIEVEMENTS.find(a => a.id === achId);
+              if (!ach) return null;
+              const isEquipped = equippedTitle === achId;
+
+              return (
+                <button
+                  key={achId}
+                  onClick={() => !isEquipped && handleEquipTitle(achId)}
+                  disabled={isEquipped}
+                  className={`p-3 rounded text-left ${
+                    isEquipped
+                      ? 'bg-yellow-600 cursor-not-allowed'
+                      : 'bg-blue-950 hover:bg-blue-800'
+                  }`}
+                >
+                  <div className="font-bold">{ach.title}</div>
+                  <div className="text-xs text-blue-300">{ach.name}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Privacy Settings */}
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-6 mb-4">
+          <h3 className="text-xl font-bold mb-4">Privacy Settings</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-bold mb-2 block">Profile Visibility</label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handlePrivacyChange('public')}
+                  className={`px-4 py-2 rounded font-bold text-sm ${
+                    privacy === 'public' ? 'bg-green-600' : 'bg-blue-900 hover:bg-blue-800'
+                  }`}
+                >
+                  Public
+                </button>
+                <button
+                  onClick={() => handlePrivacyChange('friends')}
+                  className={`px-4 py-2 rounded font-bold text-sm ${
+                    privacy === 'friends' ? 'bg-yellow-600' : 'bg-blue-900 hover:bg-blue-800'
+                  }`}
+                >
+                  Friends Only
+                </button>
+                <button
+                  onClick={() => handlePrivacyChange('private')}
+                  className={`px-4 py-2 rounded font-bold text-sm ${
+                    privacy === 'private' ? 'bg-red-600' : 'bg-blue-900 hover:bg-blue-800'
+                  }`}
+                >
+                  Private
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={allowComments}
+                  onChange={handleCommentsToggle}
+                  className="w-5 h-5"
+                />
+                <span className="font-bold">Allow profile comments</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-6">
+          <h3 className="text-xl font-bold text-red-400 mb-4 flex items-center gap-2">
+            <span className="text-xl">⚠️</span> Danger Zone
+          </h3>
+          <p className="text-sm text-blue-300 mb-4">
+            Reset your save data. This will delete all progress and cannot be undone!
+          </p>
+          <button
+            onClick={() => {
+              if (confirm('Are you sure you want to reset your save? This cannot be undone!')) {
+                localStorage.removeItem('arcaneAnglerSave');
+                window.location.reload();
+              }
+            }}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded transition-colors"
+          >
+            {Icons.Trash2()} Reset Save Data
+          </button>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const AchievementsPage = () => {
     // Safety check for ACHIEVEMENTS
