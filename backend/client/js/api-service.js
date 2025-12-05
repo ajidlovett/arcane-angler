@@ -161,6 +161,152 @@ class ApiService {
     isLoggedIn() {
         return !!this.token;
     }
+
+    // ==========================================
+    // PROFILE MANAGEMENT
+    // ==========================================
+
+    async getMyProfile() {
+        return await this.request('/profile/me', {
+            method: 'GET'
+        });
+    }
+
+    async getUserProfile(userId) {
+        return await this.request(`/profile/${userId}`, {
+            method: 'GET'
+        });
+    }
+
+    async changeProfileName(newProfileName) {
+        return await this.request('/profile/change-name', {
+            method: 'POST',
+            body: JSON.stringify({ newProfileName })
+        });
+    }
+
+    async updateBio(bio) {
+        return await this.request('/profile/update-bio', {
+            method: 'POST',
+            body: JSON.stringify({ bio })
+        });
+    }
+
+    async equipTitle(achievementId) {
+        return await this.request('/profile/equip-title', {
+            method: 'POST',
+            body: JSON.stringify({ achievementId })
+        });
+    }
+
+    async updatePrivacy(privacy, allowComments) {
+        return await this.request('/profile/privacy', {
+            method: 'POST',
+            body: JSON.stringify({ privacy, allowComments })
+        });
+    }
+
+    async getAchievementShowcase(userId) {
+        return await this.request(`/profile/${userId}/showcase`, {
+            method: 'GET'
+        });
+    }
+
+    async updateAchievementShowcase(achievementIds) {
+        return await this.request('/profile/showcase', {
+            method: 'POST',
+            body: JSON.stringify({ achievementIds })
+        });
+    }
+
+    async getFavoriteFish(userId) {
+        return await this.request(`/profile/${userId}/favorite-fish`, {
+            method: 'GET'
+        });
+    }
+
+    async updateFavoriteFish(fishList) {
+        return await this.request('/profile/favorite-fish', {
+            method: 'POST',
+            body: JSON.stringify({ fishList })
+        });
+    }
+
+    // ==========================================
+    // FRIENDS SYSTEM
+    // ==========================================
+
+    async getFriendsList() {
+        return await this.request('/friends/list', {
+            method: 'GET'
+        });
+    }
+
+    async getFriendRequests() {
+        return await this.request('/friends/requests', {
+            method: 'GET'
+        });
+    }
+
+    async sendFriendRequest(targetUserId) {
+        return await this.request(`/friends/send/${targetUserId}`, {
+            method: 'POST'
+        });
+    }
+
+    async acceptFriendRequest(requestId) {
+        return await this.request(`/friends/accept/${requestId}`, {
+            method: 'POST'
+        });
+    }
+
+    async declineFriendRequest(requestId) {
+        return await this.request(`/friends/decline/${requestId}`, {
+            method: 'POST'
+        });
+    }
+
+    async removeFriend(friendId) {
+        return await this.request(`/friends/remove/${friendId}`, {
+            method: 'DELETE'
+        });
+    }
+
+    async checkFriendship(targetUserId) {
+        return await this.request(`/friends/check/${targetUserId}`, {
+            method: 'GET'
+        });
+    }
+
+    // ==========================================
+    // COMMENTS SYSTEM
+    // ==========================================
+
+    async getProfileComments(userId, limit = 10, offset = 0) {
+        return await this.request(`/comments/${userId}?limit=${limit}&offset=${offset}`, {
+            method: 'GET'
+        });
+    }
+
+    async postComment(userId, commentText) {
+        return await this.request(`/comments/${userId}`, {
+            method: 'POST',
+            body: JSON.stringify({ commentText })
+        });
+    }
+
+    async deleteComment(commentId) {
+        return await this.request(`/comments/${commentId}`, {
+            method: 'DELETE'
+        });
+    }
+
+    async updateComment(commentId, commentText) {
+        return await this.request(`/comments/${commentId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ commentText })
+        });
+    }
 }
 
 // Export singleton instance
