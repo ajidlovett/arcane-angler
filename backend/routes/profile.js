@@ -14,7 +14,7 @@ router.get('/me', authenticateToken, async (req, res) => {
         const userId = req.user.userId;
 
         const [users] = await db.query(
-            `SELECT id, username, profileUsername, email, bio, equipped_title,
+            `SELECT id, username, profile_username, email, bio, equipped_title,
              profile_name_changes, achievement_showcase_limit, favorite_fish_limit,
              profile_privacy, allow_comments, profile_views, badges, registration_date
              FROM users WHERE id = ?`,
@@ -45,7 +45,7 @@ router.get('/:userId', authenticateToken, async (req, res) => {
 
         // Get profile user
         const [users] = await db.query(
-            `SELECT id, username, profileUsername, bio, equipped_title,
+            `SELECT id, username, profile_username, bio, equipped_title,
              profile_privacy, allow_comments, profile_views, badges, registration_date
              FROM users WHERE id = ?`,
             [profileUserId]
@@ -168,14 +168,14 @@ router.post('/change-name', authenticateToken, async (req, res) => {
         // Update profile name and increment counter if column exists
         try {
             await db.query(
-                'UPDATE users SET profileUsername = ?, profile_name_changes = profile_name_changes + 1 WHERE id = ?',
+                'UPDATE users SET profile_username = ?, profile_name_changes = profile_name_changes + 1 WHERE id = ?',
                 [validation.cleaned, userId]
             );
         } catch (dbError) {
             // If profile_name_changes column doesn't exist, just update the name
             console.warn('Could not update profile_name_changes, updating name only:', dbError.message);
             await db.query(
-                'UPDATE users SET profileUsername = ? WHERE id = ?',
+                'UPDATE users SET profile_username = ? WHERE id = ?',
                 [validation.cleaned, userId]
             );
         }
@@ -236,7 +236,22 @@ router.post('/equip-title', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'Player data not found' });
         }
 
-        const achievements = playerData[0].achievements ? JSON.parse(playerData[0].achievements) : [];
+        // Handle achievements as either string or JSON array
+        let achievements = [];
+        if (playerData[0].achievements) {
+            try {
+                // Try to parse as JSON first
+                achievements = JSON.parse(playerData[0].achievements);
+            } catch (e) {
+                // If it's not JSON, it might be a comma-separated string or single value
+                const achString = playerData[0].achievements.toString();
+                if (achString.includes(',')) {
+                    achievements = achString.split(',').map(s => s.trim());
+                } else if (achString.trim()) {
+                    achievements = [achString.trim()];
+                }
+            }
+        }
 
         if (achievementId !== null && !achievements.includes(achievementId)) {
             return res.status(400).json({ error: 'Achievement not unlocked' });
