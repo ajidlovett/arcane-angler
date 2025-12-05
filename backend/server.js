@@ -31,6 +31,9 @@ app.use((req, res, next) => {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/player', require('./routes/player'));
 app.use('/api/leaderboard', require('./routes/leaderboard'));
+app.use('/api/profile', require('./routes/profile'));
+app.use('/api/friends', require('./routes/friends'));
+app.use('/api/comments', require('./routes/comments'));
 
 // Export rate limiters for use in route files
 app.locals.authLimiter = authLimiter;
