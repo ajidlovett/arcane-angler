@@ -6,7 +6,7 @@
  * but without any database access (pure calculation functions).
  */
 
-const { RODS, BAITS } = require('../data/equipment');
+import { RODS, BAITS } from '../data/equipment.js';
 
 /**
  * Calculate total stats including equipment bonuses
@@ -230,7 +230,7 @@ function selectRandomFish(biomeData, rarity) {
   return fishPool[Math.floor(Math.random() * fishPool.length)];
 }
 
-module.exports = {
+export {
   getTotalStats,
   getBiomeRelicRange,
   calculateRarity,

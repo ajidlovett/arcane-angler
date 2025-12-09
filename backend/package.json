@@ -1,6 +1,7 @@
 {
   "name": "arcane-angler-backend",
   "version": "1.0.0",
+  "type": "module",
   "description": "Backend for Arcane Angler Fishing MMORPG with email verification",
   "main": "server.js",
   "scripts": {

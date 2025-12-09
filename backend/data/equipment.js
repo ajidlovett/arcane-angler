@@ -104,4 +104,4 @@ const BAITS = {
   'Origin Spark': { price: 2000000, str: 300, int: 0, luck: 300, stam: 0, tier: 4, desc: "The ultimate bait. A piece of the Big Bang.", stackSize: 1 }
 };
 
-module.exports = { RODS, BAITS };
+export { RODS, BAITS };

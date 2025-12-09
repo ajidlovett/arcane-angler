@@ -29,7 +29,7 @@ const inappropriatePatterns = [
  * @param {string} text - Text to check
  * @returns {boolean} - True if profanity found
  */
-function containsProfanity(text) {
+export function containsProfanity(text) {
   if (!text) return false;
 
   const lowerText = text.toLowerCase();
@@ -58,7 +58,7 @@ function containsProfanity(text) {
  * @param {string} text - Text to clean
  * @returns {string} - Cleaned text
  */
-function cleanText(text) {
+export function cleanText(text) {
   if (!text) return '';
 
   let cleaned = text;
@@ -85,7 +85,7 @@ function cleanText(text) {
  * @param {number} maxLength - Maximum allowed length
  * @returns {Object} - { valid: boolean, error: string, cleaned: string }
  */
-function validateText(text, maxLength = 500) {
+export function validateText(text, maxLength = 500) {
   if (!text || text.trim().length === 0) {
     return { valid: false, error: 'Text cannot be empty' };
   }
@@ -103,9 +103,3 @@ function validateText(text, maxLength = 500) {
 
   return { valid: true, cleaned };
 }
-
-module.exports = {
-  containsProfanity,
-  cleanText,
-  validateText
-};

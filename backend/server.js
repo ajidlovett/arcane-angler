@@ -1,9 +1,16 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import authRoutes from './routes/auth.js';
+import playerRoutes from './routes/player.js';
+import gameRoutes from './routes/game.js';
+import leaderboardRoutes from './routes/leaderboard.js';
+import profileRoutes from './routes/profile.js';
+import friendsRoutes from './routes/friends.js';
+import commentsRoutes from './routes/comments.js';
+import { authLimiter, passwordResetLimiter, apiLimiter } from './middleware/rateLimiter.js';
 
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const { authLimiter, passwordResetLimiter, apiLimiter } = require('./middleware/rateLimiter');
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,13 +35,13 @@ app.use((req, res, next) => {
 });
 
 // Routes with specific rate limiters
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/player', require('./routes/player'));
-app.use('/api/game', require('./routes/game')); // Server-authoritative game actions
-app.use('/api/leaderboard', require('./routes/leaderboard'));
-app.use('/api/profile', require('./routes/profile'));
-app.use('/api/friends', require('./routes/friends'));
-app.use('/api/comments', require('./routes/comments'));
+app.use('/api/auth', authRoutes);
+app.use('/api/player', playerRoutes);
+app.use('/api/game', gameRoutes); // Server-authoritative game actions
+app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/friends', friendsRoutes);
+app.use('/api/comments', commentsRoutes);
 
 // Export rate limiters for use in route files
 app.locals.authLimiter = authLimiter;

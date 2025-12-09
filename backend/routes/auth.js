@@ -1,9 +1,10 @@
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const db = require('../db');
-const emailService = require('../services/email');
-const { authLimiter, passwordResetLimiter } = require('../middleware/rateLimiter');
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import db from '../db.js';
+import emailService from '../services/email.js';
+import { authLimiter, passwordResetLimiter } from '../middleware/rateLimiter.js';
+
 const router = express.Router();
 
 // Helper function to validate password strength
@@ -328,4 +329,4 @@ router.get('/verify', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

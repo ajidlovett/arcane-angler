@@ -2792,4 +2792,4 @@ const BIOMES = {
     }
   }
 }
-module.exports = { BIOMES };
+export { BIOMES };

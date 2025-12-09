@@ -1,8 +1,8 @@
-const rateLimit = require('express-rate-limit');
+import rateLimit from 'express-rate-limit';
 
 // Strict rate limiter for authentication endpoints (login, register)
 // Prevents brute force attacks and credential stuffing
-const authLimiter = rateLimit({
+export const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // Limit each IP to 5 requests per windowMs
     message: {
@@ -13,7 +13,7 @@ const authLimiter = rateLimit({
 });
 
 // Moderate rate limiter for password reset endpoints
-const passwordResetLimiter = rateLimit({
+export const passwordResetLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 3, // Limit each IP to 3 requests per hour
     message: {
@@ -24,7 +24,7 @@ const passwordResetLimiter = rateLimit({
 });
 
 // General API rate limiter for other endpoints
-const apiLimiter = rateLimit({
+export const apiLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
     max: 100, // Limit each IP to 100 requests per minute
     message: {
@@ -33,9 +33,3 @@ const apiLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
 });
-
-module.exports = {
-    authLimiter,
-    passwordResetLimiter,
-    apiLimiter
-};

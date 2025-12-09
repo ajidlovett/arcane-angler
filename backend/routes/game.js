@@ -6,12 +6,12 @@
  * updates the database, and returns results.
  */
 
-const express = require('express');
-const db = require('../db');
-const { authenticateToken } = require('../middleware/auth');
-const { BIOMES } = require('../data/biomes');
-const { RODS, BAITS } = require('../data/equipment');
-const {
+import express from 'express';
+import db from '../db.js';
+import { authenticateToken } from '../middleware/auth.js';
+import { BIOMES } from '../data/biomes.js';
+import { RODS, BAITS } from '../data/equipment.js';
+import {
   getTotalStats,
   calculateRarity,
   calculateFishCount,
@@ -20,7 +20,7 @@ const {
   calculateLevelUp,
   calculateStatUpgradeCost,
   selectRandomFish
-} = require('../utils/gameLogic');
+} from '../utils/gameLogic.js';
 
 const router = express.Router();
 
@@ -903,4 +903,4 @@ router.post('/change-biome', authenticateToken, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

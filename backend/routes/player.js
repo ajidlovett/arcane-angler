@@ -1,6 +1,6 @@
-const express = require('express');
-const db = require('../db');
-const { authenticateToken } = require('../middleware/auth');
+import express from 'express';
+import db from '../db.js';
+import { authenticateToken } from '../middleware/auth.js';
 const router = express.Router();
 
 // Get complete player data
@@ -315,4 +315,4 @@ router.post('/quick-save', authenticateToken, async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;
