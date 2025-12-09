@@ -437,6 +437,52 @@ class ApiService {
             body: JSON.stringify({ biomeId })
         });
     }
+
+    /**
+     * Sell all unlocked fish from inventory
+     * @returns {Promise<Object>} Sale result with gold earned and fish sold
+     */
+    async sellAll() {
+        return await this.request('/game/sell-all', {
+            method: 'POST'
+        });
+    }
+
+    /**
+     * Sell all unlocked fish of a specific rarity
+     * @param {string} rarity - Rarity tier to sell
+     * @returns {Promise<Object>} Sale result with gold earned and fish sold
+     */
+    async sellByRarity(rarity) {
+        return await this.request('/game/sell-by-rarity', {
+            method: 'POST',
+            body: JSON.stringify({ rarity })
+        });
+    }
+
+    /**
+     * Lock a fish to prevent accidental selling
+     * @param {string} fishName - Name of fish to lock
+     * @returns {Promise<Object>} Lock result
+     */
+    async lockFish(fishName) {
+        return await this.request('/game/lock-fish', {
+            method: 'POST',
+            body: JSON.stringify({ fishName })
+        });
+    }
+
+    /**
+     * Unlock a fish to allow selling
+     * @param {string} fishName - Name of fish to unlock
+     * @returns {Promise<Object>} Unlock result
+     */
+    async unlockFish(fishName) {
+        return await this.request('/game/unlock-fish', {
+            method: 'POST',
+            body: JSON.stringify({ fishName })
+        });
+    }
 }
 
 // Export singleton instance

@@ -20,14 +20,20 @@ router.get('/data', authenticateToken, async (req, res) => {
             [userId]
         );
 
-        // Get inventory (including base_gold and titan_bonus)
+        // Get inventory (including base_gold, titan_bonus, and is_locked)
         const [inventory] = await db.query(
-            'SELECT fish_name, rarity, count, base_gold, titan_bonus FROM player_inventory WHERE user_id = ? AND count > 0',
+            'SELECT fish_name, rarity, count, base_gold, titan_bonus, COALESCE(is_locked, FALSE) as is_locked FROM player_inventory WHERE user_id = ? AND count > 0',
             [userId]
         );
 
-        // Get locked fish
+        // Get locked fish (fish that user manually locked - from is_locked column)
         const [lockedFish] = await db.query(
+            'SELECT fish_name FROM player_inventory WHERE user_id = ? AND is_locked = TRUE',
+            [userId]
+        );
+
+        // Get discovered fish (all fish ever caught - for fishpedia)
+        const [discoveredFish] = await db.query(
             'SELECT fish_name FROM locked_fish WHERE user_id = ?',
             [userId]
         );
@@ -60,6 +66,7 @@ router.get('/data', authenticateToken, async (req, res) => {
 
         const formattedOwnedRods = ownedRods.map(r => r.rod_name);
         const formattedLockedFish = lockedFish.map(f => f.fish_name);
+        const formattedDiscoveredFish = discoveredFish.map(f => f.fish_name);
 
         // Parse achievements JSON if it exists (handle both string and object)
         let achievements = [];
@@ -75,19 +82,8 @@ router.get('/data', authenticateToken, async (req, res) => {
             achievements = [];
         }
 
-        // Parse discovered_fish JSON if it exists (handle both string and object)
-        let discoveredFish = [];
-        try {
-            const rawData = playerData[0].discovered_fish;
-            if (Array.isArray(rawData)) {
-                discoveredFish = rawData; // Already an array
-            } else if (typeof rawData === 'string') {
-                discoveredFish = JSON.parse(rawData); // Parse string
-            }
-        } catch (e) {
-            console.error('Error parsing discovered_fish:', e);
-            discoveredFish = [];
-        }
+        // Discovered fish now comes from locked_fish table (not from player_data JSON)
+        // formattedDiscoveredFish is already populated above
 
         // Parse unlocked_biomes JSON if it exists (handle both string and object)
         let unlockedBiomes = [1];
@@ -136,8 +132,8 @@ router.get('/data', authenticateToken, async (req, res) => {
             luckUpgraded: playerData[0].luck_upgraded || 0,
             staminaUpgraded: playerData[0].stamina_upgraded || 0,
             totalRelicsEarned: playerData[0].total_relics_earned || 0,
-            // Fishpedia tracking
-            discoveredFish: discoveredFish,
+            // Fishpedia tracking (from locked_fish table)
+            discoveredFish: formattedDiscoveredFish,
             // Biome tracking
             unlockedBiomes: unlockedBiomes
         });

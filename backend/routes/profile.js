@@ -263,22 +263,45 @@ router.post('/equip-title', authenticateToken, async (req, res) => {
         // Handle achievements as either string or JSON array
         let achievements = [];
         if (playerData[0].achievements) {
-            try {
-                // Try to parse as JSON first
-                achievements = JSON.parse(playerData[0].achievements);
-            } catch (e) {
-                // If it's not JSON, it might be a comma-separated string or single value
-                const achString = playerData[0].achievements.toString();
-                if (achString.includes(',')) {
-                    achievements = achString.split(',').map(s => s.trim());
-                } else if (achString.trim()) {
-                    achievements = [achString.trim()];
+            const rawAchievements = playerData[0].achievements;
+
+            // If it's already an array (from JSON column type)
+            if (Array.isArray(rawAchievements)) {
+                achievements = rawAchievements;
+            } else if (typeof rawAchievements === 'string') {
+                // Try to parse as JSON string
+                try {
+                    const parsed = JSON.parse(rawAchievements);
+                    achievements = Array.isArray(parsed) ? parsed : [];
+                } catch (e) {
+                    // If not JSON, try comma-separated or single value
+                    const achString = rawAchievements.toString().trim();
+                    if (achString.includes(',')) {
+                        achievements = achString.split(',').map(s => s.trim()).filter(s => s);
+                    } else if (achString) {
+                        achievements = [achString];
+                    }
                 }
             }
         }
 
+        // Debug log to help troubleshoot
+        console.log('Equip title debug:', {
+            userId,
+            achievementId,
+            rawAchievements: playerData[0].achievements,
+            parsedAchievements: achievements,
+            isIncluded: achievements.includes(achievementId)
+        });
+
         if (achievementId !== null && !achievements.includes(achievementId)) {
-            return res.status(400).json({ error: 'Achievement not unlocked' });
+            return res.status(400).json({
+                error: 'Achievement not unlocked',
+                debug: {
+                    availableAchievements: achievements,
+                    requestedAchievement: achievementId
+                }
+            });
         }
 
         // Update equipped title - handle if column doesn't exist

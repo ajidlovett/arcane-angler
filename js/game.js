@@ -178,9 +178,11 @@ React.useEffect(() => {
 
     setFishing(true);
     setCooldown(4);
-    setFunnyLine(getFunnyLine());
 
     setTimeout(async () => {
+      // Set funny line at the same time as showing the fish result
+      setFunnyLine(getFunnyLine());
+
       try {
         // SERVER AUTHORITATIVE: Server determines the catch
         const response = await window.ApiService.castLine();
@@ -239,13 +241,25 @@ React.useEffect(() => {
     }, 1000);
   };
 
-  const toggleLock = (fishName) => {
-    setPlayer(prev => ({
-      ...prev,
-      lockedFish: prev.lockedFish.includes(fishName)
-        ? prev.lockedFish.filter(f => f !== fishName)
-        : [...prev.lockedFish, fishName]
-    }));
+  const toggleLock = async (fishName) => {
+    const isCurrentlyLocked = player.lockedFish.includes(fishName);
+
+    try {
+      if (isCurrentlyLocked) {
+        // Unlock the fish
+        await window.ApiService.unlockFish(fishName);
+      } else {
+        // Lock the fish
+        await window.ApiService.lockFish(fishName);
+      }
+
+      // Reload player data to sync locked fish
+      const playerData = await window.ApiService.getPlayerData();
+      setPlayer(playerData);
+    } catch (error) {
+      console.error('Toggle lock failed:', error);
+      alert('Failed to toggle fish lock. Please try again.');
+    }
   };
 
   const sellFish = async (fishItem) => {
@@ -275,8 +289,13 @@ React.useEffect(() => {
     }
   };
 
-  const sellAll = () => {
+  const sellAll = async () => {
     const unlockedFish = player.inventory.filter(f => !player.lockedFish.includes(f.name));
+
+    if (unlockedFish.length === 0) {
+      alert('No unlocked fish to sell!');
+      return;
+    }
 
     // Check if there are any Mythic, Exotic, or Arcane fish in unlocked inventory
     const rareRarities = ['Mythic', 'Exotic', 'Arcane'];
@@ -297,50 +316,54 @@ React.useEffect(() => {
       }
     }
 
-    const totalStats = getTotalStats();
-    const intelligenceBonus = 1 + (Number(totalStats.intelligence) * 0.02);
+    try {
+      const response = await window.ApiService.sellAll();
 
-    const totalGold = unlockedFish.reduce((sum, fish) => {
-      const titanBonus = Number(fish.titanBonus) || 1;
-      // Handle both old fish (with 'gold') and new fish (with 'baseGold')
-      const baseGoldValue = Number(fish.baseGold) || Number(fish.gold) || 0;
-      return sum + Math.floor(baseGoldValue * Number(fish.count) * intelligenceBonus * titanBonus);
-    }, 0);
+      if (response.success) {
+        // Update state with server response
+        setPlayer(prev => ({
+          ...prev,
+          gold: response.newGold
+        }));
 
-    const totalFishCount = unlockedFish.reduce((sum, fish) => sum + Number(fish.count), 0);
-
-    setPlayer(prev => ({
-      ...prev,
-      gold: Number(prev.gold) + totalGold,
-      inventory: prev.inventory.filter(f => prev.lockedFish.includes(f.name)),
-      totalFishSold: Number(prev.totalFishSold) + totalFishCount,
-      totalGoldEarned: Number(prev.totalGoldEarned) + totalGold
-    }));
+        // Reload inventory from server
+        const playerData = await window.ApiService.getPlayerData();
+        setPlayer(playerData);
+      }
+    } catch (error) {
+      console.error('Sell all failed:', error);
+      alert('Failed to sell all fish. Please try again.');
+    }
   };
 
-  const sellByRarity = (rarity) => {
+  const sellByRarity = async (rarity) => {
     const fishToSell = player.inventory.filter(
       f => f.rarity === rarity && !player.lockedFish.includes(f.name)
     );
-    const totalStats = getTotalStats();
-    const intelligenceBonus = 1 + (Number(totalStats.intelligence) * 0.02);
 
-    const totalGold = fishToSell.reduce((sum, fish) => {
-      const titanBonus = Number(fish.titanBonus) || 1;
-      return sum + Math.floor(Number(fish.baseGold) * Number(fish.count) * intelligenceBonus * titanBonus);
-    }, 0);
+    if (fishToSell.length === 0) {
+      alert(`No unlocked ${rarity} fish to sell!`);
+      return;
+    }
 
-    const totalFishCount = fishToSell.reduce((sum, fish) => sum + Number(fish.count), 0);
+    try {
+      const response = await window.ApiService.sellByRarity(rarity);
 
-    setPlayer(prev => ({
-      ...prev,
-      gold: Number(prev.gold) + totalGold,
-      inventory: prev.inventory.filter(f =>
-        f.rarity !== rarity || prev.lockedFish.includes(f.name)
-      ),
-      totalFishSold: Number(prev.totalFishSold) + totalFishCount,
-      totalGoldEarned: Number(prev.totalGoldEarned) + totalGold
-    }));
+      if (response.success) {
+        // Update state with server response
+        setPlayer(prev => ({
+          ...prev,
+          gold: response.newGold
+        }));
+
+        // Reload inventory from server
+        const playerData = await window.ApiService.getPlayerData();
+        setPlayer(playerData);
+      }
+    } catch (error) {
+      console.error('Sell by rarity failed:', error);
+      alert('Failed to sell fish by rarity. Please try again.');
+    }
   };
 
   // Fetch stat upgrade costs from server
@@ -984,6 +1007,23 @@ React.useEffect(() => {
           console.error('Change biome failed:', error);
         }
       } else {
+        // Check if player meets requirements before attempting to unlock
+        const biome = window.BIOMES[biomeId];
+        if (!biome) {
+          alert('Biome not found');
+          return;
+        }
+
+        if (player.level < biome.unlockLevel) {
+          alert(`Level ${biome.unlockLevel} required to unlock ${biome.name}. You are currently level ${player.level}.`);
+          return;
+        }
+
+        if (player.gold < biome.unlockGold) {
+          alert(`${biome.unlockGold} gold required to unlock ${biome.name}. You currently have ${player.gold} gold.`);
+          return;
+        }
+
         // Unlock new biome
         try {
           const response = await window.ApiService.unlockBiome(biomeId);
@@ -999,7 +1039,7 @@ React.useEffect(() => {
           }
         } catch (error) {
           console.error('Unlock biome failed:', error);
-          alert(error.message || 'Cannot unlock biome. Check level and gold requirements.');
+          alert(error.message || 'Failed to unlock biome. Please try again.');
         }
       }
     };
