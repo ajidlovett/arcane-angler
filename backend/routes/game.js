@@ -67,11 +67,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
       stamina: player.stamina
     };
 
-    // Check stamina (minimum 1 required to cast)
-    if (baseStats.stamina < 1) {
-      await connection.rollback();
-      return res.status(400).json({ error: 'Not enough stamina' });
-    }
+    // Note: Casting does not consume stamina - it has a 4-second cooldown handled client-side
 
     // Get total stats with equipment bonuses
     const totalStats = getTotalStats(
@@ -124,11 +120,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
         [rewards.gold, rewards.relics, 100, rewards.gold, rewards.relics, userId]
       );
 
-      // Decrease stamina
-      await connection.query(
-        'UPDATE player_stats SET stamina = stamina - 1 WHERE user_id = ?',
-        [userId]
-      );
+      // Note: Stamina is not consumed for casting (4-second cooldown instead)
     } else {
       // Normal fish catch
       const fish = selectRandomFish(biomeData, rarity);
@@ -211,11 +203,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
         );
       }
 
-      // Decrease stamina
-      await connection.query(
-        'UPDATE player_stats SET stamina = stamina - 1 WHERE user_id = ?',
-        [userId]
-      );
+      // Note: Stamina is not consumed for casting (4-second cooldown instead)
     }
 
     // Check for level up
