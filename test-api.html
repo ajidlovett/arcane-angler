@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Service Test</title>
+</head>
+<body>
+    <h1>API Service Test</h1>
+    <div id="result"></div>
+
+    <script src="js/api-service.js"></script>
+    <script>
+        const resultDiv = document.getElementById('result');
+
+        if (typeof window.ApiService !== 'undefined') {
+            resultDiv.innerHTML = '<p style="color: green;">✓ ApiService loaded successfully!</p>';
+            resultDiv.innerHTML += '<p>ApiService methods: ' + Object.getOwnPropertyNames(Object.getPrototypeOf(window.ApiService)).join(', ') + '</p>';
+        } else {
+            resultDiv.innerHTML = '<p style="color: red;">✗ ApiService is undefined - file failed to load/execute</p>';
+        }
+    </script>
+</body>
+</html>
