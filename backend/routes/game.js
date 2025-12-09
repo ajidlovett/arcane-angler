@@ -1329,4 +1329,33 @@ router.post('/unlock-fish', authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * POST /api/game/sync-achievements
+ * Sync achievements from client to server
+ *
+ * Body: { achievements } - array of achievement IDs
+ */
+router.post('/sync-achievements', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { achievements } = req.body;
+
+    if (!Array.isArray(achievements)) {
+      return res.status(400).json({ error: 'Achievements must be an array' });
+    }
+
+    // Update achievements in database
+    const achievementsJson = JSON.stringify(achievements);
+    await db.query(
+      'UPDATE player_data SET achievements = ? WHERE user_id = ?',
+      [achievementsJson, userId]
+    );
+
+    res.json({ success: true, count: achievements.length });
+  } catch (error) {
+    console.error('Sync achievements error:', error);
+    res.status(500).json({ error: 'Failed to sync achievements' });
+  }
+});
+
 export default router;

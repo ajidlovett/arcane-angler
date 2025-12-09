@@ -483,6 +483,18 @@ class ApiService {
             body: JSON.stringify({ fishName })
         });
     }
+
+    /**
+     * Sync achievements to server
+     * @param {Array<string>} achievements - Array of achievement IDs
+     * @returns {Promise<Object>} Sync result
+     */
+    async syncAchievements(achievements) {
+        return await this.request('/game/sync-achievements', {
+            method: 'POST',
+            body: JSON.stringify({ achievements })
+        });
+    }
 }
 
 // Export singleton instance
