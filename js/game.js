@@ -1381,18 +1381,16 @@ React.useEffect(() => {
     // Load profile data
     useEffect(() => {
       const loadProfile = async () => {
-        
-          try {
-            const data = await window.ApiService.getMyProfile();
-            setProfileData(data.profile);
-            setBioText(data.profile.bio || '');
-            setEquippedTitle(data.profile.equipped_title);
-            setPrivacy(data.profile.profile_privacy);
-            setAllowComments(data.profile.allow_comments);
-            setNationality(data.profile.nationality);
-          } catch (err) {
-            console.error('Failed to load profile:', err);
-          }
+        try {
+          const data = await window.ApiService.getMyProfile();
+          setProfileData(data.profile);
+          setBioText(data.profile.bio || '');
+          setEquippedTitle(data.profile.equipped_title);
+          setPrivacy(data.profile.profile_privacy);
+          setAllowComments(data.profile.allow_comments);
+          setNationality(data.profile.nationality);
+        } catch (err) {
+          console.error('Failed to load profile:', err);
         }
         setLoading(false);
       };
