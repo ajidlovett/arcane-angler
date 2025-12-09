@@ -106,10 +106,13 @@ router.post('/cast', authenticateToken, async (req, res) => {
     if (rarity === 'Treasure Chest') {
       const rewards = generateTreasureChest(currentBiome, totalStats.luck, biomeData);
 
-      // Apply Critical Catch to XP
+      // Apply Critical Catch to XP with level scaling
       const baseXP = 100; // Fixed XP for treasure chests
       const critMultiplier = calculateCriticalCatch(totalStats.stamina);
-      const xpGained = baseXP * critMultiplier;
+
+      // Add level-based XP bonus
+      const levelBonus = player.level * (1 + Math.random()); // Random between level*1 and level*2
+      const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier);
 
       result.treasureChest = rewards;
       result.goldGained = rewards.gold;
@@ -150,10 +153,15 @@ router.post('/cast', authenticateToken, async (req, res) => {
         titanBonus = calculateTitanBonus(totalStats.strength);
       }
 
-      // Calculate XP with Critical Catch multiplier
+      // Calculate XP with Critical Catch multiplier and level scaling
       const baseXP = fish.xp * count;
       const critMultiplier = calculateCriticalCatch(totalStats.stamina);
-      const xpGained = baseXP * critMultiplier;
+
+      // Add level-based XP bonus: level * random(1-2) per fish
+      // Level 2: +2-4 XP, Level 3: +3-6 XP, Level 4: +4-8 XP, etc.
+      const levelBonus = player.level * (1 + Math.random()); // Random between level*1 and level*2
+      const xpWithLevelBonus = Math.floor((baseXP + levelBonus) * critMultiplier);
+      const xpGained = xpWithLevelBonus;
 
       result.fish = {
         name: fish.name,
@@ -739,7 +747,7 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
       'strength': 'str_upgraded',
       'intelligence': 'int_upgraded',
       'luck': 'luck_upgraded',
-      'stamina': 'stam_upgraded'
+      'stamina': 'stamina_upgraded'
     };
     const statUpgradedColumn = statColumnMap[stat];
     await connection.query(
