@@ -212,9 +212,9 @@ function generateTreasureChest(currentBiome, totalLuck, biomeData) {
  * @returns {number} XP needed for next level
  */
 function calculateXPForNextLevel(currentLevel) {
-  // Formula: baseXP * (level^1.5)
-  const baseXP = 100;
-  return Math.floor(baseXP * Math.pow(currentLevel, 1.5));
+  // Linear formula: 150 * current level
+  // Level 1→2: 150, Level 2→3: 300, Level 3→4: 450, etc.
+  return 150 * currentLevel;
 }
 
 /**
