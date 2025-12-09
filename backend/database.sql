@@ -46,10 +46,10 @@ CREATE TABLE IF NOT EXISTS player_data (
 CREATE TABLE IF NOT EXISTS player_stats (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT UNIQUE NOT NULL,
-    strength INT DEFAULT 0,
-    intelligence INT DEFAULT 0,
-    luck INT DEFAULT 0,
-    stamina INT DEFAULT 0,
+    strength INT DEFAULT 1,
+    intelligence INT DEFAULT 1,
+    luck INT DEFAULT 1,
+    stamina INT DEFAULT 100,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 

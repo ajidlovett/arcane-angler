@@ -193,9 +193,15 @@ function calculateLevelUp(currentLevel, currentXP, xpGained) {
  * @returns {number} Relic cost
  */
 function calculateStatUpgradeCost(currentStatValue) {
-  // Formula: baseRelics * (statValue^1.2)
-  const baseRelics = 10;
-  return Math.floor(baseRelics * Math.pow(currentStatValue, 1.2));
+  // Linear scaling for early levels (1-10), then exponential
+  // This makes early upgrades affordable while scaling later
+  if (currentStatValue <= 10) {
+    return Math.max(1, Math.floor(currentStatValue * 1.5));
+  }
+
+  // Exponential scaling for higher levels
+  const baseRelics = 3;
+  return Math.floor(baseRelics * Math.pow(currentStatValue, 1.3));
 }
 
 /**

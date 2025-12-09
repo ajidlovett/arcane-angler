@@ -205,13 +205,15 @@ router.post('/save', authenticateToken, async (req, res) => {
              discoveredFishJson, unlockedBiomesJson, userId]
         );
 
-        // Update player stats
-        await connection.query(
-            `UPDATE player_stats 
-             SET strength = ?, intelligence = ?, luck = ?, stamina = ?
-             WHERE user_id = ?`,
-            [stats.strength, stats.intelligence, stats.luck, stats.stamina, userId]
-        );
+        // Update player stats (with validation)
+        if (stats && typeof stats === 'object') {
+            await connection.query(
+                `UPDATE player_stats
+                 SET strength = ?, intelligence = ?, luck = ?, stamina = ?
+                 WHERE user_id = ?`,
+                [stats.strength || 1, stats.intelligence || 1, stats.luck || 1, stats.stamina || 100, userId]
+            );
+        }
 
         // Update inventory (delete and reinsert for simplicity)
         await connection.query('DELETE FROM player_inventory WHERE user_id = ?', [userId]);
@@ -269,9 +271,15 @@ router.post('/save', authenticateToken, async (req, res) => {
         }
 
         // Update leaderboard stats (calculate from inventory for leaderboard display)
-        const inventoryFishCount = inventory.reduce((sum, item) => sum + item.count, 0);
-        const legendaryCount = inventory.filter(item => item.rarity === 'Legendary').reduce((sum, item) => sum + item.count, 0);
-        const mythicCount = inventory.filter(item => item.rarity === 'Mythic').reduce((sum, item) => sum + item.count, 0);
+        const inventoryFishCount = (inventory && Array.isArray(inventory))
+            ? inventory.reduce((sum, item) => sum + item.count, 0)
+            : 0;
+        const legendaryCount = (inventory && Array.isArray(inventory))
+            ? inventory.filter(item => item.rarity === 'Legendary').reduce((sum, item) => sum + item.count, 0)
+            : 0;
+        const mythicCount = (inventory && Array.isArray(inventory))
+            ? inventory.filter(item => item.rarity === 'Mythic').reduce((sum, item) => sum + item.count, 0)
+            : 0;
 
         await connection.query(
             `UPDATE leaderboard_stats
