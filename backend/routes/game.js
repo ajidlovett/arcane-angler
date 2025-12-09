@@ -20,6 +20,7 @@ import {
   calculateCriticalCatch,
   generateTreasureChest,
   calculateLevelUp,
+  calculateXPForNextLevel,
   calculateStatUpgradeCost,
   selectRandomFish
 } from '../utils/gameLogic.js';
@@ -260,18 +261,27 @@ router.post('/cast', authenticateToken, async (req, res) => {
     );
 
     if (levelUpResult.leveledUp) {
-      // Update level, XP, and grant relics (3 per level)
+      // Calculate XP needed for next level
+      const xpToNext = calculateXPForNextLevel(levelUpResult.newLevel);
+
+      // Update level, XP, xp_to_next, and grant relics (3 per level)
       await connection.query(
         `UPDATE player_data
-         SET level = ?, xp = ?, relics = relics + ?, total_relics_earned = total_relics_earned + ?
+         SET level = ?, xp = ?, xp_to_next = ?, relics = relics + ?, total_relics_earned = total_relics_earned + ?
          WHERE user_id = ?`,
-        [levelUpResult.newLevel, levelUpResult.newXP, levelUpResult.relicsGained, levelUpResult.relicsGained, userId]
+        [levelUpResult.newLevel, levelUpResult.newXP, xpToNext, levelUpResult.relicsGained, levelUpResult.relicsGained, userId]
       );
       result.leveledUp = true;
       result.newLevel = levelUpResult.newLevel;
       result.levelsGained = levelUpResult.levelsGained;
       result.relicsFromLevelUp = levelUpResult.relicsGained;
     } else {
+      // No level up, but ensure xp_to_next is correct for current level
+      const xpToNext = calculateXPForNextLevel(updatedData[0].level);
+      await connection.query(
+        `UPDATE player_data SET xp_to_next = ? WHERE user_id = ?`,
+        [xpToNext, userId]
+      );
       result.leveledUp = false;
       result.newLevel = updatedData[0].level;
       result.levelsGained = 0;
@@ -724,7 +734,14 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
     );
 
     // Update stat-specific counter
-    const statUpgradedColumn = `${stat.substring(0, stat === 'stamina' ? 4 : 3)}_upgraded`;
+    // Map stat names to their column names
+    const statColumnMap = {
+      'strength': 'str_upgraded',
+      'intelligence': 'int_upgraded',
+      'luck': 'luck_upgraded',
+      'stamina': 'stam_upgraded'
+    };
+    const statUpgradedColumn = statColumnMap[stat];
     await connection.query(
       `UPDATE player_data SET ${statUpgradedColumn} = ${statUpgradedColumn} + 1 WHERE user_id = ?`,
       [userId]
@@ -1019,10 +1036,288 @@ router.post('/change-biome', authenticateToken, async (req, res) => {
       [biomeId, userId]
     );
 
-    res.json({ success: true, currentBiome: biomeId });
+      res.json({ success: true, currentBiome: biomeId });
   } catch (error) {
     console.error('Change biome error:', error);
     res.status(500).json({ error: 'Failed to change biome' });
+  }
+});
+
+/**
+ * POST /api/game/sell-all
+ * Sell all unlocked fish from inventory
+ *
+ * Body: none
+ */
+router.post('/sell-all', authenticateToken, async (req, res) => {
+  const connection = await db.getConnection();
+
+  try {
+    const userId = req.user.userId;
+    await connection.beginTransaction();
+
+    // Get player stats for Intelligence bonus
+    const [playerData] = await connection.query(
+      `SELECT pd.equipped_rod, pd.equipped_bait, ps.intelligence
+       FROM player_data pd
+       JOIN player_stats ps ON pd.user_id = ps.user_id
+       WHERE pd.user_id = ?`,
+      [userId]
+    );
+
+    if (!playerData || playerData.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Player data not found' });
+    }
+
+    const player = playerData[0];
+
+    // Calculate total Intelligence (base + equipment)
+    const totalStats = getTotalStats(
+      { intelligence: player.intelligence },
+      player.equipped_rod,
+      player.equipped_bait
+    );
+
+    // Get all unlocked fish
+    const [unlockedFish] = await connection.query(
+      'SELECT fish_name, rarity, count, base_gold, titan_bonus FROM player_inventory WHERE user_id = ? AND (is_locked IS NULL OR is_locked = FALSE) AND count > 0',
+      [userId]
+    );
+
+    if (!unlockedFish || unlockedFish.length === 0) {
+      await connection.rollback();
+      return res.json({ success: true, goldEarned: 0, fishSold: 0, newGold: 0 });
+    }
+
+    // Calculate total gold with Intelligence multiplier
+    const goldMultiplier = calculateGoldMultiplier(totalStats.intelligence);
+    let totalGold = 0;
+    let totalFishCount = 0;
+
+    for (const fish of unlockedFish) {
+      const baseGold = fish.base_gold || 0;
+      const titanBonus = fish.titan_bonus || 1;
+      const count = fish.count || 0;
+      const goldEarned = Math.floor(baseGold * titanBonus * count * goldMultiplier);
+      totalGold += goldEarned;
+      totalFishCount += count;
+    }
+
+    // Delete all unlocked fish from inventory
+    await connection.query(
+      'DELETE FROM player_inventory WHERE user_id = ? AND (is_locked IS NULL OR is_locked = FALSE)',
+      [userId]
+    );
+
+    // Update player gold
+    await connection.query(
+      `UPDATE player_data
+       SET gold = gold + ?,
+           total_fish_sold = total_fish_sold + ?
+       WHERE user_id = ?`,
+      [totalGold, totalFishCount, userId]
+    );
+
+    // Get updated gold balance
+    const [updatedPlayer] = await connection.query(
+      'SELECT gold FROM player_data WHERE user_id = ?',
+      [userId]
+    );
+
+    await connection.commit();
+    res.json({
+      success: true,
+      goldEarned: totalGold,
+      fishSold: totalFishCount,
+      newGold: updatedPlayer[0].gold
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Sell all error:', error);
+    res.status(500).json({ error: 'Failed to sell all fish' });
+  } finally {
+    connection.release();
+  }
+});
+
+/**
+ * POST /api/game/sell-by-rarity
+ * Sell all unlocked fish of a specific rarity
+ *
+ * Body: { rarity }
+ */
+router.post('/sell-by-rarity', authenticateToken, async (req, res) => {
+  const connection = await db.getConnection();
+
+  try {
+    const userId = req.user.userId;
+    const { rarity } = req.body;
+
+    if (!rarity) {
+      return res.status(400).json({ error: 'Rarity is required' });
+    }
+
+    await connection.beginTransaction();
+
+    // Get player stats for Intelligence bonus
+    const [playerData] = await connection.query(
+      `SELECT pd.equipped_rod, pd.equipped_bait, ps.intelligence
+       FROM player_data pd
+       JOIN player_stats ps ON pd.user_id = ps.user_id
+       WHERE pd.user_id = ?`,
+      [userId]
+    );
+
+    if (!playerData || playerData.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Player data not found' });
+    }
+
+    const player = playerData[0];
+
+    // Calculate total Intelligence (base + equipment)
+    const totalStats = getTotalStats(
+      { intelligence: player.intelligence },
+      player.equipped_rod,
+      player.equipped_bait
+    );
+
+    // Get all unlocked fish of this rarity
+    const [fishToSell] = await connection.query(
+      'SELECT fish_name, count, base_gold, titan_bonus FROM player_inventory WHERE user_id = ? AND rarity = ? AND (is_locked IS NULL OR is_locked = FALSE) AND count > 0',
+      [userId, rarity]
+    );
+
+    if (!fishToSell || fishToSell.length === 0) {
+      await connection.rollback();
+      return res.json({ success: true, goldEarned: 0, fishSold: 0, newGold: 0 });
+    }
+
+    // Calculate total gold with Intelligence multiplier
+    const goldMultiplier = calculateGoldMultiplier(totalStats.intelligence);
+    let totalGold = 0;
+    let totalFishCount = 0;
+
+    for (const fish of fishToSell) {
+      const baseGold = fish.base_gold || 0;
+      const titanBonus = fish.titan_bonus || 1;
+      const count = fish.count || 0;
+      const goldEarned = Math.floor(baseGold * titanBonus * count * goldMultiplier);
+      totalGold += goldEarned;
+      totalFishCount += count;
+    }
+
+    // Delete all unlocked fish of this rarity from inventory
+    await connection.query(
+      'DELETE FROM player_inventory WHERE user_id = ? AND rarity = ? AND (is_locked IS NULL OR is_locked = FALSE)',
+      [userId, rarity]
+    );
+
+    // Update player gold
+    await connection.query(
+      `UPDATE player_data
+       SET gold = gold + ?,
+           total_fish_sold = total_fish_sold + ?
+       WHERE user_id = ?`,
+      [totalGold, totalFishCount, userId]
+    );
+
+    // Get updated gold balance
+    const [updatedPlayer] = await connection.query(
+      'SELECT gold FROM player_data WHERE user_id = ?',
+      [userId]
+    );
+
+    await connection.commit();
+    res.json({
+      success: true,
+      goldEarned: totalGold,
+      fishSold: totalFishCount,
+      newGold: updatedPlayer[0].gold
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Sell by rarity error:', error);
+    res.status(500).json({ error: 'Failed to sell fish by rarity' });
+  } finally {
+    connection.release();
+  }
+});
+
+/**
+ * POST /api/game/lock-fish
+ * Lock a fish to prevent accidental selling
+ *
+ * Body: { fishName }
+ */
+router.post('/lock-fish', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { fishName } = req.body;
+
+    if (!fishName) {
+      return res.status(400).json({ error: 'Fish name is required' });
+    }
+
+    // Check if fish exists in inventory
+    const [inventory] = await db.query(
+      'SELECT id FROM player_inventory WHERE user_id = ? AND fish_name = ?',
+      [userId, fishName]
+    );
+
+    if (!inventory || inventory.length === 0) {
+      return res.status(404).json({ error: 'Fish not found in inventory' });
+    }
+
+    // Lock the fish
+    await db.query(
+      'UPDATE player_inventory SET is_locked = TRUE WHERE user_id = ? AND fish_name = ?',
+      [userId, fishName]
+    );
+
+    res.json({ success: true, fishName, locked: true });
+  } catch (error) {
+    console.error('Lock fish error:', error);
+    res.status(500).json({ error: 'Failed to lock fish' });
+  }
+});
+
+/**
+ * POST /api/game/unlock-fish
+ * Unlock a fish to allow selling
+ *
+ * Body: { fishName }
+ */
+router.post('/unlock-fish', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { fishName } = req.body;
+
+    if (!fishName) {
+      return res.status(400).json({ error: 'Fish name is required' });
+    }
+
+    // Check if fish exists in inventory
+    const [inventory] = await db.query(
+      'SELECT id FROM player_inventory WHERE user_id = ? AND fish_name = ?',
+      [userId, fishName]
+    );
+
+    if (!inventory || inventory.length === 0) {
+      return res.status(404).json({ error: 'Fish not found in inventory' });
+    }
+
+    // Unlock the fish
+    await db.query(
+      'UPDATE player_inventory SET is_locked = FALSE WHERE user_id = ? AND fish_name = ?',
+      [userId, fishName]
+    );
+
+    res.json({ success: true, fishName, locked: false });
+  } catch (error) {
+    console.error('Unlock fish error:', error);
+    res.status(500).json({ error: 'Failed to unlock fish' });
   }
 });
 
