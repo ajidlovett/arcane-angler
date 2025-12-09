@@ -1324,6 +1324,7 @@ React.useEffect(() => {
             {/* Display player's base stats for upgrading */}
             {Object.entries(player.stats).map(([stat, value]) => {
               const info = statDescriptions[stat];
+              const upgradeCost = window.GameHelpers.calculateStatUpgradeCost(value);
               return (
                 <div key={stat} className="bg-blue-950 p-4 sm:p-5 rounded-lg">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
@@ -1334,14 +1335,14 @@ React.useEffect(() => {
                     </div>
                     <button
                       onClick={() => upgradeStat(stat)}
-                      disabled={player.relics < 3}
+                      disabled={player.relics < upgradeCost}
                       className={`w-full sm:w-auto px-6 py-3 rounded font-bold text-sm ${
-                        player.relics >= 3
+                        player.relics >= upgradeCost
                           ? 'bg-purple-600 hover:bg-purple-500'
                           : 'bg-gray-600 cursor-not-allowed'
                       }`}
                     >
-                      Upgrade (3 💎)
+                      Upgrade ({upgradeCost} 💎)
                     </button>
                   </div>
                   
