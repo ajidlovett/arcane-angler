@@ -56,6 +56,7 @@ const FishingGame = ({ user, onLogout }) => {
       staminaUpgraded: 0,
       totalRelicsEarned: 0,
       discoveredFish: [], // Track all fish ever caught (even if sold)
+      fishpediaStats: [], // Persistent fish catch statistics for Fishpedia
       unlockedBiomes: [1] // Track which biomes have been paid for (start with biome 1 unlocked)
     };
 
@@ -2167,13 +2168,14 @@ React.useEffect(() => {
       Object.entries(biome.fish).forEach(([rarity, fishList]) => {
         fishList.forEach(fish => {
           const isDiscovered = player.discoveredFish.includes(fish.name);
-          const inventoryItem = player.inventory.find(f => f.name === fish.name);
+          // Get total caught from fishpediaStats (persistent tracking, not affected by selling)
+          const fishpediaStat = player.fishpediaStats?.find(f => f.name === fish.name);
 
           allFish.push({
             ...fish,
             rarity,
             isDiscovered,
-            totalCaught: inventoryItem ? (inventoryItem.totalCaught || 0) : 0
+            totalCaught: fishpediaStat ? (fishpediaStat.totalCaught || 0) : 0
           });
         });
       });
