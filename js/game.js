@@ -32,7 +32,7 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
       xpToNext: 150,
       gold: 0,
       relics: 0,
-      stats: { strength: 0, intelligence: 0, luck: 0, stamina: 0 },
+      stats: { strength: 1, intelligence: 1, luck: 1, stamina: 100 },
       inventory: [],
       lockedFish: [],
       currentBiome: 1,
@@ -58,34 +58,38 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
       discoveredFish: [], // Track all fish ever caught (even if sold)
       unlockedBiomes: [1] // Track which biomes have been paid for (start with biome 1 unlocked)
     };
-    
-    const saved = localStorage.getItem('arcaneAnglerSave');
-    if (saved) {
-      try {
-        const data = JSON.parse(saved);
-        // Ensure new fields exist and merge with saved data
-        return {
-          ...defaultPlayerState,
-          ...data,
-          baitInventory: {
-            ...defaultPlayerState.baitInventory,
-            ...(data.baitInventory || {})
-          },
-          equippedRod: data.equippedRod || defaultPlayerState.equippedRod,
-          ownedRods: data.ownedRods || defaultPlayerState.ownedRods,
-          // Ensure achievement-related fields have defaults
-          achievements: data.achievements || [],
-          totalFishCaught: data.totalFishCaught || 0,
-          totalFishSold: data.totalFishSold || 0,
-          totalGoldEarned: data.totalGoldEarned || 0,
-          mythicsCaught: data.mythicsCaught || 0,
-          legendariesCaught: data.legendariesCaught || 0,
-          statsUpgraded: data.statsUpgraded || 0,
-          discoveredFish: data.discoveredFish || [],
-          unlockedBiomes: data.unlockedBiomes || [1]
-        };
-      } catch (e) {
-        console.error('Error loading save:', e);
+
+    // IMPORTANT: Only use localStorage in offline mode
+    // In online mode, server data will be loaded and will completely replace this
+    if (offlineMode) {
+      const saved = localStorage.getItem('arcaneAnglerSave');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          // Ensure new fields exist and merge with saved data
+          return {
+            ...defaultPlayerState,
+            ...data,
+            baitInventory: {
+              ...defaultPlayerState.baitInventory,
+              ...(data.baitInventory || {})
+            },
+            equippedRod: data.equippedRod || defaultPlayerState.equippedRod,
+            ownedRods: data.ownedRods || defaultPlayerState.ownedRods,
+            // Ensure achievement-related fields have defaults
+            achievements: data.achievements || [],
+            totalFishCaught: data.totalFishCaught || 0,
+            totalFishSold: data.totalFishSold || 0,
+            totalGoldEarned: data.totalGoldEarned || 0,
+            mythicsCaught: data.mythicsCaught || 0,
+            legendariesCaught: data.legendariesCaught || 0,
+            statsUpgraded: data.statsUpgraded || 0,
+            discoveredFish: data.discoveredFish || [],
+            unlockedBiomes: data.unlockedBiomes || [1]
+          };
+        } catch (e) {
+          console.error('Error loading save:', e);
+        }
       }
     }
     return defaultPlayerState;
@@ -178,9 +182,10 @@ React.useEffect(() => {
     player.currentBiome
   ]);
 
-  // Auto-save to localStorage (only after cloud data loads for online mode)
+  // Save to localStorage (ONLY in offline mode)
+  // Online mode uses server as source of truth - do NOT save to localStorage
   useEffect(() => {
-    if (offlineMode || dataLoaded) {
+    if (offlineMode && dataLoaded) {
       localStorage.setItem('arcaneAnglerSave', JSON.stringify(player));
     }
   }, [player, offlineMode, dataLoaded]);
@@ -255,7 +260,12 @@ React.useEffect(() => {
             xp: result.newXP,
             level: result.newLevel,
             relics: result.newRelics,
-            stamina: result.newStamina
+            stamina: result.newStamina,
+            equippedBait: result.equippedBait, // Server may have switched bait if it ran out
+            baitInventory: {
+              ...prev.baitInventory,
+              [result.equippedBait]: result.baitQuantity
+            }
           }));
 
           // Reload full player data to sync inventory

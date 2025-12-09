@@ -206,6 +206,37 @@ router.post('/cast', authenticateToken, async (req, res) => {
       // Note: Stamina is not consumed for casting (4-second cooldown instead)
     }
 
+    // Consume bait (if equipped and not the free starter bait)
+    if (player.equipped_bait && player.equipped_bait !== 'Stale Bread Crust') {
+      // Check bait inventory
+      const [baitInventory] = await connection.query(
+        'SELECT quantity FROM bait_inventory WHERE user_id = ? AND bait_name = ?',
+        [userId, player.equipped_bait]
+      );
+
+      if (baitInventory && baitInventory.length > 0) {
+        const currentQuantity = baitInventory[0].quantity;
+
+        if (currentQuantity > 1) {
+          // Decrease bait by 1
+          await connection.query(
+            'UPDATE bait_inventory SET quantity = quantity - 1 WHERE user_id = ? AND bait_name = ?',
+            [userId, player.equipped_bait]
+          );
+        } else {
+          // Last bait - remove from inventory and unequip (switch to free bait)
+          await connection.query(
+            'DELETE FROM bait_inventory WHERE user_id = ? AND bait_name = ?',
+            [userId, player.equipped_bait]
+          );
+          await connection.query(
+            'UPDATE player_data SET equipped_bait = ? WHERE user_id = ?',
+            ['Stale Bread Crust', userId]
+          );
+        }
+      }
+    }
+
     // Check for level up
     const [updatedData] = await connection.query(
       'SELECT level, xp FROM player_data WHERE user_id = ?',
@@ -230,9 +261,9 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.newLevel = updatedData[0].level;
     }
 
-    // Get updated balances
+    // Get updated balances and equipped bait
     const [finalData] = await connection.query(
-      `SELECT pd.level, pd.xp, pd.gold, pd.relics, ps.stamina
+      `SELECT pd.level, pd.xp, pd.gold, pd.relics, pd.equipped_bait, ps.stamina
        FROM player_data pd
        JOIN player_stats ps ON pd.user_id = ps.user_id
        WHERE pd.user_id = ?`,
@@ -243,6 +274,18 @@ router.post('/cast', authenticateToken, async (req, res) => {
     result.newRelics = finalData[0].relics;
     result.newXP = finalData[0].xp;
     result.newStamina = finalData[0].stamina;
+    result.equippedBait = finalData[0].equipped_bait;
+
+    // Get updated bait quantity if bait is equipped
+    if (finalData[0].equipped_bait && finalData[0].equipped_bait !== 'Stale Bread Crust') {
+      const [baitQty] = await connection.query(
+        'SELECT quantity FROM bait_inventory WHERE user_id = ? AND bait_name = ?',
+        [userId, finalData[0].equipped_bait]
+      );
+      result.baitQuantity = baitQty && baitQty.length > 0 ? baitQty[0].quantity : 0;
+    } else {
+      result.baitQuantity = 999999; // Free bait is infinite
+    }
 
     await connection.commit();
     res.json({ success: true, result });
