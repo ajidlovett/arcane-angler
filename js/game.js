@@ -498,21 +498,7 @@ React.useEffect(() => {
 
   // Save progress and logout
   const handleSaveAndLogout = async () => {
-    setSavingProgress(true);
-
-    
-      try {
-        // Save player data before logout
-        await window.ApiService.savePlayerData(player);
-        // Wait a brief moment to ensure save is fully processed
-        await new Promise(resolve => setTimeout(resolve, 500));
-      } catch (err) {
-        console.error('Failed to save before logout:', err);
-        alert('Warning: Failed to save your progress. Your recent changes may be lost. Continue with logout?');
-      }
-    }
-
-    // Call the original logout function
+    // No-op: Server already has all data from action endpoints
     onLogout();
   };
 
@@ -1425,12 +1411,10 @@ React.useEffect(() => {
         alert(`Profile name changed! ${result.relicsSpent > 0 ? `Cost: ${result.relicsSpent} relics` : 'First change is free!'}`);
 
         // Trigger cloud save to persist player data changes
-        
-          try {
-            await window.ApiService.savePlayerData(player);
-          } catch (saveErr) {
-            console.error('Failed to save after name change:', saveErr);
-          }
+        try {
+          await window.ApiService.savePlayerData(player);
+        } catch (saveErr) {
+          console.error('Failed to save after name change:', saveErr);
         }
       } catch (err) {
         alert(err.message || 'Failed to change name');
@@ -1445,13 +1429,11 @@ React.useEffect(() => {
         alert('Bio updated successfully!');
 
         // Reload profile data to ensure persistence
-        
-          try {
-            const data = await window.ApiService.getMyProfile();
-            setProfileData(data.profile);
-          } catch (loadErr) {
-            console.error('Failed to reload profile:', loadErr);
-          }
+        try {
+          const data = await window.ApiService.getMyProfile();
+          setProfileData(data.profile);
+        } catch (loadErr) {
+          console.error('Failed to reload profile:', loadErr);
         }
       } catch (err) {
         alert(err.message || 'Failed to update bio');
@@ -1466,14 +1448,12 @@ React.useEffect(() => {
         alert('Title equipped!');
 
         // Reload profile data to ensure title persists
-        
-          try {
-            const data = await window.ApiService.getMyProfile();
-            setProfileData(data.profile);
-            setEquippedTitle(data.profile.equipped_title);
-          } catch (loadErr) {
-            console.error('Failed to reload profile:', loadErr);
-          }
+        try {
+          const data = await window.ApiService.getMyProfile();
+          setProfileData(data.profile);
+          setEquippedTitle(data.profile.equipped_title);
+        } catch (loadErr) {
+          console.error('Failed to reload profile:', loadErr);
         }
       } catch (err) {
         alert(err.message || 'Failed to equip title');
@@ -1487,15 +1467,13 @@ React.useEffect(() => {
         alert('Privacy settings updated!');
 
         // Reload profile data to ensure persistence
-        
-          try {
-            const data = await window.ApiService.getMyProfile();
-            setProfileData(data.profile);
-            setPrivacy(data.profile.profile_privacy);
-            setAllowComments(data.profile.allow_comments);
-          } catch (loadErr) {
-            console.error('Failed to reload profile:', loadErr);
-          }
+        try {
+          const data = await window.ApiService.getMyProfile();
+          setProfileData(data.profile);
+          setPrivacy(data.profile.profile_privacy);
+          setAllowComments(data.profile.allow_comments);
+        } catch (loadErr) {
+          console.error('Failed to reload profile:', loadErr);
         }
       } catch (err) {
         alert(err.message || 'Failed to update privacy');
@@ -1509,15 +1487,13 @@ React.useEffect(() => {
         alert(`Comments ${!allowComments ? 'enabled' : 'disabled'}!`);
 
         // Reload profile data to ensure persistence
-        
-          try {
-            const data = await window.ApiService.getMyProfile();
-            setProfileData(data.profile);
-            setPrivacy(data.profile.profile_privacy);
-            setAllowComments(data.profile.allow_comments);
-          } catch (loadErr) {
-            console.error('Failed to reload profile:', loadErr);
-          }
+        try {
+          const data = await window.ApiService.getMyProfile();
+          setProfileData(data.profile);
+          setPrivacy(data.profile.profile_privacy);
+          setAllowComments(data.profile.allow_comments);
+        } catch (loadErr) {
+          console.error('Failed to reload profile:', loadErr);
         }
       } catch (err) {
         alert(err.message || 'Failed to toggle comments');
@@ -1531,14 +1507,12 @@ React.useEffect(() => {
         alert('Nationality updated!');
 
         // Reload profile data to ensure persistence
-        
-          try {
-            const data = await window.ApiService.getMyProfile();
-            setProfileData(data.profile);
-            setNationality(data.profile.nationality);
-          } catch (loadErr) {
-            console.error('Failed to reload profile:', loadErr);
-          }
+        try {
+          const data = await window.ApiService.getMyProfile();
+          setProfileData(data.profile);
+          setNationality(data.profile.nationality);
+        } catch (loadErr) {
+          console.error('Failed to reload profile:', loadErr);
         }
       } catch (err) {
         alert(err.message || 'Failed to update nationality');
