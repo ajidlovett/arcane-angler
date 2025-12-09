@@ -754,10 +754,11 @@ React.useEffect(() => {
         <div>Base Stats: STR {player.stats.strength} | INT {player.stats.intelligence} | LUCK {player.stats.luck} | STAM {player.stats.stamina}</div>
         <div className="text-green-400">Total Stats: STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
         <div className="border-t border-blue-800 my-2 pt-2">
-          <div>Fish per catch: {1 + Math.floor(getTotalStats().strength / 50)} - {2 + Math.floor(getTotalStats().strength / 50)} fish</div>
-          <div>Next guaranteed: {50 - (getTotalStats().strength % 50)} Strength needed</div>
-          <div>Gold bonus: +{(getTotalStats().intelligence * 2).toFixed(1)}%</div>
-          <div>Luck bonus: +{getTotalStats().luck}%</div>
+          <div>Normal fish: 1-{1 + Math.floor(getTotalStats().strength / 100)} per catch</div>
+          <div>Boss fish value: {(1 + (getTotalStats().strength * 0.02)).toFixed(2)}x multiplier</div>
+          <div>Gold multiplier: {(1 + (Math.pow(getTotalStats().intelligence, 0.7) * 0.05)).toFixed(2)}x when selling</div>
+          <div>Jackpot weight: +{getTotalStats().luck}% for Legendary/Mythic/Exotic/Arcane/Treasure</div>
+          <div>Critical Catch: {Math.min(getTotalStats().stamina / 10, 50).toFixed(1)}% chance | Max {getTotalStats().stamina >= 1000 ? (3 + Math.floor((getTotalStats().stamina - 1000) / 500)) : 3}x XP</div>
         </div>
       </div>
     </div>
@@ -1272,7 +1273,7 @@ React.useEffect(() => {
         title: "Stamina",
         current: `${Math.min(totalStats.stamina / 10, 50).toFixed(1)}% Critical Catch chance | Max ${totalStats.stamina >= 1000 ? (3 + Math.floor((totalStats.stamina - 1000) / 500)) : 3}x XP`,
         perPoint: "+0.1% crit chance per point (capped at 50%) | Every 500 stamina past 1000: +1x multiplier",
-        detail: `Critical Catch multiplies XP gain. Below 500: base crit for 2x. 500+: 50% for 2x. 750+: 50% for 2x or 25% for 3x. 1000+: 50% for 3x. Scales infinitely: 1500 = 4x, 2000 = 5x, etc.`
+        detail: `Critical Catch multiplies XP gain. Below 500: base crit for 2x. 500+: 50% for 2x. 750+: 50% for 2x or 25% for 3x. 1000-1499: 50% for 3x. 1500-1999: 50% for 4x. 2000+: 50% for 5x+. Infinite scaling!`
       }
     };
 
