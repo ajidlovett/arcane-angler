@@ -369,9 +369,19 @@ class ApiService {
     }
 
     /**
+     * Get stat upgrade costs based on current values
+     * @returns {Promise<Object>} Costs for all stats { strength: { current, cost }, ... }
+     */
+    async getStatCosts() {
+        return await this.request('/game/stat-costs', {
+            method: 'GET'
+        });
+    }
+
+    /**
      * Upgrade a player stat
      * @param {string} stat - Stat name (strength, intelligence, luck, stamina)
-     * @returns {Promise<Object>} Upgrade result with new stat value
+     * @returns {Promise<Object>} Upgrade result with new stat value and next cost
      */
     async upgradeStat(stat) {
         return await this.request('/game/upgrade-stat', {

@@ -156,18 +156,5 @@ window.GameHelpers = {
     });
 
     return newAchievements;
-  },
-
-  // Calculate the relic cost to upgrade a stat
-  // Must match backend/utils/gameLogic.js calculateStatUpgradeCost
-  calculateStatUpgradeCost: (currentStatValue) => {
-    // Linear scaling for early levels (1-10), then exponential
-    if (currentStatValue <= 10) {
-      return Math.max(1, Math.floor(currentStatValue * 1.5));
-    }
-
-    // Exponential scaling for higher levels
-    const baseRelics = 3;
-    return Math.floor(baseRelics * Math.pow(currentStatValue, 1.3));
   }
 };

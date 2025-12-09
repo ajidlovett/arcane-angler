@@ -529,6 +529,53 @@ router.post('/buy-bait', authenticateToken, async (req, res) => {
 });
 
 /**
+ * GET /api/game/stat-costs
+ * Get upgrade costs for all stats based on current values
+ *
+ * Returns: { strength: { current: 5, cost: 7 }, ... }
+ */
+router.get('/stat-costs', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Get current stat values
+    const [playerStats] = await db.query(
+      'SELECT strength, intelligence, luck, stamina FROM player_stats WHERE user_id = ?',
+      [userId]
+    );
+
+    if (!playerStats || playerStats.length === 0) {
+      return res.status(404).json({ error: 'Player stats not found' });
+    }
+
+    const stats = playerStats[0];
+    const costs = {
+      strength: {
+        current: stats.strength,
+        cost: calculateStatUpgradeCost(stats.strength)
+      },
+      intelligence: {
+        current: stats.intelligence,
+        cost: calculateStatUpgradeCost(stats.intelligence)
+      },
+      luck: {
+        current: stats.luck,
+        cost: calculateStatUpgradeCost(stats.luck)
+      },
+      stamina: {
+        current: stats.stamina,
+        cost: calculateStatUpgradeCost(stats.stamina)
+      }
+    };
+
+    res.json({ success: true, costs });
+  } catch (error) {
+    console.error('Get stat costs error:', error);
+    res.status(500).json({ error: 'Failed to get stat costs' });
+  }
+});
+
+/**
  * POST /api/game/upgrade-stat
  * Upgrade a player stat
  *
@@ -610,12 +657,16 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
       [userId]
     );
 
+    // Calculate next upgrade cost
+    const nextCost = calculateStatUpgradeCost(newStats[0][stat]);
+
     await connection.commit();
     res.json({
       success: true,
       stat,
       newValue: newStats[0][stat],
-      cost,
+      costPaid: cost,
+      nextCost,
       newRelics: updated[0].relics
     });
   } catch (error) {
