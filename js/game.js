@@ -105,14 +105,23 @@ React.useEffect(() => {
   const getGradientBorderStyle = window.getGradientBorderStyle;
 
   // Check and unlock achievements - using window.GameHelpers
-  const checkAchievements = () => {
+  const checkAchievements = async () => {
     const newAchievements = window.GameHelpers.checkAchievements(player);
 
     if (newAchievements.length > 0) {
+      const updatedAchievements = [...player.achievements, ...newAchievements];
+
       setPlayer(prev => ({
         ...prev,
-        achievements: [...prev.achievements, ...newAchievements]
+        achievements: updatedAchievements
       }));
+
+      // Sync achievements to server
+      try {
+        await window.ApiService.syncAchievements(updatedAchievements);
+      } catch (error) {
+        console.error('Failed to sync achievements:', error);
+      }
     }
   };
 
