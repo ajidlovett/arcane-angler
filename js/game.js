@@ -100,6 +100,7 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
   const [funnyLine, setFunnyLine] = useState('');
   const [shopTab, setShopTab] = useState('rods'); // Persist shop tab selection
   const [dataLoaded, setDataLoaded] = useState(false); // Track if initial data loaded
+  const [statCosts, setStatCosts] = useState({}); // Server-provided stat upgrade costs
 
   // Load player data from cloud
 React.useEffect(() => {
@@ -122,27 +123,8 @@ React.useEffect(() => {
 
 // Auto-save to cloud - Reduced frequency since server is now authoritative
 // State is already saved by individual action endpoints
-React.useEffect(() => {
-  if (!offlineMode && dataLoaded) {
-    // Reduced frequency: sync UI preferences only
-    const saveInterval = setInterval(async () => {
-      try {
-        // Only save non-gameplay data (UI preferences, etc.)
-        // Most gameplay data is already saved by action endpoints
-        await window.ApiService.savePlayerData({
-          equippedRod: player.equippedRod,
-          equippedBait: player.equippedBait,
-          currentBiome: player.currentBiome,
-          lockedFish: player.lockedFish
-        });
-      } catch (err) {
-        console.error('Preference sync failed:', err);
-      }
-    }, 60000); // Every 60 seconds (reduced from 30)
-
-    return () => clearInterval(saveInterval);
-  }
-}, [player.equippedRod, player.equippedBait, player.currentBiome, player.lockedFish, offlineMode, dataLoaded]);
+// Note: Auto-save removed - all saves now happen via individual action endpoints
+// (cast, sell, buy, equip, upgrade, etc.) for server-authoritative architecture
 
   // Constants (loaded from gameConstants.js)
   const rarities = window.RARITIES;
@@ -165,6 +147,13 @@ React.useEffect(() => {
       }));
     }
   };
+
+  // Fetch stat costs when switching to stats page
+  useEffect(() => {
+    if (currentPage === 'stats' && !offlineMode) {
+      fetchStatCosts();
+    }
+  }, [currentPage, offlineMode]);
 
   // Check achievements whenever player state changes
   useEffect(() => {
@@ -386,6 +375,19 @@ React.useEffect(() => {
     }));
   };
 
+  // Fetch stat upgrade costs from server
+  const fetchStatCosts = async () => {
+    if (offlineMode) return;
+    try {
+      const response = await window.ApiService.getStatCosts();
+      if (response.success) {
+        setStatCosts(response.costs);
+      }
+    } catch (error) {
+      console.error('Failed to fetch stat costs:', error);
+    }
+  };
+
   const upgradeStat = async (stat) => {
     try {
       const response = await window.ApiService.upgradeStat(stat);
@@ -398,6 +400,15 @@ React.useEffect(() => {
             [stat]: response.newValue
           },
           relics: response.newRelics
+        }));
+
+        // Update stat costs after upgrade
+        setStatCosts(prev => ({
+          ...prev,
+          [stat]: {
+            current: response.newValue,
+            cost: response.nextCost
+          }
         }));
       }
     } catch (error) {
@@ -1324,7 +1335,8 @@ React.useEffect(() => {
             {/* Display player's base stats for upgrading */}
             {Object.entries(player.stats).map(([stat, value]) => {
               const info = statDescriptions[stat];
-              const upgradeCost = window.GameHelpers.calculateStatUpgradeCost(value);
+              const upgradeCost = statCosts[stat]?.cost || '...';
+              const canAfford = typeof upgradeCost === 'number' && player.relics >= upgradeCost;
               return (
                 <div key={stat} className="bg-blue-950 p-4 sm:p-5 rounded-lg">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
@@ -1335,9 +1347,9 @@ React.useEffect(() => {
                     </div>
                     <button
                       onClick={() => upgradeStat(stat)}
-                      disabled={player.relics < upgradeCost}
+                      disabled={!canAfford || typeof upgradeCost !== 'number'}
                       className={`w-full sm:w-auto px-6 py-3 rounded font-bold text-sm ${
-                        player.relics >= upgradeCost
+                        canAfford
                           ? 'bg-purple-600 hover:bg-purple-500'
                           : 'bg-gray-600 cursor-not-allowed'
                       }`}
