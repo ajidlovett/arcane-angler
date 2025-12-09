@@ -139,9 +139,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
         titanBonus = calculateTitanBonus(totalStats.strength);
       }
 
-      // Calculate XP and gold
+      // Calculate XP (gold is NOT gained from catching - only from selling!)
       const xpGained = fish.xp * count;
-      const goldGained = Math.floor(fish.gold * count * titanBonus);
 
       result.fish = {
         name: fish.name,
@@ -149,7 +148,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
       };
       result.count = count;
       result.xpGained = xpGained;
-      result.goldGained = goldGained;
+      result.goldGained = 0; // No gold from catching fish
       result.titanBonus = titanBonus;
 
       // Add to inventory (or update if exists)
@@ -169,15 +168,13 @@ router.post('/cast', authenticateToken, async (req, res) => {
         [userId, fish.name]
       );
 
-      // Update player data
+      // Update player data (NO GOLD - only XP and fish count!)
       await connection.query(
         `UPDATE player_data
-         SET gold = gold + ?,
-             xp = xp + ?,
-             total_fish_caught = total_fish_caught + ?,
-             total_gold_earned = total_gold_earned + ?
+         SET xp = xp + ?,
+             total_fish_caught = total_fish_caught + ?
          WHERE user_id = ?`,
-        [goldGained, xpGained, count, goldGained, userId]
+        [xpGained, count, userId]
       );
 
       // Update rarity-specific counters

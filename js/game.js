@@ -21,7 +21,7 @@ const Icons = window.Icons;
 // *** FIX APPLIED: REMOVED THE FOLLOWING DESTRUCTURING LINE TO PREVENT ReferenceError: ***
 // const { Fish, Package, TrendingUp, Target, Users, User, Trophy, Award, Menu, X, Lock, Unlock, ChevronRight } = Icons; 
 
-const FishingGame = ({ user, onLogout, offlineMode }) => {
+const FishingGame = ({ user, onLogout }) => {
   // State
   const [currentPage, setCurrentPage] = useState('fishing');
   const [savingProgress, setSavingProgress] = useState(false);
@@ -59,39 +59,7 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
       unlockedBiomes: [1] // Track which biomes have been paid for (start with biome 1 unlocked)
     };
 
-    // IMPORTANT: Only use localStorage in offline mode
-    // In online mode, server data will be loaded and will completely replace this
-    if (offlineMode) {
-      const saved = localStorage.getItem('arcaneAnglerSave');
-      if (saved) {
-        try {
-          const data = JSON.parse(saved);
-          // Ensure new fields exist and merge with saved data
-          return {
-            ...defaultPlayerState,
-            ...data,
-            baitInventory: {
-              ...defaultPlayerState.baitInventory,
-              ...(data.baitInventory || {})
-            },
-            equippedRod: data.equippedRod || defaultPlayerState.equippedRod,
-            ownedRods: data.ownedRods || defaultPlayerState.ownedRods,
-            // Ensure achievement-related fields have defaults
-            achievements: data.achievements || [],
-            totalFishCaught: data.totalFishCaught || 0,
-            totalFishSold: data.totalFishSold || 0,
-            totalGoldEarned: data.totalGoldEarned || 0,
-            mythicsCaught: data.mythicsCaught || 0,
-            legendariesCaught: data.legendariesCaught || 0,
-            statsUpgraded: data.statsUpgraded || 0,
-            discoveredFish: data.discoveredFish || [],
-            unlockedBiomes: data.unlockedBiomes || [1]
-          };
-        } catch (e) {
-          console.error('Error loading save:', e);
-        }
-      }
-    }
+    // Server is the source of truth - default state is only used until server data loads
     return defaultPlayerState;
   });
 
@@ -106,24 +74,20 @@ const FishingGame = ({ user, onLogout, offlineMode }) => {
   const [dataLoaded, setDataLoaded] = useState(false); // Track if initial data loaded
   const [statCosts, setStatCosts] = useState({}); // Server-provided stat upgrade costs
 
-  // Load player data from cloud
+  // Load player data from server
 React.useEffect(() => {
   const loadData = async () => {
-    if (!offlineMode) {
-      try {
-        const data = await window.ApiService.getPlayerData();
-        setPlayer(data);
-        setDataLoaded(true); // Mark data as loaded
-      } catch (err) {
-        console.error('Failed to load from cloud:', err);
-        setDataLoaded(true); // Even on error, mark as loaded to prevent saving defaults
-      }
-    } else {
-      setDataLoaded(true); // Offline mode doesn't need cloud load
+    try {
+      const data = await window.ApiService.getPlayerData();
+      setPlayer(data);
+      setDataLoaded(true);
+    } catch (err) {
+      console.error('Failed to load from server:', err);
+      setDataLoaded(true);
     }
   };
   loadData();
-}, [offlineMode]);
+}, []);
 
 // Auto-save to cloud - Reduced frequency since server is now authoritative
 // State is already saved by individual action endpoints
@@ -154,10 +118,10 @@ React.useEffect(() => {
 
   // Fetch stat costs when switching to stats page
   useEffect(() => {
-    if (currentPage === 'stats' && !offlineMode) {
+    if (currentPage === 'stats') {
       fetchStatCosts();
     }
-  }, [currentPage, offlineMode]);
+  }, [currentPage]);
 
   // Check achievements whenever player state changes
   useEffect(() => {
@@ -182,13 +146,7 @@ React.useEffect(() => {
     player.currentBiome
   ]);
 
-  // Save to localStorage (ONLY in offline mode)
-  // Online mode uses server as source of truth - do NOT save to localStorage
-  useEffect(() => {
-    if (offlineMode && dataLoaded) {
-      localStorage.setItem('arcaneAnglerSave', JSON.stringify(player));
-    }
-  }, [player, offlineMode, dataLoaded]);
+  // No localStorage - server is the only source of truth
 
   // Cooldown timer
   useEffect(() => {
@@ -387,7 +345,6 @@ React.useEffect(() => {
 
   // Fetch stat upgrade costs from server
   const fetchStatCosts = async () => {
-    if (offlineMode) return;
     try {
       const response = await window.ApiService.getStatCosts();
       if (response.success) {
@@ -543,7 +500,7 @@ React.useEffect(() => {
   const handleSaveAndLogout = async () => {
     setSavingProgress(true);
 
-    if (!offlineMode) {
+    
       try {
         // Save player data before logout
         await window.ApiService.savePlayerData(player);
@@ -643,10 +600,10 @@ React.useEffect(() => {
   onClick={handleSaveAndLogout}
   className="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
 >
-  {offlineMode ? 'Exit Game' : 'Logout'}
+  Logout
 </button>
 
-{!offlineMode && user && (
+{user && (
   <div className="text-sm text-gray-500 mt-2">
     Playing as: {user.profileUsername || user.username}
   </div>
@@ -1438,7 +1395,7 @@ React.useEffect(() => {
     // Load profile data
     useEffect(() => {
       const loadProfile = async () => {
-        if (!offlineMode) {
+        
           try {
             const data = await window.ApiService.getMyProfile();
             setProfileData(data.profile);
@@ -1454,7 +1411,7 @@ React.useEffect(() => {
         setLoading(false);
       };
       loadProfile();
-    }, [offlineMode]);
+    }, []);
 
     const handleChangeName = async () => {
       if (!newName.trim()) return;
@@ -1468,7 +1425,7 @@ React.useEffect(() => {
         alert(`Profile name changed! ${result.relicsSpent > 0 ? `Cost: ${result.relicsSpent} relics` : 'First change is free!'}`);
 
         // Trigger cloud save to persist player data changes
-        if (!offlineMode) {
+        
           try {
             await window.ApiService.savePlayerData(player);
           } catch (saveErr) {
@@ -1488,7 +1445,7 @@ React.useEffect(() => {
         alert('Bio updated successfully!');
 
         // Reload profile data to ensure persistence
-        if (!offlineMode) {
+        
           try {
             const data = await window.ApiService.getMyProfile();
             setProfileData(data.profile);
@@ -1509,7 +1466,7 @@ React.useEffect(() => {
         alert('Title equipped!');
 
         // Reload profile data to ensure title persists
-        if (!offlineMode) {
+        
           try {
             const data = await window.ApiService.getMyProfile();
             setProfileData(data.profile);
@@ -1530,7 +1487,7 @@ React.useEffect(() => {
         alert('Privacy settings updated!');
 
         // Reload profile data to ensure persistence
-        if (!offlineMode) {
+        
           try {
             const data = await window.ApiService.getMyProfile();
             setProfileData(data.profile);
@@ -1552,7 +1509,7 @@ React.useEffect(() => {
         alert(`Comments ${!allowComments ? 'enabled' : 'disabled'}!`);
 
         // Reload profile data to ensure persistence
-        if (!offlineMode) {
+        
           try {
             const data = await window.ApiService.getMyProfile();
             setProfileData(data.profile);
@@ -1574,7 +1531,7 @@ React.useEffect(() => {
         alert('Nationality updated!');
 
         // Reload profile data to ensure persistence
-        if (!offlineMode) {
+        
           try {
             const data = await window.ApiService.getMyProfile();
             setProfileData(data.profile);
@@ -2307,7 +2264,6 @@ React.useEffect(() => {
 const App = () => {
   const [user, setUser] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
-  const [offlineMode, setOfflineMode] = React.useState(false);
 
   // Check if user is already logged in
   React.useEffect(() => {
@@ -2327,20 +2283,12 @@ const App = () => {
   }, []);
 
   const handleLoginSuccess = (userData) => {
-    if (userData === null) {
-      setOfflineMode(true);
-      setUser({ username: 'OfflinePlayer' });
-    } else {
-      setUser(userData);
-    }
+    setUser(userData);
   };
 
   const handleLogout = () => {
-    if (!offlineMode) {
-      window.ApiService.logout();
-    }
+    window.ApiService.logout();
     setUser(null);
-    setOfflineMode(false);
     window.location.reload();
   };
 
@@ -2356,7 +2304,7 @@ const App = () => {
     return <AuthScreen onLoginSuccess={handleLoginSuccess} />;
   }
 
-  return <FishingGame user={user} onLogout={handleLogout} offlineMode={offlineMode} />;
+  return <FishingGame user={user} onLogout={handleLogout} />;
 };
 
 // Render the app
