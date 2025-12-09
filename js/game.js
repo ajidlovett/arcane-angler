@@ -120,20 +120,29 @@ React.useEffect(() => {
   loadData();
 }, [offlineMode]);
 
-// Auto-save to cloud every 30 seconds (only after initial data loads)
+// Auto-save to cloud - Reduced frequency since server is now authoritative
+// State is already saved by individual action endpoints
 React.useEffect(() => {
-  if (!offlineMode && dataLoaded) { // Only auto-save after data is loaded
+  if (!offlineMode && dataLoaded) {
+    // Reduced frequency: sync UI preferences only
     const saveInterval = setInterval(async () => {
       try {
-        await window.ApiService.savePlayerData(player);
+        // Only save non-gameplay data (UI preferences, etc.)
+        // Most gameplay data is already saved by action endpoints
+        await window.ApiService.savePlayerData({
+          equippedRod: player.equippedRod,
+          equippedBait: player.equippedBait,
+          currentBiome: player.currentBiome,
+          lockedFish: player.lockedFish
+        });
       } catch (err) {
-        console.error('Auto-save failed:', err);
+        console.error('Preference sync failed:', err);
       }
-    }, 30000);
+    }, 60000); // Every 60 seconds (reduced from 30)
 
     return () => clearInterval(saveInterval);
   }
-}, [player, offlineMode, dataLoaded]); // Added dataLoaded dependency
+}, [player.equippedRod, player.equippedBait, player.currentBiome, player.lockedFish, offlineMode, dataLoaded]);
 
   // Constants (loaded from gameConstants.js)
   const rarities = window.RARITIES;
@@ -206,10 +215,10 @@ React.useEffect(() => {
   const generateTreasureChest = () => window.GameHelpers.generateTreasureChest(player.currentBiome, getTotalStats().luck);
   const getFunnyLine = () => window.GameHelpers.getFunnyLine(player.currentBiome);
 
-  const handleFish = () => {
+  const handleFish = async () => {
     if (cooldown > 0 || fishing) return;
 
-    // Check if bait is required and available
+    // Client-side UX check (bait availability)
     if (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) {
       alert("You need to buy or equip a different bait!");
       return;
@@ -219,120 +228,57 @@ React.useEffect(() => {
     setCooldown(4);
     setFunnyLine(getFunnyLine());
 
-    setTimeout(() => {
-      const rarity = calculateRarity();
-      
-      if (rarity === 'Treasure Chest') {
-        const treasure = generateTreasureChest();
-        
-        setLastCatch({
-          fish: 'Treasure Chest',
-          rarity: 'Treasure Chest',
-          count: 1,
-          xp: 50,
-          relics: treasure.relics,
-          gold: treasure.gold,
-          isTreasure: true
-        });
-        
-        const newXP = player.xp + 50;
-        const levelUp = newXP >= player.xpToNext;
-        
-        setPlayer(prev => ({
-          ...prev,
-          xp: levelUp ? newXP - prev.xpToNext : newXP,
-          level: levelUp ? prev.level + 1 : prev.level,
-          xpToNext: levelUp ? prev.xpToNext + 150 : prev.xpToNext,
-          relics: prev.relics + treasure.relics + (levelUp ? 1 : 0),
-          gold: prev.gold + treasure.gold,
-          treasureChestsFound: prev.treasureChestsFound + 1,
-          totalRelicsEarned: prev.totalRelicsEarned + treasure.relics + (levelUp ? 1 : 0)
-        }));
+    setTimeout(async () => {
+      try {
+        // SERVER AUTHORITATIVE: Server determines the catch
+        const response = await window.ApiService.castLine();
 
+        if (response.success) {
+          const result = response.result;
+
+          // Set last catch for display
+          if (result.treasureChest) {
+            setLastCatch({
+              fish: 'Treasure Chest',
+              rarity: 'Treasure Chest',
+              count: 1,
+              xp: result.xpGained,
+              relics: result.relicsGained,
+              gold: result.goldGained,
+              isTreasure: true
+            });
+          } else {
+            setLastCatch({
+              fish: result.fish.name,
+              rarity: result.rarity,
+              count: result.count,
+              xp: result.fish.xp || result.xpGained / result.count,
+              gold: result.fish.gold || result.goldGained / result.count,
+              relics: 0,
+              titanBonus: result.titanBonus > 1 ? result.titanBonus : null
+            });
+          }
+
+          // Update state with SERVER data only
+          setPlayer(prev => ({
+            ...prev,
+            gold: result.newGold,
+            xp: result.newXP,
+            level: result.newLevel,
+            relics: result.newRelics,
+            stamina: result.newStamina
+          }));
+
+          // Reload full player data to sync inventory
+          const playerData = await window.ApiService.getPlayerData();
+          setPlayer(playerData);
+        }
+      } catch (error) {
+        console.error('Fishing failed:', error);
+        alert('Failed to cast line. Please try again.');
+      } finally {
         setFishing(false);
-        return;
       }
-      
-      const biomeFish = getCurrentBiomeFish();
-      const fishList = biomeFish[rarity];
-      const selectedFish = fishList[Math.floor(Math.random() * fishList.length)];
-      const fishName = selectedFish.name;
-      
-      const fishCount = calculateFishCount(rarity);
-      const baseXP = selectedFish.xp;
-      const baseGold = selectedFish.gold;
-      
-      let titanBonus = 1;
-      if (rarity === 'Mythic') {
-        titanBonus = calculateTitanBonus();
-      }
-
-      setLastCatch({
-        fish: fishName,
-        rarity,
-        count: fishCount,
-        xp: baseXP,
-        gold: baseGold,
-        relics: 0,
-        titanBonus: titanBonus > 1 ? titanBonus : null
-      });
-      
-      const newInventory = [...player.inventory];
-      const existing = newInventory.find(f => f.name === fishName);
-      if (existing) {
-        existing.count += fishCount;
-        if (titanBonus > 1) {
-          existing.titanBonus = titanBonus;
-        }
-      } else {
-        newInventory.push({ 
-          name: fishName, 
-          rarity, 
-          count: fishCount,
-          baseGold: baseGold,
-          titanBonus: titanBonus > 1 ? titanBonus : 1
-        });
-      }
-
-      const newXP = player.xp + (baseXP * fishCount);
-      const levelUp = newXP >= player.xpToNext;
-      
-      // Consume bait
-      const newBaitInventory = { ...player.baitInventory };
-      if (player.equippedBait && player.equippedBait !== 'Stale Bread Crust') {
-        newBaitInventory[player.equippedBait] = (newBaitInventory[player.equippedBait] || 0) - 1;
-        
-        if (newBaitInventory[player.equippedBait] <= 0) {
-          delete newBaitInventory[player.equippedBait];
-        }
-      }
-      
-      setPlayer(prev => {
-        // Add to discovered fish if not already discovered
-        const newDiscoveredFish = prev.discoveredFish.includes(fishName)
-          ? prev.discoveredFish
-          : [...prev.discoveredFish, fishName];
-
-        return {
-          ...prev,
-          xp: levelUp ? newXP - prev.xpToNext : newXP,
-          level: levelUp ? prev.level + 1 : prev.level,
-          xpToNext: levelUp ? prev.xpToNext + 150 : prev.xpToNext,
-          relics: prev.relics + (levelUp ? 1 : 0),
-          inventory: newInventory,
-          baitInventory: newBaitInventory,
-          equippedBait: (newBaitInventory[prev.equippedBait] && newBaitInventory[prev.equippedBait] > 0) ? prev.equippedBait : 'Stale Bread Crust',
-          totalFishCaught: prev.totalFishCaught + fishCount,
-          mythicsCaught: prev.mythicsCaught + (rarity === 'Mythic' ? 1 : 0),
-          legendariesCaught: prev.legendariesCaught + (rarity === 'Legendary' ? 1 : 0),
-          exoticsCaught: prev.exoticsCaught + (rarity === 'Exotic' ? 1 : 0),
-          arcanesCaught: prev.arcanesCaught + (rarity === 'Arcane' ? 1 : 0),
-          totalRelicsEarned: prev.totalRelicsEarned + (levelUp ? 1 : 0),
-          discoveredFish: newDiscoveredFish
-        };
-      });
-
-      setFishing(false);
     }, 1000);
   };
 
@@ -345,24 +291,31 @@ React.useEffect(() => {
     }));
   };
 
-  const sellFish = (fishItem) => {
+  const sellFish = async (fishItem) => {
     if (player.lockedFish.includes(fishItem.name)) return;
 
-    const totalStats = getTotalStats();
-    const intelligenceBonus = 1 + (Number(totalStats.intelligence) * 0.02);
-    const titanBonus = Number(fishItem.titanBonus) || 1;
+    try {
+      const response = await window.ApiService.sellFish(
+        fishItem.name,
+        fishItem.rarity,
+        fishItem.count
+      );
 
-    // Handle both old fish (with 'gold') and new fish (with 'baseGold')
-    const baseGoldValue = Number(fishItem.baseGold) || Number(fishItem.gold) || 0;
-    const goldEarned = Math.floor(baseGoldValue * Number(fishItem.count) * intelligenceBonus * titanBonus);
+      if (response.success) {
+        // Update state with server response
+        setPlayer(prev => ({
+          ...prev,
+          gold: response.newGold
+        }));
 
-    setPlayer(prev => ({
-      ...prev,
-      gold: Number(prev.gold) + goldEarned,
-      inventory: prev.inventory.filter(f => f.name !== fishItem.name),
-      totalFishSold: Number(prev.totalFishSold) + Number(fishItem.count),
-      totalGoldEarned: Number(prev.totalGoldEarned) + goldEarned
-    }));
+        // Reload inventory from server
+        const playerData = await window.ApiService.getPlayerData();
+        setPlayer(playerData);
+      }
+    } catch (error) {
+      console.error('Sell failed:', error);
+      alert('Failed to sell fish. Please try again.');
+    }
   };
 
   const sellAll = () => {
@@ -433,27 +386,23 @@ React.useEffect(() => {
     }));
   };
 
-  const upgradeStat = (stat) => {
-    const cost = 3;
-    if (player.relics >= cost) {
-      // Map stat names to tracking fields
-      const statTrackingMap = {
-        'strength': 'strUpgraded',
-        'intelligence': 'intUpgraded',
-        'luck': 'luckUpgraded',
-        'stamina': 'staminaUpgraded'
-      };
+  const upgradeStat = async (stat) => {
+    try {
+      const response = await window.ApiService.upgradeStat(stat);
 
-      setPlayer(prev => ({
-        ...prev,
-        relics: prev.relics - cost,
-        stats: {
-          ...prev.stats,
-          [stat]: prev.stats[stat] + 1
-        },
-        statsUpgraded: prev.statsUpgraded + 1,
-        [statTrackingMap[stat]]: prev[statTrackingMap[stat]] + 1
-      }));
+      if (response.success) {
+        setPlayer(prev => ({
+          ...prev,
+          stats: {
+            ...prev.stats,
+            [stat]: response.newValue
+          },
+          relics: response.newRelics
+        }));
+      }
+    } catch (error) {
+      console.error('Upgrade failed:', error);
+      alert(error.message || 'Failed to upgrade stat. Please try again.');
     }
   };
 
@@ -498,42 +447,75 @@ React.useEffect(() => {
   };
 
   // Equipment functions
-  const buyRod = (rodName) => {
-    const rod = window.RODS[rodName];
-    if (player.gold >= rod.price && !player.ownedRods.includes(rodName)) {
-      setPlayer(prev => ({
-        ...prev,
-        gold: prev.gold - rod.price,
-        ownedRods: [...prev.ownedRods, rodName],
-        equippedRod: rodName
-      }));
+  const buyRod = async (rodName) => {
+    try {
+      const response = await window.ApiService.buyRod(rodName);
+
+      if (response.success) {
+        setPlayer(prev => ({
+          ...prev,
+          gold: response.newGold,
+          ownedRods: [...prev.ownedRods, rodName],
+          equippedRod: rodName
+        }));
+
+        // Also call equipRod endpoint
+        await window.ApiService.equipRod(rodName);
+      }
+    } catch (error) {
+      console.error('Buy rod failed:', error);
+      alert(error.message || 'Failed to purchase rod. Not enough gold?');
     }
   };
 
-  const equipRod = (rodName) => {
-    setPlayer(prev => ({ ...prev, equippedRod: rodName }));
-  };
+  const equipRod = async (rodName) => {
+    try {
+      const response = await window.ApiService.equipRod(rodName);
 
-  const buyBait = (baitName, multiplier = 1) => {
-    const bait = window.BAITS[baitName];
-    // Buy 'multiplier' number of baits (e.g., 1, 10, or 100)
-    const quantity = multiplier;
-    const totalCost = bait.price * quantity;
-
-    if (player.gold >= totalCost) {
-      setPlayer(prev => ({
-        ...prev,
-        gold: prev.gold - totalCost,
-        baitInventory: {
-          ...prev.baitInventory,
-          [baitName]: (prev.baitInventory[baitName] || 0) + quantity
-        }
-      }));
+      if (response.success) {
+        setPlayer(prev => ({
+          ...prev,
+          equippedRod: rodName
+        }));
+      }
+    } catch (error) {
+      console.error('Equip rod failed:', error);
     }
   };
 
-  const equipBait = (baitName) => {
-    setPlayer(prev => ({ ...prev, equippedBait: baitName }));
+  const buyBait = async (baitName, multiplier = 1) => {
+    try {
+      const response = await window.ApiService.buyBait(baitName, multiplier);
+
+      if (response.success) {
+        setPlayer(prev => ({
+          ...prev,
+          gold: response.newGold,
+          baitInventory: {
+            ...prev.baitInventory,
+            [baitName]: response.newBaitQuantity
+          }
+        }));
+      }
+    } catch (error) {
+      console.error('Buy bait failed:', error);
+      alert(error.message || 'Failed to purchase bait. Not enough gold?');
+    }
+  };
+
+  const equipBait = async (baitName) => {
+    try {
+      const response = await window.ApiService.equipBait(baitName);
+
+      if (response.success) {
+        setPlayer(prev => ({
+          ...prev,
+          equippedBait: baitName
+        }));
+      }
+    } catch (error) {
+      console.error('Equip bait failed:', error);
+    }
   };
 
   // Save progress and logout
@@ -1018,31 +1000,43 @@ React.useEffect(() => {
       return player.level >= biome.unlockLevel && player.gold >= biome.unlockGold;
     };
 
-    const visitOrUnlockBiome = (biomeId) => {
-      const biome = window.BIOMES[biomeId];
-      const alreadyUnlocked = isBiomeUnlocked(biomeId);
+    const visitOrUnlockBiome = async (biomeId) => {
+      const isUnlocked = isBiomeUnlocked(biomeId);
 
-      // If already unlocked, just visit it (no gold cost)
-      if (alreadyUnlocked) {
-        setPlayer(prev => ({
-          ...prev,
-          currentBiome: biomeId
-        }));
-        setCurrentPage('fishing');
-        return;
+      if (isUnlocked) {
+        // Just change biome (already unlocked)
+        try {
+          const response = await window.ApiService.changeBiome(biomeId);
+
+          if (response.success) {
+            setPlayer(prev => ({
+              ...prev,
+              currentBiome: biomeId
+            }));
+            setCurrentPage('fishing');
+          }
+        } catch (error) {
+          console.error('Change biome failed:', error);
+        }
+      } else {
+        // Unlock new biome
+        try {
+          const response = await window.ApiService.unlockBiome(biomeId);
+
+          if (response.success) {
+            setPlayer(prev => ({
+              ...prev,
+              currentBiome: biomeId,
+              gold: response.newGold,
+              unlockedBiomes: response.unlockedBiomes
+            }));
+            setCurrentPage('fishing');
+          }
+        } catch (error) {
+          console.error('Unlock biome failed:', error);
+          alert(error.message || 'Cannot unlock biome. Check level and gold requirements.');
+        }
       }
-
-      // If not unlocked yet, check if they can afford it
-      if (!canUnlockBiome(biomeId)) return;
-
-      // Unlock the biome (pay gold and add to unlocked list)
-      setPlayer(prev => ({
-        ...prev,
-        gold: prev.gold - biome.unlockGold,
-        currentBiome: biomeId,
-        unlockedBiomes: [...(prev.unlockedBiomes || [1]), biomeId]
-      }));
-      setCurrentPage('fishing');
     };
 
     // Get biomes for the current page
