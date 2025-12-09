@@ -1,15 +1,10 @@
--- Fix unlocked_biomes column to be proper JSON type
--- Date: 2025-12-03
+-- Fix unlocked_biomes for existing users and ensure new users start with biome 1 unlocked
 
--- First, drop the problematic column
-ALTER TABLE player_data DROP COLUMN IF EXISTS unlocked_biomes;
+-- Update existing NULL values to [1]
+UPDATE player_data
+SET unlocked_biomes = JSON_ARRAY(1)
+WHERE unlocked_biomes IS NULL OR unlocked_biomes = 'null';
 
--- Recreate it with proper JSON type
-ALTER TABLE player_data ADD COLUMN unlocked_biomes JSON;
-
--- Set default value for all users
-UPDATE player_data SET unlocked_biomes = '[1]';
-
--- Verify
-SELECT user_id, unlocked_biomes, JSON_VALID(unlocked_biomes) as is_valid
-FROM player_data;
+-- Note: The discovered_fish column in player_data is deprecated
+-- We now use the locked_fish table for tracking discovered fish (for fishpedia)
+-- No action needed for discovered_fish column

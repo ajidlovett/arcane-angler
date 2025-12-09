@@ -35,6 +35,9 @@ CREATE TABLE IF NOT EXISTS player_data (
     current_biome INT DEFAULT 1,
     equipped_rod VARCHAR(100) DEFAULT 'Willow Branch',
     equipped_bait VARCHAR(100) DEFAULT 'Stale Bread Crust',
+    unlocked_biomes JSON,
+    achievements JSON,
+    discovered_fish JSON,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_level (level),
@@ -135,21 +138,31 @@ CREATE TRIGGER after_user_insert
 AFTER INSERT ON users
 FOR EACH ROW
 BEGIN
-    -- Create player data
-    INSERT INTO player_data (user_id) VALUES (NEW.id);
-    
+    -- Create player data with proper JSON initialization
+    INSERT INTO player_data (
+        user_id,
+        unlocked_biomes,
+        achievements,
+        discovered_fish
+    ) VALUES (
+        NEW.id,
+        JSON_ARRAY(1),      -- Start with biome 1 unlocked
+        JSON_ARRAY(),       -- Empty achievements array
+        JSON_ARRAY()        -- Empty discovered fish array (deprecated but kept for compatibility)
+    );
+
     -- Create player stats
     INSERT INTO player_stats (user_id) VALUES (NEW.id);
-    
+
     -- Add default rod
     INSERT INTO owned_rods (user_id, rod_name) VALUES (NEW.id, 'Willow Branch');
-    
+
     -- Add infinite starter bait
-    INSERT INTO bait_inventory (user_id, bait_name, quantity) 
+    INSERT INTO bait_inventory (user_id, bait_name, quantity)
     VALUES (NEW.id, 'Stale Bread Crust', 999999);
-    
+
     -- Initialize leaderboard stats with profile_username
-    INSERT INTO leaderboard_stats (user_id, profile_username) 
+    INSERT INTO leaderboard_stats (user_id, profile_username)
     VALUES (NEW.id, NEW.profile_username);
 END$$
 DELIMITER ;

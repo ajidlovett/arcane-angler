@@ -42,7 +42,7 @@ window.ACHIEVEMENTS = [
   { id: 'fish_600k', name: 'Sea Emperor', title: 'the Sea Emperor', desc: 'Catch 600,000 fish', icon: '🧛', requirement: 600000, stat: 'totalFishCaught' },
   { id: 'fish_700k', name: 'Leviathan Lord', title: 'the Leviathan Lord', desc: 'Catch 700,000 fish', icon: '🐋', requirement: 700000, stat: 'totalFishCaught' },
   { id: 'fish_800k', name: 'Heir of Poseidon', title: 'the Heir of Poseidon', desc: 'Catch 800,000 fish', icon: '🏄', requirement: 800000, stat: 'totalFishCaught' },
-  { id: 'fish_900k', name: 'Neptune\'s Rival', desc: 'Catch 900,000 fish', icon: '🤺', requirement: 900000, stat: 'totalFishCaught' },
+  { id: 'fish_900k', name: 'Neptune\'s Rival', title: 'Neptune\'s Rival', desc: 'Catch 900,000 fish', icon: '🤺', requirement: 900000, stat: 'totalFishCaught' },
   { id: 'fish_1m', name: 'God of Fishing', title: 'the God of Fishing', desc: 'Catch 1,000,000 fish', icon: '🤯', requirement: 1000000, stat: 'totalFishCaught' },
   { id: 'fish_2m', name: 'Double God', title: 'Double God', desc: 'Catch 2,000,000 fish', icon: '👯', requirement: 2000000, stat: 'totalFishCaught' },
   { id: 'fish_5m', name: 'Cosmic Fisher', title: 'Cosmic Fisher', desc: 'Catch 5,000,000 fish', icon: '🌌', requirement: 5000000, stat: 'totalFishCaught' },
