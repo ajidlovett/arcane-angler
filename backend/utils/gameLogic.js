@@ -43,7 +43,8 @@ function getBiomeRelicRange(biome) {
 
 /**
  * Calculate rarity based on luck stat
- * Uses weighted RNG with luck modifiers
+ * Uses weighted RNG with luck modifiers (Jackpot Mechanic)
+ * Luck only affects high-tier rarities: Legendary, Treasure Chest, Mythic, Exotic, Arcane
  * @param {number} totalLuck - Total luck (base + equipment)
  * @returns {string} Rarity tier
  */
@@ -61,15 +62,20 @@ function calculateRarity(totalLuck) {
     'Arcane': 1
   };
 
+  // High-tier rarities affected by luck (Jackpot Mechanic)
+  const highTierRarities = ['Legendary', 'Treasure Chest', 'Mythic', 'Exotic', 'Arcane'];
+
   const effectiveWeights = {};
   let poolSize = 0;
 
   for (const [tier, baseWeight] of Object.entries(baseWeights)) {
-    if (tier === 'Common') {
-      effectiveWeights[tier] = baseWeight;
+    if (highTierRarities.includes(tier)) {
+      // Formula: NewWeight = BaseWeight * (1 + (TotalLuck / 100))
+      // 1 Luck point = +1% Weight for high-tier rarities
+      effectiveWeights[tier] = baseWeight * (1 + (totalLuck / 100));
     } else {
-      // Luck increases chances for rare+ tiers
-      effectiveWeights[tier] = baseWeight * (1 + (totalLuck / 200));
+      // Common, Uncommon, Fine, Rare, Epic: Not affected by luck
+      effectiveWeights[tier] = baseWeight;
     }
     poolSize += effectiveWeights[tier];
   }
@@ -93,32 +99,76 @@ function calculateRarity(totalLuck) {
  * @returns {number} Number of fish caught
  */
 function calculateFishCount(rarity, totalStrength) {
-  // Mythic/Exotic/Arcane/Treasure always = 1
-  if (rarity === 'Mythic' || rarity === 'Exotic' || rarity === 'Arcane' || rarity === 'Treasure Chest') {
+  // Boss fish (Legendary, Mythic, Exotic, Arcane) and Treasure Chest always = 1
+  // These get Titan Bonus instead
+  const bossFish = ['Legendary', 'Mythic', 'Exotic', 'Arcane', 'Treasure Chest'];
+  if (bossFish.includes(rarity)) {
     return 1;
   }
 
-  const guaranteedExtra = Math.floor(totalStrength / 50);
-  const remainder = totalStrength % 50;
-  const chanceForBonus = remainder * 2; // remainder * 2 = % chance
-  const bonusFish = Math.random() * 100 < chanceForBonus ? 1 : 0;
+  // Normal fish: Random range from 1 to MaxCatch
+  // MaxCatch = 1 + FLOOR(TotalSTR / 100)
+  const maxCatch = 1 + Math.floor(totalStrength / 100);
 
-  return 1 + guaranteedExtra + bonusFish;
+  // Return random integer between 1 and maxCatch (inclusive)
+  return Math.floor(Math.random() * maxCatch) + 1;
 }
 
 /**
- * Calculate titan bonus multiplier for Mythic fish
- * Mythic fish get a gold multiplier based on strength
+ * Calculate titan bonus multiplier for Boss fish (Legendary, Mythic, Exotic, Arcane)
+ * Boss fish get a massive gold multiplier based on strength instead of quantity
  * @param {number} totalStrength - Total strength (base + equipment)
  * @returns {number} Titan bonus multiplier (>= 1.0)
  */
 function calculateTitanBonus(totalStrength) {
-  const guaranteedExtra = Math.floor(totalStrength / 50);
-  const remainder = totalStrength % 50;
-  const avgBonus = remainder / 50;
-  const wouldHaveCaught = guaranteedExtra + avgBonus;
+  // Formula: 1 + (TotalSTR * 0.02)
+  // Example: 200 STR = 5x multiplier (1 + 4)
+  return 1 + (totalStrength * 0.02);
+}
 
-  return 1 + (0.5 * wouldHaveCaught);
+/**
+ * Calculate gold multiplier based on Intelligence (with diminishing returns)
+ * Uses soft cap to prevent infinite gold generation in late game
+ * @param {number} totalIntelligence - Total intelligence (base + equipment)
+ * @returns {number} Gold multiplier (>= 1.0)
+ */
+function calculateGoldMultiplier(totalIntelligence) {
+  // Formula: 1 + ((TotalINT ^ 0.7) * 0.05)
+  // Power of 0.7 provides diminishing returns for high INT values
+  // Example: 100 INT = ~1.76x, 1000 INT = ~4.48x (not linear!)
+  return 1 + (Math.pow(totalIntelligence, 0.7) * 0.05);
+}
+
+/**
+ * Calculate Critical Catch XP multiplier based on Stamina
+ * @param {number} totalStamina - Total stamina (base + equipment)
+ * @returns {number} XP multiplier (1x, 2x, or 3x)
+ */
+function calculateCriticalCatch(totalStamina) {
+  // Base crit chance: TotalStamina / 10 (capped at 50%)
+  const baseCritChance = Math.min(totalStamina / 10, 50);
+
+  // Determine multiplier tier based on stamina
+  if (totalStamina >= 1000) {
+    // 1000+ Stamina: 50% chance for 3x XP
+    const roll = Math.random() * 100;
+    if (roll < 50) return 3;
+  } else if (totalStamina >= 750) {
+    // 750+ Stamina: 50% chance for 2x XP, 25% chance for 3x XP
+    const roll = Math.random() * 100;
+    if (roll < 25) return 3;
+    if (roll < 75) return 2; // 25-75 = 50% chance
+  } else if (totalStamina >= 500) {
+    // 500+ Stamina: 50% chance for 2x XP
+    const roll = Math.random() * 100;
+    if (roll < 50) return 2;
+  } else {
+    // Below 500: Use base crit chance for 2x XP
+    const roll = Math.random() * 100;
+    if (roll < baseCritChance) return 2;
+  }
+
+  return 1; // No crit
 }
 
 /**
@@ -138,14 +188,15 @@ function generateTreasureChest(currentBiome, totalLuck, biomeData) {
     highestLegendaryGold = Math.max(...legendaryFish.map(fish => fish.gold));
   }
 
-  // Gold: 100-150% of highest legendary, scaled by luck
+  // Gold: Base on highest legendary with 100%-175% variation + luck modifier
   const baseGold = highestLegendaryGold;
-  const goldVariation = Math.random() * 0.5 + 1.0; // 100% to 150%
-  const goldReward = Math.floor(baseGold * goldVariation * (1 + (totalLuck / 200)));
+  const goldVariation = Math.random() * 0.75 + 1.0; // 100% to 175%
+  const luckModifier = 1 + (totalLuck / 100); // 1 Luck = +1% gold
+  const goldReward = Math.floor(baseGold * goldVariation * luckModifier);
 
   // Relics: Based on biome range, scaled by luck
   const baseRelics = Math.floor(Math.random() * (biomeRelicRange.max - biomeRelicRange.min + 1)) + biomeRelicRange.min;
-  const relicReward = Math.floor(baseRelics * (1 + (totalLuck / 200)));
+  const relicReward = Math.floor(baseRelics * (1 + (totalLuck / 100)));
 
   return { gold: goldReward, relics: relicReward };
 }
@@ -166,12 +217,13 @@ function calculateXPForNextLevel(currentLevel) {
  * @param {number} currentLevel - Current level
  * @param {number} currentXP - Current XP
  * @param {number} xpGained - XP to add
- * @returns {Object} { newLevel, newXP, leveledUp }
+ * @returns {Object} { newLevel, newXP, leveledUp, levelsGained, relicsGained }
  */
 function calculateLevelUp(currentLevel, currentXP, xpGained) {
   let level = currentLevel;
   let xp = currentXP + xpGained;
   let leveledUp = false;
+  let levelsGained = 0;
 
   while (true) {
     const xpNeeded = calculateXPForNextLevel(level);
@@ -179,12 +231,16 @@ function calculateLevelUp(currentLevel, currentXP, xpGained) {
       xp -= xpNeeded;
       level++;
       leveledUp = true;
+      levelsGained++;
     } else {
       break;
     }
   }
 
-  return { newLevel: level, newXP: xp, leveledUp };
+  // Grant 3 relics per level gained
+  const relicsGained = levelsGained * 3;
+
+  return { newLevel: level, newXP: xp, leveledUp, levelsGained, relicsGained };
 }
 
 /**
@@ -193,15 +249,8 @@ function calculateLevelUp(currentLevel, currentXP, xpGained) {
  * @returns {number} Relic cost
  */
 function calculateStatUpgradeCost(currentStatValue) {
-  // Linear scaling for early levels (1-10), then exponential
-  // This makes early upgrades affordable while scaling later
-  if (currentStatValue <= 10) {
-    return Math.max(1, Math.floor(currentStatValue * 1.5));
-  }
-
-  // Exponential scaling for higher levels
-  const baseRelics = 3;
-  return Math.floor(baseRelics * Math.pow(currentStatValue, 1.3));
+  // Flat cost: 2 relics per point (simple and predictable)
+  return 2;
 }
 
 /**
@@ -242,6 +291,8 @@ export {
   calculateRarity,
   calculateFishCount,
   calculateTitanBonus,
+  calculateGoldMultiplier,
+  calculateCriticalCatch,
   generateTreasureChest,
   calculateXPForNextLevel,
   calculateLevelUp,
