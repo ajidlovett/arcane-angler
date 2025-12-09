@@ -1,7 +1,7 @@
 import express from 'express';
 import db from '../db.js';
 import { authenticateToken } from '../middleware/auth.js';
-import { validateText } from '../server/utils/profanityFilter.js';
+import { validateText } from '../utils/profanityFilter.js';
 
 const router = express.Router();
 
