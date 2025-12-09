@@ -758,7 +758,7 @@ React.useEffect(() => {
           <div>Boss fish value: {(1 + (getTotalStats().strength * 0.02)).toFixed(2)}x multiplier</div>
           <div>Gold multiplier: {(1 + (Math.pow(getTotalStats().intelligence, 0.7) * 0.05)).toFixed(2)}x when selling</div>
           <div>Jackpot weight: +{getTotalStats().luck}% for Legendary/Mythic/Exotic/Arcane/Treasure</div>
-          <div>Critical Catch: {Math.min(getTotalStats().stamina / 10, 50).toFixed(1)}% chance (infinite scaling)</div>
+          <div>Critical Catch: {Math.min(getTotalStats().stamina / 10, 50).toFixed(1)}% chance</div>
         </div>
       </div>
     </div>
