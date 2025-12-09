@@ -16,6 +16,8 @@ import {
   calculateRarity,
   calculateFishCount,
   calculateTitanBonus,
+  calculateGoldMultiplier,
+  calculateCriticalCatch,
   generateTreasureChest,
   calculateLevelUp,
   calculateStatUpgradeCost,
@@ -102,10 +104,17 @@ router.post('/cast', authenticateToken, async (req, res) => {
     // Handle Treasure Chest (special case)
     if (rarity === 'Treasure Chest') {
       const rewards = generateTreasureChest(currentBiome, totalStats.luck, biomeData);
+
+      // Apply Critical Catch to XP
+      const baseXP = 100; // Fixed XP for treasure chests
+      const critMultiplier = calculateCriticalCatch(totalStats.stamina);
+      const xpGained = baseXP * critMultiplier;
+
       result.treasureChest = rewards;
       result.goldGained = rewards.gold;
       result.relicsGained = rewards.relics;
-      result.xpGained = 100; // Fixed XP for treasure chests
+      result.xpGained = xpGained;
+      result.critMultiplier = critMultiplier;
 
       // Update player stats
       await connection.query(
@@ -117,7 +126,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
              total_gold_earned = total_gold_earned + ?,
              total_relics_earned = total_relics_earned + ?
          WHERE user_id = ?`,
-        [rewards.gold, rewards.relics, 100, rewards.gold, rewards.relics, userId]
+        [rewards.gold, rewards.relics, xpGained, rewards.gold, rewards.relics, userId]
       );
 
       // Note: Stamina is not consumed for casting (4-second cooldown instead)
@@ -133,14 +142,17 @@ router.post('/cast', authenticateToken, async (req, res) => {
       // Calculate count based on strength
       const count = calculateFishCount(rarity, totalStats.strength);
 
-      // Calculate titan bonus for Mythic fish
+      // Calculate titan bonus for Boss fish (Legendary, Mythic, Exotic, Arcane)
       let titanBonus = 1;
-      if (rarity === 'Mythic') {
+      const bossFish = ['Legendary', 'Mythic', 'Exotic', 'Arcane'];
+      if (bossFish.includes(rarity)) {
         titanBonus = calculateTitanBonus(totalStats.strength);
       }
 
-      // Calculate XP (gold is NOT gained from catching - only from selling!)
-      const xpGained = fish.xp * count;
+      // Calculate XP with Critical Catch multiplier
+      const baseXP = fish.xp * count;
+      const critMultiplier = calculateCriticalCatch(totalStats.stamina);
+      const xpGained = baseXP * critMultiplier;
 
       result.fish = {
         name: fish.name,
@@ -150,6 +162,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.xpGained = xpGained;
       result.goldGained = 0; // No gold from catching fish
       result.titanBonus = titanBonus;
+      result.critMultiplier = critMultiplier;
 
       // Add to inventory (or update if exists)
       await connection.query(
@@ -247,15 +260,22 @@ router.post('/cast', authenticateToken, async (req, res) => {
     );
 
     if (levelUpResult.leveledUp) {
+      // Update level, XP, and grant relics (3 per level)
       await connection.query(
-        'UPDATE player_data SET level = ?, xp = ? WHERE user_id = ?',
-        [levelUpResult.newLevel, levelUpResult.newXP, userId]
+        `UPDATE player_data
+         SET level = ?, xp = ?, relics = relics + ?, total_relics_earned = total_relics_earned + ?
+         WHERE user_id = ?`,
+        [levelUpResult.newLevel, levelUpResult.newXP, levelUpResult.relicsGained, levelUpResult.relicsGained, userId]
       );
       result.leveledUp = true;
       result.newLevel = levelUpResult.newLevel;
+      result.levelsGained = levelUpResult.levelsGained;
+      result.relicsFromLevelUp = levelUpResult.relicsGained;
     } else {
       result.leveledUp = false;
       result.newLevel = updatedData[0].level;
+      result.levelsGained = 0;
+      result.relicsFromLevelUp = 0;
     }
 
     // Get updated balances and equipped bait
@@ -319,6 +339,29 @@ router.post('/sell', authenticateToken, async (req, res) => {
 
     await connection.beginTransaction();
 
+    // Load player stats and equipment for Intelligence bonus
+    const [playerData] = await connection.query(
+      `SELECT pd.equipped_rod, pd.equipped_bait, ps.intelligence
+       FROM player_data pd
+       JOIN player_stats ps ON pd.user_id = ps.user_id
+       WHERE pd.user_id = ?`,
+      [userId]
+    );
+
+    if (!playerData || playerData.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Player data not found' });
+    }
+
+    const player = playerData[0];
+
+    // Calculate total Intelligence (base + equipment)
+    const totalStats = getTotalStats(
+      { intelligence: player.intelligence },
+      player.equipped_rod,
+      player.equipped_bait
+    );
+
     // Check if player owns the fish
     const [inventory] = await connection.query(
       'SELECT count, base_gold, titan_bonus FROM player_inventory WHERE user_id = ? AND fish_name = ? AND rarity = ?',
@@ -339,8 +382,9 @@ router.post('/sell', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Not enough fish to sell' });
     }
 
-    // Calculate gold value
-    const goldEarned = Math.floor(baseGold * titanBonus * quantity);
+    // Calculate gold value with Intelligence multiplier
+    const goldMultiplier = calculateGoldMultiplier(totalStats.intelligence);
+    const goldEarned = Math.floor(baseGold * titanBonus * quantity * goldMultiplier);
 
     // Update inventory (remove sold fish)
     const newCount = ownedCount - quantity;
@@ -368,7 +412,7 @@ router.post('/sell', authenticateToken, async (req, res) => {
     );
 
     // Get updated gold balance
-    const [playerData] = await connection.query(
+    const [updatedPlayer] = await connection.query(
       'SELECT gold FROM player_data WHERE user_id = ?',
       [userId]
     );
@@ -377,7 +421,7 @@ router.post('/sell', authenticateToken, async (req, res) => {
     res.json({
       success: true,
       goldEarned,
-      newGold: playerData[0].gold,
+      newGold: updatedPlayer[0].gold,
       remainingCount: newCount
     });
   } catch (error) {
