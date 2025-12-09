@@ -30,6 +30,7 @@ app.use((req, res, next) => {
 // Routes with specific rate limiters
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/player', require('./routes/player'));
+app.use('/api/game', require('./routes/game')); // Server-authoritative game actions
 app.use('/api/leaderboard', require('./routes/leaderboard'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/friends', require('./routes/friends'));

@@ -314,6 +314,119 @@ class ApiService {
             body: JSON.stringify({ commentText })
         });
     }
+
+    // ==========================================
+    // GAME ACTIONS (Server-Authoritative)
+    // ==========================================
+
+    /**
+     * Cast fishing line (server determines catch)
+     * @returns {Promise<Object>} Fishing result with fish, rarity, count, rewards
+     */
+    async castLine() {
+        return await this.request('/game/cast', {
+            method: 'POST'
+        });
+    }
+
+    /**
+     * Sell fish from inventory
+     * @param {string} fishName - Name of fish to sell
+     * @param {string} rarity - Rarity tier
+     * @param {number} quantity - Number to sell
+     * @returns {Promise<Object>} Sale result with gold earned
+     */
+    async sellFish(fishName, rarity, quantity) {
+        return await this.request('/game/sell', {
+            method: 'POST',
+            body: JSON.stringify({ fishName, rarity, quantity })
+        });
+    }
+
+    /**
+     * Purchase a fishing rod
+     * @param {string} rodName - Name of rod to buy
+     * @returns {Promise<Object>} Purchase result
+     */
+    async buyRod(rodName) {
+        return await this.request('/game/buy-rod', {
+            method: 'POST',
+            body: JSON.stringify({ rodName })
+        });
+    }
+
+    /**
+     * Purchase bait
+     * @param {string} baitName - Name of bait to buy
+     * @param {number} quantity - Amount to purchase
+     * @returns {Promise<Object>} Purchase result
+     */
+    async buyBait(baitName, quantity) {
+        return await this.request('/game/buy-bait', {
+            method: 'POST',
+            body: JSON.stringify({ baitName, quantity })
+        });
+    }
+
+    /**
+     * Upgrade a player stat
+     * @param {string} stat - Stat name (strength, intelligence, luck, stamina)
+     * @returns {Promise<Object>} Upgrade result with new stat value
+     */
+    async upgradeStat(stat) {
+        return await this.request('/game/upgrade-stat', {
+            method: 'POST',
+            body: JSON.stringify({ stat })
+        });
+    }
+
+    /**
+     * Unlock a new biome
+     * @param {number} biomeId - ID of biome to unlock
+     * @returns {Promise<Object>} Unlock result
+     */
+    async unlockBiome(biomeId) {
+        return await this.request('/game/unlock-biome', {
+            method: 'POST',
+            body: JSON.stringify({ biomeId })
+        });
+    }
+
+    /**
+     * Equip a fishing rod
+     * @param {string} rodName - Name of rod to equip
+     * @returns {Promise<Object>} Equip result
+     */
+    async equipRod(rodName) {
+        return await this.request('/game/equip-rod', {
+            method: 'POST',
+            body: JSON.stringify({ rodName })
+        });
+    }
+
+    /**
+     * Equip bait for fishing
+     * @param {string|null} baitName - Name of bait to equip (or null to unequip)
+     * @returns {Promise<Object>} Equip result
+     */
+    async equipBait(baitName) {
+        return await this.request('/game/equip-bait', {
+            method: 'POST',
+            body: JSON.stringify({ baitName })
+        });
+    }
+
+    /**
+     * Change to a different biome
+     * @param {number} biomeId - ID of biome to visit
+     * @returns {Promise<Object>} Change result
+     */
+    async changeBiome(biomeId) {
+        return await this.request('/game/change-biome', {
+            method: 'POST',
+            body: JSON.stringify({ biomeId })
+        });
+    }
 }
 
 // Export singleton instance
