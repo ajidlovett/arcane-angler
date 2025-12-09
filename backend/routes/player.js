@@ -20,9 +20,9 @@ router.get('/data', authenticateToken, async (req, res) => {
             [userId]
         );
 
-        // Get inventory (including base_gold, titan_bonus, total_caught, and is_locked)
+        // Get inventory (including base_gold, titan_bonus, and is_locked)
         const [inventory] = await db.query(
-            'SELECT fish_name, rarity, count, total_caught, base_gold, titan_bonus, COALESCE(is_locked, FALSE) as is_locked FROM player_inventory WHERE user_id = ? AND count > 0',
+            'SELECT fish_name, rarity, count, base_gold, titan_bonus, COALESCE(is_locked, FALSE) as is_locked FROM player_inventory WHERE user_id = ? AND count > 0',
             [userId]
         );
 
@@ -35,6 +35,12 @@ router.get('/data', authenticateToken, async (req, res) => {
         // Get discovered fish (all fish ever caught - for fishpedia)
         const [discoveredFish] = await db.query(
             'SELECT fish_name FROM locked_fish WHERE user_id = ?',
+            [userId]
+        );
+
+        // Get fishpedia stats (persistent catch tracking for Fishpedia)
+        const [fishpediaStats] = await db.query(
+            'SELECT fish_name, rarity, total_caught, first_caught_at FROM fishpedia_stats WHERE user_id = ?',
             [userId]
         );
 
@@ -55,7 +61,6 @@ router.get('/data', authenticateToken, async (req, res) => {
             name: item.fish_name,
             rarity: item.rarity,
             count: item.count,
-            totalCaught: item.total_caught || item.count || 0,
             baseGold: item.base_gold || 0,
             titanBonus: item.titan_bonus || 1
         }));
@@ -64,6 +69,13 @@ router.get('/data', authenticateToken, async (req, res) => {
         baitInventory.forEach(item => {
             formattedBaitInventory[item.bait_name] = item.quantity;
         });
+
+        const formattedFishpediaStats = fishpediaStats.map(item => ({
+            name: item.fish_name,
+            rarity: item.rarity,
+            totalCaught: item.total_caught || 0,
+            firstCaughtAt: item.first_caught_at
+        }));
 
         const formattedOwnedRods = ownedRods.map(r => r.rod_name);
         const formattedLockedFish = lockedFish.map(f => f.fish_name);
@@ -135,6 +147,8 @@ router.get('/data', authenticateToken, async (req, res) => {
             totalRelicsEarned: playerData[0].total_relics_earned || 0,
             // Fishpedia tracking (from locked_fish table)
             discoveredFish: formattedDiscoveredFish,
+            // Fishpedia statistics (persistent catch tracking)
+            fishpediaStats: formattedFishpediaStats,
             // Biome tracking
             unlockedBiomes: unlockedBiomes
         });
@@ -212,18 +226,7 @@ router.post('/save', authenticateToken, async (req, res) => {
             );
         }
 
-        // Update inventory (delete and reinsert, but preserve total_caught)
-        // First, get existing total_caught values
-        const [existingInventory] = await connection.query(
-            'SELECT fish_name, total_caught FROM player_inventory WHERE user_id = ?',
-            [userId]
-        );
-
-        const totalCaughtMap = {};
-        existingInventory.forEach(item => {
-            totalCaughtMap[item.fish_name] = item.total_caught || 0;
-        });
-
+        // Update inventory (delete and reinsert for simplicity)
         await connection.query('DELETE FROM player_inventory WHERE user_id = ?', [userId]);
 
         if (inventory && inventory.length > 0) {
@@ -232,13 +235,12 @@ router.post('/save', authenticateToken, async (req, res) => {
                 item.name,
                 item.rarity,
                 item.count,
-                totalCaughtMap[item.name] || item.count || 0, // Preserve total_caught or initialize with count
                 item.baseGold || 0,
                 item.titanBonus || 1
             ]);
 
             await connection.query(
-                'INSERT INTO player_inventory (user_id, fish_name, rarity, count, total_caught, base_gold, titan_bonus) VALUES ?',
+                'INSERT INTO player_inventory (user_id, fish_name, rarity, count, base_gold, titan_bonus) VALUES ?',
                 [inventoryValues]
             );
         }

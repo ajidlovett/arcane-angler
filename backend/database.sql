@@ -63,7 +63,6 @@ CREATE TABLE IF NOT EXISTS player_inventory (
     fish_name VARCHAR(100) NOT NULL,
     rarity VARCHAR(50) NOT NULL,
     count INT DEFAULT 0,
-    total_caught INT DEFAULT 0,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY unique_fish_per_user (user_id, fish_name),
@@ -78,6 +77,20 @@ CREATE TABLE IF NOT EXISTS locked_fish (
     first_caught_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY unique_locked_fish (user_id, fish_name)
+);
+
+-- Fishpedia statistics (persistent fish catch tracking for Fishpedia)
+CREATE TABLE IF NOT EXISTS fishpedia_stats (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    fish_name VARCHAR(100) NOT NULL,
+    rarity VARCHAR(50) NOT NULL,
+    total_caught INT DEFAULT 0,
+    first_caught_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_caught_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_fishpedia_stat (user_id, fish_name),
+    INDEX idx_user_fish_stats (user_id, fish_name)
 );
 
 -- Owned rods
