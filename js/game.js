@@ -758,7 +758,7 @@ React.useEffect(() => {
           <div>Boss fish value: {(1 + (getTotalStats().strength * 0.02)).toFixed(2)}x multiplier</div>
           <div>Gold multiplier: {(1 + (Math.pow(getTotalStats().intelligence, 0.7) * 0.05)).toFixed(2)}x when selling</div>
           <div>Jackpot weight: +{getTotalStats().luck}% for Legendary/Mythic/Exotic/Arcane/Treasure</div>
-          <div>Critical Catch: {Math.min(getTotalStats().stamina / 10, 50).toFixed(1)}% chance | Max {getTotalStats().stamina >= 1000 ? (3 + Math.floor((getTotalStats().stamina - 1000) / 500)) : 3}x XP</div>
+          <div>Critical Catch: {Math.min(getTotalStats().stamina / 10, 50).toFixed(1)}% chance (infinite scaling)</div>
         </div>
       </div>
     </div>
@@ -1271,9 +1271,9 @@ React.useEffect(() => {
       },
       stamina: {
         title: "Stamina",
-        current: `${Math.min(totalStats.stamina / 10, 50).toFixed(1)}% Critical Catch chance | Max ${totalStats.stamina >= 1000 ? (3 + Math.floor((totalStats.stamina - 1000) / 500)) : 3}x XP`,
-        perPoint: "+0.1% crit chance per point (capped at 50%) | Every 500 stamina past 1000: +1x multiplier",
-        detail: `Critical Catch multiplies XP gain. Below 500: base crit for 2x. 500+: 50% for 2x. 750+: 50% for 2x or 25% for 3x. 1000-1499: 50% for 3x. 1500-1999: 50% for 4x. 2000+: 50% for 5x+. Infinite scaling!`
+        current: `${Math.min(totalStats.stamina / 10, 50).toFixed(1)}% Critical Catch chance`,
+        perPoint: "+0.1% crit chance per point (capped at 50%) | XP multiplier scales infinitely",
+        detail: `Critical Catch multiplies XP gain. Below 500: base crit for 2x. 500+: 50% for 2x. 750+: 50% for 2x or 25% for 3x. 1000-1499: 50% for 3x. 1500-1999: 50% for 4x. 2000+: 50% for 5x+. Scales infinitely: every 500 stamina past 1000 adds +1x multiplier!`
       }
     };
 
