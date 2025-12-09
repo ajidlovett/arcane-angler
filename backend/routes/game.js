@@ -175,13 +175,14 @@ router.post('/cast', authenticateToken, async (req, res) => {
 
       // Add to inventory (or update if exists)
       await connection.query(
-        `INSERT INTO player_inventory (user_id, fish_name, rarity, count, base_gold, titan_bonus)
-         VALUES (?, ?, ?, ?, ?, ?)
+        `INSERT INTO player_inventory (user_id, fish_name, rarity, count, total_caught, base_gold, titan_bonus)
+         VALUES (?, ?, ?, ?, ?, ?, ?)
          ON DUPLICATE KEY UPDATE
            count = count + VALUES(count),
+           total_caught = total_caught + VALUES(total_caught),
            base_gold = VALUES(base_gold),
            titan_bonus = VALUES(titan_bonus)`,
-        [userId, fish.name, rarity, count, fish.gold, titanBonus]
+        [userId, fish.name, rarity, count, count, fish.gold, titanBonus]
       );
 
       // Add to locked_fish (discovered fish) - ignore duplicates

@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS player_inventory (
     fish_name VARCHAR(100) NOT NULL,
     rarity VARCHAR(50) NOT NULL,
     count INT DEFAULT 0,
+    total_caught INT DEFAULT 0,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY unique_fish_per_user (user_id, fish_name),

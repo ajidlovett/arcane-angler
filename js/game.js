@@ -1392,40 +1392,122 @@ React.useEffect(() => {
     const [privacy, setPrivacy] = useState('public');
     const [allowComments, setAllowComments] = useState(true);
     const [nationality, setNationality] = useState(null);
+    const [nationalitySearch, setNationalitySearch] = useState('');
+    const [nationalityDropdownOpen, setNationalityDropdownOpen] = useState(false);
 
     // Popular countries list with flags (using Unicode flag emojis)
     const countries = [
-      { code: 'US', name: 'United States', flag: '🇺🇸' },
-      { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
-      { code: 'CA', name: 'Canada', flag: '🇨🇦' },
-      { code: 'AU', name: 'Australia', flag: '🇦🇺' },
-      { code: 'DE', name: 'Germany', flag: '🇩🇪' },
-      { code: 'FR', name: 'France', flag: '🇫🇷' },
-      { code: 'ES', name: 'Spain', flag: '🇪🇸' },
-      { code: 'IT', name: 'Italy', flag: '🇮🇹' },
-      { code: 'NL', name: 'Netherlands', flag: '🇳🇱' },
-      { code: 'SE', name: 'Sweden', flag: '🇸🇪' },
-      { code: 'NO', name: 'Norway', flag: '🇳🇴' },
-      { code: 'DK', name: 'Denmark', flag: '🇩🇰' },
-      { code: 'FI', name: 'Finland', flag: '🇫🇮' },
-      { code: 'PL', name: 'Poland', flag: '🇵🇱' },
-      { code: 'BR', name: 'Brazil', flag: '🇧🇷' },
-      { code: 'MX', name: 'Mexico', flag: '🇲🇽' },
+      { code: 'AF', name: 'Afghanistan', flag: '🇦🇫' },
+      { code: 'AL', name: 'Albania', flag: '🇦🇱' },
+      { code: 'DZ', name: 'Algeria', flag: '🇩🇿' },
       { code: 'AR', name: 'Argentina', flag: '🇦🇷' },
-      { code: 'JP', name: 'Japan', flag: '🇯🇵' },
+      { code: 'AM', name: 'Armenia', flag: '🇦🇲' },
+      { code: 'AU', name: 'Australia', flag: '🇦🇺' },
+      { code: 'AT', name: 'Austria', flag: '🇦🇹' },
+      { code: 'AZ', name: 'Azerbaijan', flag: '🇦🇿' },
+      { code: 'BH', name: 'Bahrain', flag: '🇧🇭' },
+      { code: 'BD', name: 'Bangladesh', flag: '🇧🇩' },
+      { code: 'BY', name: 'Belarus', flag: '🇧🇾' },
+      { code: 'BE', name: 'Belgium', flag: '🇧🇪' },
+      { code: 'BO', name: 'Bolivia', flag: '🇧🇴' },
+      { code: 'BA', name: 'Bosnia and Herzegovina', flag: '🇧🇦' },
+      { code: 'BR', name: 'Brazil', flag: '🇧🇷' },
+      { code: 'BG', name: 'Bulgaria', flag: '🇧🇬' },
+      { code: 'KH', name: 'Cambodia', flag: '🇰🇭' },
+      { code: 'CA', name: 'Canada', flag: '🇨🇦' },
+      { code: 'CL', name: 'Chile', flag: '🇨🇱' },
       { code: 'CN', name: 'China', flag: '🇨🇳' },
-      { code: 'KR', name: 'South Korea', flag: '🇰🇷' },
+      { code: 'CO', name: 'Colombia', flag: '🇨🇴' },
+      { code: 'CR', name: 'Costa Rica', flag: '🇨🇷' },
+      { code: 'HR', name: 'Croatia', flag: '🇭🇷' },
+      { code: 'CU', name: 'Cuba', flag: '🇨🇺' },
+      { code: 'CY', name: 'Cyprus', flag: '🇨🇾' },
+      { code: 'CZ', name: 'Czech Republic', flag: '🇨🇿' },
+      { code: 'DK', name: 'Denmark', flag: '🇩🇰' },
+      { code: 'DO', name: 'Dominican Republic', flag: '🇩🇴' },
+      { code: 'EC', name: 'Ecuador', flag: '🇪🇨' },
+      { code: 'EG', name: 'Egypt', flag: '🇪🇬' },
+      { code: 'SV', name: 'El Salvador', flag: '🇸🇻' },
+      { code: 'EE', name: 'Estonia', flag: '🇪🇪' },
+      { code: 'ET', name: 'Ethiopia', flag: '🇪🇹' },
+      { code: 'FI', name: 'Finland', flag: '🇫🇮' },
+      { code: 'FR', name: 'France', flag: '🇫🇷' },
+      { code: 'GE', name: 'Georgia', flag: '🇬🇪' },
+      { code: 'DE', name: 'Germany', flag: '🇩🇪' },
+      { code: 'GH', name: 'Ghana', flag: '🇬🇭' },
+      { code: 'GR', name: 'Greece', flag: '🇬🇷' },
+      { code: 'GT', name: 'Guatemala', flag: '🇬🇹' },
+      { code: 'HN', name: 'Honduras', flag: '🇭🇳' },
+      { code: 'HK', name: 'Hong Kong', flag: '🇭🇰' },
+      { code: 'HU', name: 'Hungary', flag: '🇭🇺' },
+      { code: 'IS', name: 'Iceland', flag: '🇮🇸' },
       { code: 'IN', name: 'India', flag: '🇮🇳' },
       { code: 'ID', name: 'Indonesia', flag: '🇮🇩' },
-      { code: 'TH', name: 'Thailand', flag: '🇹🇭' },
-      { code: 'VN', name: 'Vietnam', flag: '🇻🇳' },
-      { code: 'PH', name: 'Philippines', flag: '🇵🇭' },
+      { code: 'IR', name: 'Iran', flag: '🇮🇷' },
+      { code: 'IQ', name: 'Iraq', flag: '🇮🇶' },
+      { code: 'IE', name: 'Ireland', flag: '🇮🇪' },
+      { code: 'IL', name: 'Israel', flag: '🇮🇱' },
+      { code: 'IT', name: 'Italy', flag: '🇮🇹' },
+      { code: 'JM', name: 'Jamaica', flag: '🇯🇲' },
+      { code: 'JP', name: 'Japan', flag: '🇯🇵' },
+      { code: 'JO', name: 'Jordan', flag: '🇯🇴' },
+      { code: 'KZ', name: 'Kazakhstan', flag: '🇰🇿' },
+      { code: 'KE', name: 'Kenya', flag: '🇰🇪' },
+      { code: 'KW', name: 'Kuwait', flag: '🇰🇼' },
+      { code: 'LV', name: 'Latvia', flag: '🇱🇻' },
+      { code: 'LB', name: 'Lebanon', flag: '🇱🇧' },
+      { code: 'LY', name: 'Libya', flag: '🇱🇾' },
+      { code: 'LT', name: 'Lithuania', flag: '🇱🇹' },
+      { code: 'LU', name: 'Luxembourg', flag: '🇱🇺' },
       { code: 'MY', name: 'Malaysia', flag: '🇲🇾' },
-      { code: 'SG', name: 'Singapore', flag: '🇸🇬' },
-      { code: 'RU', name: 'Russia', flag: '🇷🇺' },
-      { code: 'TR', name: 'Turkey', flag: '🇹🇷' },
-      { code: 'ZA', name: 'South Africa', flag: '🇿🇦' },
+      { code: 'MX', name: 'Mexico', flag: '🇲🇽' },
+      { code: 'MD', name: 'Moldova', flag: '🇲🇩' },
+      { code: 'MA', name: 'Morocco', flag: '🇲🇦' },
+      { code: 'NP', name: 'Nepal', flag: '🇳🇵' },
+      { code: 'NL', name: 'Netherlands', flag: '🇳🇱' },
       { code: 'NZ', name: 'New Zealand', flag: '🇳🇿' },
+      { code: 'NI', name: 'Nicaragua', flag: '🇳🇮' },
+      { code: 'NG', name: 'Nigeria', flag: '🇳🇬' },
+      { code: 'KP', name: 'North Korea', flag: '🇰🇵' },
+      { code: 'NO', name: 'Norway', flag: '🇳🇴' },
+      { code: 'OM', name: 'Oman', flag: '🇴🇲' },
+      { code: 'PK', name: 'Pakistan', flag: '🇵🇰' },
+      { code: 'PS', name: 'Palestine', flag: '🇵🇸' },
+      { code: 'PA', name: 'Panama', flag: '🇵🇦' },
+      { code: 'PY', name: 'Paraguay', flag: '🇵🇾' },
+      { code: 'PE', name: 'Peru', flag: '🇵🇪' },
+      { code: 'PH', name: 'Philippines', flag: '🇵🇭' },
+      { code: 'PL', name: 'Poland', flag: '🇵🇱' },
+      { code: 'PT', name: 'Portugal', flag: '🇵🇹' },
+      { code: 'PR', name: 'Puerto Rico', flag: '🇵🇷' },
+      { code: 'QA', name: 'Qatar', flag: '🇶🇦' },
+      { code: 'RO', name: 'Romania', flag: '🇷🇴' },
+      { code: 'RU', name: 'Russia', flag: '🇷🇺' },
+      { code: 'SA', name: 'Saudi Arabia', flag: '🇸🇦' },
+      { code: 'RS', name: 'Serbia', flag: '🇷🇸' },
+      { code: 'SG', name: 'Singapore', flag: '🇸🇬' },
+      { code: 'SK', name: 'Slovakia', flag: '🇸🇰' },
+      { code: 'SI', name: 'Slovenia', flag: '🇸🇮' },
+      { code: 'ZA', name: 'South Africa', flag: '🇿🇦' },
+      { code: 'KR', name: 'South Korea', flag: '🇰🇷' },
+      { code: 'ES', name: 'Spain', flag: '🇪🇸' },
+      { code: 'LK', name: 'Sri Lanka', flag: '🇱🇰' },
+      { code: 'SE', name: 'Sweden', flag: '🇸🇪' },
+      { code: 'CH', name: 'Switzerland', flag: '🇨🇭' },
+      { code: 'SY', name: 'Syria', flag: '🇸🇾' },
+      { code: 'TW', name: 'Taiwan', flag: '🇹🇼' },
+      { code: 'TH', name: 'Thailand', flag: '🇹🇭' },
+      { code: 'TN', name: 'Tunisia', flag: '🇹🇳' },
+      { code: 'TR', name: 'Turkey', flag: '🇹🇷' },
+      { code: 'UA', name: 'Ukraine', flag: '🇺🇦' },
+      { code: 'AE', name: 'United Arab Emirates', flag: '🇦🇪' },
+      { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
+      { code: 'US', name: 'United States', flag: '🇺🇸' },
+      { code: 'UY', name: 'Uruguay', flag: '🇺🇾' },
+      { code: 'UZ', name: 'Uzbekistan', flag: '🇺🇿' },
+      { code: 'VE', name: 'Venezuela', flag: '🇻🇪' },
+      { code: 'VN', name: 'Vietnam', flag: '🇻🇳' },
+      { code: 'YE', name: 'Yemen', flag: '🇾🇪' },
     ];
 
     // Load profile data
@@ -1812,30 +1894,87 @@ React.useEffect(() => {
           <p className="text-sm text-blue-300 mb-4">
             Select your country for regional leaderboards (optional)
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-64 overflow-y-auto">
-            <button
-              onClick={() => handleNationalityChange(null)}
-              className={`p-2 rounded text-left ${
-                !nationality ? 'bg-gray-600' : 'bg-blue-950 hover:bg-blue-800'
-              }`}
-            >
-              <div className="text-sm font-bold">None</div>
-            </button>
-            {countries.map(country => (
-              <button
-                key={country.code}
-                onClick={() => handleNationalityChange(country.code)}
-                className={`p-2 rounded text-left ${
-                  nationality === country.code
-                    ? 'bg-green-600'
-                    : 'bg-blue-950 hover:bg-blue-800'
-                }`}
-              >
-                <div className="text-lg mb-1">{country.flag}</div>
-                <div className="text-xs font-bold truncate">{country.name}</div>
-              </button>
-            ))}
+
+          {/* Custom Searchable Dropdown */}
+          <div className="relative">
+            {/* Search Input */}
+            <div className="mb-2">
+              <input
+                type="text"
+                placeholder="Search countries..."
+                value={nationalitySearch}
+                onChange={(e) => setNationalitySearch(e.target.value)}
+                onFocus={() => setNationalityDropdownOpen(true)}
+                className="w-full px-4 py-3 bg-blue-950 border border-blue-700 rounded text-white placeholder-blue-400 focus:outline-none focus:border-blue-500"
+              />
+            </div>
+
+            {/* Selected Country Display */}
+            {nationality && !nationalityDropdownOpen && (
+              <div className="mb-2 p-3 bg-green-700 rounded flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{countries.find(c => c.code === nationality)?.flag}</span>
+                  <span className="font-bold">{countries.find(c => c.code === nationality)?.name}</span>
+                </div>
+                <button
+                  onClick={() => {
+                    handleNationalityChange(null);
+                    setNationalitySearch('');
+                  }}
+                  className="px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-sm"
+                >
+                  Clear
+                </button>
+              </div>
+            )}
+
+            {/* Dropdown List */}
+            {nationalityDropdownOpen && (
+              <div className="absolute z-10 w-full bg-blue-900 border border-blue-700 rounded shadow-lg max-h-64 overflow-y-auto">
+                {/* None Option */}
+                <button
+                  onClick={() => {
+                    handleNationalityChange(null);
+                    setNationalitySearch('');
+                    setNationalityDropdownOpen(false);
+                  }}
+                  className="w-full p-3 text-left hover:bg-blue-800 border-b border-blue-700"
+                >
+                  <span className="font-bold text-gray-300">None</span>
+                </button>
+
+                {/* Filtered Countries */}
+                {countries
+                  .filter(country =>
+                    country.name.toLowerCase().includes(nationalitySearch.toLowerCase())
+                  )
+                  .map(country => (
+                    <button
+                      key={country.code}
+                      onClick={() => {
+                        handleNationalityChange(country.code);
+                        setNationalitySearch('');
+                        setNationalityDropdownOpen(false);
+                      }}
+                      className={`w-full p-3 text-left hover:bg-blue-800 border-b border-blue-700 flex items-center gap-3 ${
+                        nationality === country.code ? 'bg-green-700' : ''
+                      }`}
+                    >
+                      <span className="text-2xl">{country.flag}</span>
+                      <span className="font-bold">{country.name}</span>
+                    </button>
+                  ))}
+              </div>
+            )}
           </div>
+
+          {/* Click outside to close */}
+          {nationalityDropdownOpen && (
+            <div
+              className="fixed inset-0 z-0"
+              onClick={() => setNationalityDropdownOpen(false)}
+            />
+          )}
         </div>
 
         {/* Privacy Settings */}
@@ -2034,7 +2173,7 @@ React.useEffect(() => {
             ...fish,
             rarity,
             isDiscovered,
-            count: inventoryItem ? inventoryItem.count : 0
+            totalCaught: inventoryItem ? (inventoryItem.totalCaught || 0) : 0
           });
         });
       });
@@ -2134,9 +2273,9 @@ React.useEffect(() => {
                         </div>
                         <div className="text-lg font-bold mt-1">{fish.name}</div>
                       </div>
-                      {fish.count > 0 && (
+                      {fish.totalCaught > 0 && (
                         <div className="text-sm text-blue-300 ml-2">
-                          × {fish.count}
+                          Caught: {fish.totalCaught}
                         </div>
                       )}
                     </div>
