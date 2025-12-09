@@ -1270,9 +1270,9 @@ React.useEffect(() => {
       },
       stamina: {
         title: "Stamina",
-        current: `${Math.min(totalStats.stamina / 10, 50).toFixed(1)}% Critical Catch chance`,
-        perPoint: "+0.1% crit chance per point (capped at 50%)",
-        detail: `Critical Catch doubles or triples XP gain. Below 500: base crit for 2x XP. 500+: 50% for 2x. 750+: 50% for 2x or 25% for 3x. 1000+: 50% for 3x XP.`
+        current: `${Math.min(totalStats.stamina / 10, 50).toFixed(1)}% Critical Catch chance | Max ${totalStats.stamina >= 1000 ? (3 + Math.floor((totalStats.stamina - 1000) / 500)) : 3}x XP`,
+        perPoint: "+0.1% crit chance per point (capped at 50%) | Every 500 stamina past 1000: +1x multiplier",
+        detail: `Critical Catch multiplies XP gain. Below 500: base crit for 2x. 500+: 50% for 2x. 750+: 50% for 2x or 25% for 3x. 1000+: 50% for 3x. Scales infinitely: 1500 = 4x, 2000 = 5x, etc.`
       }
     };
 

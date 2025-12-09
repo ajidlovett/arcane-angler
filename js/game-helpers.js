@@ -143,9 +143,14 @@ window.GameHelpers = {
 
     // Determine multiplier tier based on stamina
     if (totalStamina >= 1000) {
-      // 1000+ Stamina: 50% chance for 3x XP
+      // 1000+ Stamina: 50% chance for scaling multiplier
+      // Every 500 stamina = +1x multiplier
+      // 1000-1499: 3x, 1500-1999: 4x, 2000-2499: 5x, etc.
       const roll = Math.random() * 100;
-      if (roll < 50) return 3;
+      if (roll < 50) {
+        const multiplier = 3 + Math.floor((totalStamina - 1000) / 500);
+        return multiplier;
+      }
     } else if (totalStamina >= 750) {
       // 750+ Stamina: 50% chance for 2x XP, 25% chance for 3x XP
       const roll = Math.random() * 100;
