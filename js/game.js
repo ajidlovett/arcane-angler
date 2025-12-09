@@ -1252,27 +1252,27 @@ React.useEffect(() => {
     const statDescriptions = {
       strength: {
         title: "Strength",
-        current: `${1 + Math.floor(totalStats.strength / 50)}-${2 + Math.floor(totalStats.strength / 50)} fish per catch`,
-        perPoint: "+2% chance to catch an additional fish per point",
-        detail: `Every 50 points guarantees +1 fish. You currently have a ${(totalStats.strength % 50) * 2}% chance for a bonus fish.`
+        current: `1-${1 + Math.floor(totalStats.strength / 100)} normal fish per catch | ${(1 + (totalStats.strength * 0.02)).toFixed(2)}x boss fish value`,
+        perPoint: "Every 100 points: +1 max fish | Boss fish: +2% gold value per point",
+        detail: `Normal fish (Common-Epic): Catch 1 to MaxCatch fish randomly. Boss fish (Legendary/Mythic/Exotic/Arcane): Always catch 1 but get Titan Bonus gold multiplier when selling.`
       },
       intelligence: {
         title: "Intelligence",
-        current: `+${(totalStats.intelligence * 2).toFixed(1)}% gold when selling`,
-        perPoint: "+2% bonus gold from selling fish per point",
-        detail: `Increases the amount of gold earned when selling fish. Works multiplicatively with Titan Bonus.`
+        current: `${(1 + (Math.pow(totalStats.intelligence, 0.7) * 0.05)).toFixed(2)}x gold when selling`,
+        perPoint: "Diminishing returns (soft cap prevents inflation)",
+        detail: `Multiplies gold earned when selling fish. Uses power curve formula to prevent economy breaking at high levels. Works multiplicatively with Titan Bonus.`
       },
       luck: {
         title: "Luck",
-        current: `${totalStats.luck}% increased weight for rare fish`,
-        perPoint: "+1% weight multiplier for all rarities except Common per point",
-        detail: `Increases the probability weight of all fish rarities except Common. Higher Luck = better drop rates for rare fish.`
+        current: `+${totalStats.luck}% weight for Jackpot tiers`,
+        perPoint: "+1% weight for Legendary, Treasure Chest, Mythic, Exotic, Arcane per point",
+        detail: `Jackpot Mechanic: Only affects ultra-rare fish (Legendary+) and Treasure Chests. Does NOT affect Common, Uncommon, Fine, Rare, or Epic fish.`
       },
       stamina: {
         title: "Stamina",
-        current: `${totalStats.stamina * 3} minutes offline progression`,
-        perPoint: "+3 minutes of offline progression per point",
-        detail: `Allows you to earn fish and XP while offline. The game continues fishing automatically based on your stats.`
+        current: `${Math.min(totalStats.stamina / 10, 50).toFixed(1)}% Critical Catch chance`,
+        perPoint: "+0.1% crit chance per point (capped at 50%)",
+        detail: `Critical Catch doubles or triples XP gain. Below 500: base crit for 2x XP. 500+: 50% for 2x. 750+: 50% for 2x or 25% for 3x. 1000+: 50% for 3x XP.`
       }
     };
 
