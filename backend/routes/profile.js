@@ -1,7 +1,8 @@
-const express = require('express');
-const db = require('../db');
-const { authenticateToken } = require('../middleware/auth');
-const { validateText } = require('../server/utils/profanityFilter');
+import express from 'express';
+import db from '../db.js';
+import { authenticateToken } from '../middleware/auth.js';
+import { validateText } from '../server/utils/profanityFilter.js';
+
 const router = express.Router();
 
 // ==========================================
@@ -489,4 +490,4 @@ router.post('/favorite-fish', authenticateToken, async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

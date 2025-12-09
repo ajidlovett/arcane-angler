@@ -1,6 +1,6 @@
-const express = require('express');
-const db = require('../db');
-const { authenticateToken } = require('../middleware/auth');
+import express from 'express';
+import db from '../db.js';
+import { authenticateToken } from '../middleware/auth.js';
 const router = express.Router();
 
 // Get complete player data
@@ -148,9 +148,14 @@ router.get('/data', authenticateToken, async (req, res) => {
 });
 
 // Save/update player data
+// DEPRECATED: This endpoint is deprecated and will be removed in a future version.
+// Use the new server-authoritative endpoints in /api/game/ instead.
+// This endpoint now only saves UI preferences and non-gameplay data to prevent cheating.
 router.post('/save', authenticateToken, async (req, res) => {
     const connection = await db.getConnection();
-    
+
+    console.warn('[DEPRECATED] /api/player/save called. Please migrate to /api/game/ endpoints.');
+
     try {
         const userId = req.user.userId;
         const {
@@ -164,6 +169,9 @@ router.post('/save', authenticateToken, async (req, res) => {
             totalRelicsEarned,
             discoveredFish, unlockedBiomes
         } = req.body;
+
+        // WARNING: This endpoint is deprecated and should not be used for gameplay data.
+        // It may be removed or restricted in future versions.
 
         await connection.beginTransaction();
 
@@ -275,7 +283,11 @@ router.post('/save', authenticateToken, async (req, res) => {
         );
 
         await connection.commit();
-        res.json({ message: 'Player data saved successfully' });
+        res.setHeader('X-Deprecation-Warning', 'This endpoint is deprecated. Use /api/game/ endpoints instead.');
+        res.json({
+            message: 'Player data saved successfully',
+            warning: 'DEPRECATED: Please migrate to server-authoritative /api/game/ endpoints to prevent security vulnerabilities.'
+        });
     } catch (error) {
         await connection.rollback();
         console.error('Save player data error:', error);
@@ -303,4 +315,4 @@ router.post('/quick-save', authenticateToken, async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

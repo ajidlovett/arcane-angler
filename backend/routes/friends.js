@@ -1,6 +1,7 @@
-const express = require('express');
-const db = require('../db');
-const { authenticateToken } = require('../middleware/auth');
+import express from 'express';
+import db from '../db.js';
+import { authenticateToken } from '../middleware/auth.js';
+
 const router = express.Router();
 
 // Get friends list
@@ -254,4 +255,4 @@ router.get('/check/:targetUserId', authenticateToken, async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

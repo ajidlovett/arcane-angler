@@ -1,5 +1,6 @@
-const express = require('express');
-const db = require('../db');
+import express from 'express';
+import db from '../db.js';
+
 const router = express.Router();
 
 // Get top players by level
@@ -182,4 +183,4 @@ router.get('/stats', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

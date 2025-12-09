@@ -1,5 +1,5 @@
-const nodemailer = require('nodemailer');
-const crypto = require('crypto');
+import nodemailer from 'nodemailer';
+import crypto from 'crypto';
 
 class EmailService {
     constructor() {
@@ -10,7 +10,7 @@ class EmailService {
     init() {
         const host = process.env.EMAIL_HOST;
         const user = process.env.EMAIL_USER;
-        
+
         if (!host || !user) {
             console.warn('EMAIL NOT CONFIGURED');
             return;
@@ -25,7 +25,7 @@ class EmailService {
                 pass: process.env.EMAIL_PASS
             }
         });
-        
+
         console.log('EMAIL CONFIGURED SUCCESSFULLY');
         console.log('Host:', host);
         console.log('User:', user);
@@ -45,7 +45,7 @@ class EmailService {
         }
 
         const link = process.env.FRONTEND_URL + '/verify-email?token=' + token;
-        
+
         try {
             await this.transporter.sendMail({
                 from: process.env.EMAIL_USER,
@@ -67,7 +67,7 @@ class EmailService {
         }
 
         const link = process.env.FRONTEND_URL + '/reset-password?token=' + token;
-        
+
         try {
             await this.transporter.sendMail({
                 from: process.env.EMAIL_USER,
@@ -84,4 +84,4 @@ class EmailService {
     }
 }
 
-module.exports = new EmailService();
+export default new EmailService();
