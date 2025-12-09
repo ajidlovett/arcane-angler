@@ -1433,11 +1433,6 @@ React.useEffect(() => {
       const loadProfile = async () => {
         try {
           const data = await window.ApiService.getMyProfile();
-          console.log('[Profile Debug] Loaded profile data:', {
-            equipped_title: data.profile.equipped_title,
-            achievements_count: player?.achievements?.length || 0,
-            profile_username: data.profile.profile_username
-          });
           setProfileData(data.profile);
           setBioText(data.profile.bio || '');
           setEquippedTitle(data.profile.equipped_title);
@@ -1494,10 +1489,8 @@ React.useEffect(() => {
     };
 
     const handleEquipTitle = async (achievementId) => {
-      console.log('[Title Debug] Equipping title:', achievementId);
       try {
-        const result = await window.ApiService.equipTitle(achievementId);
-        console.log('[Title Debug] Equip result:', result);
+        await window.ApiService.equipTitle(achievementId);
         setEquippedTitle(achievementId);
         setProfileData(prev => ({ ...prev, equipped_title: achievementId }));
         alert('Title equipped!');
@@ -1505,16 +1498,12 @@ React.useEffect(() => {
         // Reload profile data to ensure title persists
         try {
           const data = await window.ApiService.getMyProfile();
-          console.log('[Title Debug] Reloaded profile after equip:', {
-            equipped_title: data.profile.equipped_title
-          });
           setProfileData(data.profile);
           setEquippedTitle(data.profile.equipped_title);
         } catch (loadErr) {
           console.error('Failed to reload profile:', loadErr);
         }
       } catch (err) {
-        console.error('[Title Debug] Failed to equip title:', err);
         alert(err.message || 'Failed to equip title');
       }
     };
@@ -1588,16 +1577,8 @@ React.useEffect(() => {
 
     // Get equipped title name
     const getEquippedTitleName = () => {
-      if (!equippedTitle) {
-        console.log('[Title Debug] No equipped title');
-        return null;
-      }
+      if (!equippedTitle) return null;
       const achievement = window.ACHIEVEMENTS.find(a => a.id === equippedTitle);
-      console.log('[Title Debug] Looking up title:', {
-        equippedTitle,
-        found: !!achievement,
-        titleText: achievement?.title
-      });
       return achievement ? achievement.title : null;
     };
 
