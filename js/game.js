@@ -205,6 +205,30 @@ useEffect(() => {
   localStorage.setItem('arcaneAnglerTheme', currentTheme);
 }, [currentTheme]);
 
+// Cast Line Button Color Options
+const buttonColors = {
+  blue: { bg: 'bg-blue-600', hover: 'bg-blue-500', text: 'text-white', name: 'Ocean Blue' },
+  green: { bg: 'bg-green-600', hover: 'bg-green-500', text: 'text-white', name: 'Forest Green' },
+  purple: { bg: 'bg-purple-600', hover: 'bg-purple-500', text: 'text-white', name: 'Royal Purple' },
+  red: { bg: 'bg-red-600', hover: 'bg-red-500', text: 'text-white', name: 'Crimson Red' },
+  orange: { bg: 'bg-orange-600', hover: 'bg-orange-500', text: 'text-white', name: 'Sunset Orange' },
+  pink: { bg: 'bg-pink-600', hover: 'bg-pink-500', text: 'text-white', name: 'Rose Pink' },
+  teal: { bg: 'bg-teal-600', hover: 'bg-teal-500', text: 'text-white', name: 'Teal Wave' },
+  indigo: { bg: 'bg-indigo-600', hover: 'bg-indigo-500', text: 'text-white', name: 'Deep Indigo' },
+  yellow: { bg: 'bg-yellow-600', hover: 'bg-yellow-500', text: 'text-black', name: 'Golden Yellow' },
+  gray: { bg: 'bg-gray-600', hover: 'bg-gray-500', text: 'text-white', name: 'Steel Gray' },
+};
+
+const [castButtonColor, setCastButtonColor] = useState(() => {
+  const saved = localStorage.getItem('castButtonColor');
+  return saved && buttonColors[saved] ? saved : 'blue';
+});
+
+// Save button color preference
+useEffect(() => {
+  localStorage.setItem('castButtonColor', castButtonColor);
+}, [castButtonColor]);
+
 // Helper function to get display title from equipped title
 const [equippedTitle, setEquippedTitle] = useState(null);
 
@@ -717,13 +741,44 @@ useEffect(() => {
           </div>
         </div>
 
+        {/* Cast Line Button Color */}
+        <div className="mb-8">
+          <h3 className={`text-[1.05rem] font-bold mb-4 text-${theme.accent}`}>Cast Line Button Color</h3>
+          <p className={`text-sm text-${theme.textMuted} mb-4`}>
+            Customize the color of your fishing button
+          </p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            {Object.entries(buttonColors).map(([key, colorObj]) => (
+              <button
+                key={key}
+                onClick={() => setCastButtonColor(key)}
+                className={`p-3 rounded-lg border-2 transition-all ${
+                  castButtonColor === key
+                    ? `border-${theme.accent} bg-${theme.hover}`
+                    : `border-${theme.border} hover:border-${theme.borderLight}`
+                }`}
+              >
+                <div className={`${colorObj.bg} ${colorObj.text} rounded py-2 px-3 text-xs font-bold mb-2 text-center`}>
+                  Cast Line
+                </div>
+                <div className="text-xs text-center">{colorObj.name}</div>
+                {castButtonColor === key && <div className="text-center mt-1 text-[1.05rem]">✓</div>}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Info Section */}
         <div className={`bg-${theme.surface} p-4 rounded-lg border border-${theme.border}`}>
           <p className={`text-sm text-${theme.textMuted}`}>
             <strong>Current Theme:</strong> {theme.name}
           </p>
+          <p className={`text-sm text-${theme.textMuted} mt-1`}>
+            <strong>Cast Button:</strong> {buttonColors[castButtonColor].name}
+          </p>
           <p className={`text-xs text-${theme.textDim} mt-2`}>
-            Your theme preference is automatically saved and will persist across sessions.
+            Your preferences are automatically saved and will persist across sessions.
           </p>
         </div>
       </div>
@@ -763,6 +818,11 @@ useEffect(() => {
           >
             {Icons.X()}
           </button>
+
+          {/* Logo */}
+          <div className="p-4 flex justify-center border-b border-${theme.border}">
+            <img src="/arcane-angler-200p.png" alt="Arcane Angler" className="w-32 h-auto" />
+          </div>
 
           <nav className="flex-1 overflow-y-auto py-3">
             {menuItems.map(({ id, icon: Icon, label }) => (
@@ -876,7 +936,7 @@ useEffect(() => {
           <button
             onClick={handleFish}
             disabled={cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0)}
-            className={`w-full py-3 rounded-lg font-bold text-base sm:text-[1.05rem] transition-all ${cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed' : `bg-${theme.accent} hover:bg-${theme.accentHover} active:scale-95 shadow-lg`}`}
+            className={`w-full py-3 rounded-lg font-bold text-base sm:text-[1.05rem] transition-all ${cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed text-gray-400' : `${buttonColors[castButtonColor].bg} hover:${buttonColors[castButtonColor].hover} ${buttonColors[castButtonColor].text} active:scale-95 shadow-lg`}`}
           >
             {fishing ? '🎣 Fishing...' : cooldown > 0 ? `⏱️ Cooldown: ${cooldown}s` : '🎣 Cast Line'}
           </button>
@@ -2891,14 +2951,14 @@ useEffect(() => {
           </div>
 
           <div className="space-y-2">
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 py-1.5 text-center`}>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-9 flex items-center justify-center`}>
               <div className={`text-[10px] text-${theme.textMuted}`}>
-                {user?.profileUsername || user?.username}
+                {user?.profile_username || user?.profileUsername || user?.username}
                 {getDisplayTitle() && <span> - {getDisplayTitle()}</span>}
               </div>
             </div>
 
-            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-3 py-1.5`}>
+            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-3 h-9`}>
               <div className="flex items-center gap-2">
                 <span className={`text-xs text-${theme.textMuted}`}>Level: {player.level}</span>
               </div>
@@ -2913,7 +2973,7 @@ useEffect(() => {
               <span className={`text-xs text-${theme.textMuted}`}>{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
             </div>
 
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 py-1.5 flex items-center gap-2`}>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-9 flex items-center gap-2`}>
               <div className="flex items-center gap-1 flex-[7]">
                 <span>🪙</span>
                 <span className="text-[10px] font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
@@ -2928,17 +2988,17 @@ useEffect(() => {
         </div>
 
         <div className={`hidden lg:block bg-${theme.primarySolid} border-b-2 border-${theme.border} p-3`}>
-          <h1 className={`text-sm font-bold text-${theme.accent} text-center`}>⚡ Arcane Angler</h1>
+          <h1 className={`text-sm font-bold text-${theme.accent} text-center mb-1`}>⚡ Arcane Angler</h1>
 
           <div className="max-w-4xl mx-auto space-y-2">
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 py-2 text-center`}>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 h-10 flex items-center justify-center`}>
               <div className={`text-xs text-${theme.textMuted}`}>
-                {user?.profileUsername || user?.username}
+                {user?.profile_username || user?.profileUsername || user?.username}
                 {getDisplayTitle() && <span> - {getDisplayTitle()}</span>}
               </div>
             </div>
 
-            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-4 py-2`}>
+            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-4 h-10`}>
               <div className="flex items-center gap-2">
                 <span className={`text-sm text-${theme.textMuted}`}>Level: {player.level}</span>
               </div>
@@ -2953,7 +3013,7 @@ useEffect(() => {
               <span className={`text-sm text-${theme.textMuted}`}>{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
             </div>
 
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 py-2 flex items-center gap-3`}>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 h-10 flex items-center gap-3`}>
               <div className="flex items-center gap-2 flex-[7]">
                 <span>🪙</span>
                 <span className="text-sm font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
