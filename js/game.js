@@ -680,74 +680,128 @@ React.useEffect(() => {
           <button
             onClick={handleFish}
             disabled={cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0)}
-            className={`w-full py-4 sm:py-6 rounded-lg font-bold text-lg sm:text-xl transition-all ${cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 active:scale-95 shadow-lg'}`}
+            className={`w-full py-3 rounded-lg font-bold text-base sm:text-lg transition-all ${cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 active:scale-95 shadow-lg'}`}
           >
             {fishing ? '🎣 Fishing...' : cooldown > 0 ? `⏱️ Cooldown: ${cooldown}s` : '🎣 Cast Line'}
           </button>
         </div>
 
-        {/* Right Column: Fishing Stats */}
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
-          <h3 className="font-bold mb-3 text-sm sm:text-base">Total Fishing Stats</h3>
-          <div className="text-xs sm:text-sm text-blue-300 space-y-1">
-            <div>Base Stats: STR {player.stats.strength} | INT {player.stats.intelligence} | LUCK {player.stats.luck} | STAM {player.stats.stamina}</div>
-            <div className="text-green-400">Total Stats: STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
-            <div className="border-t border-blue-800 my-2 pt-2">
-              <div>Normal fish: 1-{1 + Math.floor(getTotalStats().strength / 100)} per catch</div>
-              <div>Boss fish value: {(1 + (getTotalStats().strength * 0.02)).toFixed(2)}x multiplier</div>
-              <div>Gold multiplier: {(1 + (Math.pow(getTotalStats().intelligence, 0.7) * 0.05)).toFixed(2)}x when selling</div>
-              <div>Jackpot weight: +{getTotalStats().luck}% for Legendary/Mythic/Exotic/Arcane/Treasure</div>
-              <div>Critical Catch: {Math.min(getTotalStats().stamina / 10, 50).toFixed(1)}% chance</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Catch Result - Full Width Below */}
-      {lastCatch && (
-        <div
-          className="mt-4 p-3 sm:p-4 bg-blue-950 rounded-lg border-4 shadow-xl"
-          style={isGradientRarity(lastCatch.rarity) ? {
-            borderImage: `${rarityColors[lastCatch.rarity]} 1`,
-            borderImageSlice: 1
-          } : { borderColor: getRarityColor(lastCatch.rarity) }}
-        >
-          <div className="text-center mb-3 pb-3 border-b border-blue-800">
-            <p className="text-xs sm:text-sm text-blue-300 italic">{funnyLine}</p>
-          </div>
-
-          <div className="text-center">
-            <div className="text-xs uppercase tracking-wide mb-1" style={getGradientTextStyle(lastCatch.rarity)}>
-              {lastCatch.rarity}
-            </div>
-            <div className="text-xl sm:text-2xl font-bold mb-2">{lastCatch.fish}</div>
-
-            {lastCatch.isTreasure ? (
-              <div className="space-y-1">
-                <div className="text-base sm:text-lg text-yellow-400">🎁 Treasure Found!</div>
-                <div className="flex justify-center gap-4 text-sm sm:text-base">
-                  <span className="text-yellow-400">+{lastCatch.gold} Gold</span>
-                  <span className="text-purple-400">+{lastCatch.relics} Relics</span>
-                </div>
-                <div className="text-xs text-green-400">+{lastCatch.xp} XP</div>
+        {/* Right Column: Catch Result */}
+        <div className="lg:block hidden">
+          {lastCatch ? (
+            <div
+              className="p-3 sm:p-4 bg-blue-950 rounded-lg border-4 shadow-xl h-full"
+              style={isGradientRarity(lastCatch.rarity) ? {
+                borderImage: `${rarityColors[lastCatch.rarity]} 1`,
+                borderImageSlice: 1
+              } : { borderColor: getRarityColor(lastCatch.rarity) }}
+            >
+              <div className="text-center mb-3 pb-3 border-b border-blue-800">
+                <p className="text-xs sm:text-sm text-blue-300 italic">{funnyLine}</p>
               </div>
-            ) : (
-              <div>
-                <div className="flex justify-center items-center gap-3 text-sm sm:text-base mb-1">
-                  <span className="text-blue-200">Caught {lastCatch.count}x</span>
-                  <span className="text-blue-400">|</span>
-                  <span className="text-green-400">+{lastCatch.xp} XP</span>
+
+              <div className="text-center">
+                <div className="text-xs uppercase tracking-wide mb-1" style={getGradientTextStyle(lastCatch.rarity)}>
+                  {lastCatch.rarity}
                 </div>
-                {lastCatch.titanBonus && (
-                  <div className="text-xs text-orange-400">
-                    ⚡ Titan Bonus: {lastCatch.titanBonus.toFixed(2)}x Gold Value!
+                <div className="text-xl sm:text-2xl font-bold mb-2">{lastCatch.fish}</div>
+
+                {lastCatch.isTreasure ? (
+                  <div className="space-y-1">
+                    <div className="text-base sm:text-lg text-yellow-400">🎁 Treasure Found!</div>
+                    <div className="flex justify-center gap-4 text-sm sm:text-base">
+                      <span className="text-yellow-400">+{lastCatch.gold} Gold</span>
+                      <span className="text-purple-400">+{lastCatch.relics} Relics</span>
+                    </div>
+                    <div className="text-xs text-green-400">+{lastCatch.xp} XP</div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex justify-center items-center gap-3 text-sm sm:text-base mb-1">
+                      <span className="text-blue-200">Caught {lastCatch.count}x</span>
+                      <span className="text-blue-400">|</span>
+                      <span className="text-green-400">+{lastCatch.xp} XP</span>
+                    </div>
+                    {lastCatch.titanBonus && (
+                      <div className="text-xs text-orange-400">
+                        ⚡ Titan Bonus: {lastCatch.titanBonus.toFixed(2)}x Gold Value!
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            )}
+            </div>
+          ) : (
+            <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6 h-full flex items-center justify-center">
+              <p className="text-blue-400 text-sm italic">Cast your line to catch fish!</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile: Catch Result Below */}
+      {lastCatch && (
+        <div className="lg:hidden mt-4">
+          <div
+            className="p-3 sm:p-4 bg-blue-950 rounded-lg border-4 shadow-xl"
+            style={isGradientRarity(lastCatch.rarity) ? {
+              borderImage: `${rarityColors[lastCatch.rarity]} 1`,
+              borderImageSlice: 1
+            } : { borderColor: getRarityColor(lastCatch.rarity) }}
+          >
+            <div className="text-center mb-3 pb-3 border-b border-blue-800">
+              <p className="text-xs sm:text-sm text-blue-300 italic">{funnyLine}</p>
+            </div>
+
+            <div className="text-center">
+              <div className="text-xs uppercase tracking-wide mb-1" style={getGradientTextStyle(lastCatch.rarity)}>
+                {lastCatch.rarity}
+              </div>
+              <div className="text-xl sm:text-2xl font-bold mb-2">{lastCatch.fish}</div>
+
+              {lastCatch.isTreasure ? (
+                <div className="space-y-1">
+                  <div className="text-base sm:text-lg text-yellow-400">🎁 Treasure Found!</div>
+                  <div className="flex justify-center gap-4 text-sm sm:text-base">
+                    <span className="text-yellow-400">+{lastCatch.gold} Gold</span>
+                    <span className="text-purple-400">+{lastCatch.relics} Relics</span>
+                  </div>
+                  <div className="text-xs text-green-400">+{lastCatch.xp} XP</div>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex justify-center items-center gap-3 text-sm sm:text-base mb-1">
+                    <span className="text-blue-200">Caught {lastCatch.count}x</span>
+                    <span className="text-blue-400">|</span>
+                    <span className="text-green-400">+{lastCatch.xp} XP</span>
+                  </div>
+                  {lastCatch.titanBonus && (
+                    <div className="text-xs text-orange-400">
+                      ⚡ Titan Bonus: {lastCatch.titanBonus.toFixed(2)}x Gold Value!
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
+
+      {/* Fishing Stats - Full Width at Bottom */}
+      <div className="mt-4 bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+        <h3 className="font-bold mb-3 text-sm sm:text-base">Total Fishing Stats</h3>
+        <div className="text-xs sm:text-sm text-blue-300 space-y-1">
+          <div>Base Stats: STR {player.stats.strength} | INT {player.stats.intelligence} | LUCK {player.stats.luck} | STAM {player.stats.stamina}</div>
+          <div className="text-green-400">Total Stats: STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
+          <div className="border-t border-blue-800 my-2 pt-2">
+            <div>Normal fish: 1-{1 + Math.floor(getTotalStats().strength / 100)} per catch</div>
+            <div>Boss fish value: {(1 + (getTotalStats().strength * 0.02)).toFixed(2)}x multiplier</div>
+            <div>Gold multiplier: {(1 + (Math.pow(getTotalStats().intelligence, 0.7) * 0.05)).toFixed(2)}x when selling</div>
+            <div>Jackpot weight: +{getTotalStats().luck}% for Legendary/Mythic/Exotic/Arcane/Treasure</div>
+            <div>Critical Catch: {Math.min(getTotalStats().stamina / 10, 50).toFixed(1)}% chance</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 
@@ -1310,7 +1364,7 @@ React.useEffect(() => {
                           : 'bg-gray-600 cursor-not-allowed'
                       }`}
                     >
-                      Upgrade ({upgradeCost} 💎)
+                      Upgrade ({upgradeCost} 🔮)
                     </button>
                   </div>
                   
@@ -1987,7 +2041,7 @@ React.useEffect(() => {
               onClick={() => setEditingName(true)}
               className="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded font-bold text-sm"
             >
-              Change Name ({nameChangeCost === 0 ? 'FREE' : `${nameChangeCost} 💎`})
+              Change Name ({nameChangeCost === 0 ? 'FREE' : `${nameChangeCost} 🔮`})
             </button>
           </div>
         </div>
@@ -2066,7 +2120,7 @@ React.useEffect(() => {
             </div>
             <div className="bg-blue-950 p-3 rounded">
               <div className="text-blue-400">Treasure Chests</div>
-              <div className="font-bold">💎 {player.treasureChestsFound}</div>
+              <div className="font-bold">🔮 {player.treasureChestsFound}</div>
             </div>
             <div className="bg-blue-950 p-3 rounded">
               <div className="text-blue-400">Current Biome</div>
@@ -2600,17 +2654,31 @@ React.useEffect(() => {
         <Sidebar />
         <div className="flex-1 flex flex-col min-w-0">
         <div className="lg:hidden bg-blue-900 border-b-2 border-blue-700 p-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2">
             <button
               onClick={() => setSidebarOpen(true)}
               className="p-2 hover:bg-blue-800 rounded"
             >
               {Icons.Menu()}
             </button>
-            <h1 className="text-xs font-bold text-yellow-400">⚡ Arcane Angler</h1>
-            <div className="w-10"></div>
+            <div className="flex flex-col items-center">
+              <h1 className="text-xs font-bold text-yellow-400">⚡ Arcane Angler</h1>
+              <div className="text-[10px] text-blue-300">{user?.profileUsername || user?.username}</div>
+            </div>
+            <button
+              onClick={() => {
+                if (!document.fullscreenElement) {
+                  document.documentElement.requestFullscreen();
+                } else {
+                  document.exitFullscreen();
+                }
+              }}
+              className="p-2 hover:bg-blue-800 rounded text-sm"
+            >
+              ⛶
+            </button>
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex items-center justify-between bg-blue-800 bg-opacity-50 rounded px-3 py-1.5">
               <div className="flex items-center gap-2">
@@ -2627,24 +2695,23 @@ React.useEffect(() => {
               <span className="text-xs text-blue-300">{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
             </div>
 
-            <div className="bg-blue-800 bg-opacity-50 rounded px-3 py-1.5">
-              <div className="flex items-center justify-start gap-1">
+            <div className="bg-blue-800 bg-opacity-50 rounded px-3 py-1.5 flex items-center gap-2">
+              <div className="flex items-center gap-1 flex-[7]">
                 <span>🪙</span>
-                <span className="text-sm font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
+                <span className="text-xs font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
               </div>
-            </div>
-
-            <div className="bg-blue-800 bg-opacity-50 rounded px-3 py-1.5">
-              <div className="flex items-center justify-start gap-1">
+              <div className="h-4 w-px bg-blue-600"></div>
+              <div className="flex items-center gap-1 flex-[3]">
                 <span>🔮</span>
-                <span className="text-sm font-bold text-purple-400">{player.relics.toLocaleString()}</span>
+                <span className="text-xs font-bold text-purple-400">{player.relics.toLocaleString()}</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className="hidden lg:block bg-blue-900 border-b-2 border-blue-700 p-3">
-          <h1 className="text-sm font-bold text-yellow-400 text-center mb-3">⚡ Arcane Angler</h1>
+          <h1 className="text-sm font-bold text-yellow-400 text-center">⚡ Arcane Angler</h1>
+          <div className="text-xs text-blue-300 text-center mb-3">{user?.profileUsername || user?.username}</div>
 
           <div className="max-w-4xl mx-auto space-y-2">
             <div className="flex items-center justify-between bg-blue-800 bg-opacity-50 rounded px-4 py-2">
@@ -2662,15 +2729,13 @@ React.useEffect(() => {
               <span className="text-sm text-blue-300">{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
             </div>
 
-            <div className="bg-blue-800 bg-opacity-50 rounded px-4 py-2">
-              <div className="flex items-center justify-start gap-2">
+            <div className="bg-blue-800 bg-opacity-50 rounded px-4 py-2 flex items-center gap-3">
+              <div className="flex items-center gap-2 flex-[7]">
                 <span>🪙</span>
                 <span className="text-base font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
               </div>
-            </div>
-
-            <div className="bg-blue-800 bg-opacity-50 rounded px-4 py-2">
-              <div className="flex items-center justify-start gap-2">
+              <div className="h-5 w-px bg-blue-600"></div>
+              <div className="flex items-center gap-2 flex-[3]">
                 <span>🔮</span>
                 <span className="text-base font-bold text-purple-400">{player.relics.toLocaleString()}</span>
               </div>
