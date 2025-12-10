@@ -1429,7 +1429,7 @@ React.useEffect(() => {
 
     const loadUserNationality = async () => {
       try {
-        const profile = await apiService.getMyProfile();
+        const profile = await window.ApiService.getMyProfile();
         if (profile && profile.profile && profile.profile.nationality) {
           setUserNationality(profile.profile.nationality);
         }
@@ -1442,13 +1442,12 @@ React.useEffect(() => {
       try {
         setLoading(true);
         const nationality = selectedRegion === 'global' ? null : selectedRegion;
-        const result = await apiService.getLeaderboardByCategory(selectedCategory, nationality, 100);
+        const result = await window.ApiService.getLeaderboardByCategory(selectedCategory, nationality, 100);
 
         setLeaderboardData(result.leaderboard || []);
         setUserRank(result.userRank || null);
       } catch (error) {
         console.error('Failed to load leaderboard:', error);
-        showMessage('Failed to load leaderboard', 'error');
       } finally {
         setLoading(false);
       }
@@ -1457,7 +1456,7 @@ React.useEffect(() => {
     const loadGlobalStats = async () => {
       try {
         const nationality = selectedRegion === 'global' ? null : selectedRegion;
-        const stats = await apiService.getGlobalStats(nationality);
+        const stats = await window.ApiService.getGlobalStats(nationality);
         setGlobalStats(stats);
       } catch (error) {
         console.error('Failed to load global stats:', error);
@@ -1546,50 +1545,37 @@ React.useEffect(() => {
 
         {/* Region Filter */}
         <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 mb-4">
-          <div className="flex gap-2 flex-wrap">
-            <button
-              onClick={() => setSelectedRegion('global')}
-              className={`px-4 py-2 rounded transition-colors ${
-                selectedRegion === 'global'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-blue-900 text-blue-300 hover:bg-blue-800'
-              }`}
-            >
-              🌍 Global
-            </button>
+          <label className="block text-sm font-semibold text-blue-300 mb-2">
+            Region
+          </label>
+          <select
+            value={selectedRegion}
+            onChange={(e) => setSelectedRegion(e.target.value)}
+            className="w-full px-4 py-3 bg-blue-900 text-white rounded-lg border-2 border-blue-700 focus:border-blue-500 focus:outline-none text-lg"
+          >
+            <option value="global">🌍 Global</option>
             {userNationality && (
-              <button
-                onClick={() => setSelectedRegion(userNationality)}
-                className={`px-4 py-2 rounded transition-colors ${
-                  selectedRegion === userNationality
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-blue-900 text-blue-300 hover:bg-blue-800'
-                }`}
-              >
-                🌏 {userNationality}
-              </button>
+              <option value={userNationality}>🌏 {userNationality}</option>
             )}
-          </div>
+          </select>
         </div>
 
-        {/* Category Tabs */}
+        {/* Category Selection */}
         <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 mb-4">
-          <div className="flex gap-2 flex-wrap">
+          <label className="block text-sm font-semibold text-blue-300 mb-2">
+            Leaderboard Category
+          </label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full px-4 py-3 bg-blue-900 text-white rounded-lg border-2 border-blue-700 focus:border-blue-500 focus:outline-none text-lg"
+          >
             {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`px-3 py-2 rounded text-sm transition-colors ${
-                  selectedCategory === category.id
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-blue-900 text-blue-300 hover:bg-blue-800'
-                }`}
-              >
-                <span className="mr-1">{category.icon}</span>
-                {category.label}
-              </button>
+              <option key={category.id} value={category.id}>
+                {category.icon} {category.label}
+              </option>
             ))}
-          </div>
+          </select>
         </div>
 
         {/* Leaderboard Table */}
