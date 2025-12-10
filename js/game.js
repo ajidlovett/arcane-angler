@@ -1543,39 +1543,44 @@ React.useEffect(() => {
           </div>
         )}
 
-        {/* Region Filter */}
+        {/* Filters */}
         <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 mb-4">
-          <label className="block text-sm font-semibold text-blue-300 mb-2">
-            Region
-          </label>
-          <select
-            value={selectedRegion}
-            onChange={(e) => setSelectedRegion(e.target.value)}
-            className="w-full px-4 py-3 bg-blue-900 text-white rounded-lg border-2 border-blue-700 focus:border-blue-500 focus:outline-none text-lg"
-          >
-            <option value="global">🌍 Global</option>
-            {userNationality && (
-              <option value={userNationality}>🌏 {userNationality}</option>
-            )}
-          </select>
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Region Filter */}
+            <div>
+              <label className="block text-sm font-semibold text-blue-300 mb-2">
+                Region
+              </label>
+              <select
+                value={selectedRegion}
+                onChange={(e) => setSelectedRegion(e.target.value)}
+                className="w-full px-4 py-3 bg-blue-900 text-white rounded-lg border-2 border-blue-700 focus:border-blue-500 focus:outline-none text-lg"
+              >
+                <option value="global">🌍 Global</option>
+                {userNationality && (
+                  <option value={userNationality}>🌏 {userNationality}</option>
+                )}
+              </select>
+            </div>
 
-        {/* Category Selection */}
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 mb-4">
-          <label className="block text-sm font-semibold text-blue-300 mb-2">
-            Leaderboard Category
-          </label>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full px-4 py-3 bg-blue-900 text-white rounded-lg border-2 border-blue-700 focus:border-blue-500 focus:outline-none text-lg"
-          >
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.icon} {category.label}
-              </option>
-            ))}
-          </select>
+            {/* Category Selection */}
+            <div>
+              <label className="block text-sm font-semibold text-blue-300 mb-2">
+                Category
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-4 py-3 bg-blue-900 text-white rounded-lg border-2 border-blue-700 focus:border-blue-500 focus:outline-none text-lg"
+              >
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.icon} {category.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
 
         {/* Leaderboard Table */}
@@ -1615,6 +1620,9 @@ React.useEffect(() => {
                         </td>
                         <td className="px-4 py-3 text-white font-semibold">
                           {player.profile_username}
+                          {player.equipped_title && (
+                            <span className="text-yellow-400 ml-2">- {player.equipped_title}</span>
+                          )}
                         </td>
                         <td className="px-4 py-3 text-blue-300">
                           {player.nationality || '-'}
