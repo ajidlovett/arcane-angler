@@ -191,7 +191,15 @@ router.post('/cast', authenticateToken, async (req, res) => {
       );
 
       // Update fishpedia_stats (persistent catch tracking for Fishpedia)
-      await connection.query(
+      console.log('[DEBUG] Updating fishpedia_stats:', {
+        userId,
+        fishName: fish.name,
+        rarity,
+        count,
+        action: 'INSERT or UPDATE'
+      });
+
+      const [fishpediaResult] = await connection.query(
         `INSERT INTO fishpedia_stats (user_id, fish_name, rarity, total_caught, first_caught_at, last_caught_at)
          VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
          ON DUPLICATE KEY UPDATE
@@ -199,6 +207,12 @@ router.post('/cast', authenticateToken, async (req, res) => {
            last_caught_at = CURRENT_TIMESTAMP`,
         [userId, fish.name, rarity, count, count]
       );
+
+      console.log('[DEBUG] Fishpedia update result:', {
+        affectedRows: fishpediaResult.affectedRows,
+        insertId: fishpediaResult.insertId,
+        warningCount: fishpediaResult.warningCount
+      });
 
       // Update player data (NO GOLD - only XP and fish count!)
       await connection.query(
