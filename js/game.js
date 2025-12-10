@@ -1394,6 +1394,28 @@ React.useEffect(() => {
     const [leaderboardData, setLeaderboardData] = useState([]);
     const [userRank, setUserRank] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    // Helper function to convert country code to flag emoji
+    const getCountryFlag = (code) => {
+      if (!code) return '-';
+      const countries = {
+        'AF': '🇦🇫', 'AL': '🇦🇱', 'DZ': '🇩🇿', 'AR': '🇦🇷', 'AM': '🇦🇲', 'AU': '🇦🇺', 'AT': '🇦🇹', 'AZ': '🇦🇿',
+        'BH': '🇧🇭', 'BD': '🇧🇩', 'BY': '🇧🇾', 'BE': '🇧🇪', 'BO': '🇧🇴', 'BA': '🇧🇦', 'BR': '🇧🇷', 'BG': '🇧🇬',
+        'KH': '🇰🇭', 'CA': '🇨🇦', 'CL': '🇨🇱', 'CN': '🇨🇳', 'CO': '🇨🇴', 'CR': '🇨🇷', 'HR': '🇭🇷', 'CU': '🇨🇺',
+        'CY': '🇨🇾', 'CZ': '🇨🇿', 'DK': '🇩🇰', 'DO': '🇩🇴', 'EC': '🇪🇨', 'EG': '🇪🇬', 'SV': '🇸🇻', 'EE': '🇪🇪',
+        'ET': '🇪🇹', 'FI': '🇫🇮', 'FR': '🇫🇷', 'GE': '🇬🇪', 'DE': '🇩🇪', 'GH': '🇬🇭', 'GR': '🇬🇷', 'GT': '🇬🇹',
+        'HN': '🇭🇳', 'HK': '🇭🇰', 'HU': '🇭🇺', 'IS': '🇮🇸', 'IN': '🇮🇳', 'ID': '🇮🇩', 'IR': '🇮🇷', 'IQ': '🇮🇶',
+        'IE': '🇮🇪', 'IL': '🇮🇱', 'IT': '🇮🇹', 'JM': '🇯🇲', 'JP': '🇯🇵', 'JO': '🇯🇴', 'KZ': '🇰🇿', 'KE': '🇰🇪',
+        'KW': '🇰🇼', 'LV': '🇱🇻', 'LB': '🇱🇧', 'LY': '🇱🇾', 'LT': '🇱🇹', 'LU': '🇱🇺', 'MY': '🇲🇾', 'MX': '🇲🇽',
+        'MD': '🇲🇩', 'MA': '🇲🇦', 'NP': '🇳🇵', 'NL': '🇳🇱', 'NZ': '🇳🇿', 'NI': '🇳🇮', 'NG': '🇳🇬', 'KP': '🇰🇵',
+        'NO': '🇳🇴', 'OM': '🇴🇲', 'PK': '🇵🇰', 'PS': '🇵🇸', 'PA': '🇵🇦', 'PY': '🇵🇾', 'PE': '🇵🇪', 'PH': '🇵🇭',
+        'PL': '🇵🇱', 'PT': '🇵🇹', 'PR': '🇵🇷', 'QA': '🇶🇦', 'RO': '🇷🇴', 'RU': '🇷🇺', 'SA': '🇸🇦', 'RS': '🇷🇸',
+        'SG': '🇸🇬', 'SK': '🇸🇰', 'SI': '🇸🇮', 'ZA': '🇿🇦', 'KR': '🇰🇷', 'ES': '🇪🇸', 'LK': '🇱🇰', 'SE': '🇸🇪',
+        'CH': '🇨🇭', 'SY': '🇸🇾', 'TW': '🇹🇼', 'TH': '🇹🇭', 'TN': '🇹🇳', 'TR': '🇹🇷', 'UA': '🇺🇦', 'AE': '🇦🇪',
+        'GB': '🇬🇧', 'US': '🇺🇸', 'UY': '🇺🇾', 'UZ': '🇺🇿', 'VE': '🇻🇪', 'VN': '🇻🇳', 'YE': '🇾🇪'
+      };
+      return countries[code] || code;
+    };
     const [globalStats, setGlobalStats] = useState(null);
     const [userNationality, setUserNationality] = useState(null);
 
@@ -1636,7 +1658,7 @@ React.useEffect(() => {
                           )}
                         </td>
                         <td className="px-4 py-3 text-blue-300">
-                          {player.nationality || '-'}
+                          {getCountryFlag(player.nationality)}
                         </td>
                         <td className="px-4 py-3 text-right text-white font-bold">
                           {formatNumber(getValueForCategory(player, selectedCategory))}
@@ -2661,10 +2683,7 @@ React.useEffect(() => {
             >
               {Icons.Menu()}
             </button>
-            <div className="flex flex-col items-center">
-              <h1 className="text-xs font-bold text-yellow-400">⚡ Arcane Angler</h1>
-              <div className="text-[10px] text-blue-300">{user?.profileUsername || user?.username}</div>
-            </div>
+            <h1 className="text-xs font-bold text-yellow-400">⚡ Arcane Angler</h1>
             <button
               onClick={() => {
                 if (!document.fullscreenElement) {
@@ -2680,6 +2699,13 @@ React.useEffect(() => {
           </div>
 
           <div className="space-y-2">
+            <div className="bg-blue-800 bg-opacity-50 rounded px-3 py-1.5 text-center">
+              <div className="text-[10px] text-blue-300">
+                {user?.profileUsername || user?.username}
+                {getDisplayTitle() && <span> - {getDisplayTitle()}</span>}
+              </div>
+            </div>
+
             <div className="flex items-center justify-between bg-blue-800 bg-opacity-50 rounded px-3 py-1.5">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-blue-300">Level: {player.level}</span>
@@ -2698,12 +2724,12 @@ React.useEffect(() => {
             <div className="bg-blue-800 bg-opacity-50 rounded px-3 py-1.5 flex items-center gap-2">
               <div className="flex items-center gap-1 flex-[7]">
                 <span>🪙</span>
-                <span className="text-xs font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
+                <span className="text-[10px] font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
               </div>
               <div className="h-4 w-px bg-blue-600"></div>
               <div className="flex items-center gap-1 flex-[3]">
                 <span>🔮</span>
-                <span className="text-xs font-bold text-purple-400">{player.relics.toLocaleString()}</span>
+                <span className="text-[10px] font-bold text-purple-400">{player.relics.toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -2711,9 +2737,15 @@ React.useEffect(() => {
 
         <div className="hidden lg:block bg-blue-900 border-b-2 border-blue-700 p-3">
           <h1 className="text-sm font-bold text-yellow-400 text-center">⚡ Arcane Angler</h1>
-          <div className="text-xs text-blue-300 text-center mb-3">{user?.profileUsername || user?.username}</div>
 
           <div className="max-w-4xl mx-auto space-y-2">
+            <div className="bg-blue-800 bg-opacity-50 rounded px-4 py-2 text-center">
+              <div className="text-xs text-blue-300">
+                {user?.profileUsername || user?.username}
+                {getDisplayTitle() && <span> - {getDisplayTitle()}</span>}
+              </div>
+            </div>
+
             <div className="flex items-center justify-between bg-blue-800 bg-opacity-50 rounded px-4 py-2">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-blue-300">Level: {player.level}</span>
@@ -2732,12 +2764,12 @@ React.useEffect(() => {
             <div className="bg-blue-800 bg-opacity-50 rounded px-4 py-2 flex items-center gap-3">
               <div className="flex items-center gap-2 flex-[7]">
                 <span>🪙</span>
-                <span className="text-base font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
+                <span className="text-sm font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
               </div>
               <div className="h-5 w-px bg-blue-600"></div>
               <div className="flex items-center gap-2 flex-[3]">
                 <span>🔮</span>
-                <span className="text-base font-bold text-purple-400">{player.relics.toLocaleString()}</span>
+                <span className="text-sm font-bold text-purple-400">{player.relics.toLocaleString()}</span>
               </div>
             </div>
           </div>
