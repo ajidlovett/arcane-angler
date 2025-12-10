@@ -195,9 +195,9 @@ router.post('/cast', authenticateToken, async (req, res) => {
         `INSERT INTO fishpedia_stats (user_id, fish_name, rarity, total_caught, first_caught_at, last_caught_at)
          VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
          ON DUPLICATE KEY UPDATE
-           total_caught = total_caught + VALUES(total_caught),
+           total_caught = total_caught + ?,
            last_caught_at = CURRENT_TIMESTAMP`,
-        [userId, fish.name, rarity, count]
+        [userId, fish.name, rarity, count, count]
       );
 
       // Update player data (NO GOLD - only XP and fish count!)
