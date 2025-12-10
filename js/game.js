@@ -554,13 +554,13 @@ React.useEffect(() => {
     return (
       <>
         {sidebarOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
-        
-        <div className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-blue-900 border-r-2 border-blue-700 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
+
+        <div className={`fixed lg:static inset-y-0 left-0 z-50 w-56 bg-blue-900 border-r-2 border-blue-700 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
           <button
             onClick={() => setSidebarOpen(false)}
             className="lg:hidden absolute top-4 right-4 p-2 text-white hover:bg-blue-800 rounded"
@@ -568,31 +568,7 @@ React.useEffect(() => {
             {Icons.X()}
           </button>
 
-          <div className="p-4 border-b border-blue-700">
-
-            <div className="space-y-3">
-
-              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
-
-                <div className="text-xs text-yellow-300">Gold</div>
-
-                <div className="text-lg font-bold text-yellow-400">{player.gold.toLocaleString()}</div>
-
-              </div>
-
-              <div className="bg-blue-800 bg-opacity-50 rounded p-2">
-
-                <div className="text-xs text-purple-300">Relics</div>
-
-                <div className="text-lg font-bold text-purple-400">{player.relics}</div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <nav className="flex-1 overflow-y-auto py-4">
+          <nav className="flex-1 overflow-y-auto py-3">
             {menuItems.map(({ id, icon: Icon, label }) => (
               <button
                 key={id}
@@ -600,205 +576,180 @@ React.useEffect(() => {
                   setCurrentPage(id);
                   setSidebarOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 px-6 py-3 font-bold transition-colors text-left ${currentPage === id ? 'bg-blue-700 text-white border-l-4 border-yellow-400' : 'text-blue-300 hover:bg-blue-800 hover:text-white'}`}
+                className={`w-full flex items-center gap-2 px-4 py-2 text-sm font-bold transition-colors text-left ${currentPage === id ? 'bg-blue-700 text-white border-l-4 border-yellow-400' : 'text-blue-300 hover:bg-blue-800 hover:text-white'}`}
               >
-                <span className="w-5 flex-shrink-0">{Icon()}</span>
+                <span className="w-4 flex-shrink-0">{Icon()}</span>
                 <span>{label}</span>
               </button>
             ))}
+
+            <div className="mx-4 my-3 border-t border-blue-700"></div>
+
+            <div className="px-4 space-y-2">
+              <div className="text-xs font-bold text-yellow-400">
+                {window.BIOMES[player.currentBiome].name}
+              </div>
+              <div className="text-xs text-blue-300">
+                Biome {player.currentBiome} of {Object.keys(window.BIOMES).length}
+              </div>
+
+              <button
+                onClick={handleSaveAndLogout}
+                className="w-full px-3 py-1.5 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-bold"
+              >
+                Logout
+              </button>
+
+              {user && (
+                <div className="text-xs text-gray-400">
+                  Playing as: {user.profileUsername || user.username}
+                </div>
+              )}
+
+              <button
+                onClick={() => {
+                  if (confirm('Are you sure you want to reset your save? This cannot be undone!')) {
+                    localStorage.removeItem('arcaneAnglerSave');
+                    window.location.reload();
+                  }
+                }}
+                className="w-full px-3 py-1.5 bg-red-900 hover:bg-red-800 rounded text-xs font-bold text-red-200 flex items-center justify-center gap-1"
+              >
+                {Icons.Trash2()} Reset
+              </button>
+            </div>
           </nav>
-
-          <div className="p-4 border-t border-blue-700">
-            <div className="text-sm font-bold text-yellow-400 mb-1">
-              {window.BIOMES[player.currentBiome].name}
-            </div>
-            <div className="text-xs text-blue-300 mb-3">
-              Biome {player.currentBiome} of {Object.keys(window.BIOMES).length}
-            </div>
-            
-            <button
-  onClick={handleSaveAndLogout}
-  className="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
->
-  Logout
-</button>
-
-{user && (
-  <div className="text-sm text-gray-500 mt-2">
-    Playing as: {user.profileUsername || user.username}
-  </div>
-)}
-
-            <button
-              onClick={() => {
-                if (confirm('Are you sure you want to reset your save? This cannot be undone!')) {
-                  localStorage.removeItem('arcaneAnglerSave');
-                  window.location.reload();
-                }
-              }}
-              className="w-full px-3 py-2 bg-red-900 hover:bg-red-800 rounded text-xs font-bold text-red-200"
-            >
-              {Icons.Trash2()} Reset Save
-            </button>
-          </div>
         </div>
       </>
     );
   };
 
   const FishingPage = () => (
-    <div className="max-w-2xl mx-auto">
-      <div className="hidden lg:block mb-6">
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 text-center">
-            <div className="text-sm text-blue-300">Level</div>
-            <div className="text-3xl font-bold">{player.level}</div>
-          </div>
-          <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 text-center">
-            <div className="text-sm text-yellow-300">Gold</div>
-            <div className="text-3xl font-bold text-yellow-400">{player.gold.toLocaleString()}</div>
-          </div>
-          <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 text-center">
-            <div className="text-sm text-purple-300">Relics</div>
-            <div className="text-3xl font-bold text-purple-400">{player.relics}</div>
-          </div>
-        </div>
-        
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-blue-300">Experience Progress</div>
-            <div className="text-sm font-bold text-white">{player.xp} / {player.xpToNext}</div>
-          </div>
-          <div className="bg-blue-950 rounded-full h-4">
-            <div 
-              className="bg-gradient-to-r from-green-400 to-green-500 h-4 rounded-full transition-all duration-300 flex items-center justify-center"
-              style={{ width: `${(player.xp / player.xpToNext) * 100}%` }}
+    <div className="max-w-6xl mx-auto">
+      <div className="grid lg:grid-cols-2 gap-4">
+        {/* Left Column: Main Interaction */}
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2">
+              <span>🎣</span>
+              {window.BIOMES[player.currentBiome].name}
+            </h2>
+            <button
+              onClick={() => setCurrentPage('biomes')}
+              className="px-2 py-1 bg-blue-700 hover:bg-blue-600 rounded text-xs font-bold"
             >
-              <span className="text-xs font-bold text-white px-2">
-                {Math.floor((player.xp / player.xpToNext) * 100)}%
-              </span>
+              Change
+            </button>
+          </div>
+
+          <p className="text-xs text-blue-300 mb-4 italic">
+            {window.BIOMES[player.currentBiome].description}
+          </p>
+
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="bg-blue-950 p-3 rounded">
+              <div className="text-xs text-blue-400 mb-1">🎣 Rod</div>
+              <div className="text-sm font-bold">{player.equippedRod || 'None'}</div>
+              {player.equippedRod && window.RODS[player.equippedRod] && (
+                <div className="text-xs text-green-400 mt-1">
+                  {window.RODS[player.equippedRod].str > 0 && `+${window.RODS[player.equippedRod].str} STR `}
+                  {window.RODS[player.equippedRod].int > 0 && `+${window.RODS[player.equippedRod].int} INT `}
+                  {window.RODS[player.equippedRod].luck > 0 && `+${window.RODS[player.equippedRod].luck} LUCK `}
+                  {window.RODS[player.equippedRod].stam > 0 && `+${window.RODS[player.equippedRod].stam} STAM`}
+                </div>
+              )}
+            </div>
+            <div className="bg-blue-950 p-3 rounded">
+              <div className="text-xs text-blue-400 mb-1">🪱 Bait</div>
+              <div className="text-sm font-bold">{player.equippedBait}</div>
+              {player.equippedBait && player.equippedBait !== 'Stale Bread Crust' && (
+                <div className="text-xs text-blue-300 mt-1">
+                  {player.baitInventory[player.equippedBait] || 0} left
+                </div>
+              )}
+              {player.equippedBait && window.BAITS[player.equippedBait] && (
+                <div className="text-xs text-green-400 mt-1">
+                  {window.BAITS[player.equippedBait].str > 0 && `+${window.BAITS[player.equippedBait].str} STR `}
+                  {window.BAITS[player.equippedBait].int > 0 && `+${window.BAITS[player.equippedBait].int} INT `}
+                  {window.BAITS[player.equippedBait].luck > 0 && `+${window.BAITS[player.equippedBait].luck} LUCK`}
+                </div>
+              )}
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-            <span>{Icons.Fish()}</span>
-            {window.BIOMES[player.currentBiome].name}
-          </h2>
           <button
-            onClick={() => setCurrentPage('biomes')}
-            className="hidden lg:flex items-center gap-1 px-3 py-2 bg-blue-700 hover:bg-blue-600 rounded text-sm font-bold"
+            onClick={handleFish}
+            disabled={cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0)}
+            className={`w-full py-4 sm:py-6 rounded-lg font-bold text-lg sm:text-xl transition-all ${cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 active:scale-95 shadow-lg'}`}
           >
-            Change Biome {Icons.ChevronRight()}
+            {fishing ? '🎣 Fishing...' : cooldown > 0 ? `⏱️ Cooldown: ${cooldown}s` : '🎣 Cast Line'}
           </button>
         </div>
-        
-        <p className="text-xs sm:text-sm text-blue-300 mb-4 italic">
-          {window.BIOMES[player.currentBiome].description}
-        </p>
 
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          <div className="bg-blue-950 p-3 rounded">
-            <div className="text-xs text-blue-400 mb-1">🎣 Rod</div>
-            <div className="text-sm font-bold">{player.equippedRod || 'None'}</div>
-            {player.equippedRod && window.RODS[player.equippedRod] && (
-              <div className="text-xs text-green-400 mt-1">
-                {window.RODS[player.equippedRod].str > 0 && `+${window.RODS[player.equippedRod].str} STR `}
-                {window.RODS[player.equippedRod].int > 0 && `+${window.RODS[player.equippedRod].int} INT `}
-                {window.RODS[player.equippedRod].luck > 0 && `+${window.RODS[player.equippedRod].luck} LUCK `}
-                {window.RODS[player.equippedRod].stam > 0 && `+${window.RODS[player.equippedRod].stam} STAM`}
-              </div>
-            )}
-          </div>
-          <div className="bg-blue-950 p-3 rounded">
-            <div className="text-xs text-blue-400 mb-1">🪱 Bait</div>
-            <div className="text-sm font-bold">{player.equippedBait}</div>
-            {player.equippedBait && player.equippedBait !== 'Stale Bread Crust' && (
-              <div className="text-xs text-blue-300 mt-1">
-                {player.baitInventory[player.equippedBait] || 0} left
-              </div>
-            )}
-            {player.equippedBait && window.BAITS[player.equippedBait] && (
-              <div className="text-xs text-green-400 mt-1">
-                {window.BAITS[player.equippedBait].str > 0 && `+${window.BAITS[player.equippedBait].str} STR `}
-                {window.BAITS[player.equippedBait].int > 0 && `+${window.BAITS[player.equippedBait].int} INT `}
-                {window.BAITS[player.equippedBait].luck > 0 && `+${window.BAITS[player.equippedBait].luck} LUCK`}
-              </div>
-            )}
-          </div>
-        </div>
-        
-        <button
-          onClick={handleFish}
-          disabled={cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0)}
-          className={`w-full py-4 sm:py-6 rounded-lg font-bold text-lg sm:text-xl transition-all ${cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 active:scale-95 shadow-lg'}`}
-        >
-          {fishing ? '🎣 Fishing...' : cooldown > 0 ? `⏱️ Cooldown: ${cooldown}s` : '🎣 Cast Line'}
-        </button>
-
-        {lastCatch && (
-          <div
-            className="mt-6 p-4 sm:p-6 bg-blue-950 rounded-lg border-4 shadow-xl"
-            style={isGradientRarity(lastCatch.rarity) ? {
-              borderImage: `${rarityColors[lastCatch.rarity]} 1`,
-              borderImageSlice: 1
-            } : { borderColor: getRarityColor(lastCatch.rarity) }}
-          >
-            <div className="text-center mb-4 pb-4 border-b border-blue-800">
-              <p className="text-sm sm:text-base text-blue-300 italic">{funnyLine}</p>
+        {/* Right Column: Fishing Stats */}
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+          <h3 className="font-bold mb-3 text-sm sm:text-base">Total Fishing Stats</h3>
+          <div className="text-xs sm:text-sm text-blue-300 space-y-1">
+            <div>Base Stats: STR {player.stats.strength} | INT {player.stats.intelligence} | LUCK {player.stats.luck} | STAM {player.stats.stamina}</div>
+            <div className="text-green-400">Total Stats: STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
+            <div className="border-t border-blue-800 my-2 pt-2">
+              <div>Normal fish: 1-{1 + Math.floor(getTotalStats().strength / 100)} per catch</div>
+              <div>Boss fish value: {(1 + (getTotalStats().strength * 0.02)).toFixed(2)}x multiplier</div>
+              <div>Gold multiplier: {(1 + (Math.pow(getTotalStats().intelligence, 0.7) * 0.05)).toFixed(2)}x when selling</div>
+              <div>Jackpot weight: +{getTotalStats().luck}% for Legendary/Mythic/Exotic/Arcane/Treasure</div>
+              <div>Critical Catch: {Math.min(getTotalStats().stamina / 10, 50).toFixed(1)}% chance</div>
             </div>
-
-            <div className="text-center">
-              <div className="text-xs sm:text-sm uppercase tracking-wide mb-1" style={getGradientTextStyle(lastCatch.rarity)}>
-                {lastCatch.rarity}
-              </div>
-              <div className="text-2xl sm:text-3xl font-bold mb-2">{lastCatch.fish}</div>
-              
-              {lastCatch.isTreasure ? (
-                <div className="space-y-2">
-                  <div className="text-lg sm:text-xl text-yellow-400">🎁 Treasure Found!</div>
-<div className="flex justify-center gap-4 text-base sm:text-lg">
-<span className="text-yellow-400">+{lastCatch.gold} Gold</span>
-<span className="text-purple-400">+{lastCatch.relics} Relics</span>
-</div>
-<div className="text-sm text-green-400">+{lastCatch.xp} XP</div>
-</div>
-) : (
-<div>
-<div className="text-lg sm:text-xl text-blue-200 mb-3">Caught: {lastCatch.count}x</div>
-{lastCatch.titanBonus && (
-<div className="text-xs sm:text-sm text-orange-400 mb-2">
-⚡ Titan Bonus: {lastCatch.titanBonus.toFixed(2)}x Gold Value!
-</div>
-)}
-<div className="flex justify-center gap-4 text-sm">
-<span className="text-green-400">+{lastCatch.xp} XP</span>
-</div>
-</div>
-)}
-</div>
-</div>
-)}
-    <div className="mt-6 p-4 bg-blue-950 rounded-lg">
-      <h3 className="font-bold mb-2 text-sm sm:text-base">Total Fishing Stats</h3>
-      <div className="text-xs sm:text-sm text-blue-300 space-y-1">
-        <div>Base Stats: STR {player.stats.strength} | INT {player.stats.intelligence} | LUCK {player.stats.luck} | STAM {player.stats.stamina}</div>
-        <div className="text-green-400">Total Stats: STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
-        <div className="border-t border-blue-800 my-2 pt-2">
-          <div>Normal fish: 1-{1 + Math.floor(getTotalStats().strength / 100)} per catch</div>
-          <div>Boss fish value: {(1 + (getTotalStats().strength * 0.02)).toFixed(2)}x multiplier</div>
-          <div>Gold multiplier: {(1 + (Math.pow(getTotalStats().intelligence, 0.7) * 0.05)).toFixed(2)}x when selling</div>
-          <div>Jackpot weight: +{getTotalStats().luck}% for Legendary/Mythic/Exotic/Arcane/Treasure</div>
-          <div>Critical Catch: {Math.min(getTotalStats().stamina / 10, 50).toFixed(1)}% chance</div>
+          </div>
         </div>
       </div>
+
+      {/* Catch Result - Full Width Below */}
+      {lastCatch && (
+        <div
+          className="mt-4 p-3 sm:p-4 bg-blue-950 rounded-lg border-4 shadow-xl"
+          style={isGradientRarity(lastCatch.rarity) ? {
+            borderImage: `${rarityColors[lastCatch.rarity]} 1`,
+            borderImageSlice: 1
+          } : { borderColor: getRarityColor(lastCatch.rarity) }}
+        >
+          <div className="text-center mb-3 pb-3 border-b border-blue-800">
+            <p className="text-xs sm:text-sm text-blue-300 italic">{funnyLine}</p>
+          </div>
+
+          <div className="text-center">
+            <div className="text-xs uppercase tracking-wide mb-1" style={getGradientTextStyle(lastCatch.rarity)}>
+              {lastCatch.rarity}
+            </div>
+            <div className="text-xl sm:text-2xl font-bold mb-2">{lastCatch.fish}</div>
+
+            {lastCatch.isTreasure ? (
+              <div className="space-y-1">
+                <div className="text-base sm:text-lg text-yellow-400">🎁 Treasure Found!</div>
+                <div className="flex justify-center gap-4 text-sm sm:text-base">
+                  <span className="text-yellow-400">+{lastCatch.gold} Gold</span>
+                  <span className="text-purple-400">+{lastCatch.relics} Relics</span>
+                </div>
+                <div className="text-xs text-green-400">+{lastCatch.xp} XP</div>
+              </div>
+            ) : (
+              <div>
+                <div className="flex justify-center items-center gap-3 text-sm sm:text-base mb-1">
+                  <span className="text-blue-200">Caught {lastCatch.count}x</span>
+                  <span className="text-blue-400">|</span>
+                  <span className="text-green-400">+{lastCatch.xp} XP</span>
+                </div>
+                {lastCatch.titanBonus && (
+                  <div className="text-xs text-orange-400">
+                    ⚡ Titan Bonus: {lastCatch.titanBonus.toFixed(2)}x Gold Value!
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-</div>
-);
+  );
 
   const EquipmentPage = () => {
     // shopTab is now managed at parent level to persist across re-renders
@@ -2656,41 +2607,75 @@ React.useEffect(() => {
             >
               {Icons.Menu()}
             </button>
-            <h1 className="text-xl font-bold text-yellow-400">⚡ Arcane Angler</h1>
+            <h1 className="text-xs font-bold text-yellow-400">⚡ Arcane Angler</h1>
             <div className="w-10"></div>
           </div>
           
-          <div className="grid grid-cols-3 gap-2 mb-3">
-            <div className="bg-blue-800 bg-opacity-50 rounded p-2 text-center">
-              <div className="text-xs text-blue-300">Lvl</div>
-              <div className="text-sm font-bold">{player.level}</div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between bg-blue-800 bg-opacity-50 rounded px-3 py-1.5">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-blue-300">Level: {player.level}</span>
+              </div>
+              <div className="flex-1 mx-3">
+                <div className="bg-blue-950 rounded-full h-1.5">
+                  <div
+                    className="bg-gradient-to-r from-green-400 to-green-500 h-1.5 rounded-full transition-all"
+                    style={{ width: `${(player.xp / player.xpToNext) * 100}%` }}
+                  />
+                </div>
+              </div>
+              <span className="text-xs text-blue-300">{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
             </div>
-            <div className="bg-blue-800 bg-opacity-50 rounded p-2 text-center">
-              <div className="text-xs text-yellow-300">Gold</div>
-              <div className="text-sm font-bold text-yellow-400">{player.gold >= 1000 ? `${(player.gold / 1000).toFixed(1)}k` : player.gold}</div>
+
+            <div className="bg-blue-800 bg-opacity-50 rounded px-3 py-1.5">
+              <div className="flex items-center justify-start gap-1">
+                <span>🪙</span>
+                <span className="text-sm font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
+              </div>
             </div>
-            <div className="bg-blue-800 bg-opacity-50 rounded p-2 text-center">
-              <div className="text-xs text-purple-300">Relic</div>
-              <div className="text-sm font-bold text-purple-400">{player.relics}</div>
-            </div>
-          </div>
-          
-          <div className="bg-blue-800 bg-opacity-50 rounded p-2">
-            <div className="flex items-center justify-between mb-1">
-              <div className="text-xs text-blue-300">XP</div>
-              <div className="text-xs font-bold">{player.xp}/{player.xpToNext}</div>
-            </div>
-            <div className="bg-blue-950 rounded-full h-2">
-              <div 
-                className="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full transition-all"
-                style={{ width: `${(player.xp / player.xpToNext) * 100}%` }}
-              />
+
+            <div className="bg-blue-800 bg-opacity-50 rounded px-3 py-1.5">
+              <div className="flex items-center justify-start gap-1">
+                <span>🔮</span>
+                <span className="text-sm font-bold text-purple-400">{player.relics.toLocaleString()}</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="hidden lg:block bg-blue-900 border-b-2 border-blue-700 p-4">
-          <h1 className="text-2xl font-bold text-yellow-400 text-center mb-4">⚡ Arcane Angler</h1>
+        <div className="hidden lg:block bg-blue-900 border-b-2 border-blue-700 p-3">
+          <h1 className="text-sm font-bold text-yellow-400 text-center mb-3">⚡ Arcane Angler</h1>
+
+          <div className="max-w-4xl mx-auto space-y-2">
+            <div className="flex items-center justify-between bg-blue-800 bg-opacity-50 rounded px-4 py-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-blue-300">Level: {player.level}</span>
+              </div>
+              <div className="flex-1 mx-4 max-w-md">
+                <div className="bg-blue-950 rounded-full h-2">
+                  <div
+                    className="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full transition-all"
+                    style={{ width: `${(player.xp / player.xpToNext) * 100}%` }}
+                  />
+                </div>
+              </div>
+              <span className="text-sm text-blue-300">{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
+            </div>
+
+            <div className="bg-blue-800 bg-opacity-50 rounded px-4 py-2">
+              <div className="flex items-center justify-start gap-2">
+                <span>🪙</span>
+                <span className="text-base font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <div className="bg-blue-800 bg-opacity-50 rounded px-4 py-2">
+              <div className="flex items-center justify-start gap-2">
+                <span>🔮</span>
+                <span className="text-base font-bold text-purple-400">{player.relics.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
         </div>
         
         <div className="flex-1 overflow-y-auto p-4">
