@@ -1,53 +1,181 @@
 -- Migration: Add comprehensive leaderboard tracking columns
 -- Date: 2025-12-10
 -- Description: Adds all required columns for comprehensive leaderboard tracking
+-- Compatible with MySQL 5.7+
 
 USE arcane_angler;
 
--- Add nationality column (from users table)
-ALTER TABLE leaderboard_stats
-ADD COLUMN IF NOT EXISTS nationality VARCHAR(10) DEFAULT NULL COMMENT 'ISO 3166-1 alpha-2 country code';
+-- Check and add columns one by one (compatible with older MySQL)
+-- We'll ignore errors if columns already exist
 
--- Add gameplay tracking columns
-ALTER TABLE leaderboard_stats
-ADD COLUMN IF NOT EXISTS total_casts BIGINT DEFAULT 0 COMMENT 'Total cast line actions',
-ADD COLUMN IF NOT EXISTS fish_sold BIGINT DEFAULT 0 COMMENT 'Total fish sold',
-ADD COLUMN IF NOT EXISTS gold_earned BIGINT DEFAULT 0 COMMENT 'Total gold earned over time',
-ADD COLUMN IF NOT EXISTS relics_earned INT DEFAULT 0 COMMENT 'Total relics earned over time';
+-- Add nationality column
+SET @db_name = 'arcane_angler';
+SET @table_name = 'leaderboard_stats';
+SET @column_name = 'nationality';
+SET @column_def = 'VARCHAR(10) DEFAULT NULL COMMENT "ISO 3166-1 alpha-2 country code"';
 
--- Add rarity-specific fish counts (some already exist, adding missing ones)
-ALTER TABLE leaderboard_stats
-ADD COLUMN IF NOT EXISTS common_caught INT DEFAULT 0 COMMENT 'Total common fish caught',
-ADD COLUMN IF NOT EXISTS uncommon_caught INT DEFAULT 0 COMMENT 'Total uncommon fish caught',
-ADD COLUMN IF NOT EXISTS fine_caught INT DEFAULT 0 COMMENT 'Total fine fish caught',
-ADD COLUMN IF NOT EXISTS rare_caught INT DEFAULT 0 COMMENT 'Total rare fish caught',
-ADD COLUMN IF NOT EXISTS epic_caught INT DEFAULT 0 COMMENT 'Total epic fish caught',
-ADD COLUMN IF NOT EXISTS treasure_caught INT DEFAULT 0 COMMENT 'Total treasure chests found',
-ADD COLUMN IF NOT EXISTS exotic_caught INT DEFAULT 0 COMMENT 'Total exotic fish caught',
-ADD COLUMN IF NOT EXISTS arcane_caught INT DEFAULT 0 COMMENT 'Total arcane fish caught';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (
+    SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name
+);
 
--- legendary_caught and mythic_caught already exist in the table
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column nationality already exists"');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
--- Add stats tracking columns
-ALTER TABLE leaderboard_stats
-ADD COLUMN IF NOT EXISTS total_stats_upgraded INT DEFAULT 0 COMMENT 'Total stat upgrades purchased',
-ADD COLUMN IF NOT EXISTS strength INT DEFAULT 1 COMMENT 'Current strength stat',
-ADD COLUMN IF NOT EXISTS intelligence INT DEFAULT 1 COMMENT 'Current intelligence stat',
-ADD COLUMN IF NOT EXISTS luck INT DEFAULT 1 COMMENT 'Current luck stat',
-ADD COLUMN IF NOT EXISTS stamina INT DEFAULT 100 COMMENT 'Current max stamina';
+-- Add total_casts
+SET @column_name = 'total_casts';
+SET @column_def = 'BIGINT DEFAULT 0 COMMENT "Total cast line actions"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
--- Create indexes for new leaderboard categories
-CREATE INDEX IF NOT EXISTS idx_casts_rank ON leaderboard_stats (total_casts DESC);
-CREATE INDEX IF NOT EXISTS idx_fish_sold_rank ON leaderboard_stats (fish_sold DESC);
-CREATE INDEX IF NOT EXISTS idx_gold_earned_rank ON leaderboard_stats (gold_earned DESC);
-CREATE INDEX IF NOT EXISTS idx_relics_earned_rank ON leaderboard_stats (relics_earned DESC);
-CREATE INDEX IF NOT EXISTS idx_treasure_rank ON leaderboard_stats (treasure_caught DESC);
-CREATE INDEX IF NOT EXISTS idx_stats_upgraded_rank ON leaderboard_stats (total_stats_upgraded DESC);
-CREATE INDEX IF NOT EXISTS idx_strength_rank ON leaderboard_stats (strength DESC);
-CREATE INDEX IF NOT EXISTS idx_intelligence_rank ON leaderboard_stats (intelligence DESC);
-CREATE INDEX IF NOT EXISTS idx_luck_rank ON leaderboard_stats (luck DESC);
-CREATE INDEX IF NOT EXISTS idx_stamina_rank ON leaderboard_stats (stamina DESC);
-CREATE INDEX IF NOT EXISTS idx_nationality ON leaderboard_stats (nationality);
+-- Add fish_sold
+SET @column_name = 'fish_sold';
+SET @column_def = 'BIGINT DEFAULT 0 COMMENT "Total fish sold"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add gold_earned
+SET @column_name = 'gold_earned';
+SET @column_def = 'BIGINT DEFAULT 0 COMMENT "Total gold earned over time"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add relics_earned
+SET @column_name = 'relics_earned';
+SET @column_def = 'INT DEFAULT 0 COMMENT "Total relics earned over time"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add common_caught
+SET @column_name = 'common_caught';
+SET @column_def = 'INT DEFAULT 0 COMMENT "Total common fish caught"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add uncommon_caught
+SET @column_name = 'uncommon_caught';
+SET @column_def = 'INT DEFAULT 0 COMMENT "Total uncommon fish caught"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add fine_caught
+SET @column_name = 'fine_caught';
+SET @column_def = 'INT DEFAULT 0 COMMENT "Total fine fish caught"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add rare_caught
+SET @column_name = 'rare_caught';
+SET @column_def = 'INT DEFAULT 0 COMMENT "Total rare fish caught"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add epic_caught
+SET @column_name = 'epic_caught';
+SET @column_def = 'INT DEFAULT 0 COMMENT "Total epic fish caught"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add treasure_caught
+SET @column_name = 'treasure_caught';
+SET @column_def = 'INT DEFAULT 0 COMMENT "Total treasure chests found"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add exotic_caught
+SET @column_name = 'exotic_caught';
+SET @column_def = 'INT DEFAULT 0 COMMENT "Total exotic fish caught"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add arcane_caught
+SET @column_name = 'arcane_caught';
+SET @column_def = 'INT DEFAULT 0 COMMENT "Total arcane fish caught"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add total_stats_upgraded
+SET @column_name = 'total_stats_upgraded';
+SET @column_def = 'INT DEFAULT 0 COMMENT "Total stat upgrades purchased"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add strength
+SET @column_name = 'strength';
+SET @column_def = 'INT DEFAULT 1 COMMENT "Current strength stat"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add intelligence
+SET @column_name = 'intelligence';
+SET @column_def = 'INT DEFAULT 1 COMMENT "Current intelligence stat"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add luck
+SET @column_name = 'luck';
+SET @column_def = 'INT DEFAULT 1 COMMENT "Current luck stat"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Add stamina
+SET @column_name = 'stamina';
+SET @column_def = 'INT DEFAULT 100 COMMENT "Current max stamina"';
+SET @sql = CONCAT('ALTER TABLE ', @table_name, ' ADD COLUMN ', @column_name, ' ', @column_def);
+SET @column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = @table_name AND COLUMN_NAME = @column_name);
+SET @sql = IF(@column_exists = 0, @sql, 'SELECT "Column already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Create indexes
+-- Note: These may error if indexes already exist in your database
+-- You can safely ignore "Duplicate key name" errors
+
+CREATE INDEX idx_casts_rank ON leaderboard_stats (total_casts DESC);
+CREATE INDEX idx_fish_sold_rank ON leaderboard_stats (fish_sold DESC);
+CREATE INDEX idx_gold_earned_rank ON leaderboard_stats (gold_earned DESC);
+CREATE INDEX idx_relics_earned_rank ON leaderboard_stats (relics_earned DESC);
+CREATE INDEX idx_treasure_rank ON leaderboard_stats (treasure_caught DESC);
+CREATE INDEX idx_stats_upgraded_rank ON leaderboard_stats (total_stats_upgraded DESC);
+CREATE INDEX idx_strength_rank ON leaderboard_stats (strength DESC);
+CREATE INDEX idx_intelligence_rank ON leaderboard_stats (intelligence DESC);
+CREATE INDEX idx_luck_rank ON leaderboard_stats (luck DESC);
+CREATE INDEX idx_stamina_rank ON leaderboard_stats (stamina DESC);
+CREATE INDEX idx_nationality ON leaderboard_stats (nationality);
 
 -- Populate nationality from users table
 UPDATE leaderboard_stats ls
