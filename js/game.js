@@ -678,14 +678,14 @@ useEffect(() => {
   const OptionsPage = () => (
     <div className="max-w-4xl mx-auto">
       <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-6`}>
-        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+        <h2 className="text-[1.05rem] font-bold mb-6 flex items-center gap-2">
           <span>⚙️</span>
           Game Options
         </h2>
 
         {/* Theme Selection */}
         <div className="mb-8">
-          <h3 className="text-lg font-bold mb-4 text-${theme.accent}">Color Theme</h3>
+          <h3 className="text-[1.05rem] font-bold mb-4 text-${theme.accent}">Color Theme</h3>
           <p className={`text-sm text-${theme.textMuted} mb-4`}>
             Choose a color theme that's comfortable for your eyes
           </p>
@@ -703,7 +703,7 @@ useEffect(() => {
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-bold">{themeObj.name}</span>
-                  {currentTheme === key && <span className="text-xl">✓</span>}
+                  {currentTheme === key && <span className="text-[1.05rem]">✓</span>}
                 </div>
 
                 <div className="flex gap-2 mt-3">
@@ -824,27 +824,27 @@ useEffect(() => {
     <div className="max-w-6xl mx-auto">
       <div className="grid lg:grid-cols-2 gap-4">
         {/* Left Column: Main Interaction */}
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2">
+            <h2 className="text-[1.05rem] sm:text-xl font-bold flex items-center gap-2">
               <span>🎣</span>
               {window.BIOMES[player.currentBiome].name}
             </h2>
             <button
               onClick={() => setCurrentPage('biomes')}
-              className="px-2 py-1 bg-blue-700 hover:bg-blue-600 rounded text-xs font-bold"
+              className={`px-2 py-1 bg-${theme.hover} hover:bg-${theme.borderLight} rounded text-xs font-bold`}
             >
               Change
             </button>
           </div>
 
-          <p className="text-xs text-blue-300 mb-4 italic">
+          <p className={`text-xs text-${theme.textMuted} mb-4 italic`}>
             {window.BIOMES[player.currentBiome].description}
           </p>
 
           <div className="grid grid-cols-2 gap-2 mb-4">
-            <div className="bg-blue-950 p-3 rounded">
-              <div className="text-xs text-blue-400 mb-1">🎣 Rod</div>
+            <div className={`bg-${theme.surface} p-3 rounded`}>
+              <div className={`text-xs text-${theme.textDim} mb-1`}>🎣 Rod</div>
               <div className="text-sm font-bold">{player.equippedRod || 'None'}</div>
               {player.equippedRod && window.RODS[player.equippedRod] && (
                 <div className="text-xs text-green-400 mt-1">
@@ -855,11 +855,11 @@ useEffect(() => {
                 </div>
               )}
             </div>
-            <div className="bg-blue-950 p-3 rounded">
-              <div className="text-xs text-blue-400 mb-1">🪱 Bait</div>
+            <div className={`bg-${theme.surface} p-3 rounded`}>
+              <div className={`text-xs text-${theme.textDim} mb-1`}>🪱 Bait</div>
               <div className="text-sm font-bold">{player.equippedBait}</div>
               {player.equippedBait && player.equippedBait !== 'Stale Bread Crust' && (
-                <div className="text-xs text-blue-300 mt-1">
+                <div className={`text-xs text-${theme.textMuted} mt-1`}>
                   {player.baitInventory[player.equippedBait] || 0} left
                 </div>
               )}
@@ -876,7 +876,7 @@ useEffect(() => {
           <button
             onClick={handleFish}
             disabled={cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0)}
-            className={`w-full py-3 rounded-lg font-bold text-base sm:text-lg transition-all ${cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 active:scale-95 shadow-lg'}`}
+            className={`w-full py-3 rounded-lg font-bold text-base sm:text-[1.05rem] transition-all ${cooldown > 0 || fishing || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed' : `bg-${theme.accent} hover:bg-${theme.accentHover} active:scale-95 shadow-lg`}`}
           >
             {fishing ? '🎣 Fishing...' : cooldown > 0 ? `⏱️ Cooldown: ${cooldown}s` : '🎣 Cast Line'}
           </button>
@@ -886,14 +886,14 @@ useEffect(() => {
         <div className="lg:block hidden">
           {lastCatch ? (
             <div
-              className="p-3 sm:p-4 bg-blue-950 rounded-lg border-4 shadow-xl h-full"
+              className={`p-3 sm:p-4 bg-${theme.surface} rounded-lg border-4 shadow-xl h-full`}
               style={isGradientRarity(lastCatch.rarity) ? {
                 borderImage: `${rarityColors[lastCatch.rarity]} 1`,
                 borderImageSlice: 1
               } : { borderColor: getRarityColor(lastCatch.rarity) }}
             >
-              <div className="text-center mb-3 pb-3 border-b border-blue-800">
-                <p className="text-xs sm:text-sm text-blue-300 italic">{funnyLine}</p>
+              <div className={`text-center mb-3 pb-3 border-b border-${theme.border}`}>
+                <p className={`text-xs sm:text-sm text-${theme.textMuted} italic`}>{funnyLine}</p>
               </div>
 
               <div className="text-center">
@@ -904,7 +904,7 @@ useEffect(() => {
 
                 {lastCatch.isTreasure ? (
                   <div className="space-y-1">
-                    <div className="text-base sm:text-lg text-yellow-400">🎁 Treasure Found!</div>
+                    <div className="text-base sm:text-[1.05rem] text-yellow-400">🎁 Treasure Found!</div>
                     <div className="flex justify-center gap-4 text-sm sm:text-base">
                       <span className="text-yellow-400">+{lastCatch.gold} Gold</span>
                       <span className="text-purple-400">+{lastCatch.relics} Relics</span>
@@ -914,8 +914,8 @@ useEffect(() => {
                 ) : (
                   <div>
                     <div className="flex justify-center items-center gap-3 text-sm sm:text-base mb-1">
-                      <span className="text-blue-200">Caught {lastCatch.count}x</span>
-                      <span className="text-blue-400">|</span>
+                      <span className={`text-${theme.text}`}>Caught {lastCatch.count}x</span>
+                      <span className={`text-${theme.textDim}`}>|</span>
                       <span className="text-green-400">+{lastCatch.xp} XP</span>
                     </div>
                     {lastCatch.titanBonus && (
@@ -928,8 +928,8 @@ useEffect(() => {
               </div>
             </div>
           ) : (
-            <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6 h-full flex items-center justify-center">
-              <p className="text-blue-400 text-sm italic">Cast your line to catch fish!</p>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6 h-full flex items-center justify-center`}>
+              <p className={`text-${theme.textDim} text-sm italic`}>Cast your line to catch fish!</p>
             </div>
           )}
         </div>
@@ -939,14 +939,14 @@ useEffect(() => {
       {lastCatch && (
         <div className="lg:hidden mt-4">
           <div
-            className="p-3 sm:p-4 bg-blue-950 rounded-lg border-4 shadow-xl"
+            className={`p-3 sm:p-4 bg-${theme.surface} rounded-lg border-4 shadow-xl`}
             style={isGradientRarity(lastCatch.rarity) ? {
               borderImage: `${rarityColors[lastCatch.rarity]} 1`,
               borderImageSlice: 1
             } : { borderColor: getRarityColor(lastCatch.rarity) }}
           >
-            <div className="text-center mb-3 pb-3 border-b border-blue-800">
-              <p className="text-xs sm:text-sm text-blue-300 italic">{funnyLine}</p>
+            <div className={`text-center mb-3 pb-3 border-b border-${theme.border}`}>
+              <p className={`text-xs sm:text-sm text-${theme.textMuted} italic`}>{funnyLine}</p>
             </div>
 
             <div className="text-center">
@@ -957,7 +957,7 @@ useEffect(() => {
 
               {lastCatch.isTreasure ? (
                 <div className="space-y-1">
-                  <div className="text-base sm:text-lg text-yellow-400">🎁 Treasure Found!</div>
+                  <div className="text-base sm:text-[1.05rem] text-yellow-400">🎁 Treasure Found!</div>
                   <div className="flex justify-center gap-4 text-sm sm:text-base">
                     <span className="text-yellow-400">+{lastCatch.gold} Gold</span>
                     <span className="text-purple-400">+{lastCatch.relics} Relics</span>
@@ -967,8 +967,8 @@ useEffect(() => {
               ) : (
                 <div>
                   <div className="flex justify-center items-center gap-3 text-sm sm:text-base mb-1">
-                    <span className="text-blue-200">Caught {lastCatch.count}x</span>
-                    <span className="text-blue-400">|</span>
+                    <span className={`text-${theme.text}`}>Caught {lastCatch.count}x</span>
+                    <span className={`text-${theme.textDim}`}>|</span>
                     <span className="text-green-400">+{lastCatch.xp} XP</span>
                   </div>
                   {lastCatch.titanBonus && (
@@ -984,12 +984,12 @@ useEffect(() => {
       )}
 
       {/* Fishing Stats - Full Width at Bottom */}
-      <div className="mt-4 bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+      <div className={`mt-4 bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
         <h3 className="font-bold mb-3 text-sm sm:text-base">Total Fishing Stats</h3>
-        <div className="text-xs sm:text-sm text-blue-300 space-y-1">
+        <div className={`text-xs sm:text-sm text-${theme.textMuted} space-y-1`}>
           <div>Base Stats: STR {player.stats.strength} | INT {player.stats.intelligence} | LUCK {player.stats.luck} | STAM {player.stats.stamina}</div>
           <div className="text-green-400">Total Stats: STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
-          <div className="border-t border-blue-800 my-2 pt-2">
+          <div className={`border-t border-${theme.border} my-2 pt-2`}>
             <div>Normal fish: 1-{1 + Math.floor(getTotalStats().strength / 100)} per catch</div>
             <div>Boss fish value: {(1 + (getTotalStats().strength * 0.02)).toFixed(2)}x multiplier</div>
             <div>Gold multiplier: {(1 + (Math.pow(getTotalStats().intelligence, 0.7) * 0.05)).toFixed(2)}x when selling</div>
@@ -1013,19 +1013,19 @@ useEffect(() => {
 
     return (
       <div className="max-w-6xl mx-auto">
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4">Equipment Shop</h2>
-          
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
+          <h2 className="text-[1.05rem] sm:text-2xl font-bold mb-4">Equipment Shop</h2>
+
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => setShopTab('rods')}
-              className={`flex-1 py-3 rounded font-bold ${shopTab === 'rods' ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+              className={`flex-1 py-3 rounded font-bold ${shopTab === 'rods' ? `bg-${theme.accent}` : `bg-${theme.primarySolid} hover:bg-${theme.hover}`}`}
             >
               {Icons.Fish()} Rods
             </button>
             <button
               onClick={() => setShopTab('baits')}
-              className={`flex-1 py-3 rounded font-bold ${shopTab === 'baits' ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+              className={`flex-1 py-3 rounded font-bold ${shopTab === 'baits' ? `bg-${theme.accent}` : `bg-${theme.primarySolid} hover:bg-${theme.hover}`}`}
             >
               🪱 Baits
             </button>
@@ -1034,31 +1034,31 @@ useEffect(() => {
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
             <button
               onClick={() => setTierTab('all')}
-              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === 'all' ? 'bg-purple-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === 'all' ? 'bg-purple-600' : `bg-${theme.primarySolid} hover:bg-${theme.hover}`}`}
             >
               All Tiers
             </button>
             <button
               onClick={() => setTierTab('1')}
-              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === '1' ? 'bg-purple-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === '1' ? 'bg-purple-600' : `bg-${theme.primarySolid} hover:bg-${theme.hover}`}`}
             >
               Tier 1
             </button>
             <button
               onClick={() => setTierTab('2')}
-              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === '2' ? 'bg-purple-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === '2' ? 'bg-purple-600' : `bg-${theme.primarySolid} hover:bg-${theme.hover}`}`}
             >
               Tier 2
             </button>
             <button
               onClick={() => setTierTab('3')}
-              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === '3' ? 'bg-purple-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === '3' ? 'bg-purple-600' : `bg-${theme.primarySolid} hover:bg-${theme.hover}`}`}
             >
               Tier 3
             </button>
             <button
               onClick={() => setTierTab('4')}
-              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === '4' ? 'bg-purple-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+              className={`px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${tierTab === '4' ? 'bg-purple-600' : `bg-${theme.primarySolid} hover:bg-${theme.hover}`}`}
             >
               Tier 4
             </button>
@@ -1073,15 +1073,15 @@ useEffect(() => {
                 const canAfford = player.gold >= rod.price;
 
                 return (
-                  <div key={name} className={`p-4 rounded-lg border-2 ${isEquipped ? 'bg-blue-700 border-yellow-400' : 'bg-blue-950 border-blue-800'}`}>
+                  <div key={name} className={`p-4 rounded-lg border-2 ${isEquipped ? `bg-${theme.hover} border-yellow-400` : `bg-${theme.surface} border-${theme.border}`}`}>
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
                         <div className="font-bold text-base">{name}</div>
-                        <div className="text-xs text-blue-300 italic mt-1">{rod.desc}</div>
+                        <div className={`text-xs text-${theme.textMuted} italic mt-1`}>{rod.desc}</div>
                       </div>
                       {isEquipped && <span className="text-xs bg-yellow-500 text-black px-2 py-1 rounded font-bold ml-2">EQUIPPED</span>}
                     </div>
-                    
+
                     <div className="text-sm text-green-400 mb-3">
                       {rod.str > 0 && `+${rod.str} STR `}
                       {rod.int > 0 && `+${rod.int} INT `}
@@ -1093,7 +1093,7 @@ useEffect(() => {
                       <button
                         onClick={() => equipRod(name)}
                         disabled={isEquipped}
-                        className={`w-full py-2 rounded font-bold text-sm ${isEquipped ? 'bg-gray-700 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
+                        className={`w-full py-2 rounded font-bold text-sm ${isEquipped ? 'bg-gray-700 cursor-not-allowed' : `bg-${theme.accent} hover:bg-${theme.accentHover}`}`}
                       >
                         {isEquipped ? 'Equipped' : 'Equip'}
                       </button>
@@ -1120,18 +1120,18 @@ useEffect(() => {
                 const isFree = bait.price === 0;
 
                 return (
-                  <div key={name} className={`p-4 rounded-lg border-2 ${isEquipped ? 'bg-blue-700 border-yellow-400' : 'bg-blue-950 border-blue-800'}`}>
+                  <div key={name} className={`p-4 rounded-lg border-2 ${isEquipped ? `bg-${theme.hover} border-yellow-400` : `bg-${theme.surface} border-${theme.border}`}`}>
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
                         <div className="font-bold text-base">{name}</div>
-                        <div className="text-xs text-blue-300 italic mt-1">{bait.desc}</div>
+                        <div className={`text-xs text-${theme.textMuted} italic mt-1`}>{bait.desc}</div>
                       </div>
                       <div className="text-right ml-2">
                         {isEquipped && <span className="text-xs bg-yellow-500 text-black px-2 py-1 rounded font-bold block mb-1">EQUIPPED</span>}
-                        {!isFree && <span className="text-xs text-blue-400">Owned: {owned}</span>}
+                        {!isFree && <span className={`text-xs text-${theme.textDim}`}>Owned: {owned}</span>}
                       </div>
                     </div>
-                    
+
                     <div className="text-sm text-green-400 mb-3">
                       {bait.str > 0 && `+${bait.str} STR `}
                       {bait.int > 0 && `+${bait.int} INT `}
@@ -1168,7 +1168,7 @@ useEffect(() => {
                       <button
                         onClick={() => equipBait(name)}
                         disabled={isEquipped || (!isFree && owned === 0)}
-                        className={`w-full py-2 rounded font-bold text-sm ${isEquipped ? 'bg-gray-700 cursor-not-allowed' : (!isFree && owned === 0) ? 'bg-gray-700 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
+                        className={`w-full py-2 rounded font-bold text-sm ${isEquipped ? 'bg-gray-700 cursor-not-allowed' : (!isFree && owned === 0) ? 'bg-gray-700 cursor-not-allowed' : `bg-${theme.accent} hover:bg-${theme.accentHover}`}`}
                       >
                         {isEquipped ? 'Equipped' : 'Equip'}
                       </button>
@@ -1272,8 +1272,8 @@ useEffect(() => {
 
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
-          <h2 className="text-xl sm:text-2xl font-bold mb-6">Select Biome</h2>
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
+          <h2 className="text-[1.05rem] sm:text-2xl font-bold mb-6">Select Biome</h2>
 
           {/* Pagination Grid */}
           <div className="mb-6">
@@ -1288,8 +1288,8 @@ useEffect(() => {
                     onClick={() => setBiomePage(page)}
                     className={`px-4 py-2 rounded font-bold text-sm ${
                       biomePage === page
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-blue-900 hover:bg-blue-800 text-blue-300'
+                        ? `bg-${theme.accent} text-white`
+                        : `bg-${theme.primarySolid} hover:bg-${theme.hover} text-${theme.textMuted}`
                     }`}
                   >
                     {startBiome}-{endBiome}
@@ -1311,21 +1311,21 @@ useEffect(() => {
               return (
                 <div
                   key={id}
-                  className={`p-4 sm:p-5 rounded-lg border-2 ${isCurrent ? 'bg-blue-700 border-yellow-400' : isLocked ? 'bg-blue-950 border-gray-700 opacity-60' : 'bg-blue-900 border-blue-700 hover:border-blue-500 cursor-pointer'}`}
+                  className={`p-4 sm:p-5 rounded-lg border-2 ${isCurrent ? `bg-${theme.hover} border-yellow-400` : isLocked ? `bg-${theme.surface} border-gray-700 opacity-60` : `bg-${theme.primarySolid} border-${theme.border} hover:border-${theme.borderLight} cursor-pointer`}`}
                   onClick={() => isClickable && !isCurrent && visitOrUnlockBiome(biomeId)}
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-bold">{biome.name}</h3>
+                        <h3 className="text-[1.05rem] font-bold">{biome.name}</h3>
                         {isCurrent && <span className="text-xs bg-yellow-500 text-black px-2 py-1 rounded font-bold">CURRENT</span>}
                       </div>
-                      <div className="text-sm text-blue-300 mt-1">Biome {id}</div>
+                      <div className={`text-sm text-${theme.textMuted} mt-1`}>Biome {id}</div>
                     </div>
 
                     {isLocked && (
                       <div className="text-right">
-                        <div className="text-xs text-blue-300">Requires:</div>
+                        <div className={`text-xs text-${theme.textMuted}`}>Requires:</div>
                         <div className="text-sm font-bold">Level {biome.unlockLevel}</div>
                         {biome.unlockGold > 0 && (
                           <div className="text-sm text-yellow-400">{biome.unlockGold.toLocaleString()} Gold</div>
@@ -1334,12 +1334,12 @@ useEffect(() => {
                     )}
                   </div>
 
-                  <p className="text-xs sm:text-sm text-blue-300 italic mb-3">
+                  <p className={`text-xs sm:text-sm text-${theme.textMuted} italic mb-3`}>
                     {biome.description}
                   </p>
 
                   {biome.boatRequired && (
-                    <div className="text-xs text-blue-400 mb-2">
+                    <div className={`text-xs text-${theme.textDim} mb-2`}>
                       🚣 Requires: {biome.boatRequired}
                     </div>
                   )}
@@ -1373,10 +1373,10 @@ useEffect(() => {
     const unlockedCount = filteredInventory.filter(f => !player.lockedFish.includes(f.name)).length;
     return (
       <div className="max-w-6xl mx-auto">
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
           <div className="flex flex-col gap-4 mb-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <h2 className="text-[1.05rem] sm:text-2xl font-bold flex items-center gap-2">
                 <span className="w-5 flex-shrink-0">{Icons.Package()}</span>
                 Inventory ({player.inventory.length})
               </h2>
@@ -1390,14 +1390,14 @@ useEffect(() => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
-              <label htmlFor="sort-select" className="text-sm text-blue-300 font-semibold whitespace-nowrap">
+              <label htmlFor="sort-select" className={`text-sm text-${theme.textMuted} font-semibold whitespace-nowrap`}>
                 Sort by:
               </label>
               <select
                 id="sort-select"
                 value={inventorySortOrder}
                 onChange={(e) => setInventorySortOrder(e.target.value)}
-                className="w-full sm:w-64 px-3 py-2 rounded font-bold bg-blue-900 text-white border-2 border-blue-700 hover:border-blue-500 focus:border-blue-400 focus:outline-none cursor-pointer text-sm"
+                className={`w-full sm:w-64 px-3 py-2 rounded font-bold bg-${theme.primarySolid} text-white border-2 border-${theme.border} hover:border-${theme.borderLight} focus:border-${theme.accent} focus:outline-none cursor-pointer text-sm`}
               >
                 <option value="value-desc">Total Value (High to Low)</option>
                 <option value="value-asc">Total Value (Low to High)</option>
@@ -1412,7 +1412,7 @@ useEffect(() => {
           <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
             <button
               onClick={() => setSelectedRarity('all')}
-              className={`px-3 sm:px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${selectedRarity === 'all' ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+              className={`px-3 sm:px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${selectedRarity === 'all' ? `bg-${theme.accent}` : `bg-${theme.primarySolid} hover:bg-${theme.hover}`}`}
             >
               All
             </button>
@@ -1422,7 +1422,7 @@ useEffect(() => {
                 <button
                   key={rarity}
                   onClick={() => setSelectedRarity(rarity)}
-                  className={`px-3 sm:px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${selectedRarity === rarity ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'}`}
+                  className={`px-3 sm:px-4 py-2 rounded font-bold whitespace-nowrap text-sm ${selectedRarity === rarity ? `bg-${theme.accent}` : `bg-${theme.primarySolid} hover:bg-${theme.hover}`}`}
                   style={{ borderLeft: `4px solid ${getRarityColor(rarity)}` }}
                 >
                   {rarity} ({count})
@@ -1443,7 +1443,7 @@ useEffect(() => {
           )}
 
           {filteredInventory.length === 0 ? (
-            <p className="text-center text-blue-300 py-12 text-sm sm:text-base">
+            <p className={`text-center text-${theme.textMuted} py-12 text-sm sm:text-base`}>
               {selectedRarity === 'all' ? 'No fish caught yet. Start fishing!' : `No ${selectedRarity} fish in inventory.`}
             </p>
           ) : (
@@ -1461,7 +1461,7 @@ useEffect(() => {
                 return (
                   <div
                     key={idx}
-                    className="bg-blue-950 p-3 sm:p-4 rounded-lg border-2 relative"
+                    className={`bg-${theme.surface} p-3 sm:p-4 rounded-lg border-2 relative`}
                     style={isGradientRarity(fish.rarity) ? {
                       borderImage: `${rarityColors[fish.rarity]} 1`,
                       borderImageSlice: 1
@@ -1469,7 +1469,7 @@ useEffect(() => {
                   >
                     <button
                       onClick={() => toggleLock(fish.name)}
-                      className="absolute top-2 right-2 p-1.5 sm:p-2 bg-blue-900 rounded hover:bg-blue-800"
+                      className={`absolute top-2 right-2 p-1.5 sm:p-2 bg-${theme.primarySolid} rounded hover:bg-${theme.hover}`}
                     >
                       {isLocked ? Icons.Lock() : Icons.Unlock()}
                     </button>
@@ -1477,8 +1477,8 @@ useEffect(() => {
                     <div className="font-bold text-xs sm:text-sm" style={getGradientTextStyle(fish.rarity)}>
                       {fish.rarity}
                     </div>
-                    <div className="text-base sm:text-lg font-bold mt-1">{fish.name}</div>
-                    <div className="text-xs sm:text-sm text-blue-300 mb-1">Quantity: {fish.count}</div>
+                    <div className="text-base sm:text-[1.05rem] font-bold mt-1">{fish.name}</div>
+                    <div className={`text-xs sm:text-sm text-${theme.textMuted} mb-1`}>Quantity: {fish.count}</div>
                     {titanBonus > 1 && (
                       <div className="text-xs text-orange-400 mb-2">⚡ {titanBonus.toFixed(2)}x Value</div>
                     )}
@@ -1531,12 +1531,12 @@ useEffect(() => {
 
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
-          <h2 className="text-xl sm:text-2xl font-bold mb-6 flex items-center gap-2">
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
+          <h2 className="text-[1.05rem] sm:text-2xl font-bold mb-6 flex items-center gap-2">
             <span className="w-5 flex-shrink-0">{Icons.TrendingUp()}</span>
             Character Stats
           </h2>
-          
+
           <div className="space-y-4">
             {/* Display player's base stats for upgrading */}
             {Object.entries(player.stats).map(([stat, value]) => {
@@ -1544,11 +1544,11 @@ useEffect(() => {
               const upgradeCost = statCosts[stat]?.cost || '...';
               const canAfford = typeof upgradeCost === 'number' && player.relics >= upgradeCost;
               return (
-                <div key={stat} className="bg-blue-950 p-4 sm:p-5 rounded-lg">
+                <div key={stat} className={`bg-${theme.surface} p-4 sm:p-5 rounded-lg`}>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
                     <div>
-                      <div className="font-bold text-base sm:text-lg">{info.title}</div>
-                      <div className="text-sm text-blue-300">Base Level {value}</div>
+                      <div className="font-bold text-base sm:text-[1.05rem]">{info.title}</div>
+                      <div className={`text-sm text-${theme.textMuted}`}>Base Level {value}</div>
                       {totalStats[stat] !== value && <div className="text-xs text-green-400">Total: {totalStats[stat]} (Equipment)</div>}
                     </div>
                     <button
@@ -1563,15 +1563,15 @@ useEffect(() => {
                       Upgrade ({upgradeCost} 🔮)
                     </button>
                   </div>
-                  
+
                   <div className="space-y-2 text-xs sm:text-sm">
                     <div className="text-green-400 font-bold">
                       Current Total Effect: {info.current}
                     </div>
-                    <div className="text-blue-300">
+                    <div className={`text-${theme.textMuted}`}>
                       Per Point: {info.perPoint}
                     </div>
-                    <div className="text-blue-400 italic">
+                    <div className={`text-${theme.textDim} italic`}>
                       {info.detail}
                     </div>
                   </div>
@@ -1725,7 +1725,7 @@ useEffect(() => {
       if (rank === 1) return 'text-yellow-400';
       if (rank === 2) return 'text-gray-300';
       if (rank === 3) return 'text-orange-400';
-      return 'text-blue-300';
+      return `text-${theme.textMuted}`;
     };
 
     const getRankIcon = (rank) => {
@@ -1744,7 +1744,7 @@ useEffect(() => {
     return (
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold flex items-center gap-2">
+          <h2 className="text-[1.05rem] font-bold flex items-center gap-2">
             <span>{Icons.Trophy()}</span>
             Leaderboards
           </h2>
@@ -1753,37 +1753,37 @@ useEffect(() => {
         {/* Global Stats Summary */}
         {globalStats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4">
-              <div className="text-sm text-blue-300">Total Players</div>
-              <div className="text-2xl font-bold text-white">{globalStats.total_players?.toLocaleString() || 0}</div>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4`}>
+              <div className={`text-sm text-${theme.textMuted}`}>Total Players</div>
+              <div className="text-[1.05rem] font-bold text-white">{globalStats.total_players?.toLocaleString() || 0}</div>
             </div>
-            <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4">
-              <div className="text-sm text-blue-300">Highest Level</div>
-              <div className="text-2xl font-bold text-white">{globalStats.highest_level || 0}</div>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4`}>
+              <div className={`text-sm text-${theme.textMuted}`}>Highest Level</div>
+              <div className="text-[1.05rem] font-bold text-white">{globalStats.highest_level || 0}</div>
             </div>
-            <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4">
-              <div className="text-sm text-blue-300">Total Fish Caught</div>
-              <div className="text-2xl font-bold text-white">{formatNumber(globalStats.total_fish_caught || 0)}</div>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4`}>
+              <div className={`text-sm text-${theme.textMuted}`}>Total Fish Caught</div>
+              <div className="text-[1.05rem] font-bold text-white">{formatNumber(globalStats.total_fish_caught || 0)}</div>
             </div>
-            <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4">
-              <div className="text-sm text-blue-300">Total Arcane</div>
-              <div className="text-2xl font-bold text-white">{globalStats.total_arcane_caught || 0}</div>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4`}>
+              <div className={`text-sm text-${theme.textMuted}`}>Total Arcane</div>
+              <div className="text-[1.05rem] font-bold text-white">{globalStats.total_arcane_caught || 0}</div>
             </div>
           </div>
         )}
 
         {/* Filters */}
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 mb-4">
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 mb-4`}>
           <div className="grid grid-cols-1 md:grid-cols-[30%_70%] gap-4">
             {/* Region Filter */}
             <div>
-              <label className="block text-sm font-semibold text-blue-300 mb-2">
+              <label className={`block text-sm font-semibold text-${theme.textMuted} mb-2`}>
                 Region
               </label>
               <select
                 value={selectedRegion}
                 onChange={(e) => setSelectedRegion(e.target.value)}
-                className="w-full px-4 py-3 bg-blue-900 text-white rounded-lg border-2 border-blue-700 focus:border-blue-500 focus:outline-none text-lg"
+                className={`w-full px-4 py-3 bg-${theme.primarySolid} text-white rounded-lg border-2 border-${theme.border} focus:border-${theme.accent} focus:outline-none text-[1.05rem]`}
               >
                 <option value="global">🌍 Global</option>
                 {userNationality && (
@@ -1794,13 +1794,13 @@ useEffect(() => {
 
             {/* Category Selection */}
             <div>
-              <label className="block text-sm font-semibold text-blue-300 mb-2">
+              <label className={`block text-sm font-semibold text-${theme.textMuted} mb-2`}>
                 Category
               </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-3 bg-blue-900 text-white rounded-lg border-2 border-blue-700 focus:border-blue-500 focus:outline-none text-lg"
+                className={`w-full px-4 py-3 bg-${theme.primarySolid} text-white rounded-lg border-2 border-${theme.border} focus:border-${theme.accent} focus:outline-none text-[1.05rem]`}
               >
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
@@ -1813,25 +1813,24 @@ useEffect(() => {
         </div>
 
         {/* Leaderboard Table */}
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg overflow-hidden">
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg overflow-hidden`}>
           {loading ? (
-            <div className="p-8 text-center text-blue-300">
+            <div className={`p-8 text-center text-${theme.textMuted}`}>
               Loading leaderboard...
             </div>
           ) : leaderboardData.length === 0 ? (
-            <div className="p-8 text-center text-blue-300">
+            <div className={`p-8 text-center text-${theme.textMuted}`}>
               No data available for this category
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-blue-900">
+                <thead className={`bg-${theme.primarySolid}`}>
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-blue-300">Rank</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-blue-300">Player</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-blue-300">Region</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-blue-300">Value</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-blue-300">Level</th>
+                    <th className={`px-4 py-3 text-left text-sm font-semibold text-${theme.textMuted}`}>Rank</th>
+                    <th className={`px-4 py-3 text-left text-sm font-semibold text-${theme.textMuted}`}>Player</th>
+                    <th className={`px-4 py-3 text-left text-sm font-semibold text-${theme.textMuted}`}>Region</th>
+                    <th className={`px-4 py-3 text-right text-sm font-semibold text-${theme.textMuted}`}>Value</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1840,8 +1839,8 @@ useEffect(() => {
                     return (
                       <tr
                         key={player.user_id}
-                        className={`border-t border-blue-700 ${
-                          player.user_id === user?.id ? 'bg-blue-700 bg-opacity-50' : 'hover:bg-blue-900'
+                        className={`border-t border-${theme.border} ${
+                          player.user_id === user?.id ? `bg-${theme.hover} bg-opacity-50` : `hover:bg-${theme.primarySolid}`
                         }`}
                       >
                         <td className={`px-4 py-3 font-bold ${getRankColor(rank)}`}>
@@ -1853,14 +1852,11 @@ useEffect(() => {
                             <span className="text-yellow-400 ml-2">- {getTitleName(player.equipped_title)}</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-blue-300">
+                        <td className={`px-4 py-3 text-${theme.textMuted}`}>
                           {getCountryFlag(player.nationality)}
                         </td>
                         <td className="px-4 py-3 text-right text-white font-bold">
                           {formatNumber(getValueForCategory(player, selectedCategory))}
-                        </td>
-                        <td className="px-4 py-3 text-right text-blue-300">
-                          Lv. {player.level}
                         </td>
                       </tr>
                     );
@@ -1873,17 +1869,17 @@ useEffect(() => {
 
         {/* User Rank (if outside top 100) */}
         {userRank && userRank.rank > 100 && (
-          <div className="mt-4 bg-blue-700 bg-opacity-50 rounded-lg p-4 border-2 border-blue-500">
+          <div className={`mt-4 bg-${theme.hover} bg-opacity-50 rounded-lg p-4 border-2 border-${theme.accent}`}>
             <div className="flex justify-between items-center">
               <div>
-                <div className="text-sm text-blue-300 mb-1">Your Rank</div>
-                <div className="text-xl font-bold text-white">
+                <div className={`text-sm text-${theme.textMuted} mb-1`}>Your Rank</div>
+                <div className="text-[1.05rem] font-bold text-white">
                   #{userRank.rank} - {userRank.stats.profile_username}
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-sm text-blue-300 mb-1">Your Score</div>
-                <div className="text-xl font-bold text-white">
+                <div className={`text-sm text-${theme.textMuted} mb-1`}>Your Score</div>
+                <div className="text-[1.05rem] font-bold text-white">
                   {formatNumber(getValueForCategory(userRank.stats, selectedCategory))}
                 </div>
               </div>
@@ -2165,7 +2161,7 @@ useEffect(() => {
     if (loading) {
       return (
         <div className="max-w-4xl mx-auto text-center py-12">
-          <div className="text-2xl">Loading profile...</div>
+          <div className="text-[1.05rem]">Loading profile...</div>
         </div>
       );
     }
@@ -2184,21 +2180,21 @@ useEffect(() => {
     return (
       <div className="max-w-4xl mx-auto">
         {/* Profile Header */}
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-6 mb-4">
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-6 mb-4`}>
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <div className="text-4xl">{Icons.User()}</div>
                 <div>
-                  <h2 className="text-2xl font-bold">
+                  <h2 className="text-[1.05rem] font-bold">
                     {profileData?.profile_username || user?.profileUsername || user?.username}
                     {titleName && <span className="text-yellow-400"> - {titleName}</span>}
                   </h2>
-                  <div className="text-sm text-blue-300">
+                  <div className={`text-sm text-${theme.textMuted}`}>
                     Member since: {profileData?.registration_date ? new Date(profileData.registration_date).toLocaleDateString() : 'N/A'}
                   </div>
                   {profileData?.profile_views > 0 && (
-                    <div className="text-xs text-blue-400">Profile views: {profileData.profile_views}</div>
+                    <div className={`text-xs text-${theme.textDim}`}>Profile views: {profileData.profile_views}</div>
                   )}
                 </div>
               </div>
@@ -2212,7 +2208,7 @@ useEffect(() => {
                       onChange={(e) => setBioText(e.target.value)}
                       maxLength={500}
                       placeholder="Write your bio (max 500 characters)..."
-                      className="w-full p-3 bg-blue-950 rounded border border-blue-700 text-white resize-none"
+                      className={`w-full p-3 bg-${theme.surface} rounded border border-${theme.border} text-white resize-none`}
                       rows={4}
                     />
                     <div className="flex gap-2 mt-2">
@@ -2231,19 +2227,19 @@ useEffect(() => {
                       >
                         Cancel
                       </button>
-                      <span className="text-xs text-blue-300 self-center ml-auto">
+                      <span className={`text-xs text-${theme.textMuted} self-center ml-auto`}>
                         {bioText.length}/500
                       </span>
                     </div>
                   </div>
                 ) : (
                   <div>
-                    <div className="text-blue-200 italic mb-2 whitespace-pre-wrap">
+                    <div className={`text-${theme.textLight} italic mb-2 whitespace-pre-wrap`}>
                       {profileData?.bio || 'No bio yet. Click "Edit Bio" to add one!'}
                     </div>
                     <button
                       onClick={() => setEditingBio(true)}
-                      className="px-3 py-1 bg-blue-700 hover:bg-blue-600 rounded text-sm font-bold"
+                      className={`px-3 py-1 bg-${theme.hover} hover:bg-${theme.accent} rounded text-sm font-bold`}
                     >
                       Edit Bio
                     </button>
@@ -2267,9 +2263,9 @@ useEffect(() => {
         {/* Name Change Modal */}
         {editingName && (
           <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-            <div className="bg-blue-900 rounded-lg p-6 max-w-md w-full">
-              <h3 className="text-xl font-bold mb-4">Change Profile Name</h3>
-              <p className="text-sm text-blue-300 mb-4">
+            <div className={`bg-${theme.primarySolid} rounded-lg p-6 max-w-md w-full`}>
+              <h3 className="text-[1.05rem] font-bold mb-4">Change Profile Name</h3>
+              <p className={`text-sm text-${theme.textMuted} mb-4`}>
                 {nameChangeCost === 0 ? 'Your first name change is FREE!' : `Cost: ${nameChangeCost} Relics (You have: ${player.relics})`}
               </p>
               <input
@@ -2278,7 +2274,7 @@ useEffect(() => {
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="Enter new profile name"
                 maxLength={50}
-                className="w-full p-3 bg-blue-950 rounded border border-blue-700 text-white mb-4"
+                className={`w-full p-3 bg-${theme.surface} rounded border border-${theme.border} text-white mb-4`}
               />
               <div className="flex gap-2">
                 <button
@@ -2307,45 +2303,45 @@ useEffect(() => {
         )}
 
         {/* Stats Section */}
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-6 mb-4">
-          <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-6 mb-4`}>
+          <h3 className="text-[1.05rem] font-bold mb-4 flex items-center gap-2">
             {Icons.TrendingUp()} Player Stats
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-            <div className="bg-blue-950 p-3 rounded">
-              <div className="text-blue-400">Guild</div>
+            <div className={`bg-${theme.surface} p-3 rounded`}>
+              <div className={`text-${theme.textDim}`}>Guild</div>
               <div className="font-bold">Not in a guild (Coming Soon)</div>
             </div>
-            <div className="bg-blue-950 p-3 rounded">
-              <div className="text-blue-400">Total Stats</div>
+            <div className={`bg-${theme.surface} p-3 rounded`}>
+              <div className={`text-${theme.textDim}`}>Total Stats</div>
               <div className="font-bold">STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
             </div>
-            <div className="bg-blue-950 p-3 rounded">
-              <div className="text-blue-400">Gold</div>
+            <div className={`bg-${theme.surface} p-3 rounded`}>
+              <div className={`text-${theme.textDim}`}>Gold</div>
               <div className="font-bold text-yellow-400">{player.gold.toLocaleString()} (Earned: {player.totalGoldEarned.toLocaleString()})</div>
             </div>
-            <div className="bg-blue-950 p-3 rounded">
-              <div className="text-blue-400">Relics</div>
+            <div className={`bg-${theme.surface} p-3 rounded`}>
+              <div className={`text-${theme.textDim}`}>Relics</div>
               <div className="font-bold text-purple-400">{player.relics} (Earned: {player.totalRelicsEarned})</div>
             </div>
-            <div className="bg-blue-950 p-3 rounded">
-              <div className="text-blue-400">Fish Caught</div>
+            <div className={`bg-${theme.surface} p-3 rounded`}>
+              <div className={`text-${theme.textDim}`}>Fish Caught</div>
               <div className="font-bold">{player.totalFishCaught.toLocaleString()}</div>
             </div>
-            <div className="bg-blue-950 p-3 rounded">
-              <div className="text-blue-400">Fish Sold</div>
+            <div className={`bg-${theme.surface} p-3 rounded`}>
+              <div className={`text-${theme.textDim}`}>Fish Sold</div>
               <div className="font-bold">{player.totalFishSold.toLocaleString()}</div>
             </div>
-            <div className="bg-blue-950 p-3 rounded">
-              <div className="text-blue-400">Treasure Chests</div>
+            <div className={`bg-${theme.surface} p-3 rounded`}>
+              <div className={`text-${theme.textDim}`}>Treasure Chests</div>
               <div className="font-bold">🔮 {player.treasureChestsFound}</div>
             </div>
-            <div className="bg-blue-950 p-3 rounded">
-              <div className="text-blue-400">Current Biome</div>
+            <div className={`bg-${theme.surface} p-3 rounded`}>
+              <div className={`text-${theme.textDim}`}>Current Biome</div>
               <div className="font-bold">Biome {player.currentBiome} - {window.BIOMES[player.currentBiome]?.name}</div>
             </div>
-            <div className="bg-blue-950 p-3 rounded col-span-1 sm:col-span-2">
-              <div className="text-blue-400 mb-2">Rare Fish Caught</div>
+            <div className={`bg-${theme.surface} p-3 rounded col-span-1 sm:col-span-2`}>
+              <div className={`text-${theme.textDim} mb-2`}>Rare Fish Caught</div>
               <div className="flex flex-wrap gap-3 text-xs">
                 <span className="text-orange-400">⭐ Legendary: {player.legendariesCaught}</span>
                 <span className="text-red-400">🔥 Mythic: {player.mythicsCaught}</span>
@@ -2357,11 +2353,11 @@ useEffect(() => {
         </div>
 
         {/* Equipped Title Section */}
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-6 mb-4">
-          <h3 className="text-xl font-bold mb-4">Equipped Title</h3>
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-6 mb-4`}>
+          <h3 className="text-[1.05rem] font-bold mb-4">Equipped Title</h3>
           <div className="mb-4">
-            <div className="bg-blue-950 p-4 rounded border-2 border-yellow-400">
-              <div className="text-lg font-bold text-yellow-400">
+            <div className={`bg-${theme.surface} p-4 rounded border-2 border-yellow-400`}>
+              <div className="text-[1.05rem] font-bold text-yellow-400">
                 {titleName || 'No title equipped'}
               </div>
               {titleName && (
@@ -2390,11 +2386,11 @@ useEffect(() => {
                   className={`p-3 rounded text-left ${
                     isEquipped
                       ? 'bg-yellow-600 cursor-not-allowed'
-                      : 'bg-blue-950 hover:bg-blue-800'
+                      : `bg-${theme.surface} hover:bg-${theme.secondary}`
                   }`}
                 >
                   <div className="font-bold">{ach.title}</div>
-                  <div className="text-xs text-blue-300">{ach.name}</div>
+                  <div className={`text-xs text-${theme.textMuted}`}>{ach.name}</div>
                 </button>
               );
             })}
@@ -2402,9 +2398,9 @@ useEffect(() => {
         </div>
 
         {/* Nationality/Region */}
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-6 mb-4">
-          <h3 className="text-xl font-bold mb-4">Nationality / Region</h3>
-          <p className="text-sm text-blue-300 mb-4">
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-6 mb-4`}>
+          <h3 className="text-[1.05rem] font-bold mb-4">Nationality / Region</h3>
+          <p className={`text-sm text-${theme.textMuted} mb-4`}>
             Select your country for regional leaderboards (optional)
           </p>
 
@@ -2418,7 +2414,7 @@ useEffect(() => {
                 value={nationalitySearch}
                 onChange={(e) => setNationalitySearch(e.target.value)}
                 onFocus={() => setNationalityDropdownOpen(true)}
-                className="w-full px-4 py-3 bg-blue-950 border border-blue-700 rounded text-white placeholder-blue-400 focus:outline-none focus:border-blue-500"
+                className={`w-full px-4 py-3 bg-${theme.surface} border border-${theme.border} rounded text-white placeholder-${theme.textDim} focus:outline-none focus:border-${theme.accent}`}
               />
             </div>
 
@@ -2426,7 +2422,7 @@ useEffect(() => {
             {nationality && !nationalityDropdownOpen && (
               <div className="mb-2 p-3 bg-green-700 rounded flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{countries.find(c => c.code === nationality)?.flag}</span>
+                  <span className="text-[1.05rem]">{countries.find(c => c.code === nationality)?.flag}</span>
                   <span className="font-bold">{countries.find(c => c.code === nationality)?.name}</span>
                 </div>
                 <button
@@ -2443,7 +2439,7 @@ useEffect(() => {
 
             {/* Dropdown List */}
             {nationalityDropdownOpen && (
-              <div className="absolute z-10 w-full bg-blue-900 border border-blue-700 rounded shadow-lg max-h-64 overflow-y-auto">
+              <div className={`absolute z-10 w-full bg-${theme.primarySolid} border border-${theme.border} rounded shadow-lg max-h-64 overflow-y-auto`}>
                 {/* None Option */}
                 <button
                   onClick={() => {
@@ -2451,7 +2447,7 @@ useEffect(() => {
                     setNationalitySearch('');
                     setNationalityDropdownOpen(false);
                   }}
-                  className="w-full p-3 text-left hover:bg-blue-800 border-b border-blue-700"
+                  className={`w-full p-3 text-left hover:bg-${theme.secondary} border-b border-${theme.border}`}
                 >
                   <span className="font-bold text-gray-300">None</span>
                 </button>
@@ -2469,11 +2465,11 @@ useEffect(() => {
                         setNationalitySearch('');
                         setNationalityDropdownOpen(false);
                       }}
-                      className={`w-full p-3 text-left hover:bg-blue-800 border-b border-blue-700 flex items-center gap-3 ${
+                      className={`w-full p-3 text-left hover:bg-${theme.secondary} border-b border-${theme.border} flex items-center gap-3 ${
                         nationality === country.code ? 'bg-green-700' : ''
                       }`}
                     >
-                      <span className="text-2xl">{country.flag}</span>
+                      <span className="text-[1.05rem]">{country.flag}</span>
                       <span className="font-bold">{country.name}</span>
                     </button>
                   ))}
@@ -2491,8 +2487,8 @@ useEffect(() => {
         </div>
 
         {/* Privacy Settings */}
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-6 mb-4">
-          <h3 className="text-xl font-bold mb-4">Privacy Settings</h3>
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-6 mb-4`}>
+          <h3 className="text-[1.05rem] font-bold mb-4">Privacy Settings</h3>
           <div className="space-y-4">
             <div>
               <label className="text-sm font-bold mb-2 block">Profile Visibility</label>
@@ -2500,7 +2496,7 @@ useEffect(() => {
                 <button
                   onClick={() => handlePrivacyChange('public')}
                   className={`px-4 py-2 rounded font-bold text-sm ${
-                    privacy === 'public' ? 'bg-green-600' : 'bg-blue-900 hover:bg-blue-800'
+                    privacy === 'public' ? 'bg-green-600' : `bg-${theme.primarySolid} hover:bg-${theme.secondary}`
                   }`}
                 >
                   Public
@@ -2508,7 +2504,7 @@ useEffect(() => {
                 <button
                   onClick={() => handlePrivacyChange('friends')}
                   className={`px-4 py-2 rounded font-bold text-sm ${
-                    privacy === 'friends' ? 'bg-yellow-600' : 'bg-blue-900 hover:bg-blue-800'
+                    privacy === 'friends' ? 'bg-yellow-600' : `bg-${theme.primarySolid} hover:bg-${theme.secondary}`
                   }`}
                 >
                   Friends Only
@@ -2516,7 +2512,7 @@ useEffect(() => {
                 <button
                   onClick={() => handlePrivacyChange('private')}
                   className={`px-4 py-2 rounded font-bold text-sm ${
-                    privacy === 'private' ? 'bg-red-600' : 'bg-blue-900 hover:bg-blue-800'
+                    privacy === 'private' ? 'bg-red-600' : `bg-${theme.primarySolid} hover:bg-${theme.secondary}`
                   }`}
                 >
                   Private
@@ -2539,11 +2535,11 @@ useEffect(() => {
         </div>
 
         {/* Danger Zone */}
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-red-400 mb-4 flex items-center gap-2">
-            <span className="text-xl">⚠️</span> Danger Zone
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-6`}>
+          <h3 className="text-[1.05rem] font-bold text-red-400 mb-4 flex items-center gap-2">
+            <span className="text-[1.05rem]">⚠️</span> Danger Zone
           </h3>
-          <p className="text-sm text-blue-300 mb-4">
+          <p className={`text-sm text-${theme.textMuted} mb-4`}>
             Reset your save data. This will delete all progress and cannot be undone!
           </p>
           <button
@@ -2567,8 +2563,8 @@ useEffect(() => {
     if (!window.ACHIEVEMENTS || !Array.isArray(window.ACHIEVEMENTS)) {
       return (
         <div className="max-w-4xl mx-auto">
-          <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6 text-center">
-            <p className="text-blue-300">Loading achievements...</p>
+          <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6 text-center`}>
+            <p className={`text-${theme.textMuted}`}>Loading achievements...</p>
           </div>
         </div>
       );
@@ -2579,19 +2575,19 @@ useEffect(() => {
 
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+            <h2 className="text-[1.05rem] sm:text-2xl font-bold flex items-center gap-2">
               <span>{Icons.Trophy()}</span>
               Achievements
             </h2>
-            <div className="text-sm text-blue-300">
+            <div className={`text-sm text-${theme.textMuted}`}>
               {unlockedAchievements.length} / {window.ACHIEVEMENTS.length}
             </div>
           </div>
 
           {/* Progress Bar */}
-          <div className="bg-blue-950 rounded-full h-4 mb-8">
+          <div className={`bg-${theme.surface} rounded-full h-4 mb-8`}>
             <div
               className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-4 rounded-full transition-all duration-300 flex items-center justify-center"
               style={{ width: `${(unlockedAchievements.length / window.ACHIEVEMENTS.length) * 100}%` }}
@@ -2605,15 +2601,15 @@ useEffect(() => {
           {/* Unlocked Achievements */}
           {unlockedAchievements.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-lg font-bold mb-3 text-yellow-400">Unlocked</h3>
+              <h3 className="text-[1.05rem] font-bold mb-3 text-yellow-400">Unlocked</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {unlockedAchievements.map(achievement => (
-                  <div key={achievement.id} className="bg-blue-950 p-4 rounded-lg border-2 border-yellow-400">
+                  <div key={achievement.id} className={`bg-${theme.surface} p-4 rounded-lg border-2 border-yellow-400`}>
                     <div className="flex items-start gap-3">
                       <div className="text-3xl">{achievement.icon}</div>
                       <div className="flex-1">
                         <div className="font-bold text-yellow-400">{achievement.name}</div>
-                        <div className="text-xs text-blue-300 mt-1">{achievement.desc}</div>
+                        <div className={`text-xs text-${theme.textMuted} mt-1`}>{achievement.desc}</div>
                         <div className="text-xs text-green-400 mt-2">✓ Completed</div>
                       </div>
                     </div>
@@ -2626,14 +2622,14 @@ useEffect(() => {
           {/* Locked Achievements */}
           {lockedAchievements.length > 0 && (
             <div>
-              <h3 className="text-lg font-bold mb-3 text-gray-400">Locked</h3>
+              <h3 className="text-[1.05rem] font-bold mb-3 text-gray-400">Locked</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {lockedAchievements.map(achievement => {
                   const currentValue = player[achievement.stat] || 0;
                   const progress = Math.min(100, (currentValue / achievement.requirement) * 100);
 
                   return (
-                    <div key={achievement.id} className="bg-blue-950 p-4 rounded-lg border-2 border-gray-700 opacity-70">
+                    <div key={achievement.id} className={`bg-${theme.surface} p-4 rounded-lg border-2 border-gray-700 opacity-70`}>
                       <div className="flex items-start gap-3">
                         <div className="text-3xl grayscale">{achievement.icon}</div>
                         <div className="flex-1">
@@ -2646,7 +2642,7 @@ useEffect(() => {
                             </div>
                             <div className="bg-gray-700 rounded-full h-2">
                               <div
-                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                className={`bg-${theme.accent} h-2 rounded-full transition-all duration-300`}
                                 style={{ width: `${progress}%` }}
                               />
                             </div>
@@ -2706,20 +2702,20 @@ useEffect(() => {
 
     return (
       <div className="max-w-6xl mx-auto">
-        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 sm:p-6">
+        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+            <h2 className="text-[1.05rem] sm:text-2xl font-bold flex items-center gap-2">
               <span>🐟</span>
               Fishpedia
             </h2>
-            <div className="text-sm text-blue-300">
+            <div className={`text-sm text-${theme.textMuted}`}>
               {discoveredCount} / {totalFish} ({discoveryPercentage}%)
             </div>
           </div>
 
           {/* Biome Selection Dropdown */}
           <div className="mb-6">
-            <label htmlFor="biome-select" className="text-sm text-blue-300 mb-2 font-semibold block">
+            <label htmlFor="biome-select" className={`text-sm text-${theme.textMuted} mb-2 font-semibold block`}>
               Select Biome:
             </label>
             <select
@@ -2729,7 +2725,7 @@ useEffect(() => {
                 setSelectedBiome(parseInt(e.target.value));
                 setSelectedRarityFilter('all');
               }}
-              className="w-full sm:w-64 px-4 py-3 rounded-lg font-bold bg-blue-900 text-white border-2 border-blue-700 hover:border-blue-500 focus:border-blue-400 focus:outline-none cursor-pointer"
+              className={`w-full sm:w-64 px-4 py-3 rounded-lg font-bold bg-${theme.primarySolid} text-white border-2 border-${theme.border} hover:border-${theme.accent} focus:border-${theme.accentHover} focus:outline-none cursor-pointer`}
             >
               {availableBiomes.map(biomeId => (
                 <option key={biomeId} value={biomeId}>
@@ -2741,12 +2737,12 @@ useEffect(() => {
 
           {/* Rarity Filter */}
           <div className="mb-6">
-            <div className="text-sm text-blue-300 mb-2 font-semibold">Filter by Rarity:</div>
+            <div className={`text-sm text-${theme.textMuted} mb-2 font-semibold`}>Filter by Rarity:</div>
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-8 gap-2">
               <button
                 onClick={() => setSelectedRarityFilter('all')}
                 className={`px-3 py-2 rounded font-bold text-xs ${
-                  selectedRarityFilter === 'all' ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'
+                  selectedRarityFilter === 'all' ? `bg-${theme.accent}` : `bg-${theme.primarySolid} hover:bg-${theme.secondary}`
                 }`}
               >
                 All
@@ -2756,7 +2752,7 @@ useEffect(() => {
                   key={rarity}
                   onClick={() => setSelectedRarityFilter(rarity)}
                   className={`px-3 py-2 rounded font-bold text-xs ${
-                    selectedRarityFilter === rarity ? 'bg-blue-600' : 'bg-blue-900 hover:bg-blue-800'
+                    selectedRarityFilter === rarity ? `bg-${theme.accent}` : `bg-${theme.primarySolid} hover:bg-${theme.secondary}`
                   }`}
                   style={{ borderLeft: `4px solid ${getRarityColor(rarity)}` }}
                 >
@@ -2771,7 +2767,7 @@ useEffect(() => {
             {filteredFish.map((fish, idx) => (
               <div
                 key={idx}
-                className="bg-blue-950 p-4 rounded-lg border-2"
+                className={`bg-${theme.surface} p-4 rounded-lg border-2`}
                 style={isGradientRarity(fish.rarity) ? {
                   borderImage: `${rarityColors[fish.rarity]} 1`,
                   borderImageSlice: 1
@@ -2785,25 +2781,25 @@ useEffect(() => {
                         <div className="text-xs font-bold" style={getGradientTextStyle(fish.rarity)}>
                           {fish.rarity}
                         </div>
-                        <div className="text-lg font-bold mt-1">{fish.name}</div>
+                        <div className="text-[1.05rem] font-bold mt-1">{fish.name}</div>
                       </div>
                       {fish.totalCaught > 0 && (
-                        <div className="text-sm text-blue-300 ml-2">
+                        <div className={`text-sm text-${theme.textMuted} ml-2`}>
                           Caught: {fish.totalCaught}
                         </div>
                       )}
                     </div>
 
-                    <div className="text-sm text-blue-300 mb-3 italic">
+                    <div className={`text-sm text-${theme.textMuted} mb-3 italic`}>
                       {fish.desc}
                     </div>
 
                     <div className="flex gap-4 text-xs">
                       <div className="text-green-400">
-                        <span className="text-blue-400">XP:</span> {fish.xp}
+                        <span className={`text-${theme.textDim}`}>XP:</span> {fish.xp}
                       </div>
                       <div className="text-yellow-400">
-                        <span className="text-blue-400">Gold:</span> {fish.gold}
+                        <span className={`text-${theme.textDim}`}>Gold:</span> {fish.gold}
                       </div>
                     </div>
                   </>
@@ -2812,7 +2808,7 @@ useEffect(() => {
                     {/* Undiscovered Fish */}
                     <div className="text-center opacity-50">
                       <div className="text-6xl mb-2">❓</div>
-                      <div className="text-lg font-bold text-gray-400">???</div>
+                      <div className="text-[1.05rem] font-bold text-gray-400">???</div>
                       <div className="text-xs text-gray-500 mt-2">
                         Catch this fish to discover it!
                       </div>
@@ -2827,7 +2823,7 @@ useEffect(() => {
           </div>
 
           {filteredFish.length === 0 && (
-            <div className="text-center text-blue-300 py-12">
+            <div className={`text-center text-${theme.textMuted} py-12`}>
               No {selectedRarityFilter} fish in this biome.
             </div>
           )}
@@ -2838,10 +2834,10 @@ useEffect(() => {
 
   const PlaceholderPage = ({ title, icon }) => (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-blue-800 bg-opacity-50 rounded-lg p-8 sm:p-12 text-center">
+      <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-8 sm:p-12 text-center`}>
         <div className="text-6xl mb-4"><span className="text-5xl">{icon()}</span></div>
-        <h2 className="text-2xl sm:text-3xl font-bold mb-2">{title}</h2>
-        <p className="text-sm sm:text-base text-blue-300">Coming soon! This feature is under development.</p>
+        <h2 className="text-[1.05rem] sm:text-3xl font-bold mb-2">{title}</h2>
+        <p className={`text-sm sm:text-base text-${theme.textMuted}`}>Coming soon! This feature is under development.</p>
       </div>
     </div>
   );
@@ -2852,10 +2848,10 @@ useEffect(() => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-80 z-[100] flex items-center justify-center">
-        <div className="bg-blue-900 rounded-lg p-8 text-center border-4 border-blue-600 shadow-2xl">
+        <div className={`bg-${theme.primarySolid} rounded-lg p-8 text-center border-4 border-${theme.accent} shadow-2xl`}>
           <div className="text-6xl mb-4 animate-pulse">💾</div>
-          <h2 className="text-2xl font-bold mb-2">Saving Your Progress...</h2>
-          <p className="text-blue-300 mb-4">Please wait while we save your game data</p>
+          <h2 className="text-[1.05rem] font-bold mb-2">Saving Your Progress...</h2>
+          <p className={`text-${theme.textMuted} mb-4`}>Please wait while we save your game data</p>
           <div className="flex justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-yellow-400"></div>
           </div>
@@ -3027,7 +3023,7 @@ const App = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 to-cyan-900">
-        <div className="text-white text-2xl">Loading...</div>
+        <div className="text-white text-[1.05rem]">Loading...</div>
       </div>
     );
   }
