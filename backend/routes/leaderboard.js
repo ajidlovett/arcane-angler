@@ -44,43 +44,45 @@ async function getLeaderboard(orderBy, nationality = null, limit = 100, userId =
 
     let query = `
         SELECT
-            user_id,
-            profile_username,
-            nationality,
-            level,
-            total_gold,
-            total_relics,
-            total_fish_caught,
-            total_casts,
-            fish_sold,
-            gold_earned,
-            relics_earned,
-            common_caught,
-            uncommon_caught,
-            fine_caught,
-            rare_caught,
-            epic_caught,
-            treasure_caught,
-            legendary_fish_count,
-            mythic_fish_count,
-            exotic_caught,
-            arcane_caught,
-            total_stats_upgraded,
-            strength,
-            intelligence,
-            luck,
-            stamina
-        FROM leaderboard_stats
+            ls.user_id,
+            ls.profile_username,
+            u.equipped_title,
+            ls.nationality,
+            ls.level,
+            ls.total_gold,
+            ls.total_relics,
+            ls.total_fish_caught,
+            ls.total_casts,
+            ls.fish_sold,
+            ls.gold_earned,
+            ls.relics_earned,
+            ls.common_caught,
+            ls.uncommon_caught,
+            ls.fine_caught,
+            ls.rare_caught,
+            ls.epic_caught,
+            ls.treasure_caught,
+            ls.legendary_fish_count,
+            ls.mythic_fish_count,
+            ls.exotic_caught,
+            ls.arcane_caught,
+            ls.total_stats_upgraded,
+            ls.strength,
+            ls.intelligence,
+            ls.luck,
+            ls.stamina
+        FROM leaderboard_stats ls
+        LEFT JOIN users u ON ls.user_id = u.id
     `;
 
     const params = [];
 
     if (nationality) {
-        query += ' WHERE nationality = ?';
+        query += ' WHERE ls.nationality = ?';
         params.push(nationality.toUpperCase());
     }
 
-    query += ` ORDER BY ${orderBy} DESC LIMIT ?`;
+    query += ` ORDER BY ls.${orderBy} DESC LIMIT ?`;
     params.push(limit);
 
     const [leaderboard] = await db.query(query, params);
