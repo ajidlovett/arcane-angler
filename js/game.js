@@ -1390,6 +1390,7 @@ React.useEffect(() => {
     const [userRank, setUserRank] = useState(null);
     const [loading, setLoading] = useState(true);
     const [globalStats, setGlobalStats] = useState(null);
+    const [userNationality, setUserNationality] = useState(null);
 
     const categories = [
       { id: 'level', label: 'Total Level', icon: '📊' },
@@ -1418,9 +1419,24 @@ React.useEffect(() => {
     ];
 
     useEffect(() => {
+      loadUserNationality();
+    }, []);
+
+    useEffect(() => {
       loadLeaderboard();
       loadGlobalStats();
     }, [selectedCategory, selectedRegion]);
+
+    const loadUserNationality = async () => {
+      try {
+        const profile = await apiService.getMyProfile();
+        if (profile && profile.profile && profile.profile.nationality) {
+          setUserNationality(profile.profile.nationality);
+        }
+      } catch (error) {
+        console.error('Failed to load user nationality:', error);
+      }
+    };
 
     const loadLeaderboard = async () => {
       try {
@@ -1541,16 +1557,16 @@ React.useEffect(() => {
             >
               🌍 Global
             </button>
-            {playerData.nationality && (
+            {userNationality && (
               <button
-                onClick={() => setSelectedRegion(playerData.nationality)}
+                onClick={() => setSelectedRegion(userNationality)}
                 className={`px-4 py-2 rounded transition-colors ${
-                  selectedRegion === playerData.nationality
+                  selectedRegion === userNationality
                     ? 'bg-blue-600 text-white'
                     : 'bg-blue-900 text-blue-300 hover:bg-blue-800'
                 }`}
               >
-                🌏 {playerData.nationality}
+                🌏 {userNationality}
               </button>
             )}
           </div>
