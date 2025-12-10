@@ -90,6 +90,121 @@ React.useEffect(() => {
   loadData();
 }, []);
 
+// Theme System
+const themes = {
+  dark: {
+    name: 'Dark',
+    primary: { from: 'gray-900', via: 'gray-800', to: 'gray-950' },
+    primarySolid: 'gray-900',
+    secondary: 'gray-800',
+    surface: 'gray-950',
+    border: 'gray-700',
+    borderLight: 'gray-600',
+    text: 'white',
+    textMuted: 'gray-300',
+    textDim: 'gray-400',
+    hover: 'gray-800',
+    accent: 'yellow-400',
+    accentHover: 'yellow-500'
+  },
+  ocean: {
+    name: 'Ocean Blue',
+    primary: { from: 'blue-900', via: 'blue-800', to: 'blue-950' },
+    primarySolid: 'blue-900',
+    secondary: 'blue-800',
+    surface: 'blue-950',
+    border: 'blue-700',
+    borderLight: 'blue-600',
+    text: 'white',
+    textMuted: 'blue-300',
+    textDim: 'blue-400',
+    hover: 'blue-800',
+    accent: 'yellow-400',
+    accentHover: 'yellow-500'
+  },
+  forest: {
+    name: 'Forest Green',
+    primary: { from: 'green-900', via: 'green-800', to: 'green-950' },
+    primarySolid: 'green-900',
+    secondary: 'green-800',
+    surface: 'green-950',
+    border: 'green-700',
+    borderLight: 'green-600',
+    text: 'white',
+    textMuted: 'green-300',
+    textDim: 'green-400',
+    hover: 'green-800',
+    accent: 'yellow-400',
+    accentHover: 'yellow-500'
+  },
+  sunset: {
+    name: 'Sunset Purple',
+    primary: { from: 'purple-900', via: 'purple-800', to: 'purple-950' },
+    primarySolid: 'purple-900',
+    secondary: 'purple-800',
+    surface: 'purple-950',
+    border: 'purple-700',
+    borderLight: 'purple-600',
+    text: 'white',
+    textMuted: 'purple-300',
+    textDim: 'purple-400',
+    hover: 'purple-800',
+    accent: 'pink-400',
+    accentHover: 'pink-500'
+  },
+  ember: {
+    name: 'Warm Ember',
+    primary: { from: 'orange-900', via: 'orange-800', to: 'orange-950' },
+    primarySolid: 'orange-900',
+    secondary: 'orange-800',
+    surface: 'orange-950',
+    border: 'orange-700',
+    borderLight: 'orange-600',
+    text: 'white',
+    textMuted: 'orange-300',
+    textDim: 'orange-400',
+    hover: 'orange-800',
+    accent: 'yellow-400',
+    accentHover: 'yellow-500'
+  },
+  slate: {
+    name: 'Cool Slate',
+    primary: { from: 'slate-900', via: 'slate-800', to: 'slate-950' },
+    primarySolid: 'slate-900',
+    secondary: 'slate-800',
+    surface: 'slate-950',
+    border: 'slate-700',
+    borderLight: 'slate-600',
+    text: 'white',
+    textMuted: 'slate-300',
+    textDim: 'slate-400',
+    hover: 'slate-800',
+    accent: 'cyan-400',
+    accentHover: 'cyan-500'
+  }
+};
+
+const [currentTheme, setCurrentTheme] = useState(() => {
+  const saved = localStorage.getItem('arcaneAnglerTheme');
+  return saved && themes[saved] ? saved : 'dark';
+});
+
+const theme = themes[currentTheme];
+
+// Helper to get theme class
+const getThemeClass = (colorType) => {
+  const color = theme[colorType];
+  if (typeof color === 'object' && color.from) {
+    return `from-${color.from} via-${color.via} to-${color.to}`;
+  }
+  return color;
+};
+
+// Save theme preference
+useEffect(() => {
+  localStorage.setItem('arcaneAnglerTheme', currentTheme);
+}, [currentTheme]);
+
 // Auto-save to cloud - Reduced frequency since server is now authoritative
 // State is already saved by individual action endpoints
 // Note: Auto-save removed - all saves now happen via individual action endpoints
@@ -535,6 +650,62 @@ React.useEffect(() => {
     onLogout();
   };
 
+  // Options Page Component
+  const OptionsPage = () => (
+    <div className="max-w-4xl mx-auto">
+      <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-6`}>
+        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+          <span>⚙️</span>
+          Game Options
+        </h2>
+
+        {/* Theme Selection */}
+        <div className="mb-8">
+          <h3 className="text-lg font-bold mb-4 text-${theme.accent}">Color Theme</h3>
+          <p className={`text-sm text-${theme.textMuted} mb-4`}>
+            Choose a color theme that's comfortable for your eyes
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Object.entries(themes).map(([key, themeObj]) => (
+              <button
+                key={key}
+                onClick={() => setCurrentTheme(key)}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  currentTheme === key
+                    ? `border-${theme.accent} bg-${theme.hover}`
+                    : `border-${theme.border} hover:border-${theme.borderLight}`
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-bold">{themeObj.name}</span>
+                  {currentTheme === key && <span className="text-xl">✓</span>}
+                </div>
+
+                <div className="flex gap-2 mt-3">
+                  <div className={`w-8 h-8 rounded bg-${themeObj.primarySolid} border border-${theme.border}`}></div>
+                  <div className={`w-8 h-8 rounded bg-${themeObj.secondary} border border-${theme.border}`}></div>
+                  <div className={`w-8 h-8 rounded bg-${themeObj.surface} border border-${theme.border}`}></div>
+                  <div className={`w-8 h-8 rounded bg-${themeObj.accent} border border-${theme.border}`}></div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Info Section */}
+        <div className={`bg-${theme.surface} p-4 rounded-lg border border-${theme.border}`}>
+          <p className={`text-sm text-${theme.textMuted}`}>
+            <strong>Current Theme:</strong> {theme.name}
+          </p>
+          <p className={`text-xs text-${theme.textDim} mt-2`}>
+            Your theme preference is automatically saved and will persist across sessions.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
   // Components
   const Sidebar = () => {
     const menuItems = [
@@ -548,7 +719,8 @@ React.useEffect(() => {
       { id: 'quests', icon: Icons.Target, label: 'Quests' },
       { id: 'guilds', icon: Icons.Users, label: 'Guilds' },
       { id: 'profile', icon: Icons.User, label: 'Profile' },
-      { id: 'achievements', icon: Icons.Trophy, label: 'Achievements' }
+      { id: 'achievements', icon: Icons.Trophy, label: 'Achievements' },
+      { id: 'options', icon: () => '⚙️', label: 'Options' }
     ];
 
     return (
@@ -560,10 +732,10 @@ React.useEffect(() => {
           />
         )}
 
-        <div className={`fixed lg:static inset-y-0 left-0 z-50 w-56 bg-blue-900 border-r-2 border-blue-700 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
+        <div className={`fixed lg:static inset-y-0 left-0 z-50 w-56 bg-${theme.primarySolid} border-r-2 border-${theme.border} transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden absolute top-4 right-4 p-2 text-white hover:bg-blue-800 rounded"
+            className={`lg:hidden absolute top-4 right-4 p-2 text-white hover:bg-${theme.hover} rounded`}
           >
             {Icons.X()}
           </button>
@@ -576,20 +748,20 @@ React.useEffect(() => {
                   setCurrentPage(id);
                   setSidebarOpen(false);
                 }}
-                className={`w-full flex items-center gap-2 px-4 py-2 text-sm font-bold transition-colors text-left ${currentPage === id ? 'bg-blue-700 text-white border-l-4 border-yellow-400' : 'text-blue-300 hover:bg-blue-800 hover:text-white'}`}
+                className={`w-full flex items-center gap-2 px-4 py-2 text-sm font-bold transition-colors text-left ${currentPage === id ? `bg-${theme.hover} text-white border-l-4 border-${theme.accent}` : `text-${theme.textMuted} hover:bg-${theme.hover} hover:text-white`}`}
               >
                 <span className="w-4 flex-shrink-0">{Icon()}</span>
                 <span>{label}</span>
               </button>
             ))}
 
-            <div className="mx-4 my-3 border-t border-blue-700"></div>
+            <div className={`mx-4 my-3 border-t border-${theme.border}`}></div>
 
             <div className="px-4 space-y-2">
-              <div className="text-xs font-bold text-yellow-400">
+              <div className={`text-xs font-bold text-${theme.accent}`}>
                 {window.BIOMES[player.currentBiome].name}
               </div>
-              <div className="text-xs text-blue-300">
+              <div className={`text-xs text-${theme.textMuted}`}>
                 Biome {player.currentBiome} of {Object.keys(window.BIOMES).length}
               </div>
 
@@ -2672,18 +2844,18 @@ React.useEffect(() => {
   return (
     <>
       <SavingOverlay />
-      <div className="min-h-screen bg-gradient-to-b from-blue-900 via-blue-800 to-blue-950 text-white flex">
+      <div className={`min-h-screen bg-gradient-to-b from-${theme.primary.from} via-${theme.primary.via} to-${theme.primary.to} text-white flex`}>
         <Sidebar />
         <div className="flex-1 flex flex-col min-w-0">
-        <div className="lg:hidden bg-blue-900 border-b-2 border-blue-700 p-4">
+        <div className={`lg:hidden bg-${theme.primarySolid} border-b-2 border-${theme.border} p-4`}>
           <div className="flex items-center justify-between mb-2">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 hover:bg-blue-800 rounded"
+              className={`p-2 hover:bg-${theme.hover} rounded`}
             >
               {Icons.Menu()}
             </button>
-            <h1 className="text-xs font-bold text-yellow-400">⚡ Arcane Angler</h1>
+            <h1 className={`text-xs font-bold text-${theme.accent}`}>⚡ Arcane Angler</h1>
             <button
               onClick={() => {
                 if (!document.fullscreenElement) {
@@ -2692,41 +2864,41 @@ React.useEffect(() => {
                   document.exitFullscreen();
                 }
               }}
-              className="p-2 hover:bg-blue-800 rounded text-sm"
+              className={`p-2 hover:bg-${theme.hover} rounded text-sm`}
             >
               ⛶
             </button>
           </div>
 
           <div className="space-y-2">
-            <div className="bg-blue-800 bg-opacity-50 rounded px-3 py-1.5 text-center">
-              <div className="text-[10px] text-blue-300">
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 py-1.5 text-center`}>
+              <div className={`text-[10px] text-${theme.textMuted}`}>
                 {user?.profileUsername || user?.username}
                 {getDisplayTitle() && <span> - {getDisplayTitle()}</span>}
               </div>
             </div>
 
-            <div className="flex items-center justify-between bg-blue-800 bg-opacity-50 rounded px-3 py-1.5">
+            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-3 py-1.5`}>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-blue-300">Level: {player.level}</span>
+                <span className={`text-xs text-${theme.textMuted}`}>Level: {player.level}</span>
               </div>
               <div className="flex-1 mx-3">
-                <div className="bg-blue-950 rounded-full h-1.5">
+                <div className={`bg-${theme.surface} rounded-full h-1.5`}>
                   <div
                     className="bg-gradient-to-r from-green-400 to-green-500 h-1.5 rounded-full transition-all"
                     style={{ width: `${(player.xp / player.xpToNext) * 100}%` }}
                   />
                 </div>
               </div>
-              <span className="text-xs text-blue-300">{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
+              <span className={`text-xs text-${theme.textMuted}`}>{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
             </div>
 
-            <div className="bg-blue-800 bg-opacity-50 rounded px-3 py-1.5 flex items-center gap-2">
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 py-1.5 flex items-center gap-2`}>
               <div className="flex items-center gap-1 flex-[7]">
                 <span>🪙</span>
                 <span className="text-[10px] font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
               </div>
-              <div className="h-4 w-px bg-blue-600"></div>
+              <div className={`h-4 w-px bg-${theme.borderLight}`}></div>
               <div className="flex items-center gap-1 flex-[3]">
                 <span>🔮</span>
                 <span className="text-[10px] font-bold text-purple-400">{player.relics.toLocaleString()}</span>
@@ -2735,38 +2907,38 @@ React.useEffect(() => {
           </div>
         </div>
 
-        <div className="hidden lg:block bg-blue-900 border-b-2 border-blue-700 p-3">
-          <h1 className="text-sm font-bold text-yellow-400 text-center">⚡ Arcane Angler</h1>
+        <div className={`hidden lg:block bg-${theme.primarySolid} border-b-2 border-${theme.border} p-3`}>
+          <h1 className={`text-sm font-bold text-${theme.accent} text-center`}>⚡ Arcane Angler</h1>
 
           <div className="max-w-4xl mx-auto space-y-2">
-            <div className="bg-blue-800 bg-opacity-50 rounded px-4 py-2 text-center">
-              <div className="text-xs text-blue-300">
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 py-2 text-center`}>
+              <div className={`text-xs text-${theme.textMuted}`}>
                 {user?.profileUsername || user?.username}
                 {getDisplayTitle() && <span> - {getDisplayTitle()}</span>}
               </div>
             </div>
 
-            <div className="flex items-center justify-between bg-blue-800 bg-opacity-50 rounded px-4 py-2">
+            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-4 py-2`}>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-blue-300">Level: {player.level}</span>
+                <span className={`text-sm text-${theme.textMuted}`}>Level: {player.level}</span>
               </div>
               <div className="flex-1 mx-4 max-w-md">
-                <div className="bg-blue-950 rounded-full h-2">
+                <div className={`bg-${theme.surface} rounded-full h-2`}>
                   <div
                     className="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full transition-all"
                     style={{ width: `${(player.xp / player.xpToNext) * 100}%` }}
                   />
                 </div>
               </div>
-              <span className="text-sm text-blue-300">{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
+              <span className={`text-sm text-${theme.textMuted}`}>{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
             </div>
 
-            <div className="bg-blue-800 bg-opacity-50 rounded px-4 py-2 flex items-center gap-3">
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 py-2 flex items-center gap-3`}>
               <div className="flex items-center gap-2 flex-[7]">
                 <span>🪙</span>
                 <span className="text-sm font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
               </div>
-              <div className="h-5 w-px bg-blue-600"></div>
+              <div className={`h-5 w-px bg-${theme.borderLight}`}></div>
               <div className="flex items-center gap-2 flex-[3]">
                 <span>🔮</span>
                 <span className="text-sm font-bold text-purple-400">{player.relics.toLocaleString()}</span>
@@ -2788,6 +2960,7 @@ React.useEffect(() => {
           {currentPage === 'profile' && <ProfilePage />}
           {currentPage === 'achievements' && <AchievementsPage />}
           {currentPage === 'fishpedia' && <FishpediaPage />}
+          {currentPage === 'options' && <OptionsPage />}
         </div>
       </div>
       </div>
