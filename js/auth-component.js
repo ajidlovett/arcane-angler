@@ -142,7 +142,7 @@ const AuthScreen = ({ onLoginSuccess }) => {
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-900 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-blue-900 mb-2">🎣 Arcane Angler</h1>
+          <img src="/arcane-angler-200p.png" alt="Arcane Angler" className="w-48 h-auto mx-auto mb-2" />
           <p className="text-gray-600">The Ultimate Fishing MMORPG</p>
         </div>
 
