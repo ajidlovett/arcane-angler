@@ -205,6 +205,30 @@ useEffect(() => {
   localStorage.setItem('arcaneAnglerTheme', currentTheme);
 }, [currentTheme]);
 
+// Helper function to get display title from equipped title
+const [equippedTitle, setEquippedTitle] = useState(null);
+
+const getDisplayTitle = () => {
+  if (!equippedTitle || !window.ACHIEVEMENTS) return null;
+  const achievement = window.ACHIEVEMENTS.find(a => a.id === equippedTitle);
+  return achievement ? achievement.title : null;
+};
+
+// Load equipped title from profile
+useEffect(() => {
+  const loadEquippedTitle = async () => {
+    try {
+      const profile = await window.ApiService.getMyProfile();
+      if (profile && profile.profile && profile.profile.equipped_title) {
+        setEquippedTitle(profile.profile.equipped_title);
+      }
+    } catch (error) {
+      console.error('Failed to load equipped title:', error);
+    }
+  };
+  loadEquippedTitle();
+}, []);
+
 // Auto-save to cloud - Reduced frequency since server is now authoritative
 // State is already saved by individual action endpoints
 // Note: Auto-save removed - all saves now happen via individual action endpoints
