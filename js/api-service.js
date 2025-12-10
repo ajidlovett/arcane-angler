@@ -143,6 +143,28 @@ class ApiService {
         });
     }
 
+    async getLeaderboardByCategory(category, nationality = null, limit = 100) {
+        let url = `/leaderboard/category/${category}?limit=${limit}`;
+        if (nationality) {
+            url += `&nationality=${nationality}`;
+        }
+        return await this.request(url, {
+            method: 'GET',
+            requiresAuth: false
+        });
+    }
+
+    async getMyRanks(nationality = null) {
+        let url = '/leaderboard/my-ranks';
+        if (nationality) {
+            url += `?nationality=${nationality}`;
+        }
+        return await this.request(url, {
+            method: 'GET',
+            requiresAuth: true
+        });
+    }
+
     async getPlayerRank(username) {
         return await this.request(`/leaderboard/rank/${username}`, {
             method: 'GET',
@@ -150,8 +172,12 @@ class ApiService {
         });
     }
 
-    async getGlobalStats() {
-        return await this.request('/leaderboard/stats', {
+    async getGlobalStats(nationality = null) {
+        let url = '/leaderboard/stats';
+        if (nationality) {
+            url += `?nationality=${nationality}`;
+        }
+        return await this.request(url, {
             method: 'GET',
             requiresAuth: false
         });
