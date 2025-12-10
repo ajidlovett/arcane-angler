@@ -192,5 +192,53 @@ SET
     ls.luck = ps.luck,
     ls.stamina = ps.stamina;
 
--- Note: Other columns will be populated by triggers on future updates
--- For existing players, you may need to run a one-time data migration script
+-- Populate tracking data from player_data table
+UPDATE leaderboard_stats ls
+JOIN player_data pd ON ls.user_id = pd.user_id
+SET
+    ls.fish_sold = COALESCE(pd.total_fish_sold, 0),
+    ls.gold_earned = COALESCE(pd.total_gold_earned, 0),
+    ls.relics_earned = COALESCE(pd.total_relics_earned, 0),
+    ls.legendary_fish_count = COALESCE(pd.legendaries_caught, 0),
+    ls.mythic_fish_count = COALESCE(pd.mythics_caught, 0),
+    ls.exotic_caught = COALESCE(pd.exotics_caught, 0),
+    ls.arcane_caught = COALESCE(pd.arcanes_caught, 0),
+    ls.treasure_caught = COALESCE(pd.treasure_chests_found, 0),
+    ls.total_stats_upgraded = COALESCE(pd.stats_upgraded, 0);
+
+-- Populate rarity counts from fishpedia_stats
+UPDATE leaderboard_stats ls
+SET
+    ls.total_fish_caught = (
+        SELECT COALESCE(SUM(total_caught), 0)
+        FROM fishpedia_stats
+        WHERE user_id = ls.user_id
+    ),
+    ls.common_caught = (
+        SELECT COALESCE(SUM(total_caught), 0)
+        FROM fishpedia_stats
+        WHERE user_id = ls.user_id AND rarity = 'Common'
+    ),
+    ls.uncommon_caught = (
+        SELECT COALESCE(SUM(total_caught), 0)
+        FROM fishpedia_stats
+        WHERE user_id = ls.user_id AND rarity = 'Uncommon'
+    ),
+    ls.fine_caught = (
+        SELECT COALESCE(SUM(total_caught), 0)
+        FROM fishpedia_stats
+        WHERE user_id = ls.user_id AND rarity = 'Fine'
+    ),
+    ls.rare_caught = (
+        SELECT COALESCE(SUM(total_caught), 0)
+        FROM fishpedia_stats
+        WHERE user_id = ls.user_id AND rarity = 'Rare'
+    ),
+    ls.epic_caught = (
+        SELECT COALESCE(SUM(total_caught), 0)
+        FROM fishpedia_stats
+        WHERE user_id = ls.user_id AND rarity = 'Epic'
+    );
+
+-- Note: total_casts will need to be tracked going forward in the application code
+-- Fish rarity counts will be kept in sync by triggers for future updates
