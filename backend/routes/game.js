@@ -128,7 +128,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
              xp = xp + ?,
              treasure_chests_found = treasure_chests_found + 1,
              total_gold_earned = total_gold_earned + ?,
-             total_relics_earned = total_relics_earned + ?
+             total_relics_earned = total_relics_earned + ?,
+             total_casts = total_casts + 1
          WHERE user_id = ?`,
         [rewards.gold, rewards.relics, xpGained, rewards.gold, rewards.relics, userId]
       );
@@ -218,20 +219,46 @@ router.post('/cast', authenticateToken, async (req, res) => {
       await connection.query(
         `UPDATE player_data
          SET xp = xp + ?,
-             total_fish_caught = total_fish_caught + ?
+             total_fish_caught = total_fish_caught + ?,
+             total_casts = total_casts + 1
          WHERE user_id = ?`,
         [xpGained, count, userId]
       );
 
       // Update rarity-specific counters
-      if (rarity === 'Mythic') {
+      if (rarity === 'Common') {
         await connection.query(
-          'UPDATE player_data SET mythics_caught = mythics_caught + ? WHERE user_id = ?',
+          'UPDATE player_data SET commons_caught = commons_caught + ? WHERE user_id = ?',
+          [count, userId]
+        );
+      } else if (rarity === 'Uncommon') {
+        await connection.query(
+          'UPDATE player_data SET uncommons_caught = uncommons_caught + ? WHERE user_id = ?',
+          [count, userId]
+        );
+      } else if (rarity === 'Fine') {
+        await connection.query(
+          'UPDATE player_data SET fines_caught = fines_caught + ? WHERE user_id = ?',
+          [count, userId]
+        );
+      } else if (rarity === 'Rare') {
+        await connection.query(
+          'UPDATE player_data SET rares_caught = rares_caught + ? WHERE user_id = ?',
+          [count, userId]
+        );
+      } else if (rarity === 'Epic') {
+        await connection.query(
+          'UPDATE player_data SET epics_caught = epics_caught + ? WHERE user_id = ?',
           [count, userId]
         );
       } else if (rarity === 'Legendary') {
         await connection.query(
           'UPDATE player_data SET legendaries_caught = legendaries_caught + ? WHERE user_id = ?',
+          [count, userId]
+        );
+      } else if (rarity === 'Mythic') {
+        await connection.query(
+          'UPDATE player_data SET mythics_caught = mythics_caught + ? WHERE user_id = ?',
           [count, userId]
         );
       } else if (rarity === 'Exotic') {
