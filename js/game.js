@@ -544,6 +544,7 @@ React.useEffect(() => {
       { id: 'inventory', icon: Icons.Package, label: 'Inventory' },
       { id: 'fishpedia', icon: Icons.Fish, label: 'Fishpedia' },
       { id: 'stats', icon: Icons.TrendingUp, label: 'Stats' },
+      { id: 'leaderboard', icon: Icons.Trophy, label: 'Leaderboard' },
       { id: 'quests', icon: Icons.Target, label: 'Quests' },
       { id: 'guilds', icon: Icons.Users, label: 'Guilds' },
       { id: 'profile', icon: Icons.User, label: 'Profile' },
@@ -1381,7 +1382,279 @@ React.useEffect(() => {
       </div>
     );
   };
-  
+
+  const LeaderboardPage = () => {
+    const [selectedCategory, setSelectedCategory] = useState('level');
+    const [selectedRegion, setSelectedRegion] = useState('global');
+    const [leaderboardData, setLeaderboardData] = useState([]);
+    const [userRank, setUserRank] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [globalStats, setGlobalStats] = useState(null);
+
+    const categories = [
+      { id: 'level', label: 'Total Level', icon: '📊' },
+      { id: 'fish-caught', label: 'Total Fish Caught', icon: '🐟' },
+      { id: 'casts', label: 'Total Casts', icon: '🎣' },
+      { id: 'fish-sold', label: 'Fish Sold', icon: '💰' },
+      { id: 'gold-owned', label: 'Gold Owned', icon: '🪙' },
+      { id: 'gold-earned', label: 'Gold Earned', icon: '💵' },
+      { id: 'relics-owned', label: 'Relics Owned', icon: '🔮' },
+      { id: 'relics-earned', label: 'Relics Earned', icon: '✨' },
+      { id: 'common', label: 'Common Caught', icon: '⚪' },
+      { id: 'uncommon', label: 'Uncommon Caught', icon: '🟢' },
+      { id: 'fine', label: 'Fine Caught', icon: '🔵' },
+      { id: 'rare', label: 'Rare Caught', icon: '🟣' },
+      { id: 'epic', label: 'Epic Caught', icon: '🟣' },
+      { id: 'treasure', label: 'Treasure Found', icon: '📦' },
+      { id: 'legendary', label: 'Legendary Caught', icon: '🟠' },
+      { id: 'mythic', label: 'Mythic Caught', icon: '🔴' },
+      { id: 'exotic', label: 'Exotic Caught', icon: '🌈' },
+      { id: 'arcane', label: 'Arcane Caught', icon: '✨' },
+      { id: 'stats-upgraded', label: 'Stats Upgraded', icon: '⬆️' },
+      { id: 'strength', label: 'STR Stats', icon: '💪' },
+      { id: 'intelligence', label: 'INT Stats', icon: '🧠' },
+      { id: 'luck', label: 'Luck Stats', icon: '🍀' },
+      { id: 'stamina', label: 'Stamina Stats', icon: '⚡' }
+    ];
+
+    useEffect(() => {
+      loadLeaderboard();
+      loadGlobalStats();
+    }, [selectedCategory, selectedRegion]);
+
+    const loadLeaderboard = async () => {
+      try {
+        setLoading(true);
+        const nationality = selectedRegion === 'global' ? null : selectedRegion;
+        const result = await apiService.getLeaderboardByCategory(selectedCategory, nationality, 100);
+
+        setLeaderboardData(result.leaderboard || []);
+        setUserRank(result.userRank || null);
+      } catch (error) {
+        console.error('Failed to load leaderboard:', error);
+        showMessage('Failed to load leaderboard', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const loadGlobalStats = async () => {
+      try {
+        const nationality = selectedRegion === 'global' ? null : selectedRegion;
+        const stats = await apiService.getGlobalStats(nationality);
+        setGlobalStats(stats);
+      } catch (error) {
+        console.error('Failed to load global stats:', error);
+      }
+    };
+
+    const getValueForCategory = (player, category) => {
+      const valueMap = {
+        'level': player.level,
+        'fish-caught': player.total_fish_caught,
+        'casts': player.total_casts,
+        'fish-sold': player.fish_sold,
+        'gold-owned': player.total_gold,
+        'gold-earned': player.gold_earned,
+        'relics-owned': player.total_relics,
+        'relics-earned': player.relics_earned,
+        'common': player.common_caught,
+        'uncommon': player.uncommon_caught,
+        'fine': player.fine_caught,
+        'rare': player.rare_caught,
+        'epic': player.epic_caught,
+        'treasure': player.treasure_caught,
+        'legendary': player.legendary_fish_count,
+        'mythic': player.mythic_fish_count,
+        'exotic': player.exotic_caught,
+        'arcane': player.arcane_caught,
+        'stats-upgraded': player.total_stats_upgraded,
+        'strength': player.strength,
+        'intelligence': player.intelligence,
+        'luck': player.luck,
+        'stamina': player.stamina
+      };
+      return valueMap[category] || 0;
+    };
+
+    const formatNumber = (num) => {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num.toLocaleString();
+    };
+
+    const getRankColor = (rank) => {
+      if (rank === 1) return 'text-yellow-400';
+      if (rank === 2) return 'text-gray-300';
+      if (rank === 3) return 'text-orange-400';
+      return 'text-blue-300';
+    };
+
+    const getRankIcon = (rank) => {
+      if (rank === 1) return '🥇';
+      if (rank === 2) return '🥈';
+      if (rank === 3) return '🥉';
+      return `#${rank}`;
+    };
+
+    return (
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            <span>{Icons.Trophy()}</span>
+            Leaderboards
+          </h2>
+        </div>
+
+        {/* Global Stats Summary */}
+        {globalStats && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4">
+              <div className="text-sm text-blue-300">Total Players</div>
+              <div className="text-2xl font-bold text-white">{globalStats.total_players?.toLocaleString() || 0}</div>
+            </div>
+            <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4">
+              <div className="text-sm text-blue-300">Highest Level</div>
+              <div className="text-2xl font-bold text-white">{globalStats.highest_level || 0}</div>
+            </div>
+            <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4">
+              <div className="text-sm text-blue-300">Total Fish Caught</div>
+              <div className="text-2xl font-bold text-white">{formatNumber(globalStats.total_fish_caught || 0)}</div>
+            </div>
+            <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4">
+              <div className="text-sm text-blue-300">Total Arcane</div>
+              <div className="text-2xl font-bold text-white">{globalStats.total_arcane_caught || 0}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Region Filter */}
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 mb-4">
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => setSelectedRegion('global')}
+              className={`px-4 py-2 rounded transition-colors ${
+                selectedRegion === 'global'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-blue-900 text-blue-300 hover:bg-blue-800'
+              }`}
+            >
+              🌍 Global
+            </button>
+            {playerData.nationality && (
+              <button
+                onClick={() => setSelectedRegion(playerData.nationality)}
+                className={`px-4 py-2 rounded transition-colors ${
+                  selectedRegion === playerData.nationality
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-blue-900 text-blue-300 hover:bg-blue-800'
+                }`}
+              >
+                🌏 {playerData.nationality}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Category Tabs */}
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg p-4 mb-4">
+          <div className="flex gap-2 flex-wrap">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`px-3 py-2 rounded text-sm transition-colors ${
+                  selectedCategory === category.id
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-blue-900 text-blue-300 hover:bg-blue-800'
+                }`}
+              >
+                <span className="mr-1">{category.icon}</span>
+                {category.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Leaderboard Table */}
+        <div className="bg-blue-800 bg-opacity-50 rounded-lg overflow-hidden">
+          {loading ? (
+            <div className="p-8 text-center text-blue-300">
+              Loading leaderboard...
+            </div>
+          ) : leaderboardData.length === 0 ? (
+            <div className="p-8 text-center text-blue-300">
+              No data available for this category
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-blue-900">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-blue-300">Rank</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-blue-300">Player</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-blue-300">Region</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-blue-300">Value</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-blue-300">Level</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leaderboardData.map((player, index) => {
+                    const rank = index + 1;
+                    return (
+                      <tr
+                        key={player.user_id}
+                        className={`border-t border-blue-700 ${
+                          player.user_id === user?.id ? 'bg-blue-700 bg-opacity-50' : 'hover:bg-blue-900'
+                        }`}
+                      >
+                        <td className={`px-4 py-3 font-bold ${getRankColor(rank)}`}>
+                          {getRankIcon(rank)}
+                        </td>
+                        <td className="px-4 py-3 text-white font-semibold">
+                          {player.profile_username}
+                        </td>
+                        <td className="px-4 py-3 text-blue-300">
+                          {player.nationality || '-'}
+                        </td>
+                        <td className="px-4 py-3 text-right text-white font-bold">
+                          {formatNumber(getValueForCategory(player, selectedCategory))}
+                        </td>
+                        <td className="px-4 py-3 text-right text-blue-300">
+                          Lv. {player.level}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* User Rank (if outside top 100) */}
+        {userRank && userRank.rank > 100 && (
+          <div className="mt-4 bg-blue-700 bg-opacity-50 rounded-lg p-4 border-2 border-blue-500">
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="text-sm text-blue-300 mb-1">Your Rank</div>
+                <div className="text-xl font-bold text-white">
+                  #{userRank.rank} - {userRank.stats.profile_username}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-blue-300 mb-1">Your Score</div>
+                <div className="text-xl font-bold text-white">
+                  {formatNumber(getValueForCategory(userRank.stats, selectedCategory))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const ProfilePage = () => {
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -2410,7 +2683,8 @@ React.useEffect(() => {
           {currentPage === 'biomes' && <BiomesPage />}
           {currentPage === 'inventory' && <InventoryPage />}
           {currentPage === 'stats' && <StatsPage />}
-          
+          {currentPage === 'leaderboard' && <LeaderboardPage />}
+
           {currentPage === 'quests' && <PlaceholderPage title="Quests" icon={Icons.Target} />}
           {currentPage === 'guilds' && <PlaceholderPage title="Guilds" icon={Icons.Users} />}
           {currentPage === 'profile' && <ProfilePage />}
