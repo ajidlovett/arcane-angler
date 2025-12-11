@@ -517,9 +517,10 @@ router.post('/sell', authenticateToken, async (req, res) => {
     await connection.query(
       `UPDATE player_data
        SET gold = gold + ?,
-           total_fish_sold = total_fish_sold + ?
+           total_fish_sold = total_fish_sold + ?,
+           total_gold_earned = total_gold_earned + ?
        WHERE user_id = ?`,
-      [goldEarned, quantity, userId]
+      [goldEarned, quantity, goldEarned, userId]
     );
 
     // Get updated gold balance
@@ -1228,9 +1229,10 @@ router.post('/sell-all', authenticateToken, async (req, res) => {
     await connection.query(
       `UPDATE player_data
        SET gold = gold + ?,
-           total_fish_sold = total_fish_sold + ?
+           total_fish_sold = total_fish_sold + ?,
+           total_gold_earned = total_gold_earned + ?
        WHERE user_id = ?`,
-      [totalGold, totalFishCount, userId]
+      [totalGold, totalFishCount, totalGold, userId]
     );
 
     // Get updated gold balance
@@ -1349,9 +1351,10 @@ router.post('/sell-by-rarity', authenticateToken, async (req, res) => {
     await connection.query(
       `UPDATE player_data
        SET gold = gold + ?,
-           total_fish_sold = total_fish_sold + ?
+           total_fish_sold = total_fish_sold + ?,
+           total_gold_earned = total_gold_earned + ?
        WHERE user_id = ?`,
-      [totalGold, totalFishCount, userId]
+      [totalGold, totalFishCount, totalGold, userId]
     );
 
     // Get updated gold balance
