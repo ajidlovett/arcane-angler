@@ -16,6 +16,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy: Required when behind reverse proxy (nginx, load balancer, etc.)
+// This allows express-rate-limit to correctly identify users by their real IP
+app.set('trust proxy', 1);
+
 // Security: Request size limits (prevent DoS attacks with large payloads)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
