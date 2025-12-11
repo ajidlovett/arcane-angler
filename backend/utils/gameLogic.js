@@ -106,12 +106,20 @@ function calculateFishCount(rarity, totalStrength) {
     return 1;
   }
 
-  // Normal fish: Random range from 1 to MaxCatch
-  // MaxCatch = 1 + FLOOR(TotalSTR / 100)
-  const maxCatch = 1 + Math.floor(totalStrength / 100);
+  // Normal fish: Base range + chance-based extra
+  // BaseMax = 1 + FLOOR(TotalSTR / 100)
+  const baseMax = 1 + Math.floor(totalStrength / 100);
 
-  // Return random integer between 1 and maxCatch (inclusive)
-  return Math.floor(Math.random() * maxCatch) + 1;
+  // ChanceForExtra = (TotalSTR % 100)%
+  // Every 1 STR point adds +1% chance to gain +1 extra fish above BaseMax
+  const chanceForExtra = totalStrength % 100;
+
+  // Roll for extra fish (0-99)
+  const roll = Math.random() * 100;
+  const finalMax = (roll < chanceForExtra) ? baseMax + 1 : baseMax;
+
+  // Return random integer between 1 and finalMax (inclusive)
+  return Math.floor(Math.random() * finalMax) + 1;
 }
 
 /**
