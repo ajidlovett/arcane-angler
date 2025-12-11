@@ -43,6 +43,28 @@ export async function trackQuestProgress(userId, action, data = {}) {
       // Match action to quest requirements
       switch (action) {
         case 'fish_caught':
+          // Special handling for multi-biome quest
+          if (quest.quest_template_id === 'multi_biome_01') {
+            const visitedBiomes = metadata.visited_biomes || [];
+            const currentBiome = data.biome;
+
+            if (currentBiome && !visitedBiomes.includes(currentBiome)) {
+              // New biome visited
+              visitedBiomes.push(currentBiome);
+              metadata.visited_biomes = visitedBiomes;
+              shouldUpdate = true;
+              progressIncrement = 1;
+
+              // Update metadata in database
+              await db.execute(`
+                UPDATE player_quests
+                SET metadata = ?
+                WHERE id = ?
+              `, [JSON.stringify(metadata), quest.id]);
+            }
+            break;
+          }
+
           if (quest.quest_template_id.startsWith('catch_')) {
             // Skip chest quests - they use separate chest_caught action
             if (quest.quest_template_id === 'catch_chest_01') {
