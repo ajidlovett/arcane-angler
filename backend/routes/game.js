@@ -24,6 +24,7 @@ import {
   calculateStatUpgradeCost,
   selectRandomFish
 } from '../utils/gameLogic.js';
+import { trackQuestProgress } from '../utils/questTracking.js';
 
 const router = express.Router();
 
@@ -373,6 +374,31 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.baitQuantity = 999999; // Free bait is infinite
     }
 
+    // Track quest progress (async, non-blocking)
+    if (result.rarity !== 'Treasure Chest') {
+      trackQuestProgress(userId, 'fish_caught', {
+        rarity: result.rarity,
+        biome: currentBiome,
+        bait: player.equipped_bait
+      }).catch(err => console.error('Quest tracking error:', err));
+
+      trackQuestProgress(userId, 'cast_performed', {}).catch(err => console.error('Quest tracking error:', err));
+
+      if (result.count > 1) {
+        trackQuestProgress(userId, 'multi_catch', {}).catch(err => console.error('Quest tracking error:', err));
+      }
+
+      if (player.equipped_bait && player.equipped_bait !== 'Stale Bread Crust') {
+        trackQuestProgress(userId, 'bait_used', {}).catch(err => console.error('Quest tracking error:', err));
+      }
+    } else {
+      trackQuestProgress(userId, 'chest_caught', {}).catch(err => console.error('Quest tracking error:', err));
+    }
+
+    if (result.xpGained > 0) {
+      trackQuestProgress(userId, 'xp_gained', { amount: result.xpGained }).catch(err => console.error('Quest tracking error:', err));
+    }
+
     await connection.commit();
     res.json({ success: true, result });
   } catch (error) {
@@ -485,6 +511,12 @@ router.post('/sell', authenticateToken, async (req, res) => {
       'SELECT gold FROM player_data WHERE user_id = ?',
       [userId]
     );
+
+    // Track quest progress
+    trackQuestProgress(userId, 'fish_sold', {
+      rarity: rarity,
+      amount: quantity
+    }).catch(err => console.error('Quest tracking error:', err));
 
     await connection.commit();
     res.json({
@@ -820,6 +852,10 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
     // Calculate next upgrade cost
     const nextCost = calculateStatUpgradeCost(newStats[0][stat]);
 
+    // Track quest progress
+    trackQuestProgress(userId, 'stat_upgraded', {}).catch(err => console.error('Quest tracking error:', err));
+    trackQuestProgress(userId, 'relics_spent', { amount: cost }).catch(err => console.error('Quest tracking error:', err));
+
     await connection.commit();
     res.json({
       success: true,
@@ -1094,6 +1130,9 @@ router.post('/change-biome', authenticateToken, async (req, res) => {
       'UPDATE player_data SET current_biome = ? WHERE user_id = ?',
       [biomeId, userId]
     );
+
+    // Track quest progress
+    trackQuestProgress(userId, 'biome_visited', { biome: biomeId }).catch(err => console.error('Quest tracking error:', err));
 
       res.json({ success: true, currentBiome: biomeId });
   } catch (error) {
