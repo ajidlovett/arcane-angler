@@ -518,10 +518,11 @@ class QuestService {
     console.log(`[QuestService] Found ${existing.length} existing quests`);
 
     if (existing.length > 0) {
-      // Parse metadata
+      // Metadata is already parsed by MySQL2 (JSON column auto-parsing)
+      // Only parse if it's still a string
       return existing.map(q => ({
         ...q,
-        metadata: q.metadata ? JSON.parse(q.metadata) : null
+        metadata: typeof q.metadata === 'string' ? JSON.parse(q.metadata) : q.metadata
       }));
     }
 
