@@ -126,7 +126,7 @@
     },
     {
       "id": "catch_with_bait_01",
-      "description_template": "Catch {amount} fish using bait.",
+      "description_template": "Catch {amount} fish using purchased bait.",
       "category": "catching",
       "daily_range": [10, 50],
       "weekly_range": [100, 300],
@@ -171,7 +171,7 @@
     },
     {
       "id": "use_bait_01",
-      "description_template": "Use {amount} bait.",
+      "description_template": "Use {amount} purchased bait.",
       "category": "action",
       "daily_range": [3, 10],
       "weekly_range": [25, 50],
