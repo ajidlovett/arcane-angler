@@ -25,9 +25,18 @@ router.get('/', authenticateToken, async (req, res) => {
       monthly: quests.monthly.length
     });
 
+    // Add server time for each quest type
+    const now = new Date();
+    const serverTime = {
+      daily: getTimeUntilReset('daily', now),
+      weekly: getTimeUntilReset('weekly', now),
+      monthly: getTimeUntilReset('monthly', now)
+    };
+
     res.json({
       success: true,
-      quests
+      quests,
+      serverTime
     });
   } catch (error) {
     console.error('Error fetching quests:', error);
@@ -35,6 +44,35 @@ router.get('/', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch quests', details: error.message });
   }
 });
+
+/**
+ * Calculate time until quest reset (server time)
+ */
+function getTimeUntilReset(questType, now) {
+  if (questType === 'daily') {
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    const msUntilReset = tomorrow - now;
+    const hoursLeft = Math.floor(msUntilReset / (1000 * 60 * 60));
+    const minutesLeft = Math.floor((msUntilReset % (1000 * 60 * 60)) / (1000 * 60));
+    return { hours: hoursLeft, minutes: minutesLeft, text: `Resets in ${hoursLeft}h ${minutesLeft}m` };
+  }
+
+  if (questType === 'weekly') {
+    const dayOfWeek = now.getDay();
+    const daysUntilMonday = dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
+    return { days: daysUntilMonday, text: `Resets in ${daysUntilMonday} day${daysUntilMonday !== 1 ? 's' : ''}` };
+  }
+
+  if (questType === 'monthly') {
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const daysLeft = daysInMonth - now.getDate();
+    return { days: daysLeft, text: `Resets in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}` };
+  }
+
+  return { text: '' };
+}
 
 /**
  * GET /api/quests/:type

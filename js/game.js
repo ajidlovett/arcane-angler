@@ -2894,6 +2894,7 @@ useEffect(() => {
 
   const QuestPage = () => {
     const [quests, setQuests] = useState({ daily: [], weekly: [], monthly: [] });
+    const [serverTime, setServerTime] = useState({ daily: { text: '' }, weekly: { text: '' }, monthly: { text: '' } });
     const [loading, setLoading] = useState(true);
     const [selectedTab, setSelectedTab] = useState('daily');
 
@@ -2907,6 +2908,9 @@ useEffect(() => {
         const response = await window.ApiService.getQuests();
         if (response.success) {
           setQuests(response.quests);
+          if (response.serverTime) {
+            setServerTime(response.serverTime);
+          }
         }
       } catch (err) {
         console.error('Failed to load quests:', err);
@@ -2916,25 +2920,8 @@ useEffect(() => {
     };
 
     const getExpiresText = (type) => {
-      const now = new Date();
-      if (type === 'daily') {
-        const tomorrow = new Date(now);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(0, 0, 0, 0);
-        const hoursLeft = Math.floor((tomorrow - now) / (1000 * 60 * 60));
-        return `Resets in ${hoursLeft}h`;
-      }
-      if (type === 'weekly') {
-        const dayOfWeek = now.getDay();
-        const daysUntilMonday = dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
-        return `Resets in ${daysUntilMonday} days`;
-      }
-      if (type === 'monthly') {
-        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-        const daysLeft = daysInMonth - now.getDate();
-        return `Resets in ${daysLeft} days`;
-      }
-      return '';
+      // Use server-provided time instead of client time
+      return serverTime[type]?.text || '';
     };
 
     const QuestCard = ({ quest, type }) => {
