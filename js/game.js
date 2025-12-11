@@ -2950,7 +2950,7 @@ useEffect(() => {
               <p className="text-white text-sm mt-1">{quest.description}</p>
             </div>
             <div className="flex items-center gap-1 text-blue-400 font-bold ml-2">
-              <span>💎</span>
+              <span>🔮</span>
               <span className="text-sm">×{rewardAmount}</span>
             </div>
           </div>
@@ -3051,9 +3051,9 @@ useEffect(() => {
           {/* Rewards Info */}
           <div className="mt-6 p-4 bg-gray-800 bg-opacity-50 rounded-lg">
             <div className="text-xs sm:text-sm text-gray-400 flex flex-wrap gap-4 justify-center">
-              <span>💎 Daily: 1 relic each</span>
-              <span>💎 Weekly: 3 relics each</span>
-              <span>💎 Monthly: 5 relics each</span>
+              <span>🔮 Daily: 1 relic each</span>
+              <span>🔮 Weekly: 3 relics each</span>
+              <span>🔮 Monthly: 5 relics each</span>
             </div>
           </div>
         </div>

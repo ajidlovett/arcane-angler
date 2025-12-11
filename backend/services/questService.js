@@ -481,7 +481,9 @@ class QuestService {
    * Rotate quests if needed and return active quests
    */
   async getOrRotateQuests(userId, questType) {
+    console.log(`[QuestService] getOrRotateQuests called for user ${userId}, type ${questType}`);
     const rotationDate = this.getRotationDate(questType);
+    console.log(`[QuestService] Rotation date: ${rotationDate}`);
 
     // Check if we have active quests for this rotation period
     const [existing] = await db.execute(`
@@ -492,6 +494,8 @@ class QuestService {
       ORDER BY id
     `, [userId, questType, rotationDate]);
 
+    console.log(`[QuestService] Found ${existing.length} existing quests`);
+
     if (existing.length > 0) {
       // Parse metadata
       return existing.map(q => ({
@@ -501,8 +505,19 @@ class QuestService {
     }
 
     // Need to generate new quests
-    const newQuests = await this.generateQuests(userId, questType);
+    console.log(`[QuestService] Generating new ${questType} quests for user ${userId}`);
+    let newQuests;
+    try {
+      newQuests = await this.generateQuests(userId, questType);
+      console.log(`[QuestService] Generated ${newQuests.length} quests`);
+    } catch (error) {
+      console.error(`[QuestService] Error generating quests:`, error);
+      console.error(`[QuestService] Error stack:`, error.stack);
+      throw error;
+    }
+
     const expirationDate = this.getExpirationDate(questType);
+    console.log(`[QuestService] Expiration date: ${expirationDate}`);
 
     // Insert into database
     const insertedQuests = [];
@@ -605,15 +620,30 @@ class QuestService {
    * Get all active quests for a user
    */
   async getAllActiveQuests(userId) {
-    const daily = await this.getOrRotateQuests(userId, 'daily');
-    const weekly = await this.getOrRotateQuests(userId, 'weekly');
-    const monthly = await this.getOrRotateQuests(userId, 'monthly');
+    console.log('[QuestService] Getting all active quests for user:', userId);
+    try {
+      const daily = await this.getOrRotateQuests(userId, 'daily');
+      console.log('[QuestService] Daily quests:', daily.length);
+      const weekly = await this.getOrRotateQuests(userId, 'weekly');
+      console.log('[QuestService] Weekly quests:', weekly.length);
+      const monthly = await this.getOrRotateQuests(userId, 'monthly');
+      console.log('[QuestService] Monthly quests:', monthly.length);
 
-    return {
-      daily,
-      weekly,
-      monthly
-    };
+      return {
+        daily,
+        weekly,
+        monthly
+      };
+    } catch (error) {
+      console.error('[QuestService] Error in getAllActiveQuests:', error);
+      console.error('[QuestService] Error stack:', error.stack);
+      // Return empty arrays rather than crashing
+      return {
+        daily: [],
+        weekly: [],
+        monthly: []
+      };
+    }
   }
 }
 
