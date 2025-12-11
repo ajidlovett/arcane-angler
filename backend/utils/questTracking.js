@@ -44,6 +44,11 @@ export async function trackQuestProgress(userId, action, data = {}) {
       switch (action) {
         case 'fish_caught':
           if (quest.quest_template_id.startsWith('catch_')) {
+            // Skip chest quests - they use separate chest_caught action
+            if (quest.quest_template_id === 'catch_chest_01') {
+              break;
+            }
+
             // Check biome requirement
             if (metadata.biome_rule === 'current' || metadata.biome_rule === 'any_unlocked') {
               if (metadata.targetBiome && data.biome !== metadata.targetBiome) {
@@ -98,17 +103,41 @@ export async function trackQuestProgress(userId, action, data = {}) {
           break;
 
         case 'bait_used':
+          // Regular bait usage count quests
           if (quest.quest_template_id === 'use_bait_01' || quest.quest_template_id === 'use_bait_count_02') {
             shouldUpdate = true;
             progressIncrement = 1;
           }
+          // Different bait types quest - track unique baits
+          if (quest.quest_template_id === 'equip_bait_type_01') {
+            const usedBaits = metadata.used_baits || [];
+            const baitName = data.bait;
+
+            if (baitName && !usedBaits.includes(baitName)) {
+              // New bait type used
+              usedBaits.push(baitName);
+              metadata.used_baits = usedBaits;
+              shouldUpdate = true;
+              progressIncrement = 1;
+
+              // Update metadata in database
+              await db.execute(`
+                UPDATE player_quests
+                SET metadata = ?
+                WHERE id = ?
+              `, [JSON.stringify(metadata), quest.id]);
+            }
+          }
           break;
 
         case 'fish_sold':
+          console.log(`[Quest Tracking] fish_sold - Quest: ${quest.quest_template_id}, Rarity: ${data.rarity}, Amount: ${data.amount}`);
           if (quest.quest_template_id.startsWith('sell_')) {
             if (metadata.rarity_rule === 'Rare+' && !isRarePlus(data.rarity)) {
+              console.log(`[Quest Tracking] Skipping - rarity ${data.rarity} is not Rare+`);
               break;
             }
+            console.log(`[Quest Tracking] fish_sold - Updating progress by ${data.amount || 1}`);
             shouldUpdate = true;
             progressIncrement = data.amount || 1;
           }
