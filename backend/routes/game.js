@@ -274,6 +274,22 @@ router.post('/cast', authenticateToken, async (req, res) => {
         );
       }
 
+      // Record global rare catch for global notifications
+      if (['Mythic', 'Exotic', 'Arcane'].includes(rarity)) {
+        // Get profile username for the notification
+        const [userData] = await connection.query(
+          'SELECT profile_username FROM users WHERE id = ?',
+          [userId]
+        );
+
+        if (userData && userData.length > 0) {
+          await connection.query(
+            'INSERT INTO global_catches (user_id, profile_username, fish_name, rarity) VALUES (?, ?, ?, ?)',
+            [userId, userData[0].profile_username, fish.name, rarity]
+          );
+        }
+      }
+
       // Note: Stamina is not consumed for casting (4-second cooldown instead)
     }
 
@@ -1468,6 +1484,27 @@ router.post('/sync-achievements', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Sync achievements error:', error);
     res.status(500).json({ error: 'Failed to sync achievements' });
+  }
+});
+
+// Get recent global rare catches (for global notifications)
+router.get('/global-catches', async (req, res) => {
+  try {
+    // Get the most recent 10 global catches (Mythic, Exotic, Arcane)
+    // Only return catches from the last 5 minutes to keep it fresh
+    const [catches] = await db.query(
+      `SELECT profile_username, fish_name, rarity, caught_at
+       FROM global_catches
+       WHERE caught_at >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+       ORDER BY caught_at DESC
+       LIMIT 1`,
+      []
+    );
+
+    res.json({ catches });
+  } catch (error) {
+    console.error('Get global catches error:', error);
+    res.status(500).json({ error: 'Failed to fetch global catches' });
   }
 });
 

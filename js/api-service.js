@@ -570,6 +570,17 @@ class ApiService {
             method: 'GET'
         });
     }
+
+    /**
+     * Get recent global rare catches for notifications
+     * @returns {Promise<Object>} Recent global catches
+     */
+    async getGlobalCatches() {
+        return await this.request('/game/global-catches', {
+            method: 'GET',
+            requiresAuth: false // Public endpoint
+        });
+    }
 }
 
 // Export singleton instance

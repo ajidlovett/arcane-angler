@@ -102,6 +102,42 @@ React.useEffect(() => {
   }
 }, [globalNotification]);
 
+// Poll for global rare catches every 10 seconds
+React.useEffect(() => {
+  const pollGlobalCatches = async () => {
+    try {
+      const response = await window.ApiService.getGlobalCatches();
+      if (response.catches && response.catches.length > 0) {
+        const latestCatch = response.catches[0];
+
+        // Check if this is a new catch (different from current notification)
+        if (!globalNotification ||
+            globalNotification.fishName !== latestCatch.fish_name ||
+            globalNotification.timestamp !== new Date(latestCatch.caught_at).getTime()) {
+
+          setGlobalNotification({
+            username: latestCatch.profile_username,
+            fishName: latestCatch.fish_name,
+            rarity: latestCatch.rarity,
+            messageIndex: Math.floor(Math.random() * 10),
+            timestamp: new Date(latestCatch.caught_at).getTime()
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch global catches:', error);
+    }
+  };
+
+  // Poll immediately on mount
+  pollGlobalCatches();
+
+  // Then poll every 10 seconds
+  const interval = setInterval(pollGlobalCatches, 10000);
+
+  return () => clearInterval(interval);
+}, [globalNotification]);
+
 // Theme System
 const themes = {
   dark: {
@@ -396,17 +432,6 @@ useEffect(() => {
               relics: 0,
               titanBonus: result.titanBonus > 1 ? result.titanBonus : null
             });
-
-            // Trigger global notification for rare catches
-            if (['Mythic', 'Exotic', 'Arcane'].includes(result.rarity)) {
-              setGlobalNotification({
-                username: user?.profile_username || user?.profileUsername || user?.username,
-                fishName: result.fish.name,
-                rarity: result.rarity,
-                messageIndex: Math.floor(Math.random() * 10),
-                timestamp: Date.now()
-              });
-            }
           }
 
           // Update state with SERVER data only
@@ -891,7 +916,7 @@ useEffect(() => {
           </button>
 
           {/* Logo */}
-          <div className="p-4 flex justify-center border-b border-${theme.border}">
+          <div className="p-4 flex justify-center border-b border-gray-700">
             <img src="/arcane-angler-200p.png" alt="Arcane Angler" className="w-32 h-auto" />
           </div>
 
@@ -910,7 +935,7 @@ useEffect(() => {
               </button>
             ))}
 
-            <div className={`mx-4 my-3 border-t border-${theme.border}`}></div>
+            <div className="mx-4 my-3 border-t border-gray-700"></div>
 
             <div className="px-4 space-y-2">
               <div className={`text-xs font-bold text-${theme.accent}`}>

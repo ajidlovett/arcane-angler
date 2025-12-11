@@ -188,6 +188,19 @@ CREATE TABLE IF NOT EXISTS achievements (
     INDEX idx_user_achievements (user_id, achievement_type)
 );
 
+-- Global rare catches (for global notifications)
+CREATE TABLE IF NOT EXISTS global_catches (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    profile_username VARCHAR(50) NOT NULL,
+    fish_name VARCHAR(100) NOT NULL,
+    rarity ENUM('Mythic', 'Exotic', 'Arcane') NOT NULL,
+    caught_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_caught_at (caught_at DESC),
+    INDEX idx_rarity (rarity)
+);
+
 -- Insert default data for new users (trigger)
 DELIMITER $$
 CREATE TRIGGER after_user_insert
