@@ -1232,11 +1232,8 @@ router.post('/sell-all', authenticateToken, async (req, res) => {
       rarityGroups[fish.rarity] += fish.count || 0;
     }
 
-    console.log('[Sell All] Tracking quest progress for rarities:', rarityGroups);
-
     // Track each rarity separately (don't await to avoid blocking)
     for (const [rarity, count] of Object.entries(rarityGroups)) {
-      console.log(`[Sell All] Tracking fish_sold for rarity: ${rarity}, count: ${count}`);
       trackQuestProgress(userId, 'fish_sold', {
         rarity: rarity,
         amount: count
@@ -1348,7 +1345,6 @@ router.post('/sell-by-rarity', authenticateToken, async (req, res) => {
     );
 
     // Track quest progress for fish sold by rarity
-    console.log(`[Sell By Rarity] Tracking fish_sold for rarity: ${rarity}, count: ${totalFishCount}`);
     trackQuestProgress(userId, 'fish_sold', {
       rarity: rarity,
       amount: totalFishCount
