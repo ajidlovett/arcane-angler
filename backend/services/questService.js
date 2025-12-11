@@ -59,9 +59,28 @@ class QuestService {
     let unlockedBiomes = [1];
 
     try {
-      unlockedBiomes = JSON.parse(playerData.unlocked_biomes || '[1]');
+      const rawBiomes = playerData.unlocked_biomes;
+
+      // Handle different data types
+      if (Array.isArray(rawBiomes)) {
+        // Already an array (MySQL JSON column parsed)
+        unlockedBiomes = rawBiomes;
+      } else if (typeof rawBiomes === 'string') {
+        // String JSON - parse it
+        unlockedBiomes = JSON.parse(rawBiomes);
+      } else if (rawBiomes) {
+        // Some other type - try to parse
+        unlockedBiomes = JSON.parse(JSON.stringify(rawBiomes));
+      }
+
+      // Ensure it's an array and has at least biome 1
+      if (!Array.isArray(unlockedBiomes) || unlockedBiomes.length === 0) {
+        unlockedBiomes = [1];
+      }
     } catch (e) {
       console.error('Failed to parse unlocked biomes:', e);
+      console.error('Raw value:', playerData.unlocked_biomes);
+      unlockedBiomes = [1];
     }
 
     return {
@@ -108,7 +127,7 @@ class QuestService {
     if (questType === 'monthly') lookbackCount = 1; // Last month
 
     const [rows] = await db.execute(`
-      SELECT DISTINCT quest_template_id
+      SELECT quest_template_id, rotation_date
       FROM quest_history
       WHERE user_id = ?
         AND quest_type = ?
