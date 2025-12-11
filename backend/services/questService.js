@@ -7,7 +7,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import db from '../db.js';
-import { QUEST_BIOMES } from '../data/biomes.js';
+import { BIOMES } from '../data/biomes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -200,7 +200,8 @@ class QuestService {
    * Get biome name by index
    */
   async getBiomeName(biomeIndex) {
-    return QUEST_BIOMES[biomeIndex] || `Biome ${biomeIndex}`;
+    const biome = BIOMES[biomeIndex];
+    return biome ? biome.name : `Biome ${biomeIndex}`;
   }
 
   /**
