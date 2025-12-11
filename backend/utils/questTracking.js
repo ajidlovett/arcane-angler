@@ -34,7 +34,11 @@ export async function trackQuestProgress(userId, action, data = {}) {
       let shouldUpdate = false;
       let progressIncrement = 0;
 
-      const metadata = quest.metadata ? JSON.parse(quest.metadata) : {};
+      // Metadata is already parsed by MySQL2 (JSON column auto-parsing)
+      // Only parse if it's still a string
+      const metadata = typeof quest.metadata === 'string'
+        ? JSON.parse(quest.metadata)
+        : (quest.metadata || {});
 
       // Match action to quest requirements
       switch (action) {
