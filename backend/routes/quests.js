@@ -17,7 +17,13 @@ const router = express.Router();
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const userId = req.userId;
+    console.log('[Quest API] Fetching quests for user:', userId);
     const quests = await questService.getAllActiveQuests(userId);
+    console.log('[Quest API] Quests fetched:', {
+      daily: quests.daily.length,
+      weekly: quests.weekly.length,
+      monthly: quests.monthly.length
+    });
 
     res.json({
       success: true,
@@ -25,7 +31,8 @@ router.get('/', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching quests:', error);
-    res.status(500).json({ error: 'Failed to fetch quests' });
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ error: 'Failed to fetch quests', details: error.message });
   }
 });
 
