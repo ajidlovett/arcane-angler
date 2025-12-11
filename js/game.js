@@ -1128,7 +1128,7 @@ useEffect(() => {
           <div>Base Stats: STR {player.stats.strength} | INT {player.stats.intelligence} | LUCK {player.stats.luck} | STAM {player.stats.stamina}</div>
           <div className="text-green-400">Total Stats: STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
           <div className={`border-t border-${theme.border} my-2 pt-2`}>
-            <div>Normal fish: 1-{1 + Math.floor(getTotalStats().strength / 100)} per catch</div>
+            <div>Normal fish: 1-{1 + Math.floor(getTotalStats().strength / 100)} per catch{getTotalStats().strength % 100 > 0 ? ` (${getTotalStats().strength % 100}% chance: 1-${2 + Math.floor(getTotalStats().strength / 100)})` : ''}</div>
             <div>Boss fish value: {(1 + (getTotalStats().strength * 0.02)).toFixed(2)}x multiplier</div>
             <div>Gold multiplier: {(1 + (Math.pow(getTotalStats().intelligence, 0.7) * 0.05)).toFixed(2)}x when selling</div>
             <div>Jackpot weight: +{getTotalStats().luck}% for Legendary/Mythic/Exotic/Arcane/Treasure</div>
@@ -1643,9 +1643,9 @@ useEffect(() => {
     const statDescriptions = {
       strength: {
         title: "Strength",
-        current: `1-${1 + Math.floor(totalStats.strength / 100)} normal fish per catch | ${(1 + (totalStats.strength * 0.02)).toFixed(2)}x boss fish value`,
-        perPoint: "Every 100 points: +1 max fish | Boss fish: +2% gold value per point",
-        detail: `Normal fish (Common-Epic): Catch 1 to MaxCatch fish randomly. Boss fish (Legendary/Mythic/Exotic/Arcane): Always catch 1 but get Titan Bonus gold multiplier when selling.`
+        current: `1-${1 + Math.floor(totalStats.strength / 100)} normal fish per catch${totalStats.strength % 100 > 0 ? ` (${totalStats.strength % 100}% chance: 1-${2 + Math.floor(totalStats.strength / 100)})` : ''} | ${(1 + (totalStats.strength * 0.02)).toFixed(2)}x boss fish value`,
+        perPoint: "Every 100 points: +1 guaranteed max fish | Every 1 point: +1% chance for +1 extra | Boss fish: +2% gold value per point",
+        detail: `Normal fish (Common-Epic): Catch 1 to MaxCatch fish randomly. MaxCatch = 1 + FLOOR(STR/100), with (STR%100)% chance for +1 extra fish. Example: 150 STR = 50% chance for 1-2 fish, 50% chance for 1-3 fish. Boss fish (Legendary/Mythic/Exotic/Arcane): Always catch 1 but get Titan Bonus gold multiplier when selling.`
       },
       intelligence: {
         title: "Intelligence",
