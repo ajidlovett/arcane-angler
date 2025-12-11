@@ -1,0 +1,302 @@
+{
+  "quest_templates": [
+
+    {
+      "id": "catch_any_01",
+      "description_template": "Catch {amount} fish.",
+      "category": "catching",
+      "daily_range": [20, 50],
+      "weekly_range": [300, 600],
+      "monthly_range": [3000, 6000],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 1.0
+    },
+    {
+      "id": "catch_any_02",
+      "description_template": "Catch {amount} fish in your current biome.",
+      "category": "catching",
+      "daily_range": [20, 50],
+      "weekly_range": [200, 500],
+      "monthly_range": [1500, 5000],
+      "biome_rule": "current",
+      "rarity_rule": null,
+      "weight": 1.0
+    },
+    {
+      "id": "catch_any_03",
+      "description_template": "Catch fish in {biome}.",
+      "category": "catching",
+      "daily_range": [10, 30],
+      "weekly_range": [100, 200],
+      "monthly_range": [800, 2500],
+      "biome_rule": "any_unlocked",
+      "rarity_rule": null,
+      "weight": 0.8
+    },
+    {
+      "id": "catch_species_unique_01",
+      "description_template": "Catch {species_count} different fish species in your current biome.",
+      "category": "catching",
+      "daily_range": [3, 10],
+      "weekly_range": [5, 15],
+      "monthly_range": [8, 15],
+      "biome_rule": "current",
+      "rarity_rule": null,
+      "weight": 0.9
+    },
+    {
+      "id": "catch_rare_plus_01",
+      "description_template": "Catch {amount} Rare or higher fish.",
+      "category": "catching",
+      "daily_range": [10, 30],
+      "weekly_range": [50, 100],
+      "monthly_range": [200, 400],
+      "biome_rule": null,
+      "rarity_rule": "Rare+",
+      "weight": 0.9
+    },
+    {
+      "id": "catch_epic_plus_01",
+      "description_template": "Catch {amount} Epic or higher fish.",
+      "category": "catching",
+      "daily_range": [10, 30],
+      "weekly_range": [50, 100],
+      "monthly_range": [200, 400],
+      "biome_rule": null,
+      "rarity_rule": "Epic+",
+      "weight": 0.6
+    },
+    {
+      "id": "catch_legendary_01",
+      "description_template": "Catch {amount} Legendary fish.",
+      "category": "catching",
+      "daily_range": [1, 3],
+      "weekly_range": [5, 10],
+      "monthly_range": [10, 50],
+      "biome_rule": null,
+      "rarity_rule": "Legendary",
+      "weight": 0.4
+    },
+    {
+      "id": "catch_mythic_01",
+      "description_template": "Catch a Mythic fish.",
+      "category": "catching",
+      "daily_range": [1, 1],
+      "weekly_range": [1, 2],
+      "monthly_range": [1, 3],
+      "biome_rule": null,
+      "rarity_rule": "Mythic",
+      "weight": 0.2
+    },
+    {
+      "id": "catch_exotic_01",
+      "description_template": "Catch an Exotic fish.",
+      "category": "catching",
+      "daily_range": [1, 1],
+      "weekly_range": [1, 2],
+      "monthly_range": [1, 2],
+      "biome_rule": null,
+      "rarity_rule": "Exotic",
+      "weight": 0.15
+    },
+    {
+      "id": "catch_arcane_01",
+      "description_template": "Catch an Arcane fish.",
+      "category": "catching",
+      "daily_range": [1, 1],
+      "weekly_range": [1, 1],
+      "monthly_range": [1, 1],
+      "biome_rule": null,
+      "rarity_rule": "Arcane",
+      "weight": 0.1
+    },
+
+
+    {
+      "id": "catch_default_bait_01",
+      "description_template": "Catch {amount} fish using default bait.",
+      "category": "catching",
+      "daily_range": [10, 50],
+      "weekly_range": [100, 300],
+      "monthly_range": [400, 1000],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 0.7
+    },
+    {
+      "id": "catch_with_bait_01",
+      "description_template": "Catch {amount} fish using bait.",
+      "category": "catching",
+      "daily_range": [10, 50],
+      "weekly_range": [100, 300],
+      "monthly_range": [400, 1000],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 0.8
+    },
+    {
+      "id": "catch_biome_type_01",
+      "description_template": "Catch {amount} fish in {biome}.",
+      "category": "catching",
+      "daily_range": [10, 50],
+      "weekly_range": [100, 200],
+      "monthly_range": [300, 400],
+      "biome_rule": "any_unlocked",
+      "rarity_rule": null,
+      "weight": 0.8
+    },
+
+  {
+      "id": "casts_01",
+      "description_template": "Perform {amount} casts.",
+      "category": "action",
+      "daily_range": [20, 50],
+      "weekly_range": [200, 400],
+      "monthly_range": [1500, 5000],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 1.0
+    },
+    {
+      "id": "multi_catch_01",
+      "description_template": "Perform {amount} multi-catches.",
+      "category": "action",
+      "daily_range": [3, 8],
+      "weekly_range": [20, 50],
+      "monthly_range": [100, 300],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 1.0
+    },
+    {
+      "id": "use_bait_01",
+      "description_template": "Use {amount} bait.",
+      "category": "action",
+      "daily_range": [3, 10],
+      "weekly_range": [25, 50],
+      "monthly_range": [150, 300],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 0.9
+    },
+    {
+      "id": "equip_bait_type_01",
+      "description_template": "Use {amount} different bait types.",
+      "category": "action",
+      "daily_range": [2, 4],
+      "weekly_range": [3, 5],
+      "monthly_range": [4, 6],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 0.6
+    },
+
+    {
+      "id": "use_bait_count_02",
+      "description_template": "Use same bait for {amount} consecutive casts.",
+      "category": "action",
+      "daily_range": [5, 20],
+      "weekly_range": [30, 50],
+      "monthly_range": [100, 300],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 0.5
+    },
+
+
+    {
+      "id": "sell_fish_01",
+      "description_template": "Sell {amount} fish.",
+      "category": "economy",
+      "daily_range": [10, 500],
+      "weekly_range": [80, 200],
+      "monthly_range": [300, 700],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 1.0
+    },
+
+    {
+      "id": "sell_rarity_01",
+      "description_template": "Sell {amount} Rare or higher fish.",
+      "category": "economy",
+      "daily_range": [10, 20],
+      "weekly_range": [50, 200],
+      "monthly_range": [300, 600],
+      "biome_rule": null,
+      "rarity_rule": "Rare+",
+      "weight": 0.7
+    },
+
+    {
+      "id": "catch_chest_01",
+      "description_template": "Catch {amount} treasure chests.",
+      "category": "exploration",
+      "daily_range": [1, 3],
+      "weekly_range": [5, 10],
+      "monthly_range": [15, 30],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 1.0
+    },
+    {
+      "id": "biome_visit_01",
+      "description_template": "Catch fish in {biome}.",
+      "category": "exploration",
+      "daily_range": [10, 20],
+      "weekly_range": [60, 100],
+      "monthly_range": [200, 400],
+      "biome_rule": "any_unlocked",
+      "rarity_rule": null,
+      "weight": 0.8
+    },
+    {
+      "id": "multi_biome_01",
+      "description_template": "Catch fish in {amount} different biomes.",
+      "category": "exploration",
+      "daily_range": [2, 2],
+      "weekly_range": [3, 4],
+      "monthly_range": [5, 6],
+      "biome_rule": "any_unlocked",
+      "rarity_rule": null,
+      "weight": 0.9
+    },
+
+
+    {
+      "id": "upgrade_stat_01",
+      "description_template": "Upgrade any stat {amount} times.",
+      "category": "progression",
+      "daily_range": [5, 10],
+      "weekly_range": [20, 50],
+      "monthly_range": [50, 100],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 1.0
+    },
+    {
+      "id": "level_up_01",
+      "description_template": "Gain {amount} XP.",
+      "category": "progression",
+      "daily_range": [3000, 100000],
+      "weekly_range": [200000, 5000000],
+      "monthly_range": [600000, 15000000],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 0.9
+    },
+    {
+      "id": "relic_spend_01",
+      "description_template": "Spend {amount} relics.",
+      "category": "progression",
+      "daily_range": [10, 20],
+      "weekly_range": [50, 100],
+      "monthly_range": [150, 400],
+      "biome_rule": null,
+      "rarity_rule": null,
+      "weight": 0.8
+    }
+
+  ]
+}
