@@ -891,7 +891,7 @@ useEffect(() => {
           </button>
 
           {/* Logo */}
-          <div className="p-4 flex justify-center border-b border-${theme.border}">
+          <div className="p-4 flex justify-center border-b border-gray-700">
             <img src="/arcane-angler-200p.png" alt="Arcane Angler" className="w-32 h-auto" />
           </div>
 
@@ -910,7 +910,7 @@ useEffect(() => {
               </button>
             ))}
 
-            <div className={`mx-4 my-3 border-t border-${theme.border}`}></div>
+            <div className="mx-4 my-3 border-t border-gray-700"></div>
 
             <div className="px-4 space-y-2">
               <div className={`text-xs font-bold text-${theme.accent}`}>
