@@ -74,6 +74,7 @@ const FishingGame = ({ user, onLogout }) => {
   const [shopTab, setShopTab] = useState('rods'); // Persist shop tab selection
   const [dataLoaded, setDataLoaded] = useState(false); // Track if initial data loaded
   const [statCosts, setStatCosts] = useState({}); // Server-provided stat upgrade costs
+  const [globalNotification, setGlobalNotification] = useState(null); // Global notifications for rare catches
 
   // Load player data from server
 React.useEffect(() => {
@@ -89,6 +90,17 @@ React.useEffect(() => {
   };
   loadData();
 }, []);
+
+// Handle global notification timeout (minimum 20 seconds)
+React.useEffect(() => {
+  if (globalNotification) {
+    const timer = setTimeout(() => {
+      setGlobalNotification(null);
+    }, 20000); // 20 seconds minimum display time
+
+    return () => clearTimeout(timer);
+  }
+}, [globalNotification]);
 
 // Theme System
 const themes = {
@@ -384,6 +396,17 @@ useEffect(() => {
               relics: 0,
               titanBonus: result.titanBonus > 1 ? result.titanBonus : null
             });
+
+            // Trigger global notification for rare catches
+            if (['Mythic', 'Exotic', 'Arcane'].includes(result.rarity)) {
+              setGlobalNotification({
+                username: user?.profile_username || user?.profileUsername || user?.username,
+                fishName: result.fish.name,
+                rarity: result.rarity,
+                messageIndex: Math.floor(Math.random() * 10),
+                timestamp: Date.now()
+              });
+            }
           }
 
           // Update state with SERVER data only
@@ -698,6 +721,54 @@ useEffect(() => {
     onLogout();
   };
 
+  // Global Notification Component
+  const GlobalNotification = ({ theme }) => {
+    const messageVariations = [
+      '🎉 Congratulations, {username} has caught {fish}!',
+      '✨ Amazing! {username} just reeled in {fish}!',
+      '🌟 Incredible catch! {username} landed {fish}!',
+      '🎊 Outstanding! {username} has hooked {fish}!',
+      '💫 Remarkable! {username} just caught {fish}!',
+      '🏆 Epic catch! {username} has snagged {fish}!',
+      '⭐ Spectacular! {username} just pulled in {fish}!',
+      '🎯 Wow! {username} successfully caught {fish}!',
+      '🌠 Legendary! {username} has captured {fish}!',
+      '🎪 Fantastic! {username} just hooked {fish}!'
+    ];
+
+    if (!globalNotification) {
+      return <span className={`text-xs font-bold text-${theme.textMuted}`}>Waiting for legendary catches...</span>;
+    }
+
+    const template = messageVariations[globalNotification.messageIndex];
+    const message = template
+      .replace('{username}', globalNotification.username)
+      .replace('{fish}', globalNotification.fishName);
+
+    const getRarityColor = (rarity) => {
+      switch (rarity) {
+        case 'Mythic':
+          return 'text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500';
+        case 'Exotic':
+          return 'text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-300 to-orange-400';
+        case 'Arcane':
+          return 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500';
+        default:
+          return 'text-purple-400';
+      }
+    };
+
+    const parts = message.split(globalNotification.fishName);
+
+    return (
+      <div className="text-xs font-bold flex items-center justify-center flex-wrap gap-1">
+        <span className={`text-${theme.textMuted}`}>{parts[0]}</span>
+        <span className={getRarityColor(globalNotification.rarity)}>{globalNotification.fishName}</span>
+        <span className={`text-${theme.textMuted}`}>{parts[1]}</span>
+      </div>
+    );
+  };
+
   // Options Page Component
   const OptionsPage = () => (
     <div className="max-w-4xl mx-auto">
@@ -854,24 +925,6 @@ useEffect(() => {
                 className="w-full px-3 py-1.5 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-bold"
               >
                 Logout
-              </button>
-
-              {user && (
-                <div className="text-xs text-gray-400">
-                  Playing as: {user.profileUsername || user.username}
-                </div>
-              )}
-
-              <button
-                onClick={() => {
-                  if (confirm('Are you sure you want to reset your save? This cannot be undone!')) {
-                    localStorage.removeItem('arcaneAnglerSave');
-                    window.location.reload();
-                  }
-                }}
-                className="w-full px-3 py-1.5 bg-red-900 hover:bg-red-800 rounded text-xs font-bold text-red-200 flex items-center justify-center gap-1"
-              >
-                {Icons.Trash2()} Reset
               </button>
             </div>
           </nav>
@@ -2593,27 +2646,6 @@ useEffect(() => {
             </div>
           </div>
         </div>
-
-        {/* Danger Zone */}
-        <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-6`}>
-          <h3 className="text-[1.05rem] font-bold text-red-400 mb-4 flex items-center gap-2">
-            <span className="text-[1.05rem]">⚠️</span> Danger Zone
-          </h3>
-          <p className={`text-sm text-${theme.textMuted} mb-4`}>
-            Reset your save data. This will delete all progress and cannot be undone!
-          </p>
-          <button
-            onClick={() => {
-              if (confirm('Are you sure you want to reset your save? This cannot be undone!')) {
-                localStorage.removeItem('arcaneAnglerSave');
-                window.location.reload();
-              }
-            }}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded transition-colors"
-          >
-            {Icons.Trash2()} Reset Save Data
-          </button>
-        </div>
       </div>
     );
   };
@@ -3091,7 +3123,7 @@ useEffect(() => {
             >
               {Icons.Menu()}
             </button>
-            <h1 className={`text-xs font-bold text-${theme.accent}`}>⚡ Arcane Angler</h1>
+            <div className="flex-1"></div>
             <button
               onClick={() => {
                 if (!document.fullscreenElement) {
@@ -3106,15 +3138,15 @@ useEffect(() => {
             </button>
           </div>
 
-          <div className="space-y-2">
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-9 flex items-center justify-center`}>
-              <div className={`text-[10px] text-${theme.textMuted}`}>
+          <div className="space-y-1.5">
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-8 flex items-center justify-center`}>
+              <div className={`text-xs font-bold text-${theme.textMuted}`}>
                 {user?.profile_username || user?.profileUsername || user?.username}
                 {getDisplayTitle() && <span> - {getDisplayTitle()}</span>}
               </div>
             </div>
 
-            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-3 h-9`}>
+            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-3 h-8`}>
               <div className="flex items-center gap-2">
                 <span className={`text-xs text-${theme.textMuted}`}>Level: {player.level}</span>
               </div>
@@ -3129,7 +3161,7 @@ useEffect(() => {
               <span className={`text-xs text-${theme.textMuted}`}>{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
             </div>
 
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-9 flex items-center gap-2`}>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-8 flex items-center gap-2`}>
               <div className="flex items-center gap-1 flex-[7]">
                 <span>🪙</span>
                 <span className="text-[10px] font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
@@ -3140,21 +3172,23 @@ useEffect(() => {
                 <span className="text-[10px] font-bold text-purple-400">{player.relics.toLocaleString()}</span>
               </div>
             </div>
+
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-8 flex items-center justify-center`}>
+              <GlobalNotification theme={theme} />
+            </div>
           </div>
         </div>
 
         <div className={`hidden lg:block bg-${theme.primarySolid} border-b-2 border-${theme.border} p-3`}>
-          <h1 className={`text-sm font-bold text-${theme.accent} text-center mb-1`}>⚡ Arcane Angler</h1>
-
-          <div className="max-w-4xl mx-auto space-y-2">
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 h-10 flex items-center justify-center`}>
-              <div className={`text-xs text-${theme.textMuted}`}>
+          <div className="max-w-4xl mx-auto space-y-1.5">
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 h-8 flex items-center justify-center`}>
+              <div className={`text-xs font-bold text-${theme.textMuted}`}>
                 {user?.profile_username || user?.profileUsername || user?.username}
                 {getDisplayTitle() && <span> - {getDisplayTitle()}</span>}
               </div>
             </div>
 
-            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-4 h-10`}>
+            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-4 h-8`}>
               <div className="flex items-center gap-2">
                 <span className={`text-sm text-${theme.textMuted}`}>Level: {player.level}</span>
               </div>
@@ -3169,7 +3203,7 @@ useEffect(() => {
               <span className={`text-sm text-${theme.textMuted}`}>{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
             </div>
 
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 h-10 flex items-center gap-3`}>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 h-8 flex items-center gap-3`}>
               <div className="flex items-center gap-2 flex-[7]">
                 <span>🪙</span>
                 <span className="text-sm font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
@@ -3179,6 +3213,10 @@ useEffect(() => {
                 <span>🔮</span>
                 <span className="text-sm font-bold text-purple-400">{player.relics.toLocaleString()}</span>
               </div>
+            </div>
+
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 h-8 flex items-center justify-center`}>
+              <GlobalNotification theme={theme} />
             </div>
           </div>
         </div>
