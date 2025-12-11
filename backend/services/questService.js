@@ -126,14 +126,16 @@ class QuestService {
     if (questType === 'weekly') lookbackCount = 1; // Last week
     if (questType === 'monthly') lookbackCount = 1; // Last month
 
+    const limit = lookbackCount * 5; // 5 quests per rotation
+
     const [rows] = await db.execute(`
       SELECT quest_template_id, rotation_date
       FROM quest_history
       WHERE user_id = ?
         AND quest_type = ?
       ORDER BY rotation_date DESC
-      LIMIT ?
-    `, [userId, questType, lookbackCount * 5]); // 5 quests per rotation
+      LIMIT ${limit}
+    `, [userId, questType]);
 
     return rows.map(r => r.quest_template_id);
   }
