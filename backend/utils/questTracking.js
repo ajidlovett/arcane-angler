@@ -131,13 +131,10 @@ export async function trackQuestProgress(userId, action, data = {}) {
           break;
 
         case 'fish_sold':
-          console.log(`[Quest Tracking] fish_sold - Quest: ${quest.quest_template_id}, Rarity: ${data.rarity}, Amount: ${data.amount}`);
           if (quest.quest_template_id.startsWith('sell_')) {
             if (metadata.rarity_rule === 'Rare+' && !isRarePlus(data.rarity)) {
-              console.log(`[Quest Tracking] Skipping - rarity ${data.rarity} is not Rare+`);
               break;
             }
-            console.log(`[Quest Tracking] fish_sold - Updating progress by ${data.amount || 1}`);
             shouldUpdate = true;
             progressIncrement = data.amount || 1;
           }
