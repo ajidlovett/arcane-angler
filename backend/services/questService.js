@@ -7,6 +7,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import db from '../db.js';
+import { QUEST_BIOMES } from '../data/biomes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -196,41 +197,10 @@ class QuestService {
   }
 
   /**
-   * Get biome name by index (would need biome data from frontend)
+   * Get biome name by index
    */
   async getBiomeName(biomeIndex) {
-    // Simplified - in production, load from a biome config file
-    const biomeNames = [
-      'Unknown',
-      'Shallow Waters',
-      'Coral Reef',
-      'Deep Ocean',
-      'Kelp Forest',
-      'Arctic Waters',
-      'Tropical Lagoon',
-      'Abyssal Depths',
-      'Mangrove Swamp',
-      'Rocky Shore',
-      'Sunken Ruins',
-      'Volcanic Vents',
-      'Bioluminescent Bay',
-      'Shipwreck',
-      'Open Ocean',
-      'Tidal Pools',
-      'Frozen Lake',
-      'Underground Lake',
-      'Mystic Springs',
-      'Crystal Caverns',
-      'Ancient Temple',
-      'Sky Realm',
-      'Void Waters',
-      'Celestial Sea',
-      'Ethereal Depths',
-      'Timeless Ocean',
-      'Arcane Abyss'
-    ];
-
-    return biomeNames[biomeIndex] || `Biome ${biomeIndex}`;
+    return QUEST_BIOMES[biomeIndex] || `Biome ${biomeIndex}`;
   }
 
   /**

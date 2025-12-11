@@ -389,7 +389,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
       }
 
       if (player.equipped_bait && player.equipped_bait !== 'Stale Bread Crust') {
-        trackQuestProgress(userId, 'bait_used', {}).catch(err => console.error('Quest tracking error:', err));
+        trackQuestProgress(userId, 'bait_used', { bait: player.equipped_bait }).catch(err => console.error('Quest tracking error:', err));
       }
     } else {
       trackQuestProgress(userId, 'chest_caught', {}).catch(err => console.error('Quest tracking error:', err));
