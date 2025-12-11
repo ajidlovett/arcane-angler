@@ -1223,6 +1223,23 @@ router.post('/sell-all', authenticateToken, async (req, res) => {
       [userId]
     );
 
+    // Track quest progress for each rarity sold
+    const rarityGroups = {};
+    for (const fish of unlockedFish) {
+      if (!rarityGroups[fish.rarity]) {
+        rarityGroups[fish.rarity] = 0;
+      }
+      rarityGroups[fish.rarity] += fish.count || 0;
+    }
+
+    // Track each rarity separately (don't await to avoid blocking)
+    for (const [rarity, count] of Object.entries(rarityGroups)) {
+      trackQuestProgress(userId, 'fish_sold', {
+        rarity: rarity,
+        amount: count
+      }).catch(err => console.error('Quest tracking error:', err));
+    }
+
     await connection.commit();
     res.json({
       success: true,
@@ -1326,6 +1343,12 @@ router.post('/sell-by-rarity', authenticateToken, async (req, res) => {
       'SELECT gold FROM player_data WHERE user_id = ?',
       [userId]
     );
+
+    // Track quest progress for fish sold by rarity
+    trackQuestProgress(userId, 'fish_sold', {
+      rarity: rarity,
+      amount: totalFishCount
+    }).catch(err => console.error('Quest tracking error:', err));
 
     await connection.commit();
     res.json({
