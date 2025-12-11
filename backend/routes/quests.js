@@ -16,7 +16,7 @@ const router = express.Router();
  */
 router.get('/', authenticateToken, async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.userId;
     console.log('[Quest API] Fetching quests for user:', userId);
     const quests = await questService.getAllActiveQuests(userId);
     console.log('[Quest API] Quests fetched:', {
@@ -42,7 +42,7 @@ router.get('/', authenticateToken, async (req, res) => {
  */
 router.get('/:type', authenticateToken, async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.userId;
     const { type } = req.params;
 
     if (!['daily', 'weekly', 'monthly'].includes(type)) {
@@ -68,7 +68,7 @@ router.get('/:type', authenticateToken, async (req, res) => {
  */
 router.post('/track', authenticateToken, async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.userId;
     const { action, data } = req.body;
 
     if (!action) {
@@ -256,7 +256,7 @@ router.isEpicPlus = function(rarity) {
  */
 router.post('/manual-update/:questId', authenticateToken, async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.userId;
     const { questId } = req.params;
     const { progress } = req.body;
 
@@ -282,7 +282,7 @@ router.post('/manual-update/:questId', authenticateToken, async (req, res) => {
  */
 router.get('/history/completed', authenticateToken, async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.userId;
     const { limit = 50 } = req.query;
 
     const [history] = await db.execute(`
