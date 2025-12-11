@@ -521,6 +521,55 @@ class ApiService {
             body: JSON.stringify({ achievements })
         });
     }
+
+    // ==========================================
+    // QUEST SYSTEM
+    // ==========================================
+
+    /**
+     * Get all active quests (daily, weekly, monthly)
+     * @returns {Promise<Object>} Quest data { daily: [], weekly: [], monthly: [] }
+     */
+    async getQuests() {
+        return await this.request('/quests', {
+            method: 'GET'
+        });
+    }
+
+    /**
+     * Get quests of a specific type
+     * @param {string} type - Quest type (daily, weekly, monthly)
+     * @returns {Promise<Object>} Quest data
+     */
+    async getQuestsByType(type) {
+        return await this.request(`/quests/${type}`, {
+            method: 'GET'
+        });
+    }
+
+    /**
+     * Track quest progress
+     * @param {string} action - Action type (fish_caught, cast_performed, etc.)
+     * @param {Object} data - Action data
+     * @returns {Promise<Object>} Updated quest data
+     */
+    async trackQuestProgress(action, data) {
+        return await this.request('/quests/track', {
+            method: 'POST',
+            body: JSON.stringify({ action, data })
+        });
+    }
+
+    /**
+     * Get quest completion history
+     * @param {number} limit - Number of records to fetch
+     * @returns {Promise<Object>} Quest history
+     */
+    async getQuestHistory(limit = 50) {
+        return await this.request(`/quests/history/completed?limit=${limit}`, {
+            method: 'GET'
+        });
+    }
 }
 
 // Export singleton instance
