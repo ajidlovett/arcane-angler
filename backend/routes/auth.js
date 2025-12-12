@@ -199,12 +199,13 @@ router.post('/login', authLimiter, async (req, res) => {
         const { username, password } = req.body;
 
         if (!username || !password) {
-            return res.status(400).json({ error: 'Username and password are required' });
+            return res.status(400).json({ error: 'Username/Email and password are required' });
         }
 
+        // Allow login with either username or email
         const [users] = await db.query(
-            'SELECT id, username, profile_username, email, password_hash, email_verified FROM users WHERE username = ?',
-            [username]
+            'SELECT id, username, profile_username, email, password_hash, email_verified FROM users WHERE username = ? OR email = ?',
+            [username, username]
         );
 
         if (users.length === 0) {
