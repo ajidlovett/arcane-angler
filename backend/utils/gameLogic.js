@@ -34,11 +34,11 @@ function getTotalStats(baseStats, equippedRod, equippedBait) {
  */
 function getBiomeRelicRange(biome) {
   if (biome <= 5) return { min: 1, max: 5 };
-  if (biome <= 10) return { min: 5, max: 12 };
-  if (biome <= 15) return { min: 12, max: 25 };
-  if (biome <= 20) return { min: 25, max: 45 };
-  if (biome <= 25) return { min: 45, max: 70 };
-  return { min: 70, max: 100 };
+  if (biome <= 10) return { min: 6, max: 10 };
+  if (biome <= 15) return { min: 11, max: 15 };
+  if (biome <= 20) return { min: 16, max: 20 };
+  if (biome <= 25) return { min: 21, max: 25 };
+  return { min: 21, max: 25 }; // Biome 26+ same as 21-25
 }
 
 /**
@@ -207,9 +207,8 @@ function generateTreasureChest(currentBiome, totalLuck, biomeData) {
   const luckModifier = 1 + (totalLuck / 100); // 1 Luck = +1% gold
   const goldReward = Math.floor(baseGold * goldVariation * luckModifier);
 
-  // Relics: Based on biome range, scaled by luck
-  const baseRelics = Math.floor(Math.random() * (biomeRelicRange.max - biomeRelicRange.min + 1)) + biomeRelicRange.min;
-  const relicReward = Math.floor(baseRelics * (1 + (totalLuck / 100)));
+  // Relics: Fixed range based on biome (NOT affected by luck)
+  const relicReward = Math.floor(Math.random() * (biomeRelicRange.max - biomeRelicRange.min + 1)) + biomeRelicRange.min;
 
   return { gold: goldReward, relics: relicReward };
 }

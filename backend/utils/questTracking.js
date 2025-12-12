@@ -101,11 +101,17 @@ export async function trackQuestProgress(userId, action, data = {}) {
             }
 
             // Check bait requirement
-            if (quest.quest_template_id.includes('default_bait') && data.bait !== null) {
-              shouldUpdate = false;
+            // Default bait quest: only track if bait is null or "Stale Bread Crust"
+            if (quest.quest_template_id.includes('default_bait')) {
+              if (data.bait !== null && data.bait !== 'Stale Bread Crust') {
+                shouldUpdate = false;
+              }
             }
-            if (quest.quest_template_id.includes('with_bait') && data.bait === null) {
-              shouldUpdate = false;
+            // Purchased bait quest: only track if bait is NOT null and NOT "Stale Bread Crust"
+            if (quest.quest_template_id.includes('with_bait')) {
+              if (data.bait === null || data.bait === 'Stale Bread Crust') {
+                shouldUpdate = false;
+              }
             }
           }
           break;
@@ -126,10 +132,43 @@ export async function trackQuestProgress(userId, action, data = {}) {
 
         case 'bait_used':
           // Regular bait usage count quests
-          if (quest.quest_template_id === 'use_bait_01' || quest.quest_template_id === 'use_bait_count_02') {
+          if (quest.quest_template_id === 'use_bait_01') {
             shouldUpdate = true;
             progressIncrement = 1;
           }
+
+          // Consecutive bait usage quest - track same bait used consecutively
+          if (quest.quest_template_id === 'use_bait_count_02') {
+            const currentBait = data.bait;
+            const lastBait = metadata.last_bait || null;
+            let consecutiveCount = metadata.consecutive_count || 0;
+
+            if (currentBait === lastBait) {
+              // Same bait as before - increment consecutive count
+              consecutiveCount++;
+            } else {
+              // Different bait - reset to 1
+              consecutiveCount = 1;
+            }
+
+            // Update metadata
+            metadata.last_bait = currentBait;
+            metadata.consecutive_count = consecutiveCount;
+
+            // Update metadata in database
+            await db.execute(`
+              UPDATE player_quests
+              SET metadata = ?
+              WHERE id = ?
+            `, [JSON.stringify(metadata), quest.id]);
+
+            // Progress = max consecutive count achieved so far
+            if (consecutiveCount > quest.current_progress) {
+              shouldUpdate = true;
+              progressIncrement = consecutiveCount - quest.current_progress;
+            }
+          }
+
           // Different bait types quest - track unique baits
           if (quest.quest_template_id === 'equip_bait_type_01') {
             const usedBaits = metadata.used_baits || [];
