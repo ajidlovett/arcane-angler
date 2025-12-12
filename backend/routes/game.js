@@ -1251,9 +1251,9 @@ router.post('/sell-all', authenticateToken, async (req, res) => {
       rarityGroups[fish.rarity] += Number(fish.count) || 0;
     }
 
-    // Track each rarity separately (don't await to avoid blocking)
+    // Track each rarity separately (await to prevent race conditions)
     for (const [rarity, count] of Object.entries(rarityGroups)) {
-      trackQuestProgress(userId, 'fish_sold', {
+      await trackQuestProgress(userId, 'fish_sold', {
         rarity: rarity,
         amount: count
       }).catch(err => console.error('Quest tracking error:', err));
