@@ -19,148 +19,9 @@ const { useState, useEffect } = React;
 const Icons = window.Icons;
 
 // *** FIX APPLIED: REMOVED THE FOLLOWING DESTRUCTURING LINE TO PREVENT ReferenceError: ***
-// const { Fish, Package, TrendingUp, Target, Users, User, Trophy, Award, Menu, X, Lock, Unlock, ChevronRight } = Icons; 
+// const { Fish, Package, TrendingUp, Target, Users, User, Trophy, Award, Menu, X, Lock, Unlock, ChevronRight } = Icons;
 
-const FishingGame = ({ user, onLogout }) => {
-  // State
-  const [currentPage, setCurrentPage] = useState('fishing');
-  const [savingProgress, setSavingProgress] = useState(false);
-  const [player, setPlayer] = useState(() => {
-    const defaultPlayerState = {
-      level: 1,
-      xp: 0,
-      xpToNext: 150,
-      gold: 0,
-      relics: 0,
-      stats: { strength: 1, intelligence: 1, luck: 1, stamina: 100 },
-      inventory: [],
-      lockedFish: [],
-      currentBiome: 1,
-      equippedRod: 'Willow Branch', // Default Rod from equipment.js
-      equippedBait: 'Stale Bread Crust',
-      ownedRods: ['Willow Branch'], // Start with the free rod
-      baitInventory: { 'Stale Bread Crust': 999999 },
-      achievements: [],
-      totalFishCaught: 0,
-      totalFishSold: 0,
-      totalGoldEarned: 0,
-      mythicsCaught: 0,
-      legendariesCaught: 0,
-      exoticsCaught: 0,
-      arcanesCaught: 0,
-      treasureChestsFound: 0,
-      statsUpgraded: 0,
-      strUpgraded: 0,
-      intUpgraded: 0,
-      luckUpgraded: 0,
-      staminaUpgraded: 0,
-      totalRelicsEarned: 0,
-      discoveredFish: [], // Track all fish ever caught (even if sold)
-      fishpediaStats: [], // Persistent fish catch statistics for Fishpedia
-      unlockedBiomes: [1] // Track which biomes have been paid for (start with biome 1 unlocked)
-    };
-
-    // Server is the source of truth - default state is only used until server data loads
-    return defaultPlayerState;
-  });
-
-  const [fishing, setFishing] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
-  const [lastCatch, setLastCatch] = useState(null);
-  const [selectedRarity, setSelectedRarity] = useState('all');
-  const [inventorySortOrder, setInventorySortOrder] = useState('value-desc'); // Default sort by value descending
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [funnyLine, setFunnyLine] = useState('');
-  const [shopTab, setShopTab] = useState('rods'); // Persist shop tab selection
-  const [dataLoaded, setDataLoaded] = useState(false); // Track if initial data loaded
-  const [statCosts, setStatCosts] = useState({}); // Server-provided stat upgrade costs
-  const [globalNotification, setGlobalNotification] = useState(null); // Global notifications for rare catches
-  const [idleNotificationIndex, setIdleNotificationIndex] = useState(0); // Index for rotating idle messages
-
-  // Load player data from server
-React.useEffect(() => {
-  const loadData = async () => {
-    try {
-      const data = await window.ApiService.getPlayerData();
-      setPlayer(data);
-      setDataLoaded(true);
-    } catch (err) {
-      console.error('Failed to load from server:', err);
-      setDataLoaded(true);
-    }
-  };
-  loadData();
-}, []);
-
-// Handle global notification timeout (minimum 30 seconds)
-React.useEffect(() => {
-  if (globalNotification) {
-    const timer = setTimeout(() => {
-      setGlobalNotification(null);
-    }, 30000); // 30 seconds minimum display time
-
-    return () => clearTimeout(timer);
-  }
-}, [globalNotification]);
-
-// Rotate idle notification messages every 45 seconds
-React.useEffect(() => {
-  const rotateIdleMessage = () => {
-    setIdleNotificationIndex((prevIndex) => {
-      const totalMessages = window.IDLE_NOTIFICATIONS?.length || 14;
-      return (prevIndex + 1) % totalMessages;
-    });
-  };
-
-  const interval = setInterval(rotateIdleMessage, 45000); // 45 seconds
-
-  return () => clearInterval(interval);
-}, []);
-
-// Poll for global rare catches every 10 seconds
-// Pause polling when a notification is active (for 30 seconds)
-React.useEffect(() => {
-  const pollGlobalCatches = async () => {
-    try {
-      const response = await window.ApiService.getGlobalCatches();
-      if (response.catches && response.catches.length > 0) {
-        const latestCatch = response.catches[0];
-
-        // Check if this is a new catch (different from current notification)
-        if (!globalNotification ||
-            globalNotification.fishName !== latestCatch.fish_name ||
-            globalNotification.timestamp !== new Date(latestCatch.caught_at).getTime()) {
-
-          setGlobalNotification({
-            username: latestCatch.profile_username,
-            fishName: latestCatch.fish_name,
-            rarity: latestCatch.rarity,
-            messageIndex: Math.floor(Math.random() * 10),
-            timestamp: new Date(latestCatch.caught_at).getTime()
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch global catches:', error);
-    }
-  };
-
-  // If there's an active notification, wait 30 seconds before polling again
-  // The notification will be cleared by another useEffect after 30 seconds,
-  // which will trigger this effect to resume regular polling
-  if (globalNotification) {
-    const resumeTimeout = setTimeout(pollGlobalCatches, 30000);
-    return () => clearTimeout(resumeTimeout);
-  }
-
-  // No active notification - poll immediately and continue every 10 seconds
-  pollGlobalCatches();
-  const interval = setInterval(pollGlobalCatches, 10000);
-
-  return () => clearInterval(interval);
-}, [globalNotification]);
-
-// Theme System
+// Theme System - Defined outside component to prevent re-creation on every render
 const themes = {
   dark: {
     name: 'Dark',
@@ -253,6 +114,156 @@ const themes = {
     accentHover: 'cyan-500'
   }
 };
+
+const FishingGame = ({ user, onLogout }) => {
+  // State
+  const [currentPage, setCurrentPage] = useState('fishing');
+  const [savingProgress, setSavingProgress] = useState(false);
+  const [player, setPlayer] = useState(() => {
+    const defaultPlayerState = {
+      level: 1,
+      xp: 0,
+      xpToNext: 150,
+      gold: 0,
+      relics: 0,
+      stats: { strength: 1, intelligence: 1, luck: 1, stamina: 100 },
+      inventory: [],
+      lockedFish: [],
+      currentBiome: 1,
+      equippedRod: 'Willow Branch', // Default Rod from equipment.js
+      equippedBait: 'Stale Bread Crust',
+      ownedRods: ['Willow Branch'], // Start with the free rod
+      baitInventory: { 'Stale Bread Crust': 999999 },
+      achievements: [],
+      totalFishCaught: 0,
+      totalFishSold: 0,
+      totalGoldEarned: 0,
+      mythicsCaught: 0,
+      legendariesCaught: 0,
+      exoticsCaught: 0,
+      arcanesCaught: 0,
+      treasureChestsFound: 0,
+      statsUpgraded: 0,
+      strUpgraded: 0,
+      intUpgraded: 0,
+      luckUpgraded: 0,
+      staminaUpgraded: 0,
+      totalRelicsEarned: 0,
+      discoveredFish: [], // Track all fish ever caught (even if sold)
+      fishpediaStats: [], // Persistent fish catch statistics for Fishpedia
+      unlockedBiomes: [1] // Track which biomes have been paid for (start with biome 1 unlocked)
+    };
+
+    // Server is the source of truth - default state is only used until server data loads
+    return defaultPlayerState;
+  });
+
+  const [fishing, setFishing] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const [lastCatch, setLastCatch] = useState(null);
+  const [selectedRarity, setSelectedRarity] = useState('all');
+  const [inventorySortOrder, setInventorySortOrder] = useState('value-desc'); // Default sort by value descending
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [funnyLine, setFunnyLine] = useState('');
+  const [shopTab, setShopTab] = useState('rods'); // Persist shop tab selection
+  const [dataLoaded, setDataLoaded] = useState(false); // Track if initial data loaded
+  const [statCosts, setStatCosts] = useState({}); // Server-provided stat upgrade costs
+  const [globalNotification, setGlobalNotification] = useState(null); // Global notifications for rare catches
+  const [idleNotificationIndex, setIdleNotificationIndex] = useState(0); // Index for rotating idle messages
+  const shownNotifications = React.useRef(new Set()); // Track timestamps of notifications we've already shown
+
+  // Load player data from server
+React.useEffect(() => {
+  const loadData = async () => {
+    try {
+      const data = await window.ApiService.getPlayerData();
+      setPlayer(data);
+      setDataLoaded(true);
+    } catch (err) {
+      console.error('Failed to load from server:', err);
+      setDataLoaded(true);
+    }
+  };
+  loadData();
+}, []);
+
+// Handle global notification timeout (minimum 30 seconds)
+React.useEffect(() => {
+  if (globalNotification) {
+    const timer = setTimeout(() => {
+      setGlobalNotification(null);
+    }, 30000); // 30 seconds minimum display time
+
+    return () => clearTimeout(timer);
+  }
+}, [globalNotification]);
+
+// Rotate idle notification messages every 45 seconds
+React.useEffect(() => {
+  const rotateIdleMessage = () => {
+    setIdleNotificationIndex((prevIndex) => {
+      const totalMessages = window.IDLE_NOTIFICATIONS?.length || 14;
+      return (prevIndex + 1) % totalMessages;
+    });
+  };
+
+  const interval = setInterval(rotateIdleMessage, 45000); // 45 seconds
+
+  return () => clearInterval(interval);
+}, []);
+
+// Poll for global rare catches every 10 seconds
+// Pause polling when a notification is active (for 30 seconds)
+React.useEffect(() => {
+  const pollGlobalCatches = async () => {
+    try {
+      const response = await window.ApiService.getGlobalCatches();
+      if (response.catches && response.catches.length > 0) {
+        const latestCatch = response.catches[0];
+        const catchTimestamp = new Date(latestCatch.caught_at).getTime();
+
+        // Check if we've already shown this notification
+        if (shownNotifications.current.has(catchTimestamp)) {
+          return; // Skip this catch, we've already shown it
+        }
+
+        // Clean up old timestamps (older than 5 minutes) to prevent memory leaks
+        const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+        shownNotifications.current.forEach(timestamp => {
+          if (timestamp < fiveMinutesAgo) {
+            shownNotifications.current.delete(timestamp);
+          }
+        });
+
+        // This is a new catch we haven't shown yet
+        shownNotifications.current.add(catchTimestamp);
+        setGlobalNotification({
+          username: latestCatch.profile_username,
+          fishName: latestCatch.fish_name,
+          rarity: latestCatch.rarity,
+          messageIndex: Math.floor(Math.random() * 10),
+          timestamp: catchTimestamp
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch global catches:', error);
+    }
+  };
+
+  // If there's an active notification, wait 30 seconds before polling again
+  // The notification will be cleared by another useEffect after 30 seconds,
+  // which will trigger this effect to resume regular polling
+  if (globalNotification) {
+    const resumeTimeout = setTimeout(pollGlobalCatches, 30000);
+    return () => clearTimeout(resumeTimeout);
+  }
+
+  // No active notification - poll immediately and continue every 10 seconds
+  pollGlobalCatches();
+  const interval = setInterval(pollGlobalCatches, 10000);
+
+  return () => clearInterval(interval);
+}, [globalNotification]);
 
 const [currentTheme, setCurrentTheme] = useState(() => {
   const saved = localStorage.getItem('arcaneAnglerTheme');
