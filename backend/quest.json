@@ -160,7 +160,7 @@
     },
     {
       "id": "equip_bait_type_01",
-      "description_template": "Use {amount} different bait types.",
+      "description_template": "Use {amount} different purchased bait types.",
       "category": "action",
       "daily_range": [2, 4],
       "weekly_range": [3, 5],
@@ -172,7 +172,7 @@
 
     {
       "id": "use_bait_count_02",
-      "description_template": "Use same bait for {amount} consecutive casts.",
+      "description_template": "Use same purchased bait for {amount} consecutive casts.",
       "category": "action",
       "daily_range": [5, 20],
       "weekly_range": [30, 50],
