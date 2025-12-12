@@ -75,6 +75,7 @@ const FishingGame = ({ user, onLogout }) => {
   const [dataLoaded, setDataLoaded] = useState(false); // Track if initial data loaded
   const [statCosts, setStatCosts] = useState({}); // Server-provided stat upgrade costs
   const [globalNotification, setGlobalNotification] = useState(null); // Global notifications for rare catches
+  const [idleNotificationIndex, setIdleNotificationIndex] = useState(0); // Index for rotating idle messages
 
   // Load player data from server
 React.useEffect(() => {
@@ -91,16 +92,30 @@ React.useEffect(() => {
   loadData();
 }, []);
 
-// Handle global notification timeout (minimum 20 seconds)
+// Handle global notification timeout (minimum 30 seconds)
 React.useEffect(() => {
   if (globalNotification) {
     const timer = setTimeout(() => {
       setGlobalNotification(null);
-    }, 20000); // 20 seconds minimum display time
+    }, 30000); // 30 seconds minimum display time
 
     return () => clearTimeout(timer);
   }
 }, [globalNotification]);
+
+// Rotate idle notification messages every 45 seconds
+React.useEffect(() => {
+  const rotateIdleMessage = () => {
+    setIdleNotificationIndex((prevIndex) => {
+      const totalMessages = window.IDLE_NOTIFICATIONS?.length || 14;
+      return (prevIndex + 1) % totalMessages;
+    });
+  };
+
+  const interval = setInterval(rotateIdleMessage, 45000); // 45 seconds
+
+  return () => clearInterval(interval);
+}, []);
 
 // Poll for global rare catches every 10 seconds
 React.useEffect(() => {
@@ -762,7 +777,8 @@ useEffect(() => {
     ];
 
     if (!globalNotification) {
-      return <span className={`text-xs font-bold text-${theme.textMuted}`}>Waiting for legendary catches...</span>;
+      const idleMessage = window.IDLE_NOTIFICATIONS?.[idleNotificationIndex] || "The Arcane Depths await their next champion…";
+      return <span className={`text-xs font-bold text-${theme.textMuted}`}>{idleMessage}</span>;
     }
 
     const template = messageVariations[globalNotification.messageIndex];
