@@ -187,18 +187,18 @@ React.useEffect(() => {
   loadData();
 }, []);
 
-// Handle global notification timeout (minimum 30 seconds)
+// Handle global notification timeout (minimum 60 seconds)
 React.useEffect(() => {
   if (globalNotification) {
     const timer = setTimeout(() => {
       setGlobalNotification(null);
-    }, 30000); // 30 seconds minimum display time
+    }, 60000); // 60 seconds minimum display time
 
     return () => clearTimeout(timer);
   }
 }, [globalNotification]);
 
-// Rotate idle notification messages every 45 seconds
+// Rotate idle notification messages every 60 seconds
 React.useEffect(() => {
   const rotateIdleMessage = () => {
     setIdleNotificationIndex((prevIndex) => {
@@ -207,7 +207,7 @@ React.useEffect(() => {
     });
   };
 
-  const interval = setInterval(rotateIdleMessage, 45000); // 45 seconds
+  const interval = setInterval(rotateIdleMessage, 60000); // 60 seconds
 
   return () => clearInterval(interval);
 }, []);
@@ -250,17 +250,17 @@ React.useEffect(() => {
     }
   };
 
-  // If there's an active notification, wait 30 seconds before polling again
-  // The notification will be cleared by another useEffect after 30 seconds,
+  // If there's an active notification, wait 60 seconds before polling again
+  // The notification will be cleared by another useEffect after 60 seconds,
   // which will trigger this effect to resume regular polling
   if (globalNotification) {
-    const resumeTimeout = setTimeout(pollGlobalCatches, 30000);
+    const resumeTimeout = setTimeout(pollGlobalCatches, 60000);
     return () => clearTimeout(resumeTimeout);
   }
 
-  // No active notification - poll immediately and continue every 10 seconds
+  // No active notification - poll immediately and continue every 15 seconds
   pollGlobalCatches();
-  const interval = setInterval(pollGlobalCatches, 10000);
+  const interval = setInterval(pollGlobalCatches, 15000);
 
   return () => clearInterval(interval);
 }, [globalNotification]);
@@ -3364,4 +3364,5 @@ const App = () => {
 };
 
 // Render the app
+
 ReactDOM.render(<App />, document.getElementById('root'));
