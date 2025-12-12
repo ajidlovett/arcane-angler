@@ -161,7 +161,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
 
       // Add level-based XP bonus: level * random(1-2) per fish
       // Level 2: +2-4 XP, Level 3: +3-6 XP, Level 4: +4-8 XP, etc.
-      const levelBonus = player.level * (1 + Math.random()); // Random between level*1 and level*2
+      const levelBonus = player.level * (1 + Math.random()) * count; // Random between level*1 and level*2 per fish
       const xpWithLevelBonus = Math.floor((baseXP + levelBonus) * critMultiplier);
       const xpGained = xpWithLevelBonus;
 
