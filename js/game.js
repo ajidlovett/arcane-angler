@@ -118,6 +118,7 @@ React.useEffect(() => {
 }, []);
 
 // Poll for global rare catches every 10 seconds
+// Pause polling when a notification is active (for 30 seconds)
 React.useEffect(() => {
   const pollGlobalCatches = async () => {
     try {
@@ -144,10 +145,16 @@ React.useEffect(() => {
     }
   };
 
-  // Poll immediately on mount
-  pollGlobalCatches();
+  // If there's an active notification, wait 30 seconds before polling again
+  // The notification will be cleared by another useEffect after 30 seconds,
+  // which will trigger this effect to resume regular polling
+  if (globalNotification) {
+    const resumeTimeout = setTimeout(pollGlobalCatches, 30000);
+    return () => clearTimeout(resumeTimeout);
+  }
 
-  // Then poll every 10 seconds
+  // No active notification - poll immediately and continue every 10 seconds
+  pollGlobalCatches();
   const interval = setInterval(pollGlobalCatches, 10000);
 
   return () => clearInterval(interval);
@@ -1753,7 +1760,7 @@ useEffect(() => {
     );
   };
 
-  const LeaderboardPage = () => {
+  const LeaderboardPage = React.memo(() => {
     const [selectedCategory, setSelectedCategory] = useState('level');
     const [selectedRegion, setSelectedRegion] = useState('global');
     const [leaderboardData, setLeaderboardData] = useState([]);
@@ -2057,7 +2064,7 @@ useEffect(() => {
         )}
       </div>
     );
-  };
+  });
 
   const ProfilePage = () => {
     const [profileData, setProfileData] = useState(null);
