@@ -1211,9 +1211,9 @@ router.post('/sell-all', authenticateToken, async (req, res) => {
     let totalFishCount = 0;
 
     for (const fish of unlockedFish) {
-      const baseGold = fish.base_gold || 0;
-      const titanBonus = fish.titan_bonus || 1;
-      const count = fish.count || 0;
+      const baseGold = Number(fish.base_gold) || 0;
+      const titanBonus = Number(fish.titan_bonus) || 1;
+      const count = Number(fish.count) || 0;
       const goldEarned = Math.floor(baseGold * titanBonus * count * goldMultiplier);
       totalGold += goldEarned;
       totalFishCount += count;
@@ -1247,7 +1247,8 @@ router.post('/sell-all', authenticateToken, async (req, res) => {
       if (!rarityGroups[fish.rarity]) {
         rarityGroups[fish.rarity] = 0;
       }
-      rarityGroups[fish.rarity] += fish.count || 0;
+      // Explicitly convert to number to ensure proper addition
+      rarityGroups[fish.rarity] += Number(fish.count) || 0;
     }
 
     // Track each rarity separately (don't await to avoid blocking)
@@ -1333,9 +1334,9 @@ router.post('/sell-by-rarity', authenticateToken, async (req, res) => {
     let totalFishCount = 0;
 
     for (const fish of fishToSell) {
-      const baseGold = fish.base_gold || 0;
-      const titanBonus = fish.titan_bonus || 1;
-      const count = fish.count || 0;
+      const baseGold = Number(fish.base_gold) || 0;
+      const titanBonus = Number(fish.titan_bonus) || 1;
+      const count = Number(fish.count) || 0;
       const goldEarned = Math.floor(baseGold * titanBonus * count * goldMultiplier);
       totalGold += goldEarned;
       totalFishCount += count;
