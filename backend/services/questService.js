@@ -169,13 +169,21 @@ class QuestService {
   }
 
   /**
+   * Format number with thousand separators
+   */
+  formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  /**
    * Fill placeholders in quest description
    */
   async fillPlaceholders(template, amount, playerProgression, metadata) {
     let description = template.description_template;
 
-    // Replace {amount}
-    description = description.replace(/{amount}/g, amount);
+    // Replace {amount} - use thousand separator for level_up_01 (XP quest)
+    const formattedAmount = template.id === 'level_up_01' ? this.formatNumber(amount) : amount;
+    description = description.replace(/{amount}/g, formattedAmount);
 
     // Replace {biome}
     if (description.includes('{biome}')) {
@@ -428,16 +436,17 @@ class QuestService {
     const now = new Date();
 
     if (questType === 'daily') {
-      // Today's date
+      // Today's date in YYYY-MM-DD format
       return now.toISOString().split('T')[0];
     } else if (questType === 'weekly') {
       // Monday of this week
-      const day = now.getDay();
-      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(now.setDate(diff));
+      const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
+      const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Days to subtract to get to Monday
+      const monday = new Date(now); // Create new Date to avoid mutation
+      monday.setDate(now.getDate() + daysToMonday);
       return monday.toISOString().split('T')[0];
     } else {
-      // First day of this month
+      // First day of this month (monthly)
       return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
     }
   }

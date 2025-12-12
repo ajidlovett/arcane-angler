@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import db from '../db.js';
 import emailService from '../services/email.js';
 import { authLimiter, passwordResetLimiter } from '../middleware/rateLimiter.js';
+import questService from '../services/questService.js';
 
 const router = express.Router();
 
@@ -79,7 +80,12 @@ router.post('/register', authLimiter, async (req, res) => {
 
         // Send verification email
         const emailResult = await emailService.sendVerificationEmail(email, profileUsername, verificationToken);
-        
+
+        // Pre-generate quests for new user (non-blocking)
+        questService.getAllActiveQuests(result.insertId).catch(err => {
+            console.error('Quest pre-generation error on registration:', err);
+        });
+
         // Generate JWT token
         const token = jwt.sign(
             { userId: result.insertId, username },
@@ -213,6 +219,11 @@ router.post('/login', authLimiter, async (req, res) => {
         }
 
         await db.query('UPDATE users SET last_login = NOW() WHERE id = ?', [user.id]);
+
+        // Pre-generate quests on login (non-blocking) to ensure they're ready when user opens quest page
+        questService.getAllActiveQuests(user.id).catch(err => {
+            console.error('Quest pre-generation error on login:', err);
+        });
 
         const token = jwt.sign(
             { userId: user.id, username: user.username },
