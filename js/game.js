@@ -427,7 +427,7 @@ useEffect(() => {
               fish: result.fish.name,
               rarity: result.rarity,
               count: result.count,
-              xp: result.fish.xp || result.xpGained / result.count,
+              xp: result.xpGained, // Show total XP, not per-fish
               gold: result.fish.gold || result.goldGained / result.count,
               relics: 0,
               titanBonus: result.titanBonus > 1 ? result.titanBonus : null
@@ -1062,14 +1062,14 @@ useEffect(() => {
                       <span className="text-yellow-400">+{lastCatch.gold} Gold</span>
                       <span className="text-purple-400">+{lastCatch.relics} Relics</span>
                     </div>
-                    <div className="text-xs text-green-400">+{lastCatch.xp} XP</div>
+                    <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
                   </div>
                 ) : (
                   <div>
                     <div className="flex justify-center items-center gap-3 text-sm sm:text-base mb-1">
                       <span className={`text-${theme.text}`}>Caught {lastCatch.count}x</span>
                       <span className={`text-${theme.textDim}`}>|</span>
-                      <span className="text-green-400">+{lastCatch.xp} XP</span>
+                      <span className="text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</span>
                     </div>
                     {lastCatch.titanBonus && (
                       <div className="text-xs text-orange-400">
@@ -1115,14 +1115,14 @@ useEffect(() => {
                     <span className="text-yellow-400">+{lastCatch.gold} Gold</span>
                     <span className="text-purple-400">+{lastCatch.relics} Relics</span>
                   </div>
-                  <div className="text-xs text-green-400">+{lastCatch.xp} XP</div>
+                  <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
                 </div>
               ) : (
                 <div>
                   <div className="flex justify-center items-center gap-3 text-sm sm:text-base mb-1">
                     <span className={`text-${theme.text}`}>Caught {lastCatch.count}x</span>
                     <span className={`text-${theme.textDim}`}>|</span>
-                    <span className="text-green-400">+{lastCatch.xp} XP</span>
+                    <span className="text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</span>
                   </div>
                   {lastCatch.titanBonus && (
                     <div className="text-xs text-orange-400">
@@ -1523,7 +1523,7 @@ useEffect(() => {
   
   const InventoryPage = () => {
     const filteredInventory = getFilteredInventory();
-    const unlockedCount = filteredInventory.filter(f => !player.lockedFish.includes(f.name)).length;
+    const unlockedCount = filteredInventory.filter(f => !player.lockedFish.includes(f.name)).reduce((sum, f) => sum + f.count, 0);
     return (
       <div className="max-w-6xl mx-auto">
         <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
@@ -1570,7 +1570,7 @@ useEffect(() => {
               All
             </button>
             {rarities.map(rarity => {
-              const count = player.inventory.filter(f => f.rarity === rarity).length;
+              const count = player.inventory.filter(f => f.rarity === rarity).reduce((sum, f) => sum + f.count, 0);
               return (
                 <button
                   key={rarity}
