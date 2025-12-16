@@ -1,6 +1,6 @@
 import { useState } from 'react';
 // Sidebar navigation component
-import { Icons } from '../utils/icons.js';
+import { Icons } from '../utils/icons.jsx';
 
 export const Sidebar = ({ player, theme, currentPage, setCurrentPage, sidebarOpen, setSidebarOpen, handleSaveAndLogout }) => {
   const menuItems = [
