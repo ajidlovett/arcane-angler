@@ -1069,6 +1069,3 @@ export const FishingGame = ({ user, onLogout }) => {
   );
 };
 
-// Export to window for main.js
-window.FishingGame = FishingGame;
-};
