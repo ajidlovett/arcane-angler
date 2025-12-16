@@ -1,9 +1,7 @@
-const { useState, useEffect } = React;
+const { useState } = React;
 
-export const BoostersPage = ({ player, setPlayer, theme, showConfirm, showAlert }) => {
-  const [activeBoosters, setActiveBoosters] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
-
+// Receives activeBoosters and handlers from parent FishingGame (NO local polling!)
+export const BoostersPage = ({ player, setPlayer, theme, showConfirm, showAlert, activeBoosters, handleBuyBooster: buyBoosterHandler, getBoosterTimeRemaining }) => {
   // Booster definitions
   const boosters = [
     { id: 'knowledge_scroll', name: 'Knowledge Scroll', cost: 10, duration: 30, icon: '📜', effect: '+20% XP', description: 'Gain 20% more XP from catches for 30 minutes' },
@@ -12,26 +10,7 @@ export const BoostersPage = ({ player, setPlayer, theme, showConfirm, showAlert 
     { id: 'titans_elixir', name: "Titan's Elixir", cost: 20, duration: 60, icon: '⚗️', effect: '+20% STR & LUCK', description: 'Increase Strength and Luck by 20% for 1 hour' }
   ];
 
-  // Fetch active boosters
-  React.useEffect(() => {
-    loadActiveBoosters();
-    const interval = setInterval(loadActiveBoosters, 5000); // Refresh every 5 seconds
-    return () => clearInterval(interval);
-  }, []);
-
-  const loadActiveBoosters = async () => {
-    try {
-      const response = await window.ApiService.getActiveBoosters();
-      if (response.success) {
-        setActiveBoosters(response.boosters || []);
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error('Failed to load active boosters:', error);
-      setLoading(false);
-    }
-  };
-
+  // Local handler with confirmation dialog
   const handleBuyBooster = async (boosterType) => {
     const booster = boosters.find(b => b.id === boosterType);
     if (!booster) return;
@@ -41,32 +20,15 @@ export const BoostersPage = ({ player, setPlayer, theme, showConfirm, showAlert 
       `Purchase ${booster.name}?\n\nCost: ${booster.cost} Relics 🔮\nEffect: ${booster.effect}\nDuration: ${booster.duration} minutes\n\nYou currently have ${player.relics} Relics.`,
       async () => {
         try {
-          const response = await window.ApiService.buyBooster(boosterType);
-          if (response.success) {
-            // Reload boosters and refresh player data
-            await loadActiveBoosters();
-            const playerData = await window.ApiService.getPlayerData();
-            setPlayer(playerData);
-            showAlert(`✨ ${booster.name} activated! Enjoy your ${booster.effect} boost for ${booster.duration} minutes!`);
-          }
+          // Call parent handler which will refresh boosters and player data
+          await buyBoosterHandler(boosterType);
+          showAlert(`✨ ${booster.name} activated! Enjoy your ${booster.effect} boost for ${booster.duration} minutes!`);
         } catch (error) {
           console.error('Failed to buy booster:', error);
           showAlert(error.message || 'Failed to purchase booster. Please try again.');
         }
       }
     );
-  };
-
-  const getTimeRemaining = (expiresAt) => {
-    const now = new Date();
-    const expires = new Date(expiresAt);
-    const diff = expires - now;
-
-    if (diff <= 0) return 'Expired';
-
-    const minutes = Math.floor(diff / 60000);
-    const seconds = Math.floor((diff % 60000) / 1000);
-    return `${minutes}m ${seconds}s`;
   };
 
   return (
@@ -97,7 +59,7 @@ export const BoostersPage = ({ player, setPlayer, theme, showConfirm, showAlert 
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-green-400 font-bold text-lg">{getTimeRemaining(booster.expires_at)}</div>
+                        <div className="text-green-400 font-bold text-lg">{getBoosterTimeRemaining(booster.expires_at)}</div>
                         <div className={`text-xs text-${theme.textDim}`}>remaining</div>
                       </div>
                     </div>
