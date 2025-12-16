@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 // StatsPage component - Character stat upgrades with bulk upgrade support
-import { Icons } from '../../utils/icons.js';
+import { Icons } from '../../utils/icons.jsx';
 
 export const StatsPage = ({ player, theme, upgradeStat, getTotalStats }) => {
   const totalStats = getTotalStats();

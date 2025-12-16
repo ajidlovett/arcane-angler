@@ -1,20 +1,26 @@
 // Game Helper Functions
+import { FUNNY_LINES } from './funnylines.js';
+import { BIOMES } from './biomes.js';
+import { RODS, BAITS } from './equipment.js';
+import { ACHIEVEMENTS } from './achievements.js';
+import { RARITIES } from './constants/gameConstants.js';
+
 export const GameHelpers = {
   // Get current biome fish
   getCurrentBiomeFish: (currentBiome) => {
-    return window.BIOMES[currentBiome].fish;
+    return BIOMES[currentBiome].fish;
   },
 
   // Get all fish from current biome
   getAllCurrentBiomeFish: (currentBiome) => {
-    const biomeFish = window.GameHelpers.getCurrentBiomeFish(currentBiome);
+    const biomeFish = GameHelpers.getCurrentBiomeFish(currentBiome);
     return Object.values(biomeFish).flat();
   },
 
   // Calculate total stats including equipment bonuses
   getTotalStats: (player) => {
-    const rod = player.equippedRod ? window.RODS[player.equippedRod] : null;
-    const bait = player.equippedBait ? window.BAITS[player.equippedBait] : null;
+    const rod = player.equippedRod ? RODS[player.equippedRod] : null;
+    const bait = player.equippedBait ? BAITS[player.equippedBait] : null;
 
     return {
       strength: Number(player.stats.strength) + (rod?.str || 0) + (bait?.str || 0),
@@ -112,8 +118,8 @@ export const GameHelpers = {
 
   // Generate treasure chest rewards
   generateTreasureChest: (currentBiome, totalLuck) => {
-    const biomeRelicRange = window.GameHelpers.getBiomeRelicRange(currentBiome);
-    const biomeData = window.BIOMES[currentBiome];
+    const biomeRelicRange = GameHelpers.getBiomeRelicRange(currentBiome);
+    const biomeData = BIOMES[currentBiome];
 
     // Find the highest legendary fish gold value in the biome
     let highestLegendaryGold = 200; // Fallback minimum
@@ -179,10 +185,10 @@ export const GameHelpers = {
 
   // Get a random funny line
   getFunnyLine: (currentBiome) => {
-    const allFish = window.GameHelpers.getAllCurrentBiomeFish(currentBiome);
+    const allFish = GameHelpers.getAllCurrentBiomeFish(currentBiome);
     const randomFish = allFish[Math.floor(Math.random() * allFish.length)];
 
-    const lines = [...window.FUNNY_LINES];
+    const lines = [...FUNNY_LINES];
 
     // Add dynamic lines with random fish name
     lines.push(`You hoped to catch ${randomFish.name} but you caught:`);
@@ -200,12 +206,12 @@ export const GameHelpers = {
 
   // Check and return newly unlocked achievements
   checkAchievements: (player) => {
-    if (!window.ACHIEVEMENTS || !Array.isArray(window.ACHIEVEMENTS)) {
+    if (!ACHIEVEMENTS || !Array.isArray(ACHIEVEMENTS)) {
       return [];
     }
 
     const newAchievements = [];
-    window.ACHIEVEMENTS.forEach(achievement => {
+    ACHIEVEMENTS.forEach(achievement => {
       if (!player.achievements.includes(achievement.id)) {
         const currentValue = Number(player[achievement.stat]) || 0;
         if (currentValue >= achievement.requirement) {

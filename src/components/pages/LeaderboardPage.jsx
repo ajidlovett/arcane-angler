@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 // LeaderboardPage component - Global and regional leaderboards with mobile optimization
-import { Icons } from '../../utils/icons.js';
+import { Icons } from '../../utils/icons.jsx';
 
 export const LeaderboardPage = React.memo(({ player, theme, user }) => {
   const [selectedCategory, setSelectedCategory] = useState('level');
