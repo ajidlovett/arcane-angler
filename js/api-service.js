@@ -610,5 +610,11 @@ class ApiService {
     }
 }
 
-// Export singleton instance
-window.ApiService = new ApiService();
+// Export singleton instance (ESM)
+const apiService = new ApiService();
+export default apiService;
+
+// Also export to window for backward compatibility during transition
+if (typeof window !== 'undefined') {
+    window.ApiService = apiService;
+}
