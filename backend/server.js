@@ -73,7 +73,8 @@ app.use(express.static(distPath, {
 
 // SPA fallback: serve index.html for all non-API routes
 // This allows React Router to handle client-side routing
-app.get('*', (req, res, next) => {
+// Express 5 requires named wildcard route (path-to-regexp v8 syntax)
+app.get('/*splat', (req, res, next) => {
     // Don't serve index.html for API routes
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({ error: 'API route not found' });
