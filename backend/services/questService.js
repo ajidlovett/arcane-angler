@@ -521,16 +521,17 @@ class QuestService {
     const expirationDate = this.getExpirationDate(questType);
     console.log(`[QuestService] Expiration date: ${expirationDate}`);
 
-    // Insert into database
-    const insertedQuests = [];
+    // Bulk insert quests (optimized for single-core VPS)
+    if (newQuests.length === 0) {
+      return [];
+    }
+
+    // Build bulk INSERT for player_quests
+    const questValues = [];
+    const questParams = [];
     for (const quest of newQuests) {
-      const [result] = await db.execute(`
-        INSERT INTO player_quests (
-          user_id, quest_type, quest_template_id, description, category,
-          target_amount, current_progress, completed, reward_relics,
-          expires_at, rotation_date, metadata
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `, [
+      questValues.push('(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+      questParams.push(
         userId,
         questType,
         quest.quest_template_id,
@@ -543,26 +544,43 @@ class QuestService {
         expirationDate,
         rotationDate,
         quest.metadata
-      ]);
-
-      // Add to history
-      await db.execute(`
-        INSERT INTO quest_history (user_id, quest_template_id, quest_type, rotation_date)
-        VALUES (?, ?, ?, ?)
-      `, [userId, quest.quest_template_id, questType, rotationDate]);
-
-      insertedQuests.push({
-        id: result.insertId,
-        ...quest,
-        user_id: userId,
-        quest_type: questType,
-        expires_at: expirationDate,
-        rotation_date: rotationDate,
-        metadata: quest.metadata ? JSON.parse(quest.metadata) : null
-      });
+      );
     }
 
-    return insertedQuests;
+    const [questResult] = await db.execute(`
+      INSERT INTO player_quests (
+        user_id, quest_type, quest_template_id, description, category,
+        target_amount, current_progress, completed, reward_relics,
+        expires_at, rotation_date, metadata
+      ) VALUES ${questValues.join(', ')}
+    `, questParams);
+
+    // Build bulk INSERT for quest_history
+    const historyValues = [];
+    const historyParams = [];
+    for (const quest of newQuests) {
+      historyValues.push('(?, ?, ?, ?)');
+      historyParams.push(userId, quest.quest_template_id, questType, rotationDate);
+    }
+
+    await db.execute(`
+      INSERT INTO quest_history (user_id, quest_template_id, quest_type, rotation_date)
+      VALUES ${historyValues.join(', ')}
+    `, historyParams);
+
+    // Fetch inserted quests with IDs
+    const [insertedQuests] = await db.execute(`
+      SELECT * FROM player_quests
+      WHERE user_id = ?
+        AND quest_type = ?
+        AND rotation_date = ?
+      ORDER BY id
+    `, [userId, questType, rotationDate]);
+
+    return insertedQuests.map(q => ({
+      ...q,
+      metadata: typeof q.metadata === 'string' ? JSON.parse(q.metadata) : q.metadata
+    }));
   }
 
   /**

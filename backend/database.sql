@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS player_data (
     xp_to_next INT DEFAULT 150,
     gold INT DEFAULT 0,
     relics INT DEFAULT 0,
+    stat_points INT DEFAULT 0,
     current_biome INT DEFAULT 1,
     equipped_rod VARCHAR(100) DEFAULT 'Willow Branch',
     equipped_bait VARCHAR(100) DEFAULT 'Stale Bread Crust',
@@ -54,6 +55,19 @@ CREATE TABLE IF NOT EXISTS player_stats (
     luck INT DEFAULT 1,
     stamina INT DEFAULT 100,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Player boosters (temporary stat/XP boosts purchased with relics)
+CREATE TABLE IF NOT EXISTS player_boosters (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    booster_type ENUM('knowledge_scroll', 'ancient_tome', 'giants_potion', 'titans_elixir') NOT NULL,
+    effect_type ENUM('xp_bonus', 'stat_bonus') NOT NULL,
+    bonus_percentage INT NOT NULL DEFAULT 20,
+    expires_at DATETIME NOT NULL,
+    activated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_active (user_id, expires_at)
 );
 
 -- Player inventory (fish caught)

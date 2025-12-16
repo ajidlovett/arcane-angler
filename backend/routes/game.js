@@ -64,16 +64,36 @@ router.post('/cast', authenticateToken, async (req, res) => {
     }
 
     const player = playerData[0];
+
+    // Load active boosters
+    const [activeBoosters] = await connection.query(
+      `SELECT * FROM player_boosters
+       WHERE user_id = ? AND expires_at > NOW()`,
+      [userId]
+    );
+
+    // Calculate booster bonuses
+    let xpBonus = 1.0; // Multiplier (1.0 = no bonus)
+    let statBonus = 1.0; // Multiplier for strength/luck
+    for (const booster of activeBoosters) {
+      if (booster.effect_type === 'xp_bonus') {
+        xpBonus += booster.bonus_percentage / 100;
+      } else if (booster.effect_type === 'stat_bonus') {
+        statBonus += booster.bonus_percentage / 100;
+      }
+    }
+
+    // Apply stat bonus to base stats
     const baseStats = {
-      strength: player.strength,
-      intelligence: player.intelligence,
-      luck: player.luck,
-      stamina: player.stamina
+      strength: Math.floor(player.strength * statBonus),
+      intelligence: player.intelligence, // Intelligence not affected by stat boosters
+      luck: Math.floor(player.luck * statBonus),
+      stamina: player.stamina // Stamina not affected by stat boosters
     };
 
     // Note: Casting does not consume stamina - it has a 4-second cooldown handled client-side
 
-    // Get total stats with equipment bonuses
+    // Get total stats with equipment bonuses (already includes booster bonuses from baseStats)
     const totalStats = getTotalStats(
       baseStats,
       player.equipped_rod,
@@ -113,13 +133,14 @@ router.post('/cast', authenticateToken, async (req, res) => {
 
       // Add level-based XP bonus
       const levelBonus = player.level * (1 + Math.random()); // Random between level*1 and level*2
-      const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier);
+      const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier * xpBonus);
 
       result.treasureChest = rewards;
       result.goldGained = rewards.gold;
       result.relicsGained = rewards.relics;
       result.xpGained = xpGained;
       result.critMultiplier = critMultiplier;
+      result.xpBonus = xpBonus;
 
       // Update player stats
       await connection.query(
@@ -162,7 +183,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
       // Add level-based XP bonus: level * random(1-2) per fish
       // Level 2: +2-4 XP, Level 3: +3-6 XP, Level 4: +4-8 XP, etc.
       const levelBonus = player.level * (1 + Math.random()) * count; // Random between level*1 and level*2 per fish
-      const xpWithLevelBonus = Math.floor((baseXP + levelBonus) * critMultiplier);
+      const xpWithLevelBonus = Math.floor((baseXP + levelBonus) * critMultiplier * xpBonus);
       const xpGained = xpWithLevelBonus;
 
       result.fish = {
@@ -174,6 +195,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.goldGained = 0; // No gold from catching fish
       result.titanBonus = titanBonus;
       result.critMultiplier = critMultiplier;
+      result.xpBonus = xpBonus;
 
       // Add to inventory (or update if exists)
       await connection.query(
@@ -340,17 +362,20 @@ router.post('/cast', authenticateToken, async (req, res) => {
       // Calculate XP needed for next level
       const xpToNext = calculateXPForNextLevel(levelUpResult.newLevel);
 
-      // Update level, XP, xp_to_next, and grant relics (3 per level)
+      // Grant stat points instead of relics (3 stat points per level)
+      const statPointsGained = levelUpResult.levelsGained * 3;
+
+      // Update level, XP, xp_to_next, and grant stat points
       await connection.query(
         `UPDATE player_data
-         SET level = ?, xp = ?, xp_to_next = ?, relics = relics + ?, total_relics_earned = total_relics_earned + ?
+         SET level = ?, xp = ?, xp_to_next = ?, stat_points = stat_points + ?
          WHERE user_id = ?`,
-        [levelUpResult.newLevel, levelUpResult.newXP, xpToNext, levelUpResult.relicsGained, levelUpResult.relicsGained, userId]
+        [levelUpResult.newLevel, levelUpResult.newXP, xpToNext, statPointsGained, userId]
       );
       result.leveledUp = true;
       result.newLevel = levelUpResult.newLevel;
       result.levelsGained = levelUpResult.levelsGained;
-      result.relicsFromLevelUp = levelUpResult.relicsGained;
+      result.statPointsGained = statPointsGained;
     } else {
       // No level up, but ensure xp_to_next is correct for current level
       const xpToNext = calculateXPForNextLevel(updatedData[0].level);
@@ -361,7 +386,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.leveledUp = false;
       result.newLevel = updatedData[0].level;
       result.levelsGained = 0;
-      result.relicsFromLevelUp = 0;
+      result.statPointsGained = 0;
     }
 
     // Get updated balances and equipped bait
@@ -798,51 +823,28 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
 
     await connection.beginTransaction();
 
-    // Get current stat value
-    const [playerStats] = await connection.query(
-      `SELECT ${stat} FROM player_stats WHERE user_id = ?`,
-      [userId]
+    // Stat upgrade now costs 1 stat point (simplified economy)
+    const cost = 1;
+
+    // Atomic update: deduct stat point and increment stat in one query
+    // This prevents race conditions and ensures player has enough points
+    const [updateResult] = await connection.query(
+      `UPDATE player_data pd
+       JOIN player_stats ps ON pd.user_id = ps.user_id
+       SET pd.stat_points = pd.stat_points - ?,
+           pd.stats_upgraded = pd.stats_upgraded + 1,
+           ps.${stat} = ps.${stat} + 1
+       WHERE pd.user_id = ?
+         AND pd.stat_points >= ?`,
+      [cost, userId, cost]
     );
 
-    if (!playerStats || playerStats.length === 0) {
+    if (updateResult.affectedRows === 0) {
       await connection.rollback();
-      return res.status(404).json({ error: 'Player stats not found' });
+      return res.status(400).json({ error: 'Not enough stat points' });
     }
-
-    const currentValue = playerStats[0][stat];
-    const cost = calculateStatUpgradeCost(currentValue);
-
-    // Check if player has enough relics
-    const [playerData] = await connection.query(
-      'SELECT relics FROM player_data WHERE user_id = ?',
-      [userId]
-    );
-
-    if (!playerData || playerData.length === 0) {
-      await connection.rollback();
-      return res.status(404).json({ error: 'Player data not found' });
-    }
-
-    const currentRelics = playerData[0].relics;
-    if (currentRelics < cost) {
-      await connection.rollback();
-      return res.status(400).json({ error: 'Not enough relics' });
-    }
-
-    // Deduct relics
-    await connection.query(
-      'UPDATE player_data SET relics = relics - ?, stats_upgraded = stats_upgraded + 1 WHERE user_id = ?',
-      [cost, userId]
-    );
-
-    // Increment stat
-    await connection.query(
-      `UPDATE player_stats SET ${stat} = ${stat} + 1 WHERE user_id = ?`,
-      [userId]
-    );
 
     // Update stat-specific counter
-    // Map stat names to their column names
     const statColumnMap = {
       'strength': 'str_upgraded',
       'intelligence': 'int_upgraded',
@@ -857,7 +859,7 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
 
     // Get updated values
     const [updated] = await connection.query(
-      `SELECT relics FROM player_data WHERE user_id = ?`,
+      `SELECT stat_points FROM player_data WHERE user_id = ?`,
       [userId]
     );
 
@@ -866,12 +868,8 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
       [userId]
     );
 
-    // Calculate next upgrade cost
-    const nextCost = calculateStatUpgradeCost(newStats[0][stat]);
-
     // Track quest progress
     trackQuestProgress(userId, 'stat_upgraded', {}).catch(err => console.error('Quest tracking error:', err));
-    trackQuestProgress(userId, 'relics_spent', { amount: cost }).catch(err => console.error('Quest tracking error:', err));
 
     await connection.commit();
     res.json({
@@ -879,8 +877,8 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
       stat,
       newValue: newStats[0][stat],
       costPaid: cost,
-      nextCost,
-      newRelics: updated[0].relics
+      nextCost: 1, // Always costs 1 stat point
+      newStatPoints: updated[0].stat_points
     });
   } catch (error) {
     await connection.rollback();
@@ -888,6 +886,114 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to upgrade stat' });
   } finally {
     connection.release();
+  }
+});
+
+/**
+ * POST /api/game/buy-booster
+ * Purchase a temporary booster with relics
+ *
+ * Body: { boosterType } // "knowledge_scroll" | "ancient_tome" | "giants_potion" | "titans_elixir"
+ */
+router.post('/buy-booster', authenticateToken, async (req, res) => {
+  const connection = await db.getConnection();
+
+  try {
+    const userId = req.user.userId;
+    const { boosterType } = req.body;
+
+    // Booster definitions
+    const boosters = {
+      'knowledge_scroll': { cost: 10, duration: 30, effect: 'xp_bonus', bonus: 20 },
+      'ancient_tome': { cost: 20, duration: 60, effect: 'xp_bonus', bonus: 20 },
+      'giants_potion': { cost: 10, duration: 30, effect: 'stat_bonus', bonus: 20 },
+      'titans_elixir': { cost: 20, duration: 60, effect: 'stat_bonus', bonus: 20 }
+    };
+
+    if (!boosters[boosterType]) {
+      return res.status(400).json({ error: 'Invalid booster type' });
+    }
+
+    const booster = boosters[boosterType];
+
+    await connection.beginTransaction();
+
+    // Check if player has enough relics
+    const [playerData] = await connection.query(
+      'SELECT relics FROM player_data WHERE user_id = ?',
+      [userId]
+    );
+
+    if (!playerData || playerData.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Player data not found' });
+    }
+
+    if (playerData[0].relics < booster.cost) {
+      await connection.rollback();
+      return res.status(400).json({ error: 'Not enough relics' });
+    }
+
+    // Deduct relics
+    await connection.query(
+      'UPDATE player_data SET relics = relics - ? WHERE user_id = ?',
+      [booster.cost, userId]
+    );
+
+    // Calculate expiration time (in UTC)
+    const expiresAt = new Date(Date.now() + booster.duration * 60 * 1000);
+
+    // Add booster
+    await connection.query(
+      `INSERT INTO player_boosters (user_id, booster_type, effect_type, bonus_percentage, expires_at)
+       VALUES (?, ?, ?, ?, ?)`,
+      [userId, boosterType, booster.effect, booster.bonus, expiresAt]
+    );
+
+    // Get updated relics
+    const [updated] = await connection.query(
+      'SELECT relics FROM player_data WHERE user_id = ?',
+      [userId]
+    );
+
+    await connection.commit();
+    res.json({
+      success: true,
+      boosterType,
+      duration: booster.duration,
+      expiresAt: expiresAt.toISOString(),
+      newRelics: updated[0].relics
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Buy booster error:', error);
+    res.status(500).json({ error: 'Failed to purchase booster' });
+  } finally {
+    connection.release();
+  }
+});
+
+/**
+ * GET /api/game/active-boosters
+ * Get all active boosters for the player
+ */
+router.get('/active-boosters', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Get active boosters (not expired)
+    const [boosters] = await db.query(
+      `SELECT * FROM player_boosters
+       WHERE user_id = ?
+         AND expires_at > NOW()
+       ORDER BY expires_at ASC`,
+      [userId]
+    );
+
+    res.json({ boosters });
+  } catch (error) {
+    console.error('Get active boosters error:', error);
+    res.status(500).json({ error: 'Failed to get active boosters' });
   }
 });
 
@@ -1194,30 +1300,39 @@ router.post('/sell-all', authenticateToken, async (req, res) => {
       player.equipped_bait
     );
 
-    // Get all unlocked fish
-    const [unlockedFish] = await connection.query(
-      'SELECT fish_name, rarity, count, base_gold, titan_bonus FROM player_inventory WHERE user_id = ? AND (is_locked IS NULL OR is_locked = FALSE) AND count > 0',
-      [userId]
+    // Calculate gold multiplier
+    const goldMultiplier = calculateGoldMultiplier(totalStats.intelligence);
+
+    // Use SQL aggregation to calculate totals in a single query (prevents timeout)
+    const [aggregateResult] = await connection.query(
+      `SELECT
+         SUM(count) as total_fish_count,
+         SUM(FLOOR(base_gold * IFNULL(titan_bonus, 1) * count * ?)) as total_gold
+       FROM player_inventory
+       WHERE user_id = ?
+         AND (is_locked IS NULL OR is_locked = FALSE)
+         AND count > 0`,
+      [goldMultiplier, userId]
     );
 
-    if (!unlockedFish || unlockedFish.length === 0) {
+    const totalFishCount = Number(aggregateResult[0]?.total_fish_count) || 0;
+    const totalGold = Number(aggregateResult[0]?.total_gold) || 0;
+
+    if (totalFishCount === 0) {
       await connection.rollback();
       return res.json({ success: true, goldEarned: 0, fishSold: 0, newGold: 0 });
     }
 
-    // Calculate total gold with Intelligence multiplier
-    const goldMultiplier = calculateGoldMultiplier(totalStats.intelligence);
-    let totalGold = 0;
-    let totalFishCount = 0;
-
-    for (const fish of unlockedFish) {
-      const baseGold = Number(fish.base_gold) || 0;
-      const titanBonus = Number(fish.titan_bonus) || 1;
-      const count = Number(fish.count) || 0;
-      const goldEarned = Math.floor(baseGold * titanBonus * count * goldMultiplier);
-      totalGold += goldEarned;
-      totalFishCount += count;
-    }
+    // Get rarity groups for quest tracking (aggregated in SQL)
+    const [rarityGroups] = await connection.query(
+      `SELECT rarity, SUM(count) as total_count
+       FROM player_inventory
+       WHERE user_id = ?
+         AND (is_locked IS NULL OR is_locked = FALSE)
+         AND count > 0
+       GROUP BY rarity`,
+      [userId]
+    );
 
     // Delete all unlocked fish from inventory
     await connection.query(
@@ -1242,20 +1357,10 @@ router.post('/sell-all', authenticateToken, async (req, res) => {
     );
 
     // Track quest progress for each rarity sold
-    const rarityGroups = {};
-    for (const fish of unlockedFish) {
-      if (!rarityGroups[fish.rarity]) {
-        rarityGroups[fish.rarity] = 0;
-      }
-      // Explicitly convert to number to ensure proper addition
-      rarityGroups[fish.rarity] += Number(fish.count) || 0;
-    }
-
-    // Track each rarity separately (await to prevent race conditions)
-    for (const [rarity, count] of Object.entries(rarityGroups)) {
+    for (const row of rarityGroups) {
       await trackQuestProgress(userId, 'fish_sold', {
-        rarity: rarity,
-        amount: count
+        rarity: row.rarity,
+        amount: Number(row.total_count) || 0
       }).catch(err => console.error('Quest tracking error:', err));
     }
 
@@ -1317,29 +1422,28 @@ router.post('/sell-by-rarity', authenticateToken, async (req, res) => {
       player.equipped_bait
     );
 
-    // Get all unlocked fish of this rarity
-    const [fishToSell] = await connection.query(
-      'SELECT fish_name, count, base_gold, titan_bonus FROM player_inventory WHERE user_id = ? AND rarity = ? AND (is_locked IS NULL OR is_locked = FALSE) AND count > 0',
-      [userId, rarity]
+    // Calculate gold multiplier
+    const goldMultiplier = calculateGoldMultiplier(totalStats.intelligence);
+
+    // Use SQL aggregation to calculate totals in a single query (prevents timeout)
+    const [aggregateResult] = await connection.query(
+      `SELECT
+         SUM(count) as total_fish_count,
+         SUM(FLOOR(base_gold * IFNULL(titan_bonus, 1) * count * ?)) as total_gold
+       FROM player_inventory
+       WHERE user_id = ?
+         AND rarity = ?
+         AND (is_locked IS NULL OR is_locked = FALSE)
+         AND count > 0`,
+      [goldMultiplier, userId, rarity]
     );
 
-    if (!fishToSell || fishToSell.length === 0) {
+    const totalFishCount = Number(aggregateResult[0]?.total_fish_count) || 0;
+    const totalGold = Number(aggregateResult[0]?.total_gold) || 0;
+
+    if (totalFishCount === 0) {
       await connection.rollback();
       return res.json({ success: true, goldEarned: 0, fishSold: 0, newGold: 0 });
-    }
-
-    // Calculate total gold with Intelligence multiplier
-    const goldMultiplier = calculateGoldMultiplier(totalStats.intelligence);
-    let totalGold = 0;
-    let totalFishCount = 0;
-
-    for (const fish of fishToSell) {
-      const baseGold = Number(fish.base_gold) || 0;
-      const titanBonus = Number(fish.titan_bonus) || 1;
-      const count = Number(fish.count) || 0;
-      const goldEarned = Math.floor(baseGold * titanBonus * count * goldMultiplier);
-      totalGold += goldEarned;
-      totalFishCount += count;
     }
 
     // Delete all unlocked fish of this rarity from inventory
