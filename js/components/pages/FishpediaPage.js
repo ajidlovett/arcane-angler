@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-export const FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRarity, getGradientTextStyle, rarityColors }) => {
+const FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRarity, getGradientTextStyle, rarityColors }) => {
   const [selectedBiome, setSelectedBiome] = useState(1);
   const [selectedRarityFilter, setSelectedRarityFilter] = useState('all');
 
@@ -172,4 +172,6 @@ export const FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradi
   );
 };
 
-export default FishpediaPage;
+
+// Export to window
+window.FishpediaPage = FishpediaPage;

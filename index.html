@@ -65,10 +65,38 @@
     <!-- Game logic helpers -->
     <script src="js/game-helpers.js"></script>
 
-    <!-- Auth component (uses Babel for JSX - temporary solution) -->
+    <!-- React component utilities (need Babel for JSX) -->
+    <script type="text/babel" src="js/utils/icons.js"></script>
+    <script type="text/babel" src="js/utils/themes.js"></script>
+
+    <!-- Shared components (need Babel for JSX) -->
+    <script type="text/babel" src="js/components/Sidebar.js"></script>
+    <script type="text/babel" src="js/components/CustomModal.js"></script>
+    <script type="text/babel" src="js/components/GlobalNotification.js"></script>
+    <script type="text/babel" src="js/components/SavingOverlay.js"></script>
+    <script type="text/babel" src="js/components/PlaceholderPage.js"></script>
+
+    <!-- Page components (need Babel for JSX) -->
+    <script type="text/babel" src="js/components/pages/FishingPage.js"></script>
+    <script type="text/babel" src="js/components/pages/StatsPage.js"></script>
+    <script type="text/babel" src="js/components/pages/LeaderboardPage.js"></script>
+    <script type="text/babel" src="js/components/pages/OptionsPage.js"></script>
+    <script type="text/babel" src="js/components/pages/BoostersPage.js"></script>
+    <script type="text/babel" src="js/components/pages/EquipmentPage.js"></script>
+    <script type="text/babel" src="js/components/pages/BiomesPage.js"></script>
+    <script type="text/babel" src="js/components/pages/InventoryPage.js"></script>
+    <script type="text/babel" src="js/components/pages/ProfilePage.js"></script>
+    <script type="text/babel" src="js/components/pages/AchievementsPage.js"></script>
+    <script type="text/babel" src="js/components/pages/FishpediaPage.js"></script>
+    <script type="text/babel" src="js/components/pages/QuestPage.js"></script>
+
+    <!-- Main game component (need Babel for JSX) -->
+    <script type="text/babel" src="js/components/FishingGame.js"></script>
+
+    <!-- Auth component (uses Babel for JSX) -->
     <script type="text/babel" src="js/auth-component.js"></script>
 
-    <!-- ESM entry point -->
+    <!-- ESM entry point (pure JS, no JSX) -->
     <script type="module" src="js/main.js"></script>
 </body>
 </html>

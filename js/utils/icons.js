@@ -1,5 +1,5 @@
 // Icon definitions for Arcane Angler
-export const Icons = {
+const Icons = {
   Fish: () => '🎣',
   Package: () => '📦',
   TrendingUp: () => '📊',
@@ -16,9 +16,5 @@ export const Icons = {
   Trash2: () => '🗑️'
 };
 
-// Also export to window for backward compatibility
-if (typeof window !== 'undefined') {
-  window.Icons = Icons;
-}
-
-export default Icons;
+// Export to window for Babel-transpiled scripts
+window.Icons = Icons;

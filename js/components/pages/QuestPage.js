@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-export const QuestPage = ({ theme }) => {
+const QuestPage = ({ theme }) => {
   const [quests, setQuests] = useState({ daily: [], weekly: [], monthly: [] });
   const [serverTime, setServerTime] = useState({ daily: { text: '' }, weekly: { text: '' }, monthly: { text: '' } });
   const [loading, setLoading] = useState(true);
@@ -156,4 +156,6 @@ export const QuestPage = ({ theme }) => {
   );
 };
 
-export default QuestPage;
+
+// Export to window
+window.QuestPage = QuestPage;

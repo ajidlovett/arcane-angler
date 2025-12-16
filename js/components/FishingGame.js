@@ -1,30 +1,33 @@
 // FishingGame.js - Main game container with server-authoritative state
-import apiService from '../api-service.js';
-import { themes } from '../utils/themes.js';
-import { Icons } from '../utils/icons.js';
-import { Sidebar } from './Sidebar.js';
-import { CustomModal } from './CustomModal.js';
-import { GlobalNotification } from './GlobalNotification.js';
-import { SavingOverlay } from './SavingOverlay.js';
-import { PlaceholderPage } from './PlaceholderPage.js';
-
-// Import all page components
-import { FishingPage } from './pages/FishingPage.js';
-import { StatsPage } from './pages/StatsPage.js';
-import { LeaderboardPage } from './pages/LeaderboardPage.js';
-import { OptionsPage } from './pages/OptionsPage.js';
-import { BoostersPage } from './pages/BoostersPage.js';
-import { EquipmentPage } from './pages/EquipmentPage.js';
-import { BiomesPage } from './pages/BiomesPage.js';
-import { InventoryPage } from './pages/InventoryPage.js';
-import { ProfilePage } from './pages/ProfilePage.js';
-import { AchievementsPage } from './pages/AchievementsPage.js';
-import { FishpediaPage } from './pages/FishpediaPage.js';
-import { QuestPage } from './pages/QuestPage.js';
+// All dependencies loaded via window object from Babel-transpiled scripts
 
 const { useState, useEffect, useRef } = React;
 
-export const FishingGame = ({ user, onLogout }) => {
+// Get dependencies from window
+const apiService = window.ApiService;
+const themes = window.themes;
+const Icons = window.Icons;
+const Sidebar = window.Sidebar;
+const CustomModal = window.CustomModal;
+const GlobalNotification = window.GlobalNotification;
+const SavingOverlay = window.SavingOverlay;
+const PlaceholderPage = window.PlaceholderPage;
+
+// Page components from window
+const FishingPage = window.FishingPage;
+const StatsPage = window.StatsPage;
+const LeaderboardPage = window.LeaderboardPage;
+const OptionsPage = window.OptionsPage;
+const BoostersPage = window.BoostersPage;
+const EquipmentPage = window.EquipmentPage;
+const BiomesPage = window.BiomesPage;
+const InventoryPage = window.InventoryPage;
+const ProfilePage = window.ProfilePage;
+const AchievementsPage = window.AchievementsPage;
+const FishpediaPage = window.FishpediaPage;
+const QuestPage = window.QuestPage;
+
+const FishingGame = ({ user, onLogout }) => {
   // State
   const [currentPage, setCurrentPage] = useState('fishing');
   const [savingProgress, setSavingProgress] = useState(false);
@@ -1061,3 +1064,9 @@ export const FishingGame = ({ user, onLogout }) => {
     </>
   );
 };
+
+// Export to window for main.js
+window.FishingGame = FishingGame;
+
+// Export to window
+window.FishingGame = FishingGame;

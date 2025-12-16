@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-export const EquipmentPage = ({ theme, player, setPlayer, shopTab, setShopTab, buyRod, equipRod, buyBait, equipBait, Icons }) => {
+const EquipmentPage = ({ theme, player, setPlayer, shopTab, setShopTab, buyRod, equipRod, buyBait, equipBait, Icons }) => {
   const [tierTab, setTierTab] = useState('all');
 
   const getFilteredEquipment = () => {
@@ -181,4 +181,6 @@ export const EquipmentPage = ({ theme, player, setPlayer, shopTab, setShopTab, b
   );
 };
 
-export default EquipmentPage;
+
+// Export to window
+window.EquipmentPage = EquipmentPage;

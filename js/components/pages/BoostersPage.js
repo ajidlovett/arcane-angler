@@ -1,7 +1,7 @@
 const { useState } = React;
 
 // Receives activeBoosters and handlers from parent FishingGame (NO local polling!)
-export const BoostersPage = ({ player, setPlayer, theme, showConfirm, showAlert, activeBoosters, handleBuyBooster: buyBoosterHandler, getBoosterTimeRemaining }) => {
+const BoostersPage = ({ player, setPlayer, theme, showConfirm, showAlert, activeBoosters, handleBuyBooster: buyBoosterHandler, getBoosterTimeRemaining }) => {
   // Booster definitions
   const boosters = [
     { id: 'knowledge_scroll', name: 'Knowledge Scroll', cost: 10, duration: 30, icon: '📜', effect: '+20% XP', description: 'Gain 20% more XP from catches for 30 minutes' },
@@ -142,4 +142,6 @@ export const BoostersPage = ({ player, setPlayer, theme, showConfirm, showAlert,
   );
 };
 
-export default BoostersPage;
+
+// Export to window
+window.BoostersPage = BoostersPage;

@@ -2,7 +2,7 @@
 const { useState, useEffect } = React;
 import { Icons } from '../../utils/icons.js';
 
-export const StatsPage = ({ player, theme, upgradeStat, getTotalStats }) => {
+const StatsPage = ({ player, theme, upgradeStat, getTotalStats }) => {
   const totalStats = getTotalStats();
 
   // State for bulk upgrade amounts
@@ -120,4 +120,6 @@ export const StatsPage = ({ player, theme, upgradeStat, getTotalStats }) => {
   );
 };
 
-export default StatsPage;
+
+// Export to window
+window.StatsPage = StatsPage;

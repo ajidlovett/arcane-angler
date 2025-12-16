@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-export const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, showAlert, showConfirm }) => {
+const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, showAlert, showConfirm }) => {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editingBio, setEditingBio] = useState(false);
@@ -416,4 +416,6 @@ export const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Ico
   );
 };
 
-export default ProfilePage;
+
+// Export to window
+window.ProfilePage = ProfilePage;

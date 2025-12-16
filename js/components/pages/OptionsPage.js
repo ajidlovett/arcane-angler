@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-export const OptionsPage = ({ theme, currentTheme, setCurrentTheme, buttonColors, castButtonColor, setCastButtonColor, themes }) => (
+const OptionsPage = ({ theme, currentTheme, setCurrentTheme, buttonColors, castButtonColor, setCastButtonColor, themes }) => (
   <div className="max-w-4xl mx-auto">
     <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-6`}>
       <h2 className="text-[1.05rem] font-bold mb-6 flex items-center gap-2">
@@ -101,4 +101,6 @@ export const OptionsPage = ({ theme, currentTheme, setCurrentTheme, buttonColors
   </div>
 );
 
-export default OptionsPage;
+
+// Export to window
+window.OptionsPage = OptionsPage;

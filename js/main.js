@@ -1,8 +1,10 @@
 // Main entry point for Arcane Angler - ESM architecture
-import { FishingGame } from './components/FishingGame.js';
 import apiService from './api-service.js';
 
 const { useState, useEffect } = React;
+
+// FishingGame is loaded via Babel script and available on window
+const FishingGame = window.FishingGame;
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);

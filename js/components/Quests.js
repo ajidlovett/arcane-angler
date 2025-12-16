@@ -308,3 +308,6 @@ function Quests({ onClose }) {
 
 // Export for use in game.js
 window.Quests = Quests;
+
+// Export to window
+window.Quests = Quests;

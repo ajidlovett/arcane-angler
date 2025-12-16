@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-export const BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRarityColor }) => {
+const BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRarityColor }) => {
   const [biomePage, setBiomePage] = useState(1);
   const biomesPerPage = 5;
   const totalBiomes = Object.keys(window.BIOMES).length;
@@ -185,4 +185,6 @@ export const BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert
   );
 };
 
-export default BiomesPage;
+
+// Export to window
+window.BiomesPage = BiomesPage;

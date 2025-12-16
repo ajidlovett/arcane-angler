@@ -2,7 +2,7 @@
 const { useState, useEffect } = React;
 import { Icons } from '../utils/icons.js';
 
-export const Sidebar = ({ player, theme, currentPage, setCurrentPage, sidebarOpen, setSidebarOpen, handleSaveAndLogout }) => {
+const Sidebar = ({ player, theme, currentPage, setCurrentPage, sidebarOpen, setSidebarOpen, handleSaveAndLogout }) => {
   const menuItems = [
     { id: 'fishing', icon: Icons.Fish, label: 'Fishing' },
     { id: 'equipment', icon: Icons.Award, label: 'Equipment' },
@@ -81,4 +81,6 @@ export const Sidebar = ({ player, theme, currentPage, setCurrentPage, sidebarOpe
   );
 };
 
-export default Sidebar;
+
+// Export to window
+window.Sidebar = Sidebar;

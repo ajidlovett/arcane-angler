@@ -1,7 +1,7 @@
 // FishingPage component - Main fishing UI with passive booster feedback
 const { useState, useEffect } = React;
 
-export const FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle }) => (
+const FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle }) => (
   <div className="max-w-6xl mx-auto">
     <div className="grid lg:grid-cols-2 gap-4">
       {/* Left Column: Main Interaction */}
@@ -234,4 +234,6 @@ export const FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldow
   </div>
 );
 
-export default FishingPage;
+
+// Export to window
+window.FishingPage = FishingPage;

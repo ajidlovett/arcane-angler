@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-export const AchievementsPage = ({ player, theme, Icons }) => {
+const AchievementsPage = ({ player, theme, Icons }) => {
   // Safety check for ACHIEVEMENTS
   if (!window.ACHIEVEMENTS || !Array.isArray(window.ACHIEVEMENTS)) {
     return (
@@ -102,4 +102,6 @@ export const AchievementsPage = ({ player, theme, Icons }) => {
   );
 };
 
-export default AchievementsPage;
+
+// Export to window
+window.AchievementsPage = AchievementsPage;

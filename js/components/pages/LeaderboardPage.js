@@ -2,7 +2,7 @@
 const { useState, useEffect } = React;
 import { Icons } from '../../utils/icons.js';
 
-export const LeaderboardPage = React.memo(({ player, theme, user }) => {
+const LeaderboardPage = React.memo(({ player, theme, user }) => {
   const [selectedCategory, setSelectedCategory] = useState('level');
   const [selectedRegion, setSelectedRegion] = useState('global');
   const [leaderboardData, setLeaderboardData] = useState([]);
@@ -310,4 +310,6 @@ export const LeaderboardPage = React.memo(({ player, theme, user }) => {
   );
 });
 
-export default LeaderboardPage;
+
+// Export to window
+window.LeaderboardPage = LeaderboardPage;
