@@ -115,6 +115,116 @@ const themes = {
   }
 };
 
+// Booster Panel Component - Extracted outside to prevent re-rendering
+const BoosterPanel = ({ player, theme, onBuyBooster }) => {
+  const [activeBoosters, setActiveBoosters] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  // Booster definitions
+  const boosters = [
+    { id: 'knowledge_scroll', name: 'Knowledge Scroll', cost: 10, duration: 30, icon: '📜', effect: '+20% XP' },
+    { id: 'ancient_tome', name: 'Ancient Tome', cost: 20, duration: 60, icon: '📚', effect: '+20% XP' },
+    { id: 'giants_potion', name: "Giant's Potion", cost: 10, duration: 30, icon: '🧪', effect: '+20% STR & LUCK' },
+    { id: 'titans_elixir', name: "Titan's Elixir", cost: 20, duration: 60, icon: '⚗️', effect: '+20% STR & LUCK' }
+  ];
+
+  // Fetch active boosters
+  React.useEffect(() => {
+    loadActiveBoosters();
+    const interval = setInterval(loadActiveBoosters, 5000); // Refresh every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const loadActiveBoosters = async () => {
+    try {
+      const response = await window.ApiService.getActiveBoosters();
+      if (response.success) {
+        setActiveBoosters(response.boosters || []);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('Failed to load active boosters:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleBuyBooster = async (boosterType) => {
+    try {
+      const response = await window.ApiService.buyBooster(boosterType);
+      if (response.success) {
+        // Reload boosters and notify parent
+        await loadActiveBoosters();
+        if (onBuyBooster) onBuyBooster(response);
+      }
+    } catch (error) {
+      console.error('Failed to buy booster:', error);
+      alert(error.message || 'Failed to purchase booster');
+    }
+  };
+
+  const getTimeRemaining = (expiresAt) => {
+    const now = new Date();
+    const expires = new Date(expiresAt);
+    const diff = expires - now;
+
+    if (diff <= 0) return 'Expired';
+
+    const minutes = Math.floor(diff / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    return `${minutes}m ${seconds}s`;
+  };
+
+  return (
+    <div className="px-4 mt-3 space-y-2">
+      <div className={`text-xs font-bold text-${theme.accent} mb-2`}>
+        💫 Boosters
+      </div>
+
+      {/* Active Boosters */}
+      {activeBoosters.length > 0 && (
+        <div className={`bg-${theme.surface} rounded p-2 mb-2 space-y-1`}>
+          <div className={`text-xs font-bold text-green-400`}>Active:</div>
+          {activeBoosters.map((booster, idx) => {
+            const boosterDef = boosters.find(b => b.id === booster.booster_type);
+            return (
+              <div key={idx} className={`text-xs text-${theme.textMuted}`}>
+                {boosterDef?.icon} {boosterDef?.name}
+                <div className="text-green-400">{getTimeRemaining(booster.expires_at)}</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Available Boosters */}
+      <div className="space-y-1">
+        {boosters.map(booster => {
+          const canAfford = player.relics >= booster.cost;
+          return (
+            <button
+              key={booster.id}
+              onClick={() => handleBuyBooster(booster.id)}
+              disabled={!canAfford}
+              className={`w-full text-left p-2 rounded text-xs ${
+                canAfford
+                  ? `bg-${theme.primarySolid} hover:bg-${theme.hover} border border-${theme.border}`
+                  : 'bg-gray-700 cursor-not-allowed opacity-50'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-bold">{booster.icon} {booster.name}</span>
+                <span className="text-purple-400">{booster.cost} 🔮</span>
+              </div>
+              <div className={`text-${theme.textDim}`}>{booster.effect}</div>
+              <div className={`text-${theme.textDim}`}>{booster.duration}min</div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 const FishingGame = ({ user, onLogout }) => {
   // State
   const [currentPage, setCurrentPage] = useState('fishing');
@@ -126,6 +236,7 @@ const FishingGame = ({ user, onLogout }) => {
       xpToNext: 150,
       gold: 0,
       relics: 0,
+      statPoints: 0,
       stats: { strength: 1, intelligence: 1, luck: 1, stamina: 100 },
       inventory: [],
       lockedFish: [],
@@ -453,7 +564,8 @@ useEffect(() => {
               xp: result.xpGained,
               relics: result.relicsGained,
               gold: result.goldGained,
-              isTreasure: true
+              isTreasure: true,
+              xpBonus: result.xpBonus
             });
           } else {
             setLastCatch({
@@ -463,8 +575,24 @@ useEffect(() => {
               xp: result.xpGained, // Show total XP, not per-fish
               gold: result.fish.gold || result.goldGained / result.count,
               relics: 0,
-              titanBonus: result.titanBonus > 1 ? result.titanBonus : null
+              titanBonus: result.titanBonus > 1 ? result.titanBonus : null,
+              xpBonus: result.xpBonus
             });
+          }
+
+          // Show XP Bonus notification if active
+          if (result.xpBonus && result.xpBonus > 1) {
+            const bonusPercent = Math.round((result.xpBonus - 1) * 100);
+            setTimeout(() => {
+              alert(`✨ +${bonusPercent}% XP Boost Active!`);
+            }, 100);
+          }
+
+          // Show level up notification with stat points gained
+          if (result.leveledUp && result.statPointsGained) {
+            setTimeout(() => {
+              alert(`🎉 Level Up! You gained +${result.statPointsGained} Stat Points!`);
+            }, 200);
           }
 
           // Update state with SERVER data only
@@ -474,6 +602,7 @@ useEffect(() => {
             xp: result.newXP,
             level: result.newLevel,
             relics: result.newRelics,
+            statPoints: result.newStatPoints !== undefined ? result.newStatPoints : prev.statPoints,
             stamina: result.newStamina,
             equippedBait: result.equippedBait, // Server may have switched bait if it ran out
             baitInventory: {
@@ -643,10 +772,10 @@ useEffect(() => {
             ...prev.stats,
             [stat]: response.newValue
           },
-          relics: response.newRelics
+          statPoints: response.newStatPoints
         }));
 
-        // Update stat costs after upgrade
+        // Update stat costs after upgrade (now always costs 1 stat point)
         setStatCosts(prev => ({
           ...prev,
           [stat]: {
@@ -993,7 +1122,20 @@ useEffect(() => {
               <div className={`text-xs text-${theme.textMuted}`}>
                 Biome {player.currentBiome} of {Object.keys(window.BIOMES).length}
               </div>
+            </div>
 
+            {/* Booster Panel */}
+            <BoosterPanel
+              player={player}
+              theme={theme}
+              onBuyBooster={async (response) => {
+                // Refresh player data after buying booster
+                const playerData = await window.ApiService.getPlayerData();
+                setPlayer(playerData);
+              }}
+            />
+
+            <div className="px-4 mt-3">
               <button
                 onClick={handleSaveAndLogout}
                 className="w-full px-3 py-1.5 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-bold"
@@ -1719,17 +1861,27 @@ useEffect(() => {
     return (
       <div className="max-w-4xl mx-auto">
         <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
-          <h2 className="text-[1.05rem] sm:text-2xl font-bold mb-6 flex items-center gap-2">
+          <h2 className="text-[1.05rem] sm:text-2xl font-bold mb-4 flex items-center gap-2">
             <span className="w-5 flex-shrink-0">{Icons.TrendingUp()}</span>
             Character Stats
           </h2>
+
+          {/* Display Stat Points */}
+          <div className={`bg-${theme.surface} p-4 rounded-lg mb-6`}>
+            <div className="flex items-center justify-center gap-3">
+              <span className="text-2xl">⭐</span>
+              <div className="text-center">
+                <div className={`text-sm text-${theme.textMuted}`}>Stat Points Available</div>
+                <div className="text-3xl font-bold text-purple-400">{player.statPoints}</div>
+              </div>
+            </div>
+          </div>
 
           <div className="space-y-4">
             {/* Display player's base stats for upgrading */}
             {Object.entries(player.stats).map(([stat, value]) => {
               const info = statDescriptions[stat];
-              const upgradeCost = statCosts[stat]?.cost || '...';
-              const canAfford = typeof upgradeCost === 'number' && player.relics >= upgradeCost;
+              const canAfford = player.statPoints >= 1; // Always costs 1 stat point
               return (
                 <div key={stat} className={`bg-${theme.surface} p-4 sm:p-5 rounded-lg`}>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
@@ -1740,14 +1892,14 @@ useEffect(() => {
                     </div>
                     <button
                       onClick={() => upgradeStat(stat)}
-                      disabled={!canAfford || typeof upgradeCost !== 'number'}
+                      disabled={!canAfford}
                       className={`w-full sm:w-auto px-6 py-3 rounded font-bold text-sm ${
                         canAfford
                           ? 'bg-purple-600 hover:bg-purple-500'
                           : 'bg-gray-600 cursor-not-allowed'
                       }`}
                     >
-                      Upgrade ({upgradeCost} 🔮)
+                      Upgrade (+1 Point)
                     </button>
                   </div>
 

@@ -581,6 +581,32 @@ class ApiService {
             requiresAuth: false // Public endpoint
         });
     }
+
+    // ==========================================
+    // BOOSTER SYSTEM
+    // ==========================================
+
+    /**
+     * Purchase a booster with relics
+     * @param {string} boosterType - Type of booster (knowledge_scroll, ancient_tome, giants_potion, titans_elixir)
+     * @returns {Promise<Object>} Purchase result with new relics balance and expiration time
+     */
+    async buyBooster(boosterType) {
+        return await this.request('/game/buy-booster', {
+            method: 'POST',
+            body: JSON.stringify({ boosterType })
+        });
+    }
+
+    /**
+     * Get all active boosters for the player
+     * @returns {Promise<Object>} Active boosters with expiration times
+     */
+    async getActiveBoosters() {
+        return await this.request('/game/active-boosters', {
+            method: 'GET'
+        });
+    }
 }
 
 // Export singleton instance
