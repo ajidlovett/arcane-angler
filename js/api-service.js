@@ -407,12 +407,13 @@ class ApiService {
     /**
      * Upgrade a player stat
      * @param {string} stat - Stat name (strength, intelligence, luck, stamina)
+     * @param {number} amount - Number of stat points to spend (default: 1)
      * @returns {Promise<Object>} Upgrade result with new stat value and next cost
      */
-    async upgradeStat(stat) {
+    async upgradeStat(stat, amount = 1) {
         return await this.request('/game/upgrade-stat', {
             method: 'POST',
-            body: JSON.stringify({ stat })
+            body: JSON.stringify({ stat, amount })
         });
     }
 
