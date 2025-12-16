@@ -11,10 +11,10 @@
     <!-- React and ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Babel Standalone for JSX -->
+
+    <!-- Babel for auth component only (temporary) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+
     <style>
         * {
             margin: 0;
@@ -62,12 +62,13 @@
     <script src="js/constants/gameConstants.js"></script>
     <script src="js/utils/rarityUtils.js"></script>
 
-    <!-- Game logic and services -->
+    <!-- Game logic helpers -->
     <script src="js/game-helpers.js"></script>
-    <script src="js/api-service.js"></script>
 
-    <!-- React components -->
+    <!-- Auth component (uses Babel for JSX - temporary solution) -->
     <script type="text/babel" src="js/auth-component.js"></script>
-    <script type="text/babel" src="js/game.js"></script>
+
+    <!-- ESM entry point -->
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
