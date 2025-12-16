@@ -1,7 +1,7 @@
+import { useState } from 'react';
 // Global Notification Component for rare catches
-const { useState, useEffect } = React;
 
-const GlobalNotification = ({ theme, globalNotification, idleNotificationIndex }) => {
+export const GlobalNotification = ({ theme, globalNotification, idleNotificationIndex }) => {
   const messageVariations = [
     '🎉 Congratulations, {username} has caught {fish}!',
     '✨ Amazing! {username} just reeled in {fish}!',
@@ -50,5 +50,3 @@ const GlobalNotification = ({ theme, globalNotification, idleNotificationIndex }
 };
 
 
-// Export to window
-window.GlobalNotification = GlobalNotification;

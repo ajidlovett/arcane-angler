@@ -1,5 +1,5 @@
 // Theme definitions for Arcane Angler
-const themes = {
+export const themes = {
   dark: {
     name: 'Dark',
     primary: { from: 'gray-900', via: 'gray-800', to: 'gray-950' },
@@ -92,5 +92,3 @@ const themes = {
   }
 };
 
-// Export to window for Babel-transpiled scripts
-window.themes = themes;

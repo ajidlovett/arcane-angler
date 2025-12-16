@@ -1,7 +1,7 @@
+import { useState } from 'react';
 // Custom Modal Component - Replaces window.alert and window.confirm
-const { useState, useEffect } = React;
 
-const CustomModal = ({ isOpen, type, message, onClose, onConfirm }) => {
+export const CustomModal = ({ isOpen, type, message, onClose, onConfirm }) => {
   if (!isOpen) return null;
 
   const handleBackdropClick = (e) => {
@@ -44,5 +44,3 @@ const CustomModal = ({ isOpen, type, message, onClose, onConfirm }) => {
 };
 
 
-// Export to window
-window.CustomModal = CustomModal;

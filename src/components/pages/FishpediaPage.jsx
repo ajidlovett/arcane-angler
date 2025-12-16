@@ -1,13 +1,13 @@
-const { useState, useEffect } = React;
+import { useState, useEffect } from 'react';
 
-const FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRarity, getGradientTextStyle, rarityColors }) => {
+export const FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRarity, getGradientTextStyle, rarityColors }) => {
   const [selectedBiome, setSelectedBiome] = useState(1);
   const [selectedRarityFilter, setSelectedRarityFilter] = useState('all');
 
   // Show all 30 biomes
   const availableBiomes = Array.from({ length: 30 }, (_, i) => i + 1);
 
-  const biome = window.BIOMES[selectedBiome];
+  const biome = BIOMES[selectedBiome];
   if (!biome) return null;
 
   // Get all fish from the selected biome
@@ -69,7 +69,7 @@ const FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRari
           >
             {availableBiomes.map(biomeId => (
               <option key={biomeId} value={biomeId}>
-                Biome {biomeId}: {window.BIOMES[biomeId]?.name || `Biome ${biomeId}`}
+                Biome {biomeId}: {BIOMES[biomeId]?.name || `Biome ${biomeId}`}
               </option>
             ))}
           </select>
@@ -173,5 +173,3 @@ const FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRari
 };
 
 
-// Export to window
-window.FishpediaPage = FishpediaPage;

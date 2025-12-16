@@ -1,7 +1,7 @@
+import { useState } from 'react';
 // Saving Overlay Component
-const { useState, useEffect } = React;
 
-const SavingOverlay = ({ savingProgress, theme }) => {
+export const SavingOverlay = ({ savingProgress, theme }) => {
   if (!savingProgress) return null;
 
   return (
@@ -19,5 +19,3 @@ const SavingOverlay = ({ savingProgress, theme }) => {
 };
 
 
-// Export to window
-window.SavingOverlay = SavingOverlay;

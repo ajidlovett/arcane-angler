@@ -1,6 +1,6 @@
-const { useState, useEffect } = React;
+import { useState, useEffect } from 'react';
 
-const InventoryPage = ({ player, setPlayer, theme, Icons, rarities, getTotalStats, selectedRarity, setSelectedRarity, inventorySortOrder, setInventorySortOrder, getFilteredInventory, toggleLock, sellFish, sellAll, sellByRarity, getRarityColor, isGradientRarity, getGradientTextStyle, rarityColors }) => {
+export const InventoryPage = ({ player, setPlayer, theme, Icons, rarities, getTotalStats, selectedRarity, setSelectedRarity, inventorySortOrder, setInventorySortOrder, getFilteredInventory, toggleLock, sellFish, sellAll, sellByRarity, getRarityColor, isGradientRarity, getGradientTextStyle, rarityColors }) => {
   const filteredInventory = getFilteredInventory();
   const unlockedCount = filteredInventory.filter(f => !player.lockedFish.includes(f.name)).reduce((sum, f) => sum + f.count, 0);
   return (
@@ -132,5 +132,3 @@ const InventoryPage = ({ player, setPlayer, theme, Icons, rarities, getTotalStat
 };
 
 
-// Export to window
-window.InventoryPage = InventoryPage;

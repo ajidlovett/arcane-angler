@@ -1,8 +1,8 @@
+import { useState } from 'react';
 // Sidebar navigation component
-const { useState, useEffect } = React;
 import { Icons } from '../utils/icons.js';
 
-const Sidebar = ({ player, theme, currentPage, setCurrentPage, sidebarOpen, setSidebarOpen, handleSaveAndLogout }) => {
+export const Sidebar = ({ player, theme, currentPage, setCurrentPage, sidebarOpen, setSidebarOpen, handleSaveAndLogout }) => {
   const menuItems = [
     { id: 'fishing', icon: Icons.Fish, label: 'Fishing' },
     { id: 'equipment', icon: Icons.Award, label: 'Equipment' },
@@ -82,5 +82,3 @@ const Sidebar = ({ player, theme, currentPage, setCurrentPage, sidebarOpen, setS
 };
 
 
-// Export to window
-window.Sidebar = Sidebar;

@@ -1,8 +1,8 @@
+import { useState, useEffect } from 'react';
 // LeaderboardPage component - Global and regional leaderboards with mobile optimization
-const { useState, useEffect } = React;
 import { Icons } from '../../utils/icons.js';
 
-const LeaderboardPage = React.memo(({ player, theme, user }) => {
+export const LeaderboardPage = React.memo(({ player, theme, user }) => {
   const [selectedCategory, setSelectedCategory] = useState('level');
   const [selectedRegion, setSelectedRegion] = useState('global');
   const [leaderboardData, setLeaderboardData] = useState([]);
@@ -70,7 +70,7 @@ const LeaderboardPage = React.memo(({ player, theme, user }) => {
 
   const loadUserNationality = async () => {
     try {
-      const profile = await window.ApiService.getMyProfile();
+      const profile = await apiService.getMyProfile();
       if (profile && profile.profile && profile.profile.nationality) {
         setUserNationality(profile.profile.nationality);
       }
@@ -83,7 +83,7 @@ const LeaderboardPage = React.memo(({ player, theme, user }) => {
     try {
       setLoading(true);
       const nationality = selectedRegion === 'global' ? null : selectedRegion;
-      const result = await window.ApiService.getLeaderboardByCategory(selectedCategory, nationality, 100);
+      const result = await apiService.getLeaderboardByCategory(selectedCategory, nationality, 100);
 
       setLeaderboardData(result.leaderboard || []);
       setUserRank(result.userRank || null);
@@ -97,7 +97,7 @@ const LeaderboardPage = React.memo(({ player, theme, user }) => {
   const loadGlobalStats = async () => {
     try {
       const nationality = selectedRegion === 'global' ? null : selectedRegion;
-      const stats = await window.ApiService.getGlobalStats(nationality);
+      const stats = await apiService.getGlobalStats(nationality);
       setGlobalStats(stats);
     } catch (error) {
       console.error('Failed to load global stats:', error);
@@ -154,8 +154,8 @@ const LeaderboardPage = React.memo(({ player, theme, user }) => {
   };
 
   const getTitleName = (titleId) => {
-    if (!titleId || !window.ACHIEVEMENTS) return null;
-    const achievement = window.ACHIEVEMENTS.find(a => a.id === titleId);
+    if (!titleId || !ACHIEVEMENTS) return null;
+    const achievement = ACHIEVEMENTS.find(a => a.id === titleId);
     return achievement ? achievement.title : null;
   };
 
@@ -311,5 +311,3 @@ const LeaderboardPage = React.memo(({ player, theme, user }) => {
 });
 
 
-// Export to window
-window.LeaderboardPage = LeaderboardPage;

@@ -1,6 +1,6 @@
-const { useState, useEffect } = React;
+import { useState, useEffect } from 'react';
 
-const QuestPage = ({ theme }) => {
+export const QuestPage = ({ theme }) => {
   const [quests, setQuests] = useState({ daily: [], weekly: [], monthly: [] });
   const [serverTime, setServerTime] = useState({ daily: { text: '' }, weekly: { text: '' }, monthly: { text: '' } });
   const [loading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ const QuestPage = ({ theme }) => {
   const loadQuests = async () => {
     try {
       setLoading(true);
-      const response = await window.ApiService.getQuests();
+      const response = await apiService.getQuests();
       if (response.success) {
         setQuests(response.quests);
         if (response.serverTime) {
@@ -157,5 +157,3 @@ const QuestPage = ({ theme }) => {
 };
 
 
-// Export to window
-window.QuestPage = QuestPage;

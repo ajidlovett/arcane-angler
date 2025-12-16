@@ -1,8 +1,8 @@
-const { useState, useEffect } = React;
+import { useState, useEffect } from 'react';
 
-const AchievementsPage = ({ player, theme, Icons }) => {
+export const AchievementsPage = ({ player, theme, Icons }) => {
   // Safety check for ACHIEVEMENTS
-  if (!window.ACHIEVEMENTS || !Array.isArray(window.ACHIEVEMENTS)) {
+  if (!ACHIEVEMENTS || !Array.isArray(ACHIEVEMENTS)) {
     return (
       <div className="max-w-4xl mx-auto">
         <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6 text-center`}>
@@ -12,8 +12,8 @@ const AchievementsPage = ({ player, theme, Icons }) => {
     );
   }
 
-  const unlockedAchievements = window.ACHIEVEMENTS.filter(a => player.achievements.includes(a.id));
-  const lockedAchievements = window.ACHIEVEMENTS.filter(a => !player.achievements.includes(a.id));
+  const unlockedAchievements = ACHIEVEMENTS.filter(a => player.achievements.includes(a.id));
+  const lockedAchievements = ACHIEVEMENTS.filter(a => !player.achievements.includes(a.id));
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -24,7 +24,7 @@ const AchievementsPage = ({ player, theme, Icons }) => {
             Achievements
           </h2>
           <div className={`text-sm text-${theme.textMuted}`}>
-            {unlockedAchievements.length} / {window.ACHIEVEMENTS.length}
+            {unlockedAchievements.length} / {ACHIEVEMENTS.length}
           </div>
         </div>
 
@@ -32,10 +32,10 @@ const AchievementsPage = ({ player, theme, Icons }) => {
         <div className={`bg-${theme.surface} rounded-full h-4 mb-8`}>
           <div
             className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-4 rounded-full transition-all duration-300 flex items-center justify-center"
-            style={{ width: `${(unlockedAchievements.length / window.ACHIEVEMENTS.length) * 100}%` }}
+            style={{ width: `${(unlockedAchievements.length / ACHIEVEMENTS.length) * 100}%` }}
           >
             <span className="text-xs font-bold text-black px-2">
-              {Math.floor((unlockedAchievements.length / window.ACHIEVEMENTS.length) * 100)}%
+              {Math.floor((unlockedAchievements.length / ACHIEVEMENTS.length) * 100)}%
             </span>
           </div>
         </div>
@@ -103,5 +103,3 @@ const AchievementsPage = ({ player, theme, Icons }) => {
 };
 
 
-// Export to window
-window.AchievementsPage = AchievementsPage;

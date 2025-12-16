@@ -1,6 +1,6 @@
-const { useState, useEffect } = React;
+import { useState, useEffect } from 'react';
 
-const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, showAlert, showConfirm }) => {
+export const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, showAlert, showConfirm }) => {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editingBio, setEditingBio] = useState(false);
@@ -40,7 +40,7 @@ const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, sho
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const data = await window.ApiService.getMyProfile();
+        const data = await apiService.getMyProfile();
         setProfileData(data.profile);
         setBioText(data.profile.bio || '');
         setEquippedTitle(data.profile.equipped_title);
@@ -59,7 +59,7 @@ const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, sho
     if (!newName.trim()) return;
 
     try {
-      const result = await window.ApiService.changeProfileName(newName);
+      const result = await apiService.changeProfileName(newName);
       setProfileData(prev => ({ ...prev, profile_username: result.newProfileName }));
       setPlayer(prev => ({ ...prev, relics: prev.relics - result.relicsSpent }));
       setEditingName(false);
@@ -68,7 +68,7 @@ const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, sho
 
       // Trigger cloud save to persist player data changes
       try {
-        await window.ApiService.savePlayerData(player);
+        await apiService.savePlayerData(player);
       } catch (saveErr) {
         console.error('Failed to save after name change:', saveErr);
       }
@@ -79,14 +79,14 @@ const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, sho
 
   const handleUpdateBio = async () => {
     try {
-      const result = await window.ApiService.updateBio(bioText);
+      const result = await apiService.updateBio(bioText);
       setProfileData(prev => ({ ...prev, bio: result.bio }));
       setEditingBio(false);
       showAlert('Bio updated successfully!');
 
       // Reload profile data to ensure persistence
       try {
-        const data = await window.ApiService.getMyProfile();
+        const data = await apiService.getMyProfile();
         setProfileData(data.profile);
       } catch (loadErr) {
         console.error('Failed to reload profile:', loadErr);
@@ -98,14 +98,14 @@ const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, sho
 
   const handleEquipTitle = async (achievementId) => {
     try {
-      await window.ApiService.equipTitle(achievementId);
+      await apiService.equipTitle(achievementId);
       setEquippedTitle(achievementId);
       setProfileData(prev => ({ ...prev, equipped_title: achievementId }));
       showAlert('Title equipped!');
 
       // Reload profile data to ensure title persists
       try {
-        const data = await window.ApiService.getMyProfile();
+        const data = await apiService.getMyProfile();
         setProfileData(data.profile);
         setEquippedTitle(data.profile.equipped_title);
       } catch (loadErr) {
@@ -118,13 +118,13 @@ const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, sho
 
   const handlePrivacyChange = async (newPrivacy) => {
     try {
-      await window.ApiService.updatePrivacy(newPrivacy, allowComments);
+      await apiService.updatePrivacy(newPrivacy, allowComments);
       setPrivacy(newPrivacy);
       showAlert('Privacy settings updated!');
 
       // Reload profile data to ensure persistence
       try {
-        const data = await window.ApiService.getMyProfile();
+        const data = await apiService.getMyProfile();
         setProfileData(data.profile);
         setPrivacy(data.profile.profile_privacy);
         setAllowComments(data.profile.allow_comments);
@@ -138,13 +138,13 @@ const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, sho
 
   const handleCommentsToggle = async () => {
     try {
-      await window.ApiService.updatePrivacy(privacy, !allowComments);
+      await apiService.updatePrivacy(privacy, !allowComments);
       setAllowComments(!allowComments);
       showAlert(`Comments ${!allowComments ? 'enabled' : 'disabled'}!`);
 
       // Reload profile data to ensure persistence
       try {
-        const data = await window.ApiService.getMyProfile();
+        const data = await apiService.getMyProfile();
         setProfileData(data.profile);
         setPrivacy(data.profile.profile_privacy);
         setAllowComments(data.profile.allow_comments);
@@ -158,13 +158,13 @@ const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, sho
 
   const handleNationalityChange = async (countryCode) => {
     try {
-      await window.ApiService.updateNationality(countryCode);
+      await apiService.updateNationality(countryCode);
       setNationality(countryCode);
       showAlert('Nationality updated!');
 
       // Reload profile data to ensure persistence
       try {
-        const data = await window.ApiService.getMyProfile();
+        const data = await apiService.getMyProfile();
         setProfileData(data.profile);
         setNationality(data.profile.nationality);
       } catch (loadErr) {
@@ -186,7 +186,7 @@ const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, sho
   // Get equipped title name
   const getEquippedTitleName = () => {
     if (!equippedTitle) return null;
-    const achievement = window.ACHIEVEMENTS.find(a => a.id === equippedTitle);
+    const achievement = ACHIEVEMENTS.find(a => a.id === equippedTitle);
     return achievement ? achievement.title : null;
   };
 
@@ -351,7 +351,7 @@ const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, sho
           </div>
           <div className={`bg-${theme.surface} p-3 rounded`}>
             <div className={`text-${theme.textDim}`}>Current Biome</div>
-            <div className="font-bold">Biome {player.currentBiome} - {window.BIOMES[player.currentBiome]?.name}</div>
+            <div className="font-bold">Biome {player.currentBiome} - {BIOMES[player.currentBiome]?.name}</div>
           </div>
           <div className={`bg-${theme.surface} p-3 rounded col-span-1 sm:col-span-2`}>
             <div className={`text-${theme.textDim} mb-2`}>Rare Fish Caught</div>
@@ -417,5 +417,3 @@ const ProfilePage = ({ player, setPlayer, theme, user, getTotalStats, Icons, sho
 };
 
 
-// Export to window
-window.ProfilePage = ProfilePage;

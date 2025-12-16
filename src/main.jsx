@@ -1,10 +1,9 @@
-// Main entry point for Arcane Angler - ESM architecture
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom/client';
 import apiService from './api-service.js';
-
-const { useState, useEffect } = React;
-
-// FishingGame is loaded via Babel script and available on window
-const FishingGame = window.FishingGame;
+import { FishingGame } from './components/FishingGame.jsx';
+import { AuthScreen } from './components/AuthScreen.jsx';
+import './index.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -45,13 +44,15 @@ function App() {
   };
 
   if (!isLoggedIn) {
-    // Render auth screen (using global AuthScreen component from auth-component.js)
-    return React.createElement(window.AuthScreen, { onLoginSuccess: handleLogin });
+    return <AuthScreen onLoginSuccess={handleLogin} />;
   }
 
-  return React.createElement(FishingGame, { user, onLogout: handleLogout });
+  return <FishingGame user={user} onLogout={handleLogout} />;
 }
 
 // Render app to DOM
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(React.createElement(App));
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);

@@ -1,7 +1,7 @@
+import { useState, useEffect } from 'react';
 // FishingPage component - Main fishing UI with passive booster feedback
-const { useState, useEffect } = React;
 
-const FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle }) => (
+export const FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle }) => (
   <div className="max-w-6xl mx-auto">
     <div className="grid lg:grid-cols-2 gap-4">
       {/* Left Column: Main Interaction */}
@@ -9,7 +9,7 @@ const FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fish
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-[1.05rem] sm:text-xl font-bold flex items-center gap-2">
             <span>🎣</span>
-            {window.BIOMES[player.currentBiome].name}
+            {BIOMES[player.currentBiome].name}
           </h2>
           <button
             onClick={() => setCurrentPage('biomes')}
@@ -20,19 +20,19 @@ const FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fish
         </div>
 
         <p className={`text-xs text-${theme.textMuted} mb-4 italic`}>
-          {window.BIOMES[player.currentBiome].description}
+          {BIOMES[player.currentBiome].description}
         </p>
 
         <div className="grid grid-cols-2 gap-2 mb-4">
           <div className={`bg-${theme.surface} p-3 rounded`}>
             <div className={`text-xs text-${theme.textDim} mb-1`}>🎣 Rod</div>
             <div className="text-sm font-bold">{player.equippedRod || 'None'}</div>
-            {player.equippedRod && window.RODS[player.equippedRod] && (
+            {player.equippedRod && RODS[player.equippedRod] && (
               <div className="text-xs text-green-400 mt-1">
-                {window.RODS[player.equippedRod].str > 0 && `+${window.RODS[player.equippedRod].str} STR `}
-                {window.RODS[player.equippedRod].int > 0 && `+${window.RODS[player.equippedRod].int} INT `}
-                {window.RODS[player.equippedRod].luck > 0 && `+${window.RODS[player.equippedRod].luck} LUCK `}
-                {window.RODS[player.equippedRod].stam > 0 && `+${window.RODS[player.equippedRod].stam} STAM`}
+                {RODS[player.equippedRod].str > 0 && `+${RODS[player.equippedRod].str} STR `}
+                {RODS[player.equippedRod].int > 0 && `+${RODS[player.equippedRod].int} INT `}
+                {RODS[player.equippedRod].luck > 0 && `+${RODS[player.equippedRod].luck} LUCK `}
+                {RODS[player.equippedRod].stam > 0 && `+${RODS[player.equippedRod].stam} STAM`}
               </div>
             )}
           </div>
@@ -44,11 +44,11 @@ const FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fish
                 {player.baitInventory[player.equippedBait] || 0} left
               </div>
             )}
-            {player.equippedBait && window.BAITS[player.equippedBait] && (
+            {player.equippedBait && BAITS[player.equippedBait] && (
               <div className="text-xs text-green-400 mt-1">
-                {window.BAITS[player.equippedBait].str > 0 && `+${window.BAITS[player.equippedBait].str} STR `}
-                {window.BAITS[player.equippedBait].int > 0 && `+${window.BAITS[player.equippedBait].int} INT `}
-                {window.BAITS[player.equippedBait].luck > 0 && `+${window.BAITS[player.equippedBait].luck} LUCK`}
+                {BAITS[player.equippedBait].str > 0 && `+${BAITS[player.equippedBait].str} STR `}
+                {BAITS[player.equippedBait].int > 0 && `+${BAITS[player.equippedBait].int} INT `}
+                {BAITS[player.equippedBait].luck > 0 && `+${BAITS[player.equippedBait].luck} LUCK`}
               </div>
             )}
           </div>
@@ -235,5 +235,3 @@ const FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fish
 );
 
 
-// Export to window
-window.FishingPage = FishingPage;

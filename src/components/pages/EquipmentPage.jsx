@@ -1,10 +1,10 @@
-const { useState, useEffect } = React;
+import { useState, useEffect } from 'react';
 
-const EquipmentPage = ({ theme, player, setPlayer, shopTab, setShopTab, buyRod, equipRod, buyBait, equipBait, Icons }) => {
+export const EquipmentPage = ({ theme, player, setPlayer, shopTab, setShopTab, buyRod, equipRod, buyBait, equipBait, Icons }) => {
   const [tierTab, setTierTab] = useState('all');
 
   const getFilteredEquipment = () => {
-    const equipment = shopTab === 'rods' ? window.RODS : window.BAITS;
+    const equipment = shopTab === 'rods' ? RODS : BAITS;
     if (tierTab === 'all') return Object.entries(equipment);
     return Object.entries(equipment).filter(([name, item]) => item.tier === parseInt(tierTab));
   };
@@ -182,5 +182,3 @@ const EquipmentPage = ({ theme, player, setPlayer, shopTab, setShopTab, buyRod, 
 };
 
 
-// Export to window
-window.EquipmentPage = EquipmentPage;

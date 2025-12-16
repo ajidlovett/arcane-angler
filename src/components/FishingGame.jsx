@@ -1,33 +1,41 @@
-// FishingGame.js - Main game container with server-authoritative state
-// All dependencies loaded via window object from Babel-transpiled scripts
+// FishingGame.jsx - Main game container with server-authoritative state
+import { useState, useEffect, useRef } from 'react';
+import apiService from '../api-service.js';
+import { themes } from '../utils/themes.js';
+import { Icons } from '../utils/icons.jsx';
 
-const { useState, useEffect, useRef } = React;
+// Import game data
+import { BIOMES } from '../biomes.js';
+import { RODS, BAITS } from '../equipment.js';
+import { ACHIEVEMENTS } from '../achievements.js';
+import { FUNNY_LINES } from '../funnylines.js';
+import { IDLE_NOTIFICATIONS } from '../idleNotifications.js';
+import { RARITIES, RARITY_COLORS } from '../constants/gameConstants.js';
+import { getRarityColor, isGradientRarity, getGradientTextStyle, getGradientBorderStyle } from '../utils/rarityUtils.js';
+import { GameHelpers } from '../game-helpers.js';
 
-// Get dependencies from window
-const apiService = window.ApiService;
-const themes = window.themes;
-const Icons = window.Icons;
-const Sidebar = window.Sidebar;
-const CustomModal = window.CustomModal;
-const GlobalNotification = window.GlobalNotification;
-const SavingOverlay = window.SavingOverlay;
-const PlaceholderPage = window.PlaceholderPage;
+// Import shared components
+import { Sidebar } from './Sidebar.jsx';
+import { CustomModal } from './CustomModal.jsx';
+import { GlobalNotification } from './GlobalNotification.jsx';
+import { SavingOverlay } from './SavingOverlay.jsx';
+import { PlaceholderPage } from './PlaceholderPage.jsx';
 
-// Page components from window
-const FishingPage = window.FishingPage;
-const StatsPage = window.StatsPage;
-const LeaderboardPage = window.LeaderboardPage;
-const OptionsPage = window.OptionsPage;
-const BoostersPage = window.BoostersPage;
-const EquipmentPage = window.EquipmentPage;
-const BiomesPage = window.BiomesPage;
-const InventoryPage = window.InventoryPage;
-const ProfilePage = window.ProfilePage;
-const AchievementsPage = window.AchievementsPage;
-const FishpediaPage = window.FishpediaPage;
-const QuestPage = window.QuestPage;
+// Import page components (will create these next)
+import { FishingPage } from './pages/FishingPage.jsx';
+import { StatsPage } from './pages/StatsPage.jsx';
+import { LeaderboardPage } from './pages/LeaderboardPage.jsx';
+import { OptionsPage } from './pages/OptionsPage.jsx';
+import { BoostersPage } from './pages/BoostersPage.jsx';
+import { EquipmentPage } from './pages/EquipmentPage.jsx';
+import { BiomesPage } from './pages/BiomesPage.jsx';
+import { InventoryPage } from './pages/InventoryPage.jsx';
+import { ProfilePage } from './pages/ProfilePage.jsx';
+import { AchievementsPage } from './pages/AchievementsPage.jsx';
+import { FishpediaPage } from './pages/FishpediaPage.jsx';
+import { QuestPage } from './pages/QuestPage.jsx';
 
-const FishingGame = ({ user, onLogout }) => {
+export const FishingGame = ({ user, onLogout }) => {
   // State
   const [currentPage, setCurrentPage] = useState('fishing');
   const [savingProgress, setSavingProgress] = useState(false);
@@ -198,7 +206,7 @@ const FishingGame = ({ user, onLogout }) => {
   useEffect(() => {
     const rotateIdleMessage = () => {
       setIdleNotificationIndex((prevIndex) => {
-        const totalMessages = window.IDLE_NOTIFICATIONS?.length || 14;
+        const totalMessages = IDLE_NOTIFICATIONS?.length || 14;
         return (prevIndex + 1) % totalMessages;
       });
     };
@@ -289,8 +297,8 @@ const FishingGame = ({ user, onLogout }) => {
   const [equippedTitle, setEquippedTitle] = useState(null);
 
   const getDisplayTitle = () => {
-    if (!equippedTitle || !window.ACHIEVEMENTS) return null;
-    const achievement = window.ACHIEVEMENTS.find(a => a.id === equippedTitle);
+    if (!equippedTitle || !ACHIEVEMENTS) return null;
+    const achievement = ACHIEVEMENTS.find(a => a.id === equippedTitle);
     return achievement ? achievement.title : null;
   };
 
@@ -308,17 +316,13 @@ const FishingGame = ({ user, onLogout }) => {
     loadEquippedTitle();
   }, []);
 
-  // Constants from global scope
-  const rarities = window.RARITIES;
-  const rarityColors = window.RARITY_COLORS;
-  const getRarityColor = window.getRarityColor;
-  const isGradientRarity = window.isGradientRarity;
-  const getGradientTextStyle = window.getGradientTextStyle;
-  const getGradientBorderStyle = window.getGradientBorderStyle;
+  // Constants from global scope (already imported above)
+  const rarities = RARITIES;
+  const rarityColors = RARITY_COLORS;
 
   // Achievement checking
   const checkAchievements = async () => {
-    const newAchievements = window.GameHelpers.checkAchievements(player);
+    const newAchievements = GameHelpers.checkAchievements(player);
 
     if (newAchievements.length > 0) {
       const updatedAchievements = [...player.achievements, ...newAchievements];
@@ -375,15 +379,15 @@ const FishingGame = ({ user, onLogout }) => {
   }, [cooldown]);
 
   // Helper functions using GameHelpers
-  const getCurrentBiomeFish = () => window.GameHelpers.getCurrentBiomeFish(player.currentBiome);
-  const getAllCurrentBiomeFish = () => window.GameHelpers.getAllCurrentBiomeFish(player.currentBiome);
-  const getTotalStats = () => window.GameHelpers.getTotalStats(player);
-  const getBiomeRelicRange = (biome) => window.GameHelpers.getBiomeRelicRange(biome);
-  const calculateRarity = () => window.GameHelpers.calculateRarity(getTotalStats().luck);
-  const calculateFishCount = (rarity) => window.GameHelpers.calculateFishCount(rarity, getTotalStats().strength);
-  const calculateTitanBonus = () => window.GameHelpers.calculateTitanBonus(getTotalStats().strength);
-  const generateTreasureChest = () => window.GameHelpers.generateTreasureChest(player.currentBiome, getTotalStats().luck);
-  const getFunnyLine = () => window.GameHelpers.getFunnyLine(player.currentBiome);
+  const getCurrentBiomeFish = () => GameHelpers.getCurrentBiomeFish(player.currentBiome);
+  const getAllCurrentBiomeFish = () => GameHelpers.getAllCurrentBiomeFish(player.currentBiome);
+  const getTotalStats = () => GameHelpers.getTotalStats(player);
+  const getBiomeRelicRange = (biome) => GameHelpers.getBiomeRelicRange(biome);
+  const calculateRarity = () => GameHelpers.calculateRarity(getTotalStats().luck);
+  const calculateFishCount = (rarity) => GameHelpers.calculateFishCount(rarity, getTotalStats().strength);
+  const calculateTitanBonus = () => GameHelpers.calculateTitanBonus(getTotalStats().strength);
+  const generateTreasureChest = () => GameHelpers.generateTreasureChest(player.currentBiome, getTotalStats().luck);
+  const getFunnyLine = () => GameHelpers.getFunnyLine(player.currentBiome);
 
   // Event Handlers
   const handleFish = async () => {
@@ -765,7 +769,7 @@ const FishingGame = ({ user, onLogout }) => {
         console.error('Change biome failed:', error);
       }
     } else {
-      const biome = window.BIOMES[biomeId];
+      const biome = BIOMES[biomeId];
       if (!biome) {
         showAlert('Biome not found');
         return;
@@ -1065,8 +1069,3 @@ const FishingGame = ({ user, onLogout }) => {
   );
 };
 
-// Export to window for main.js
-window.FishingGame = FishingGame;
-
-// Export to window
-window.FishingGame = FishingGame;

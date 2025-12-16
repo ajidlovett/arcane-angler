@@ -1,9 +1,9 @@
-const { useState, useEffect } = React;
+import { useState, useEffect } from 'react';
 
-const BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRarityColor }) => {
+export const BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRarityColor }) => {
   const [biomePage, setBiomePage] = useState(1);
   const biomesPerPage = 5;
-  const totalBiomes = Object.keys(window.BIOMES).length;
+  const totalBiomes = Object.keys(BIOMES).length;
   const totalPages = Math.ceil(totalBiomes / biomesPerPage);
 
   const isBiomeUnlocked = (biomeId) => {
@@ -13,7 +13,7 @@ const BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRa
   };
 
   const canUnlockBiome = (biomeId) => {
-    const biome = window.BIOMES[biomeId];
+    const biome = BIOMES[biomeId];
     return player.level >= biome.unlockLevel && player.gold >= biome.unlockGold;
   };
 
@@ -23,7 +23,7 @@ const BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRa
     if (isUnlocked) {
       // Just change biome (already unlocked)
       try {
-        const response = await window.ApiService.changeBiome(biomeId);
+        const response = await apiService.changeBiome(biomeId);
 
         if (response.success) {
           setPlayer(prev => ({
@@ -37,7 +37,7 @@ const BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRa
       }
     } else {
       // Check if player meets requirements before attempting to unlock
-      const biome = window.BIOMES[biomeId];
+      const biome = BIOMES[biomeId];
       if (!biome) {
         showAlert('Biome not found');
         return;
@@ -55,7 +55,7 @@ const BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRa
 
       // Unlock new biome
       try {
-        const response = await window.ApiService.unlockBiome(biomeId);
+        const response = await apiService.unlockBiome(biomeId);
 
         if (response.success) {
           setPlayer(prev => ({
@@ -80,8 +80,8 @@ const BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRa
 
     const biomes = [];
     for (let i = startIndex; i <= endIndex; i++) {
-      if (window.BIOMES[i]) {
-        biomes.push([i.toString(), window.BIOMES[i]]);
+      if (BIOMES[i]) {
+        biomes.push([i.toString(), BIOMES[i]]);
       }
     }
     return biomes;
@@ -186,5 +186,3 @@ const BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRa
 };
 
 
-// Export to window
-window.BiomesPage = BiomesPage;

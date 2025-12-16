@@ -1,12 +1,12 @@
+import { useState, useEffect } from 'react';
 // StatsPage component - Character stat upgrades with bulk upgrade support
-const { useState, useEffect } = React;
 import { Icons } from '../../utils/icons.js';
 
-const StatsPage = ({ player, theme, upgradeStat, getTotalStats }) => {
+export const StatsPage = ({ player, theme, upgradeStat, getTotalStats }) => {
   const totalStats = getTotalStats();
 
   // State for bulk upgrade amounts
-  const [upgradeAmounts, setUpgradeAmounts] = React.useState({
+  const [upgradeAmounts, setUpgradeAmounts] = useState({
     strength: 1,
     intelligence: 1,
     luck: 1,
@@ -121,5 +121,3 @@ const StatsPage = ({ player, theme, upgradeStat, getTotalStats }) => {
 };
 
 
-// Export to window
-window.StatsPage = StatsPage;

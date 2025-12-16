@@ -1,7 +1,7 @@
+import { useState } from 'react';
 // Placeholder Page Component for upcoming features
-const { useState, useEffect } = React;
 
-const PlaceholderPage = ({ title, icon, theme }) => (
+export const PlaceholderPage = ({ title, icon, theme }) => (
   <div className="max-w-4xl mx-auto">
     <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-8 sm:p-12 text-center`}>
       <div className="text-6xl mb-4"><span className="text-5xl">{icon()}</span></div>
@@ -12,5 +12,3 @@ const PlaceholderPage = ({ title, icon, theme }) => (
 );
 
 
-// Export to window
-window.PlaceholderPage = PlaceholderPage;
