@@ -115,6 +115,49 @@ const themes = {
   }
 };
 
+// Custom Modal Component - Replaces window.alert and window.confirm
+const CustomModal = ({ isOpen, type, message, onClose, onConfirm }) => {
+  if (!isOpen) return null;
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl border border-gray-700">
+        <div className="text-white mb-4 whitespace-pre-wrap">{message}</div>
+        <div className="flex justify-end gap-2">
+          {type === 'confirm' && (
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition"
+            >
+              Cancel
+            </button>
+          )}
+          <button
+            onClick={() => {
+              if (type === 'confirm' && onConfirm) {
+                onConfirm();
+              }
+              onClose();
+            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
+          >
+            {type === 'confirm' ? 'Confirm' : 'OK'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Booster Panel Component - Extracted outside to prevent re-rendering
 const BoosterPanel = ({ player, theme, onBuyBooster }) => {
   const [activeBoosters, setActiveBoosters] = React.useState([]);
@@ -158,7 +201,9 @@ const BoosterPanel = ({ player, theme, onBuyBooster }) => {
       }
     } catch (error) {
       console.error('Failed to buy booster:', error);
-      alert(error.message || 'Failed to purchase booster');
+      if (window.showAlert) {
+        window.showAlert(error.message || 'Failed to purchase booster');
+      }
     }
   };
 
@@ -282,6 +327,84 @@ const FishingGame = ({ user, onLogout }) => {
   const [globalNotification, setGlobalNotification] = useState(null); // Global notifications for rare catches
   const [idleNotificationIndex, setIdleNotificationIndex] = useState(0); // Index for rotating idle messages
   const shownNotifications = React.useRef(new Set()); // Track timestamps of notifications we've already shown
+  const [activeBoosters, setActiveBoosters] = useState([]); // Track active boosters for display
+
+  // Modal state - replaces window.alert and window.confirm
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    type: 'alert', // 'alert' or 'confirm'
+    message: '',
+    onConfirm: null
+  });
+
+  // Helper functions for modal
+  const showAlert = (message) => {
+    setModalState({
+      isOpen: true,
+      type: 'alert',
+      message,
+      onConfirm: null
+    });
+  };
+
+  const showConfirm = (message, onConfirm) => {
+    setModalState({
+      isOpen: true,
+      type: 'confirm',
+      message,
+      onConfirm
+    });
+  };
+
+  const closeModal = () => {
+    setModalState({
+      isOpen: false,
+      type: 'alert',
+      message: '',
+      onConfirm: null
+    });
+  };
+
+  // Make showAlert and showConfirm globally available
+  React.useEffect(() => {
+    window.showAlert = showAlert;
+    window.showConfirm = showConfirm;
+    return () => {
+      delete window.showAlert;
+      delete window.showConfirm;
+    };
+  }, []);
+
+  // Fetch active boosters periodically
+  React.useEffect(() => {
+    const fetchBoosters = async () => {
+      try {
+        const response = await window.ApiService.getActiveBoosters();
+        if (response.boosters) {
+          setActiveBoosters(response.boosters);
+        }
+      } catch (error) {
+        console.error('Failed to fetch active boosters:', error);
+      }
+    };
+
+    fetchBoosters();
+    const interval = setInterval(fetchBoosters, 1000); // Update every second for real-time countdown
+    return () => clearInterval(interval);
+  }, []);
+
+  // Helper function to get time remaining for booster
+  const getBoosterTimeRemaining = (expiresAt) => {
+    const now = new Date();
+    const expires = new Date(expiresAt);
+    const diff = expires - now;
+
+    if (diff <= 0) return 'Expired';
+
+    const minutes = Math.floor(diff / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    return `${minutes}m ${seconds}s`;
+  };
 
   // Load player data from server
 React.useEffect(() => {
@@ -537,7 +660,7 @@ useEffect(() => {
 
     // Client-side UX check (bait availability)
     if (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) {
-      alert("You need to buy or equip a different bait!");
+      showAlert("You need to buy or equip a different bait!");
       return;
     }
 
@@ -584,16 +707,11 @@ useEffect(() => {
           if (result.xpBonus && result.xpBonus > 1) {
             const bonusPercent = Math.round((result.xpBonus - 1) * 100);
             setTimeout(() => {
-              alert(`✨ +${bonusPercent}% XP Boost Active!`);
+              showAlert(`✨ +${bonusPercent}% XP Boost Active!`);
             }, 100);
           }
 
-          // Show level up notification with stat points gained
-          if (result.leveledUp && result.statPointsGained) {
-            setTimeout(() => {
-              alert(`🎉 Level Up! You gained +${result.statPointsGained} Stat Points!`);
-            }, 200);
-          }
+          // Level up notification removed per user request (intrusive popup)
 
           // Update state with SERVER data only
           setPlayer(prev => ({
@@ -617,7 +735,7 @@ useEffect(() => {
         }
       } catch (error) {
         console.error('Fishing failed:', error);
-        alert('Failed to cast line. Please try again.');
+        showAlert('Failed to cast line. Please try again.');
       } finally {
         setFishing(false);
       }
@@ -641,7 +759,7 @@ useEffect(() => {
       setPlayer(playerData);
     } catch (error) {
       console.error('Toggle lock failed:', error);
-      alert('Failed to toggle fish lock. Please try again.');
+      showAlert('Failed to toggle fish lock. Please try again.');
     }
   };
 
@@ -668,7 +786,7 @@ useEffect(() => {
       }
     } catch (error) {
       console.error('Sell failed:', error);
-      alert('Failed to sell fish. Please try again.');
+      showAlert('Failed to sell fish. Please try again.');
     }
   };
 
@@ -676,7 +794,7 @@ useEffect(() => {
     const unlockedFish = player.inventory.filter(f => !player.lockedFish.includes(f.name));
 
     if (unlockedFish.length === 0) {
-      alert('No unlocked fish to sell!');
+      showAlert('No unlocked fish to sell!');
       return;
     }
 
@@ -690,15 +808,34 @@ useEffect(() => {
         .map(f => `${f.rarity}: ${f.name} (${f.count}x)`)
         .join('\n');
 
-      const confirmed = window.confirm(
-        `⚠️ WARNING ⚠️\n\nYou have ultra-rare fish that are not locked:\n\n${rareFishList}\n\nAre you sure you want to sell these extremely rare fish?`
-      );
+      showConfirm(
+        `⚠️ WARNING ⚠️\n\nYou have ultra-rare fish that are not locked:\n\n${rareFishList}\n\nAre you sure you want to sell these extremely rare fish?`,
+        async () => {
+          // User confirmed - proceed with sell
+          try {
+            const response = await window.ApiService.sellAll();
 
-      if (!confirmed) {
-        return; // User cancelled, don't sell
-      }
+            if (response.success) {
+              // Update state with server response
+              setPlayer(prev => ({
+                ...prev,
+                gold: response.newGold
+              }));
+
+              // Reload inventory from server
+              const playerData = await window.ApiService.getPlayerData();
+              setPlayer(playerData);
+            }
+          } catch (error) {
+            console.error('Sell all failed:', error);
+            showAlert('Failed to sell all fish. Please try again.');
+          }
+        }
+      );
+      return; // Return early since the action is now async
     }
 
+    // If no rare fish, proceed directly with sellAll
     try {
       const response = await window.ApiService.sellAll();
 
@@ -715,7 +852,7 @@ useEffect(() => {
       }
     } catch (error) {
       console.error('Sell all failed:', error);
-      alert('Failed to sell all fish. Please try again.');
+      showAlert('Failed to sell all fish. Please try again.');
     }
   };
 
@@ -725,7 +862,7 @@ useEffect(() => {
     );
 
     if (fishToSell.length === 0) {
-      alert(`No unlocked ${rarity} fish to sell!`);
+      showAlert(`No unlocked ${rarity} fish to sell!`);
       return;
     }
 
@@ -745,7 +882,7 @@ useEffect(() => {
       }
     } catch (error) {
       console.error('Sell by rarity failed:', error);
-      alert('Failed to sell fish by rarity. Please try again.');
+      showAlert('Failed to sell fish by rarity. Please try again.');
     }
   };
 
@@ -761,9 +898,9 @@ useEffect(() => {
     }
   };
 
-  const upgradeStat = async (stat) => {
+  const upgradeStat = async (stat, amount = 1) => {
     try {
-      const response = await window.ApiService.upgradeStat(stat);
+      const response = await window.ApiService.upgradeStat(stat, amount);
 
       if (response.success) {
         setPlayer(prev => ({
@@ -783,10 +920,15 @@ useEffect(() => {
             cost: response.nextCost
           }
         }));
+
+        // Show success message if upgrading multiple at once
+        if (amount > 1) {
+          showAlert(`Successfully upgraded ${stat} by ${amount} points!`);
+        }
       }
     } catch (error) {
       console.error('Upgrade failed:', error);
-      alert(error.message || 'Failed to upgrade stat. Please try again.');
+      showAlert(error.message || 'Failed to upgrade stat. Please try again.');
     }
   };
 
@@ -848,7 +990,7 @@ useEffect(() => {
       }
     } catch (error) {
       console.error('Buy rod failed:', error);
-      alert(error.message || 'Failed to purchase rod. Not enough gold?');
+      showAlert(error.message || 'Failed to purchase rod. Not enough gold?');
     }
   };
 
@@ -883,7 +1025,7 @@ useEffect(() => {
       }
     } catch (error) {
       console.error('Buy bait failed:', error);
-      alert(error.message || 'Failed to purchase bait. Not enough gold?');
+      showAlert(error.message || 'Failed to purchase bait. Not enough gold?');
     }
   };
 
@@ -1318,6 +1460,28 @@ useEffect(() => {
         <div className={`text-xs sm:text-sm text-${theme.textMuted} space-y-1`}>
           <div>Base Stats: STR {player.stats.strength} | INT {player.stats.intelligence} | LUCK {player.stats.luck} | STAM {player.stats.stamina}</div>
           <div className="text-green-400">Total Stats: STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
+
+          {/* Active Boosters Display */}
+          {activeBoosters.length > 0 && (
+            <div className="mt-2 pt-2 border-t border-yellow-600">
+              <div className="text-yellow-400 font-bold mb-1">Active Boosters:</div>
+              {activeBoosters.map((booster, idx) => {
+                const boosterNames = {
+                  'knowledge_scroll': { name: 'Knowledge Scroll', icon: '📜' },
+                  'ancient_tome': { name: 'Ancient Tome', icon: '📚' },
+                  'giants_potion': { name: "Giant's Potion", icon: '🧪' },
+                  'titans_elixir': { name: "Titan's Elixir", icon: '⚗️' }
+                };
+                const boosterInfo = boosterNames[booster.booster_type] || { name: booster.booster_type, icon: '✨' };
+                return (
+                  <div key={idx} className="text-yellow-300">
+                    {boosterInfo.icon} {boosterInfo.name}: <span className="font-bold text-green-400">{getBoosterTimeRemaining(booster.expires_at)}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           <div className={`border-t border-${theme.border} my-2 pt-2`}>
             <div>Normal fish: 1-{1 + Math.floor(getTotalStats().strength / 100)} per catch{getTotalStats().strength % 100 > 0 ? ` (${getTotalStats().strength % 100}% chance: 1-${2 + Math.floor(getTotalStats().strength / 100)})` : ''}</div>
             <div>Boss fish value: {(1 + (getTotalStats().strength * 0.02)).toFixed(2)}x multiplier</div>
@@ -1551,17 +1715,17 @@ useEffect(() => {
         // Check if player meets requirements before attempting to unlock
         const biome = window.BIOMES[biomeId];
         if (!biome) {
-          alert('Biome not found');
+          showAlert('Biome not found');
           return;
         }
 
         if (player.level < biome.unlockLevel) {
-          alert(`Level ${biome.unlockLevel} required to unlock ${biome.name}. You are currently level ${player.level}.`);
+          showAlert(`Level ${biome.unlockLevel} required to unlock ${biome.name}. You are currently level ${player.level}.`);
           return;
         }
 
         if (player.gold < biome.unlockGold) {
-          alert(`${biome.unlockGold} gold required to unlock ${biome.name}. You currently have ${player.gold} gold.`);
+          showAlert(`${biome.unlockGold} gold required to unlock ${biome.name}. You currently have ${player.gold} gold.`);
           return;
         }
 
@@ -1580,7 +1744,7 @@ useEffect(() => {
           }
         } catch (error) {
           console.error('Unlock biome failed:', error);
-          alert(error.message || 'Failed to unlock biome. Please try again.');
+          showAlert(error.message || 'Failed to unlock biome. Please try again.');
         }
       }
     };
@@ -1830,7 +1994,15 @@ useEffect(() => {
 
   const StatsPage = () => {
     const totalStats = getTotalStats();
-    
+
+    // State for bulk upgrade amounts
+    const [upgradeAmounts, setUpgradeAmounts] = React.useState({
+      strength: 1,
+      intelligence: 1,
+      luck: 1,
+      stamina: 1
+    });
+
     const statDescriptions = {
       strength: {
         title: "Strength",
@@ -1881,7 +2053,7 @@ useEffect(() => {
             {/* Display player's base stats for upgrading */}
             {Object.entries(player.stats).map(([stat, value]) => {
               const info = statDescriptions[stat];
-              const canAfford = player.statPoints >= 1; // Always costs 1 stat point
+              const canAfford = player.statPoints >= upgradeAmounts[stat];
               return (
                 <div key={stat} className={`bg-${theme.surface} p-4 sm:p-5 rounded-lg`}>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
@@ -1890,17 +2062,31 @@ useEffect(() => {
                       <div className={`text-sm text-${theme.textMuted}`}>Base Level {value}</div>
                       {totalStats[stat] !== value && <div className="text-xs text-green-400">Total: {totalStats[stat]} (Equipment)</div>}
                     </div>
-                    <button
-                      onClick={() => upgradeStat(stat)}
-                      disabled={!canAfford}
-                      className={`w-full sm:w-auto px-6 py-3 rounded font-bold text-sm ${
-                        canAfford
-                          ? 'bg-purple-600 hover:bg-purple-500'
-                          : 'bg-gray-600 cursor-not-allowed'
-                      }`}
-                    >
-                      Upgrade (+1 Point)
-                    </button>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                      <input
+                        type="number"
+                        min="1"
+                        max={player.statPoints}
+                        value={upgradeAmounts[stat]}
+                        onChange={(e) => {
+                          const value = Math.max(1, Math.min(player.statPoints, parseInt(e.target.value) || 1));
+                          setUpgradeAmounts(prev => ({ ...prev, [stat]: value }));
+                        }}
+                        className="px-3 py-2 rounded bg-gray-800 text-white border border-gray-600 w-full sm:w-24 text-center"
+                        placeholder="Amount"
+                      />
+                      <button
+                        onClick={() => upgradeStat(stat, upgradeAmounts[stat])}
+                        disabled={!canAfford}
+                        className={`w-full sm:w-auto px-6 py-3 rounded font-bold text-sm ${
+                          canAfford
+                            ? 'bg-purple-600 hover:bg-purple-500'
+                            : 'bg-gray-600 cursor-not-allowed'
+                        }`}
+                      >
+                        Upgrade (+{upgradeAmounts[stat]} {upgradeAmounts[stat] === 1 ? 'Point' : 'Points'})
+                      </button>
+                    </div>
                   </div>
 
                   <div className="space-y-2 text-xs sm:text-sm">
@@ -2386,7 +2572,7 @@ useEffect(() => {
         setPlayer(prev => ({ ...prev, relics: prev.relics - result.relicsSpent }));
         setEditingName(false);
         setNewName('');
-        alert(`Profile name changed! ${result.relicsSpent > 0 ? `Cost: ${result.relicsSpent} relics` : 'First change is free!'}`);
+        showAlert(`Profile name changed! ${result.relicsSpent > 0 ? `Cost: ${result.relicsSpent} relics` : 'First change is free!'}`);
 
         // Trigger cloud save to persist player data changes
         try {
@@ -2395,7 +2581,7 @@ useEffect(() => {
           console.error('Failed to save after name change:', saveErr);
         }
       } catch (err) {
-        alert(err.message || 'Failed to change name');
+        showAlert(err.message || 'Failed to change name');
       }
     };
 
@@ -2404,7 +2590,7 @@ useEffect(() => {
         const result = await window.ApiService.updateBio(bioText);
         setProfileData(prev => ({ ...prev, bio: result.bio }));
         setEditingBio(false);
-        alert('Bio updated successfully!');
+        showAlert('Bio updated successfully!');
 
         // Reload profile data to ensure persistence
         try {
@@ -2414,7 +2600,7 @@ useEffect(() => {
           console.error('Failed to reload profile:', loadErr);
         }
       } catch (err) {
-        alert(err.message || 'Failed to update bio');
+        showAlert(err.message || 'Failed to update bio');
       }
     };
 
@@ -2423,7 +2609,7 @@ useEffect(() => {
         await window.ApiService.equipTitle(achievementId);
         setEquippedTitle(achievementId);
         setProfileData(prev => ({ ...prev, equipped_title: achievementId }));
-        alert('Title equipped!');
+        showAlert('Title equipped!');
 
         // Reload profile data to ensure title persists
         try {
@@ -2434,7 +2620,7 @@ useEffect(() => {
           console.error('Failed to reload profile:', loadErr);
         }
       } catch (err) {
-        alert(err.message || 'Failed to equip title');
+        showAlert(err.message || 'Failed to equip title');
       }
     };
 
@@ -2442,7 +2628,7 @@ useEffect(() => {
       try {
         await window.ApiService.updatePrivacy(newPrivacy, allowComments);
         setPrivacy(newPrivacy);
-        alert('Privacy settings updated!');
+        showAlert('Privacy settings updated!');
 
         // Reload profile data to ensure persistence
         try {
@@ -2454,7 +2640,7 @@ useEffect(() => {
           console.error('Failed to reload profile:', loadErr);
         }
       } catch (err) {
-        alert(err.message || 'Failed to update privacy');
+        showAlert(err.message || 'Failed to update privacy');
       }
     };
 
@@ -2462,7 +2648,7 @@ useEffect(() => {
       try {
         await window.ApiService.updatePrivacy(privacy, !allowComments);
         setAllowComments(!allowComments);
-        alert(`Comments ${!allowComments ? 'enabled' : 'disabled'}!`);
+        showAlert(`Comments ${!allowComments ? 'enabled' : 'disabled'}!`);
 
         // Reload profile data to ensure persistence
         try {
@@ -2474,7 +2660,7 @@ useEffect(() => {
           console.error('Failed to reload profile:', loadErr);
         }
       } catch (err) {
-        alert(err.message || 'Failed to toggle comments');
+        showAlert(err.message || 'Failed to toggle comments');
       }
     };
 
@@ -2482,7 +2668,7 @@ useEffect(() => {
       try {
         await window.ApiService.updateNationality(countryCode);
         setNationality(countryCode);
-        alert('Nationality updated!');
+        showAlert('Nationality updated!');
 
         // Reload profile data to ensure persistence
         try {
@@ -2493,7 +2679,7 @@ useEffect(() => {
           console.error('Failed to reload profile:', loadErr);
         }
       } catch (err) {
-        alert(err.message || 'Failed to update nationality');
+        showAlert(err.message || 'Failed to update nationality');
       }
     };
 
@@ -3337,6 +3523,13 @@ useEffect(() => {
   // Main render
   return (
     <>
+      <CustomModal
+        isOpen={modalState.isOpen}
+        type={modalState.type}
+        message={modalState.message}
+        onClose={closeModal}
+        onConfirm={modalState.onConfirm}
+      />
       <SavingOverlay />
       <div className={`min-h-screen bg-gradient-to-b from-${theme.primary.from} via-${theme.primary.via} to-${theme.primary.to} text-white flex`}>
         <Sidebar />

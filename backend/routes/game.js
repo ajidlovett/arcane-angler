@@ -813,7 +813,7 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
 
   try {
     const userId = req.user.userId;
-    const { stat } = req.body;
+    const { stat, amount } = req.body;
 
     // Validate input
     const validStats = ['strength', 'intelligence', 'luck', 'stamina'];
@@ -821,22 +821,28 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Invalid stat name' });
     }
 
+    // Validate amount (default to 1 if not provided, for backward compatibility)
+    const upgradeAmount = amount && Number.isInteger(amount) && amount > 0 ? amount : 1;
+    if (upgradeAmount > 10000) {
+      return res.status(400).json({ error: 'Cannot upgrade more than 10,000 points at once' });
+    }
+
     await connection.beginTransaction();
 
-    // Stat upgrade now costs 1 stat point (simplified economy)
-    const cost = 1;
+    // Stat upgrade costs 1 stat point per upgrade
+    const cost = upgradeAmount;
 
-    // Atomic update: deduct stat point and increment stat in one query
+    // Atomic update: deduct stat points and increment stat in one query
     // This prevents race conditions and ensures player has enough points
     const [updateResult] = await connection.query(
       `UPDATE player_data pd
        JOIN player_stats ps ON pd.user_id = ps.user_id
        SET pd.stat_points = pd.stat_points - ?,
-           pd.stats_upgraded = pd.stats_upgraded + 1,
-           ps.${stat} = ps.${stat} + 1
+           pd.stats_upgraded = pd.stats_upgraded + ?,
+           ps.${stat} = ps.${stat} + ?
        WHERE pd.user_id = ?
          AND pd.stat_points >= ?`,
-      [cost, userId, cost]
+      [cost, upgradeAmount, upgradeAmount, userId, cost]
     );
 
     if (updateResult.affectedRows === 0) {
@@ -853,8 +859,8 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
     };
     const statUpgradedColumn = statColumnMap[stat];
     await connection.query(
-      `UPDATE player_data SET ${statUpgradedColumn} = ${statUpgradedColumn} + 1 WHERE user_id = ?`,
-      [userId]
+      `UPDATE player_data SET ${statUpgradedColumn} = ${statUpgradedColumn} + ? WHERE user_id = ?`,
+      [upgradeAmount, userId]
     );
 
     // Get updated values
@@ -868,8 +874,10 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
       [userId]
     );
 
-    // Track quest progress
-    trackQuestProgress(userId, 'stat_upgraded', {}).catch(err => console.error('Quest tracking error:', err));
+    // Track quest progress (track each upgrade individually for quests)
+    for (let i = 0; i < upgradeAmount; i++) {
+      trackQuestProgress(userId, 'stat_upgraded', {}).catch(err => console.error('Quest tracking error:', err));
+    }
 
     await connection.commit();
     res.json({
@@ -877,6 +885,7 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
       stat,
       newValue: newStats[0][stat],
       costPaid: cost,
+      amountUpgraded: upgradeAmount,
       nextCost: 1, // Always costs 1 stat point
       newStatPoints: updated[0].stat_points
     });
@@ -917,6 +926,24 @@ router.post('/buy-booster', authenticateToken, async (req, res) => {
     const booster = boosters[boosterType];
 
     await connection.beginTransaction();
+
+    // Category-based stacking check: boosters of the same category cannot stack
+    // XP Category: knowledge_scroll, ancient_tome (xp_bonus)
+    // Stats Category: giants_potion, titans_elixir (stat_bonus)
+    const [activeBoosters] = await connection.query(
+      `SELECT booster_type, effect_type FROM player_boosters
+       WHERE user_id = ? AND expires_at > NOW()`,
+      [userId]
+    );
+
+    // Check if there's already an active booster in the same category
+    for (const activeBooster of activeBoosters) {
+      if (activeBooster.effect_type === booster.effect) {
+        await connection.rollback();
+        const categoryName = booster.effect === 'xp_bonus' ? 'XP Booster' : 'Stats Booster';
+        return res.status(400).json({ error: `${categoryName} already active` });
+      }
+    }
 
     // Check if player has enough relics
     const [playerData] = await connection.query(
