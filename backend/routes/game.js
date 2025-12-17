@@ -17,6 +17,7 @@ import {
   calculateFishCount,
   calculateTitanBonus,
   calculateGoldMultiplier,
+  calculateIntelligenceDuration,
   calculateCriticalCatch,
   generateTreasureChest,
   calculateLevelUp,
@@ -1232,9 +1233,12 @@ router.post('/buy-booster', authenticateToken, async (req, res) => {
       }
     }
 
-    // Check if player has enough relics
+    // Get player data and stats for Intelligence bonus calculation
     const [playerData] = await connection.query(
-      'SELECT relics FROM player_data WHERE user_id = ?',
+      `SELECT pd.relics, pd.equipped_rod, pd.equipped_bait, ps.intelligence
+       FROM player_data pd
+       JOIN player_stats ps ON pd.user_id = ps.user_id
+       WHERE pd.user_id = ?`,
       [userId]
     );
 
@@ -1243,10 +1247,28 @@ router.post('/buy-booster', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Player data not found' });
     }
 
-    if (playerData[0].relics < booster.cost) {
+    const player = playerData[0];
+
+    if (player.relics < booster.cost) {
       await connection.rollback();
       return res.status(400).json({ error: 'Not enough relics' });
     }
+
+    // Calculate total Intelligence (base + equipment bonuses)
+    const totalStats = getTotalStats(
+      {
+        strength: 0,
+        intelligence: player.intelligence,
+        luck: 0,
+        stamina: 0
+      },
+      player.equipped_rod,
+      player.equipped_bait
+    );
+
+    // Calculate booster duration with Intelligence bonus
+    const baseDurationSeconds = booster.duration * 60; // Convert minutes to seconds
+    const extendedDurationSeconds = calculateIntelligenceDuration(totalStats.intelligence, baseDurationSeconds);
 
     // Deduct relics
     await connection.query(
@@ -1254,8 +1276,8 @@ router.post('/buy-booster', authenticateToken, async (req, res) => {
       [booster.cost, userId]
     );
 
-    // Calculate expiration time (in UTC)
-    const expiresAt = new Date(Date.now() + booster.duration * 60 * 1000);
+    // Calculate expiration time with INT bonus (in UTC)
+    const expiresAt = new Date(Date.now() + extendedDurationSeconds * 1000);
 
     // Add booster
     await connection.query(
@@ -1274,7 +1296,9 @@ router.post('/buy-booster', authenticateToken, async (req, res) => {
     res.json({
       success: true,
       boosterType,
-      duration: booster.duration,
+      baseDuration: booster.duration,
+      extendedDuration: Math.floor(extendedDurationSeconds / 60),
+      intelligenceBonus: Math.floor((extendedDurationSeconds - baseDurationSeconds) / 60),
       expiresAt: expiresAt.toISOString(),
       newRelics: updated[0].relics
     });
