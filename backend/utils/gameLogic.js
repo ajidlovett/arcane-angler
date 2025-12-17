@@ -122,15 +122,16 @@ function calculateLuckPower(totalLuck) {
  */
 function calculateRarity(totalLuck, isAutoCast = false) {
   const baseWeights = {
-    'Common': 50000,
-    'Uncommon': 28000,
-    'Fine': 15000,
-    'Rare': 5000,
-    'Epic': 1575,
-    'Treasure Chest': 250,
-    'Legendary': 150,
-    'Mythic': 25,
-    'Exotic': 4,
+    'Common': 60046,
+    'Uncommon': 23000,
+    'Fine': 10000,
+    'Rare': 4000,
+    'Relic': 2000,          // NEW: Drops 1-5 relics instead of fish
+    'Epic': 750,
+    'Treasure Chest': 150,
+    'Legendary': 40,
+    'Mythic': 10,
+    'Exotic': 3,
     'Arcane': 1
   };
 
@@ -151,7 +152,7 @@ function calculateRarity(totalLuck, isAutoCast = false) {
 
   for (const [tier, baseWeight] of Object.entries(baseWeights)) {
     // Auto-Cast caps at Epic rarity
-    if (isAutoCast && ['Treasure Chest', 'Legendary', 'Mythic', 'Exotic', 'Arcane'].includes(tier)) {
+    if (isAutoCast && ['Relic', 'Treasure Chest', 'Legendary', 'Mythic', 'Exotic', 'Arcane'].includes(tier)) {
       continue; // Skip these rarities for auto-cast
     }
 
@@ -160,7 +161,7 @@ function calculateRarity(totalLuck, isAutoCast = false) {
       const bonus = Math.floor(luckPower * dampingFactors[tier]);
       effectiveWeights[tier] = baseWeight + bonus;
     } else {
-      // Low-tier (Common, Uncommon, Fine, Rare, Epic): Not affected by luck
+      // Low-tier (Common, Uncommon, Fine, Rare, Relic, Epic): Not affected by luck
       effectiveWeights[tier] = baseWeight;
     }
     poolSize += effectiveWeights[tier];

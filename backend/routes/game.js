@@ -124,8 +124,38 @@ router.post('/cast', authenticateToken, async (req, res) => {
       treasureChest: null
     };
 
-    // Handle Treasure Chest (special case)
-    if (rarity === 'Treasure Chest') {
+    // Handle Relic drop (special case - gives 1-5 relics + XP, no fish)
+    if (rarity === 'Relic') {
+      const relicsDropped = Math.floor(Math.random() * 5) + 1; // 1-5 relics
+
+      // Apply Critical Catch to XP with level scaling
+      const baseXP = 50; // Fixed base XP for relic drops
+      const critMultiplier = calculateCriticalCatch(totalStats.stamina);
+
+      // Add level-based XP bonus: (Level - 1) * random(10-20)
+      const minBonus = (player.level - 1) * 10;
+      const maxBonus = (player.level - 1) * 20;
+      const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
+      const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier * xpBonus);
+
+      result.relicsGained = relicsDropped;
+      result.xpGained = xpGained;
+      result.critMultiplier = critMultiplier;
+      result.xpBonus = xpBonus;
+
+      // Update player stats
+      await connection.query(
+        `UPDATE player_data
+         SET relics = relics + ?,
+             xp = xp + ?,
+             total_relics_earned = total_relics_earned + ?,
+             total_casts = total_casts + 1
+         WHERE user_id = ?`,
+        [relicsDropped, xpGained, relicsDropped, userId]
+      );
+
+      // Note: Stamina is not consumed for casting (6-second cooldown instead)
+    } else if (rarity === 'Treasure Chest') {
       const rewards = generateTreasureChest(currentBiome, totalStats.luck, biomeData);
 
       // Apply Critical Catch to XP with level scaling

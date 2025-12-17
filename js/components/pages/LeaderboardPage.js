@@ -132,8 +132,7 @@ window.LeaderboardPage = React.memo(({ user, theme }) => {
   };
 
   const formatNumber = (num) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    // Always show full number with thousand separators (no K/M/B abbreviations)
     return num.toLocaleString();
   };
 
@@ -168,22 +167,22 @@ window.LeaderboardPage = React.memo(({ user, theme }) => {
 
       {/* Global Stats Summary */}
       {globalStats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4`}>
-            <div className={`text-sm text-${theme.textMuted}`}>Total Players</div>
-            <div className="text-[1.05rem] font-bold text-white">{globalStats.total_players?.toLocaleString() || 0}</div>
+        <div className="flex flex-col md:grid md:grid-cols-4 gap-1 md:gap-4 mb-6">
+          <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg px-4 py-2 md:p-4 flex md:flex-col items-center justify-between md:items-start`}>
+            <div className={`text-xs md:text-sm text-${theme.textMuted}`}>Total Players</div>
+            <div className="text-xs md:text-[1.05rem] font-bold text-white">{globalStats.total_players?.toLocaleString() || 0}</div>
           </div>
-          <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4`}>
-            <div className={`text-sm text-${theme.textMuted}`}>Highest Level</div>
-            <div className="text-[1.05rem] font-bold text-white">{globalStats.highest_level || 0}</div>
+          <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg px-4 py-2 md:p-4 flex md:flex-col items-center justify-between md:items-start`}>
+            <div className={`text-xs md:text-sm text-${theme.textMuted}`}>Highest Level</div>
+            <div className="text-xs md:text-[1.05rem] font-bold text-white">{formatNumber(globalStats.highest_level || 0)}</div>
           </div>
-          <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4`}>
-            <div className={`text-sm text-${theme.textMuted}`}>Total Fish Caught</div>
-            <div className="text-[1.05rem] font-bold text-white">{formatNumber(globalStats.total_fish_caught || 0)}</div>
+          <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg px-4 py-2 md:p-4 flex md:flex-col items-center justify-between md:items-start`}>
+            <div className={`text-xs md:text-sm text-${theme.textMuted}`}>Total Fish Caught</div>
+            <div className="text-xs md:text-[1.05rem] font-bold text-white">{formatNumber(globalStats.total_fish_caught || 0)}</div>
           </div>
-          <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4`}>
-            <div className={`text-sm text-${theme.textMuted}`}>Total Arcane</div>
-            <div className="text-[1.05rem] font-bold text-white">{globalStats.total_arcane_caught || 0}</div>
+          <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg px-4 py-2 md:p-4 flex md:flex-col items-center justify-between md:items-start`}>
+            <div className={`text-xs md:text-sm text-${theme.textMuted}`}>Arcane Caught</div>
+            <div className="text-xs md:text-[1.05rem] font-bold text-white">{formatNumber(globalStats.total_arcane_caught || 0)}</div>
           </div>
         </div>
       )}
