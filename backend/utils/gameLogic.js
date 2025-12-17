@@ -181,11 +181,12 @@ function calculateRarity(totalLuck, isAutoCast = false) {
  * Calculate number of fish caught based on strength (REFACTORED)
  * Strength (STR) - "The Bulk Hauler"
  * Effect: Increases fish quantity per cast (ACTIVE Play only - Manual Casting)
+ * Returns a RANGE: random between 1 and Max
  *
  * @param {string} rarity - Fish rarity tier
  * @param {number} totalStrength - Total strength (base + equipment)
  * @param {boolean} isAutoCast - Whether this is an auto-cast (auto-cast always yields 1)
- * @returns {number} Number of fish caught
+ * @returns {number} Number of fish caught (random between 1 and max)
  */
 function calculateFishCount(rarity, totalStrength, isAutoCast = false) {
   // Auto-Cast always yields 1 fish (ignores STR)
@@ -223,7 +224,8 @@ function calculateFishCount(rarity, totalStrength, isAutoCast = false) {
   // Max Yield = 1 + Floor(Raw Bonus * Efficiency)
   const maxYield = 1 + Math.floor(rawBonus * efficiency);
 
-  return maxYield;
+  // Return random value between 1 and maxYield (inclusive)
+  return Math.floor(Math.random() * maxYield) + 1;
 }
 
 /**
@@ -380,9 +382,9 @@ function generateTreasureChest(currentBiome, totalLuck, biomeData) {
  * @returns {number} XP needed for next level
  */
 function calculateXPForNextLevel(currentLevel) {
-  // Linear formula: 150 * current level
-  // Level 1→2: 150, Level 2→3: 300, Level 3→4: 450, etc.
-  return 150 * currentLevel;
+  // Linear formula: 200 * current level
+  // Level 1→2: 200, Level 2→3: 400, Level 3→4: 600, etc.
+  return 200 * currentLevel;
 }
 
 /**

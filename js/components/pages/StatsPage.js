@@ -13,27 +13,23 @@ window.StatsPage = ({ player, theme, getTotalStats, upgradeStat }) => {
   const statDescriptions = {
     strength: {
       title: "Strength",
-      current: `1-${1 + Math.floor(totalStats.strength / 100)} normal fish per catch${totalStats.strength % 100 > 0 ? ` (${totalStats.strength % 100}% chance: 1-${2 + Math.floor(totalStats.strength / 100)})` : ''} | ${(1 + (totalStats.strength * 0.02)).toFixed(2)}x boss fish value`,
-      perPoint: "Every 100 points: +1 guaranteed max fish | Every 1 point: +1% chance for +1 extra | Boss fish: +2% gold value per point",
-      detail: `Normal fish (Common-Epic): Catch 1 to MaxCatch fish randomly. MaxCatch = 1 + FLOOR(STR/100), with (STR%100)% chance for +1 extra fish. Example: 150 STR = 50% chance for 1-2 fish, 50% chance for 1-3 fish. Boss fish (Legendary/Mythic/Exotic/Arcane): Always catch 1 but get Titan Bonus gold multiplier when selling.`
+      subtitle: "The Bulk Hauler",
+      description: "Increases the quantity of fish caught per cast."
     },
     intelligence: {
       title: "Intelligence",
-      current: `${(1 + (Math.pow(totalStats.intelligence, 0.7) * 0.05)).toFixed(2)}x gold when selling`,
-      perPoint: "Diminishing returns (soft cap prevents inflation)",
-      detail: `Multiplies gold earned when selling fish. Uses power curve formula to prevent economy breaking at high levels. Works multiplicatively with Titan Bonus.`
+      subtitle: "The Time Mage",
+      description: "Extends the duration of all active boosters."
     },
     luck: {
       title: "Luck",
-      current: `+${totalStats.luck}% weight for Jackpot tiers`,
-      perPoint: "+1% weight for Legendary, Treasure Chest, Mythic, Exotic, Arcane per point",
-      detail: `Jackpot Mechanic: Only affects ultra-rare fish (Legendary+) and Treasure Chests. Does NOT affect Common, Uncommon, Fine, Rare, or Epic fish.`
+      subtitle: "The Fate Weaver",
+      description: "Increases the chances of encountering Legendary, Mythic, and Arcane fish."
     },
     stamina: {
       title: "Stamina",
-      current: `${Math.min(totalStats.stamina / 10, 50).toFixed(1)}% Critical Catch chance`,
-      perPoint: "+0.1% crit chance per point (capped at 50%) | XP multiplier scales infinitely",
-      detail: `Critical Catch multiplies XP gain. Below 500: base crit for 2x. 500+: 50% for 2x. 750+: 50% for 2x or 25% for 3x. 1000-1499: 50% for 3x. 1500-1999: 50% for 4x. 2000+: 50% for 5x+. Scales infinitely: every 500 stamina past 1000 adds +1x multiplier!`
+      subtitle: "The Sleep Battery",
+      description: "Determines the capacity of your Auto-Cast functionality."
     }
   };
 
@@ -47,12 +43,8 @@ window.StatsPage = ({ player, theme, getTotalStats, upgradeStat }) => {
 
         {/* Display Stat Points */}
         <div className={`bg-${theme.surface} p-4 rounded-lg mb-6`}>
-          <div className="flex items-center justify-center gap-3">
-            <span className="text-2xl">⭐</span>
-            <div className="text-center">
-              <div className={`text-sm text-${theme.textMuted}`}>Stat Points Available</div>
-              <div className="text-3xl font-bold text-purple-400">{player.statPoints}</div>
-            </div>
+          <div className="text-center text-base sm:text-lg">
+            ⭐ <span className="font-bold text-purple-400">{player.statPoints}</span> Stat Points Available
           </div>
         </div>
 
@@ -97,14 +89,11 @@ window.StatsPage = ({ player, theme, getTotalStats, upgradeStat }) => {
                 </div>
 
                 <div className="space-y-2 text-xs sm:text-sm">
-                  <div className="text-green-400 font-bold">
-                    Current Total Effect: {info.current}
+                  <div className="text-purple-400 font-bold italic">
+                    "{info.subtitle}"
                   </div>
                   <div className={`text-${theme.textMuted}`}>
-                    Per Point: {info.perPoint}
-                  </div>
-                  <div className={`text-${theme.textDim} italic`}>
-                    {info.detail}
+                    {info.description}
                   </div>
                 </div>
               </div>

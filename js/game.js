@@ -95,6 +95,7 @@ const FishingGame = ({ user, onLogout }) => {
   // Auto-Cast state
   const [isAutoCasting, setIsAutoCasting] = useState(false);
   const [autoCastCooldown, setAutoCastCooldown] = useState(0);
+  const [currentStamina, setCurrentStamina] = useState(0); // Local stamina counter for auto-cast
   const autoCastInterval = React.useRef(null);
   const autoCastCooldownInterval = React.useRef(null);
   const [selectedRarity, setSelectedRarity] = useState('all');
@@ -577,11 +578,19 @@ useEffect(() => {
         // Refresh active boosters
         fetchActiveBoosters();
 
-        // Check if stamina is now 0 (stop auto-cast)
-        if (result.newStamina < 1) {
-          stopAutoCast();
-          showAlert("Auto-Cast complete: All stamina consumed!");
-        }
+        // Decrement local stamina counter
+        setCurrentStamina(prev => {
+          const newStamina = prev - 1;
+
+          // Check if stamina is now 0 (stop auto-cast)
+          if (newStamina <= 0) {
+            stopAutoCast();
+            showAlert("Auto-Cast complete: All stamina consumed!");
+            return 0;
+          }
+
+          return newStamina;
+        });
       }
     } catch (error) {
       console.error('Auto-cast failed:', error);
@@ -592,11 +601,15 @@ useEffect(() => {
 
   // Start Auto-Cast
   const startAutoCast = () => {
-    if (player.stamina < 1) {
+    const maxStamina = getTotalStats().stamina;
+
+    if (maxStamina < 1) {
       showAlert("Not enough stamina for auto-cast!");
       return;
     }
 
+    // Initialize local stamina counter to max
+    setCurrentStamina(maxStamina);
     setIsAutoCasting(true);
 
     // Immediately perform first cast
@@ -621,6 +634,9 @@ useEffect(() => {
   const stopAutoCast = () => {
     setIsAutoCasting(false);
     setAutoCastCooldown(0);
+
+    // Reset local stamina counter to max
+    setCurrentStamina(getTotalStats().stamina);
 
     if (autoCastInterval.current) {
       clearInterval(autoCastInterval.current);
@@ -3109,6 +3125,7 @@ useEffect(() => {
             isAutoCasting={isAutoCasting}
             toggleAutoCast={toggleAutoCast}
             autoCastCooldown={autoCastCooldown}
+            currentStamina={currentStamina}
           />}
           {currentPage === 'equipment' && <EquipmentPage />}
           {currentPage === 'biomes' && <BiomesPage />}

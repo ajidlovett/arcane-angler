@@ -131,8 +131,10 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const baseXP = 100; // Fixed XP for treasure chests
       const critMultiplier = calculateCriticalCatch(totalStats.stamina);
 
-      // Add level-based XP bonus
-      const levelBonus = player.level * (1 + Math.random()); // Random between level*1 and level*2
+      // Add level-based XP bonus: (Level - 1) * random(10-20)
+      const minBonus = (player.level - 1) * 10;
+      const maxBonus = (player.level - 1) * 20;
+      const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
       const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier * xpBonus);
 
       result.treasureChest = rewards;
@@ -180,9 +182,11 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const baseXP = fish.xp * count;
       const critMultiplier = calculateCriticalCatch(totalStats.stamina);
 
-      // Add level-based XP bonus: level * random(1-2) per fish
-      // Level 2: +2-4 XP, Level 3: +3-6 XP, Level 4: +4-8 XP, etc.
-      const levelBonus = player.level * (1 + Math.random()) * count; // Random between level*1 and level*2 per fish
+      // Add level-based XP bonus: (Level - 1) * random(10-20)
+      // Level 2: +10-20 XP, Level 3: +20-40 XP, Level 4: +30-60 XP, etc.
+      const minBonus = (player.level - 1) * 10;
+      const maxBonus = (player.level - 1) * 20;
+      const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
       const xpWithLevelBonus = Math.floor((baseXP + levelBonus) * critMultiplier * xpBonus);
       const xpGained = xpWithLevelBonus;
 
@@ -362,8 +366,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       // Calculate XP needed for next level
       const xpToNext = calculateXPForNextLevel(levelUpResult.newLevel);
 
-      // Grant stat points instead of relics (3 stat points per level)
-      const statPointsGained = levelUpResult.levelsGained * 3;
+      // Grant stat points instead of relics (2 stat points per level)
+      const statPointsGained = levelUpResult.levelsGained * 2;
 
       // Update level, XP, xp_to_next, and grant stat points
       await connection.query(
@@ -453,10 +457,11 @@ router.post('/cast', authenticateToken, async (req, res) => {
 
 /**
  * POST /api/game/auto-cast
- * Automated fishing cast (stamina-based)
+ * Automated fishing cast (stamina capacity-based)
  *
  * Stamina (STA) - "The Sleep Battery"
- * - Consumes 1 stamina per cast
+ * - Stamina is BATCH CAPACITY, not consumed per cast
+ * - Frontend manages local stamina counter (current/max)
  * - Fixed 12-second cooldown (handled client-side)
  * - Fixed 1 fish yield (ignores STR)
  * - Caps at Epic rarity (no Legendary/Chest/Arcane)
@@ -484,11 +489,8 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
 
     const player = playerData[0];
 
-    // Check stamina availability
-    if (player.stamina < 1) {
-      await connection.rollback();
-      return res.status(400).json({ error: 'Insufficient stamina for auto-cast' });
-    }
+    // Note: Stamina is NOT consumed - it represents batch capacity for auto-cast
+    // The frontend manages the local stamina counter for UX
 
     // Load active boosters
     const [activeBoosters] = await connection.query(
@@ -548,7 +550,10 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
 
     // Calculate XP (no critical catch for auto-cast)
     const baseXP = fish.xp * count;
-    const levelBonus = player.level * (1 + Math.random()) * count;
+    // Add level-based XP bonus: (Level - 1) * random(10-20)
+    const minBonus = (player.level - 1) * 10;
+    const maxBonus = (player.level - 1) * 20;
+    const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
     const xpGained = Math.floor((baseXP + levelBonus) * xpBonus);
 
     let result = {
@@ -591,7 +596,7 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
       [userId, fish.name, rarity, count, count]
     );
 
-    // Update player data and consume stamina
+    // Update player data (stamina is NOT consumed - it's batch capacity, not a resource)
     await connection.query(
       `UPDATE player_data
        SET xp = xp + ?,
@@ -599,12 +604,6 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
            total_casts = total_casts + 1
        WHERE user_id = ?`,
       [xpGained, count, userId]
-    );
-
-    // Consume 1 stamina
-    await connection.query(
-      'UPDATE player_stats SET stamina = stamina - 1 WHERE user_id = ?',
-      [userId]
     );
 
     // Update rarity-specific counters
@@ -665,7 +664,7 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
 
     if (levelUpResult.leveledUp) {
       const xpToNext = calculateXPForNextLevel(levelUpResult.newLevel);
-      const statPointsGained = levelUpResult.levelsGained * 3;
+      const statPointsGained = levelUpResult.levelsGained * 2;
 
       await connection.query(
         `UPDATE player_data
