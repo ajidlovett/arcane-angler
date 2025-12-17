@@ -1,568 +1,515 @@
-// Equipment Data - Rods and Baits
 window.RODS = {
-  // TIER 1: The Amateur Collection (500 - 6,500 Gold)
-  'Willow Branch': { 
-    price: 500, 
-    str: 2, int: 0, luck: 0, stam: 0, 
-    tier: 1,
-    desc: "Flexible, free, and barely better than using your hands." 
+  'Willow Branch Pole': { 
+    price: 1000, 
+    str: 5, int: 0, luck: 0, stam: 0, 
+    tier: 1, 
+    desc: "A flexible stick found near the riverbank. Good for beginners.", 
+    stackSize: 1 
   },
   'Reinforced Bamboo Rod': { 
-    price: 1500, 
-    str: 5, int: 0, luck: 0, stam: 2, 
-    tier: 1,
-    desc: "Sturdy bamboo allows you to fish longer without getting tired." 
-  },
-  'Fiberglass Casting Rod': { 
-    price: 3500, 
-    str: 5, int: 5, luck: 0, stam: 0, 
-    tier: 1,
-    desc: "A smart investment for new anglers looking to maximize profit." 
-  },
-  'The "Lucky" Stick': { 
     price: 5000, 
-    str: 0, int: 0, luck: 10, stam: 0, 
-    tier: 1,
-    desc: "It's just a stick with a four-leaf clover taped to it." 
+    str: 10, int: 0, luck: 0, stam: 0, 
+    tier: 1, 
+    desc: "Wrapped in hemp for extra durability.", 
+    stackSize: 1 
   },
   'Tinker\'s Mechanical Rod': { 
-    price: 10000, 
-    str: 0, int: 10, luck: 0, stam: 5, 
-    tier: 1,
-    desc: "Gears and pulleys do the heavy lifting for you." 
-  },
-  'Carbon-Flex 2000': { 
     price: 15000, 
-    str: 15, int: 0, luck: 0, stam: 0, 
-    tier: 1,
-    desc: "Lightweight aerospace material designed for hauling in multiple fish." 
+    str: 10, int: 0, luck: 10, stam: 0, 
+    tier: 1, 
+    desc: "A mechanical rod that hums slightly.", 
+    stackSize: 1 
   },
-  'Rusty Iron Pipe': { 
-    price: 20000, 
-    str: 18, int: 0, luck: 0, stam: 0, 
-    tier: 1,
-    desc: "Heavy, crude, and ugly, but it won't break under pressure." 
-  },
-  'Merchant\'s Ledger Rod': { 
-    price: 20000, 
-    str: 0, int: 18, luck: 0, stam: 0, 
-    tier: 1,
-    desc: "Calculates the value of the fish as you reel it in." 
-  },
-  'Mangrove Root Weaver': { 
-    price: 25000, 
-    str: 10, int: 0, luck: 8, stam: 0, 
-    tier: 1,
-    desc: "Twisted roots formed into a pole. Great for swamp fishing." 
-  },
-  'The Camper\'s Pole': { 
+  'Fiberglass Caster': { 
     price: 35000, 
-    str: 0, int: 0, luck: 0, stam: 20, 
-    tier: 1,
-    desc: "Comes with a cup holder. Perfect for long, lazy offline sessions." 
+    str: 25, int: 0, luck: 0, stam: 0, 
+    tier: 1, 
+    desc: "Lightweight and reliable standard issue rod.", 
+    stackSize: 1 
+  },
+  'Reed-Weaver Pole': {
+    price: 60000, 
+    str: 15, int: 0, luck: 15, stam: 0, 
+    tier: 1, 
+    desc: "Woven from sturdy river reeds. Surprisingly strong.", 
+    stackSize: 1 
+  },
+  'Lucky Charm Rod': { 
+    price: 75000, 
+    str: 5, int: 0, luck: 30, stam: 0, 
+    tier: 1, 
+    desc: "Adorned with four-leaf clovers.", 
+    stackSize: 1 
+  },
+  'Copper-Wired Rod': {
+    price: 100000, 
+    str: 35, int: 0, luck: 5, stam: 0, 
+    tier: 1, 
+    desc: "Conductive wiring runs through the core.", 
+    stackSize: 1 
+  },
+  'Graphite Pro Rod': { 
+    price: 150000, 
+    str: 40, int: 0, luck: 5, stam: 0, 
+    tier: 1, 
+    desc: "Professional grade graphite for serious anglers.", 
+    stackSize: 1 
+  },
+  'Ceramic Composite Pole': {
+    price: 200000, 
+    str: 48, int: 0, luck: 0, stam: 0, 
+    tier: 1, 
+    desc: "Space-age ceramics. Very brittle but very stiff.", 
+    stackSize: 1 
+  },
+  'River King\'s Scepter': { 
+    price: 250000, 
+    str: 30, int: 0, luck: 20, stam: 0, 
+    tier: 1, 
+    desc: "The gold standard for river fishing.", 
+    stackSize: 1 
   },
 
-  // TIER 2: The Seasoned Angler (50,000 - 3,000,000 Gold)
-  'The Cheese-Master 3000': { 
-    price: 50000, 
-    str: 0, int: 20, luck: 0, stam: 10, 
-    tier: 2,
-    desc: "Bright yellow and smells faintly of cheddar. Great for gold farming." 
-  },
-  'Thunderbolt Caster': { 
-    price: 250000, 
-    str: 30, int: 0, luck: 10, stam: 0, 
-    tier: 2,
-    desc: "Harnesses static electricity to pull fish out of the water in groups." 
-  },
-  'Obsidian Magma Rod': { 
+  'The Cheese-Master Pole': { 
     price: 500000, 
-    str: 40, int: 0, luck: 0, stam: 0, 
-    tier: 2,
-    desc: "Forged in a volcano. It can handle the heaviest catches." 
+    str: 50, int: 0, luck: 50, stam: 0, 
+    tier: 2, 
+    desc: "Surprisingly effective bait delivery system.", 
+    stackSize: 1 
+  },
+  'Ironwood Staff': {
+    price: 1000000, 
+    str: 105, int: 0, luck: 0, stam: 0, 
+    tier: 2, 
+    desc: "Carved from wood as hard as steel.", 
+    stackSize: 1 
+  },
+  'Deep-Dive Heavy Rod': { 
+    price: 1500000, 
+    str: 110, int: 0, luck: 0, stam: 0, 
+    tier: 2, 
+    desc: "Weighted to reach the bottom quickly.", 
+    stackSize: 1 
+  },
+  'Whispering Cane Rod': {
+    price: 3000000, 
+    str: 60, int: 0, luck: 60, stam: 0, 
+    tier: 2, 
+    desc: "The wind whistles through holes in the shaft.", 
+    stackSize: 1 
   },
   'Jade Emperor\'s Pole': { 
-    price: 800000, 
-    str: 0, int: 50, luck: 20, stam: 0, 
-    tier: 2,
-    desc: "An ornate rod inlaid with precious gems. Attracts wealth." 
+    price: 5000000, 
+    str: 40, int: 0, luck: 80, stam: 0, 
+    tier: 2, 
+    desc: "Carved from holy jade. Attracts fortune.", 
+    stackSize: 1 
   },
-  'Frost-Bite Rod': { 
-    price: 1000000, 
-    str: 20, int: 0, luck: 0, stam: 40, 
-    tier: 2,
-    desc: "Cold to the touch. Preserves your energy for long fishing trips." 
+  'Magma Forged Rod': { 
+    price: 12000000, 
+    str: 150, int: 0, luck: 10, stam: 0, 
+    tier: 2, 
+    desc: "Warm to the touch. Never breaks.", 
+    stackSize: 1 
   },
-  'Spirit-Walker\'s Staff': { 
-    price: 1250000, 
-    str: 0, int: 20, luck: 50, stam: 0, 
-    tier: 2,
-    desc: "A ceremonial staff repurposed for fishing in the spirit realm." 
+  'Gilded Trident Spear': { 
+    price: 25000000, 
+    str: 100, int: 0, luck: 100, stam: 0, 
+    tier: 2, 
+    desc: "A royal weapon repurposed for peace.", 
+    stackSize: 1 
   },
-  'Golden Scarab Rod': { 
-    price: 1500000, 
-    str: 0, int: 60, luck: 0, stam: 0, 
-    tier: 2,
-    desc: "Ancient desert technology. It seeks out valuable treasures." 
+  'Crystal Shard Staff': { 
+    price: 35000000, 
+    str: 180, int: 0, luck: 40, stam: 0, 
+    tier: 2, 
+    desc: "Resonates with the song of the ocean.", 
+    stackSize: 1 
   },
-  'Mycelium Spore-Rod': { 
-    price: 2000000, 
-    str: 20, int: 0, luck: 40, stam: 0, 
-    tier: 2,
-    desc: "Living fungus that grows stronger in damp environments." 
+  'Abyssal Anchor Rod': {
+    price: 42000000, 
+    str: 240, int: 0, luck: 0, stam: 0, 
+    tier: 2, 
+    desc: "So heavy only the strongest can lift it.", 
+    stackSize: 1 
   },
-  'Crystal Shard Pole': { 
-    price: 2250000, 
-    str: 30, int: 30, luck: 0, stam: 0, 
-    tier: 2,
-    desc: "Made of jagged glass. Sharp, dangerous, and efficient." 
-  },
-  'Deep-Sea Harpoon': { 
-    price: 3000000, 
-    str: 70, int: 0, luck: 0, stam: 0, 
-    tier: 2,
-    desc: "Less of a fishing rod, more of a weapon. Catches whales." 
+  'Void-Touched Harpoon': { 
+    price: 50000000, 
+    str: 250, int: 0, luck: 0, stam: 0, 
+    tier: 2, 
+    desc: "Darkness radiates from the tip.", 
+    stackSize: 1 
   },
 
-  // TIER 3: The Ascended (10M - 600M Gold)
   'Neon-Pulse Rod': { 
-    price: 10000000, 
-    str: 40, int: 80, luck: 0, stam: 0, 
-    tier: 3,
-    desc: "Buzzes with synthetic energy. Maximizes efficiency." 
-  },
-  'Clockwork Chronos Rod': { 
-    price: 25000000, 
-    str: 0, int: 0, luck: 0, stam: 100, 
-    tier: 3,
-    desc: "Ticks rhythmically. Allows for massive offline progression." 
-  },
-  'Void-Eater': { 
-    price: 50000000, 
-    str: 100, int: 0, luck: 50, stam: 0, 
-    tier: 3,
-    desc: "It pulls fish out of existence and into your inventory." 
-  },
-  'Archmage\'s Runestaff': { 
     price: 100000000, 
-    str: 0, int: 150, luck: 0, stam: 0, 
-    tier: 3,
-    desc: "Glows with arcane power. Converts every catch into maximum gold." 
+    str: 200, int: 0, luck: 50, stam: 0, 
+    tier: 3, 
+    desc: "Vaporwave aesthetics meets high-tech fishing.", 
+    stackSize: 1 
+  },
+  'Solar-Flare Staff': {
+    price: 250000000, 
+    str: 275, int: 0, luck: 0, stam: 0, 
+    tier: 3, 
+    desc: "Emits a blinding light that pierces the deep.", 
+    stackSize: 1 
   },
   'Vampiric Blood-Rod': { 
-    price: 250000000, 
-    str: 120, int: 0, luck: 80, stam: 0, 
-    tier: 3,
-    desc: "A living tool carved from bone. It hungers for rare catches." 
-  },
-  'Stardust Spindle': { 
     price: 500000000, 
-    str: 0, int: 0, luck: 200, stam: 0, 
-    tier: 3,
-    desc: "Weaves threads of fate to ensure you find the rarest creatures." 
+    str: 300, int: 0, luck: 0, stam: 0, 
+    tier: 3, 
+    desc: "It pulses like a heartbeat in your hand.", 
+    stackSize: 1 
   },
-  'Mercury Flow Rod': { 
-    price: 525000000, 
-    str: 150, int: 0, luck: 0, stam: 50, 
-    tier: 3,
-    desc: "A liquid metal rod that shifts weight to help you reel." 
+  'Chrono-Shifter Pole': {
+    price: 1000000000, 
+    str: 150, int: 0, luck: 175, stam: 0, 
+    tier: 3, 
+    desc: "Seems to vibrate out of phase with time.", 
+    stackSize: 1 
   },
-  'Sky-Sail Mast': { 
-    price: 550000000, 
-    str: 0, int: 0, luck: 100, stam: 100, 
-    tier: 3,
-    desc: "Made from the mast of a sky-ship. Catches the wind and the fish." 
+  'Stardust Spindle Rod': { 
+    price: 1500000000, 
+    str: 100, int: 0, luck: 250, stam: 0, 
+    tier: 3, 
+    desc: "Woven from threads of cosmic light.", 
+    stackSize: 1 
   },
-  'Symphonic Conductor': { 
-    price: 575000000, 
-    str: 0, int: 200, luck: 0, stam: 0, 
-    tier: 3,
-    desc: "A baton that commands the ocean to pay you tribute." 
+  'Leviathan\'s Spine Rod': { 
+    price: 3500000000, 
+    str: 400, int: 0, luck: 20, stam: 0, 
+    tier: 3, 
+    desc: "Carved from the bone of a sea monster.", 
+    stackSize: 1 
   },
-  'Book of Shadows Spine': { 
-    price: 600000000, 
-    str: 0, int: 120, luck: 120, stam: 0, 
-    tier: 3,
-    desc: "Bound in leather. It knows where the secret fish hide." 
+  'Nebula Weaver Rod': {
+    price: 5000000000, 
+    str: 220, int: 0, luck: 220, stam: 0, 
+    tier: 3, 
+    desc: "Creates small gas clouds in the water.", 
+    stackSize: 1 
+  },
+  'Celestial Harpoon': { 
+    price: 7000000000, 
+    str: 350, int: 0, luck: 100, stam: 0, 
+    tier: 3, 
+    desc: "Used by angels to hunt sky-whales.", 
+    stackSize: 1 
+  },
+  'Event Horizon Rod': { 
+    price: 10000000000, 
+    str: 250, int: 0, luck: 250, stam: 0, 
+    tier: 3, 
+    desc: "The hook creates a tiny singularity.", 
+    stackSize: 1 
   },
 
-  // TIER 4: Godslayer & Abstract (5B - 750T Gold)
-  'Event Horizon Rod': { 
-    price: 5000000000, 
-    str: 300, int: 0, luck: 0, stam: 300, 
-    tier: 4,
-    desc: "So heavy that only a master can lift it. Pulls with gravity." 
-  },
-  'The Glitch Stick (MissingNo)': { 
+  'Quantum Weaver Rod': { 
     price: 50000000000, 
-    str: 250, int: 250, luck: 0, stam: 0, 
-    tier: 4,
-    desc: "A corrupted item file. It breaks the economy." 
+    str: 500, int: 0, luck: 250, stam: 0, 
+    tier: 4, 
+    desc: "Exists in a superposition of caught and not caught.", 
+    stackSize: 1 
   },
-  'Geometry Prime': { 
-    price: 200000000000, 
-    str: 0, int: 400, luck: 400, stam: 0, 
-    tier: 4,
-    desc: "Calculates the perfect angle for every cast." 
+  'Antimatter Caster': {
+    price: 100000000000, 
+    str: 850, int: 0, luck: 0, stam: 0, 
+    tier: 4, 
+    desc: "Don't cross the streams.", 
+    stackSize: 1 
   },
-  'The Eraser': { 
+  'The Glitch Stick': { 
+    price: 250000000000, 
+    str: 800, int: 0, luck: 200, stam: 0, 
+    tier: 4, 
+    desc: "MISSINGNO texture detected.", 
+    stackSize: 1 
+  },
+  'Dark Energy Scepter': {
+    price: 500000000000, 
+    str: 600, int: 0, luck: 600, stam: 0, 
+    tier: 4, 
+    desc: "Expands the space between fish.", 
+    stackSize: 1 
+  },
+  'Geometry Prime Rod': { 
     price: 1000000000000, 
-    str: 600, int: 0, luck: 0, stam: 0, 
-    tier: 4,
-    desc: "It doesn't just catch fish; it removes them from the water instantly." 
+    str: 200, int: 0, luck: 1100, stam: 0, 
+    tier: 4, 
+    desc: "Mathematical perfection made physical.", 
+    stackSize: 1 
+  },
+  'The Eraser Rod': { 
+    price: 5000000000000, 
+    str: 1600, int: 0, luck: 0, stam: 0, 
+    tier: 4, 
+    desc: "Deletes the water around the fish.", 
+    stackSize: 1 
+  },
+  'Multiverse Rift Pole': {
+    price: 10000000000000, 
+    str: 1900, int: 0, luck: 0, stam: 0, 
+    tier: 4, 
+    desc: "Fishing in timeline B.", 
+    stackSize: 1 
   },
   'Rod of Genesis': { 
-    price: 100000000000000, 
-    str: 1000, int: 1000, luck: 1000, stam: 1000, 
-    tier: 4,
-    desc: "Fashioned from the first tree in the Garden of Origins." 
+    price: 25000000000000, 
+    str: 1100, int: 0, luck: 1100, stam: 0, 
+    tier: 4, 
+    desc: "The tool used to create the first ocean.", 
+    stackSize: 1 
   },
-  'The Developer\'s Debug Tool': { 
-    price: 500000000000000, 
-    str: 2500, int: 2500, luck: 2500, stam: 2500, 
-    tier: 4,
-    desc: "A tool left behind by the creators. Overpowered and unfair." 
-  },
-  'Supernova Caster': { 
-    price: 550000000000000, 
-    str: 1500, int: 0, luck: 1000, stam: 0, 
-    tier: 4,
-    desc: "Forged in a dying star. It burns with the need to catch." 
-  },
-  'Dimensional Rift Rod': { 
-    price: 600000000000000, 
-    str: 1200, int: 1200, luck: 0, stam: 0, 
-    tier: 4,
-    desc: "Refracts reality to multiply your catch and your wealth." 
-  },
-  'Soul-Harvester Scythe': { 
-    price: 650000000000000, 
-    str: 0, int: 500, luck: 2000, stam: 0, 
-    tier: 4,
-    desc: "Reaps the rarest souls from the depths." 
-  },
-  'The Omni-Null': { 
-    price: 750000000000000, 
-    str: 1500, int: 1500, luck: 1500, stam: 1500, 
-    tier: 4,
-    desc: "A rod made of pure nothingness. It balances all things." 
+  'The Omni-Null Scepter': { 
+    price: 50000000000000, 
+    str: 1250, int: 0, luck: 1250, stam: 0, 
+    tier: 4, 
+    desc: "The end of all things. The final rod.", 
+    stackSize: 1 
   }
 };
 
 window.BAITS = {
-  // TIER 1: The Basics (0 - 750 Gold)
   'Stale Bread Crust': { 
     price: 0, 
     str: 0, int: 0, luck: 0, stam: 0, 
-    tier: 1,
+    tier: 1, 
     desc: "Better than a bare hook.", 
     stackSize: 999999 
   },
-  'Wriggling Garden Worm': { 
-    price: 20, 
+  'Garden Worm Bait': { 
+    price: 15, 
     str: 2, int: 0, luck: 0, stam: 0, 
-    tier: 1,
-    desc: "The classic. Fish can't resist the wiggle.", 
+    tier: 1, 
+    desc: "A classic.", 
     stackSize: 1 
   },
-  'Shiny Pebble': { 
-    price: 40, 
-    str: 0, int: 0, luck: 2, stam: 0, 
-    tier: 1,
-    desc: "Replaces the old foil. Magpies and fish love it.", 
+  'Shiny Pebble Lure': { 
+    price: 30, 
+    str: 0, int: 0, luck: 5, stam: 0, 
+    tier: 1, 
+    desc: "Sparkles in the water.", 
     stackSize: 1 
   },
-  'Sticky Dough Ball': { 
+  'Dough Ball Bait': { 
+    price: 50, 
+    str: 10, int: 0, luck: 0, stam: 0, 
+    tier: 1, 
+    desc: "Simple flour mix.", 
+    stackSize: 1 
+  },
+  'Cricket Lure': {
     price: 75, 
-    str: 3, int: 0, luck: 0, stam: 0, 
-    tier: 1,
-    desc: "Expands in water. Good for catching two small fry at once.", 
+    str: 0, int: 0, luck: 12, stam: 0, 
+    tier: 1, 
+    desc: "Mimics a drowning bug.", 
     stackSize: 1 
   },
-  'Neon Cricket': { 
-    price: 100, 
-    str: 0, int: 0, luck: 4, stam: 0, 
-    tier: 1,
-    desc: "Glows faintly. Helps rare fish find the hook in muddy water.", 
+  'Neon Cricket Lure': { 
+    price: 120, 
+    str: 0, int: 0, luck: 15, stam: 0, 
+    tier: 1, 
+    desc: "Glows in the dark.", 
     stackSize: 1 
   },
-  'Fat Maggot': { 
-    price: 150, 
-    str: 5, int: 0, luck: 0, stam: 0, 
-    tier: 1,
-    desc: "Disgusting, but fish find it irresistible. High protein.", 
+  'Fish Flakes Bait': {
+    price: 200, 
+    str: 18, int: 0, luck: 0, stam: 0, 
+    tier: 1, 
+    desc: "Compressed fish meal.", 
     stackSize: 1 
   },
-  'Sparkle Fly': { 
-    price: 250, 
-    str: 0, int: 0, luck: 6, stam: 0, 
-    tier: 1,
-    desc: "Fake fly with glittery wings. Attracts the fancy ones.", 
+  'Fat Maggot Bait': { 
+    price: 400, 
+    str: 20, int: 0, luck: 0, stam: 0, 
+    tier: 1, 
+    desc: "Fish love the protein.", 
+    stackSize: 1 
+  },
+  'Spider Leg Bait': {
+    price: 550, 
+    str: 25, int: 0, luck: 0, stam: 0, 
+    tier: 1, 
+    desc: "Twitches in the water.", 
     stackSize: 1 
   },
   'River Snail Meat': { 
-    price: 300, 
-    str: 4, int: 0, luck: 2, stam: 0, 
-    tier: 1,
-    desc: "A crunchy treat for larger river predators.", 
-    stackSize: 1 
-  },
-  'Salmon Roe': { 
-    price: 400, 
-    str: 8, int: 0, luck: 0, stam: 0, 
-    tier: 1,
-    desc: "A cluster of eggs. Often triggers a feeding frenzy.", 
-    stackSize: 1 
-  },
-  'Grotto Crystal Shard': { 
-    price: 550, 
-    str: 0, int: 0, luck: 8, stam: 0, 
-    tier: 1,
-    desc: "Refracts light deep underwater. Grotto fish are drawn to it.", 
-    stackSize: 1 
-  },
-  'Frost Grub': { 
     price: 750, 
-    str: 6, int: 0, luck: 4, stam: 0, 
-    tier: 1,
-    desc: "Found in the ice. It stays wiggling even in freezing water.", 
+    str: 15, int: 0, luck: 15, stam: 0, 
+    tier: 1, 
+    desc: "A crunchy snack.", 
     stackSize: 1 
   },
 
-  // TIER 2: The Specialist (750 - 7,500 Gold)
   'Aged Cheddar Chunk': { 
-    price: 900, 
-    str: 10, int: 0, luck: 0, stam: 0, 
-    tier: 2,
-    desc: "Strong smell triggers aggressive feeding in the Cheddar Gorge.", 
+    price: 3000, 
+    str: 50, int: 0, luck: 0, stam: 0, 
+    tier: 2, 
+    desc: "The funk attracts them.", 
+    stackSize: 1 
+  },
+  'Spicy Meatball Bait': {
+    price: 4000, 
+    str: 55, int: 0, luck: 0, stam: 0, 
+    tier: 2, 
+    desc: "Packed with heat.", 
     stackSize: 1 
   },
   'Sand-Worm Segment': { 
-    price: 1100, 
-    str: 0, int: 0, luck: 10, stam: 0, 
-    tier: 2,
-    desc: "Vibrates against the sand. Rare desert fish sense it.", 
-    stackSize: 1 
-  },
-  'Electric Grub': { 
-    price: 1500, 
-    str: 15, int: 0, luck: 0, stam: 0, 
-    tier: 2,
-    desc: "Shocks the fish when they bite, hooking them instantly.", 
-    stackSize: 1 
-  },
-  'Gilded Wing': { 
-    price: 1750, 
-    str: 0, int: 0, luck: 15, stam: 0, 
-    tier: 2,
-    desc: "A golden insect wing. It looks valuable, so valuable fish bite it.", 
-    stackSize: 1 
-  },
-  'Ghost Moth Wing': { 
-    price: 2500, 
-    str: 10, int: 0, luck: 10, stam: 0, 
-    tier: 2,
-    desc: "Phases through water weeds to catch spirit fish.", 
-    stackSize: 1 
-  },
-  'Mangrove Root Sap': { 
-    price: 3200, 
-    str: 20, int: 0, luck: 0, stam: 0, 
-    tier: 2,
-    desc: "Extremely sticky. Once they bite, they never let go.", 
-    stackSize: 1 
-  },
-  'Moon Dust Vial': { 
-    price: 3500, 
-    str: 0, int: 0, luck: 20, stam: 0, 
-    tier: 2,
-    desc: "Glows with a soft lunar light. Hypnotic to rare species.", 
-    stackSize: 1 
-  },
-  'Explosive Spore Pod': { 
-    price: 4250, 
-    str: 25, int: 0, luck: 0, stam: 0, 
-    tier: 2,
-    desc: "Bursts on contact, snagging multiple fish in a cloud of spores.", 
-    stackSize: 1 
-  },
-  'Rusty Gear': { 
     price: 5000, 
-    str: 15, int: 0, luck: 10, stam: 0, 
-    tier: 2,
-    desc: "Sunken city fish think it's spare parts. Heavy.", 
-    stackSize: 1 
-  },
-  'Glass Shard Lure': { 
-    price: 6000, 
-    str: 0, int: 0, luck: 25, stam: 0, 
-    tier: 2,
-    desc: "Invisible in the water until it flashes. Deadly effective.", 
-    stackSize: 1 
-  },
-  'Void-Touched Leech': { 
-    price: 7500, 
-    str: 20, int: 0, luck: 15, stam: 0, 
-    tier: 2,
-    desc: "It seeks out life in the dead waters of the void.", 
-    stackSize: 1 
-  },
-
-  // TIER 3: High-Tech & Arcane (7,500 - 75,000 Gold)
-  'Magnetic Ball Bearing': { 
-    price: 8000, 
-    str: 30, int: 0, luck: 0, stam: 0, 
-    tier: 3,
-    desc: "Essential for the Quicksilver Canal. Attracts metallic fish.", 
-    stackSize: 1 
-  },
-  'Mana Crystal Shard': { 
-    price: 10000, 
-    str: 0, int: 0, luck: 30, stam: 0, 
-    tier: 3,
-    desc: "Radiates pure magic. Rare magical fish crave the mana.", 
-    stackSize: 1 
-  },
-  'Abyssal Mite': { 
-    price: 12000, 
-    str: 40, int: 0, luck: 0, stam: 0, 
-    tier: 3,
-    desc: "A parasite that latches onto bones. Great for the Crimson Abyss.", 
-    stackSize: 1 
-  },
-  'Cyber-Fly v2.0': { 
-    price: 18000, 
-    str: 25, int: 0, luck: 20, stam: 0, 
-    tier: 3,
-    desc: "Artificial bait programmed to target high-value assets.", 
-    stackSize: 1 
-  },
-  'Bottle of Clouds': { 
-    price: 25000, 
-    str: 0, int: 0, luck: 45, stam: 0, 
-    tier: 3,
-    desc: "Condensed water vapor. Floats perfectly in the Sky Biome.", 
-    stackSize: 1 
-  },
-  'Blood-Worm': { 
-    price: 37500, 
-    str: 50, int: 0, luck: 0, stam: 0, 
-    tier: 3,
-    desc: "Throbs with a heartbeat. Predators go crazy for it.", 
-    stackSize: 1 
-  },
-  'Chronos Sand': { 
-    price: 45000, 
     str: 0, int: 0, luck: 50, stam: 0, 
-    tier: 3,
-    desc: "Sands of time. It attracts fish from yesterday.", 
+    tier: 2, 
+    desc: "From the desert dunes.", 
     stackSize: 1 
   },
-  'Crimson Flesh Chunk': { 
-    price: 50000, 
-    str: 60, int: 0, luck: 0, stam: 0, 
-    tier: 3,
-    desc: "Fresh meat. The scent travels for miles in the blood ocean.", 
+  'Beetle Larva Bait': {
+    price: 6500, 
+    str: 65, int: 0, luck: 0, stam: 0, 
+    tier: 2, 
+    desc: "Juicy and thick.", 
     stackSize: 1 
   },
-  'Neon Battery': { 
-    price: 57500, 
-    str: 30, int: 0, luck: 30, stam: 0, 
-    tier: 3,
-    desc: "Leaks energy. Neon Reef fish treat it like a snack.", 
-    stackSize: 1 
-  },
-  'Ink Drop': { 
-    price: 65000, 
-    str: 0, int: 0, luck: 60, stam: 0, 
-    tier: 3,
-    desc: "Pure black ink. It writes a story where you catch a rare fish.", 
-    stackSize: 1 
-  },
-  'Tuning Fork Tip': { 
-    price: 75000, 
+  'Electric Grub Lure': { 
+    price: 8000, 
     str: 70, int: 0, luck: 0, stam: 0, 
-    tier: 3,
-    desc: "Vibrates constantly. Sound-based fish swarm it.", 
+    tier: 2, 
+    desc: "Zaps the tongue.", 
+    stackSize: 1 
+  },
+  'Glowing Algae Ball': {
+    price: 10000, 
+    str: 0, int: 0, luck: 75, stam: 0, 
+    tier: 2, 
+    desc: "Bioluminescent snack.", 
+    stackSize: 1 
+  },
+  'Gilded Wing Lure': { 
+    price: 12000, 
+    str: 20, int: 0, luck: 60, stam: 0, 
+    tier: 2, 
+    desc: "Dipped in gold leaf.", 
+    stackSize: 1 
+  },
+  'Ghost Moth Lure': { 
+    price: 15000, 
+    str: 50, int: 0, luck: 50, stam: 0, 
+    tier: 2, 
+    desc: "Phases through water.", 
     stackSize: 1 
   },
 
-  // TIER 4: Cosmic & Conceptual (100,000 - 2,000,000 Gold)
-  'Nebula Dust': { 
-    price: 100000, 
-    str: 0, int: 0, luck: 70, stam: 0, 
-    tier: 4,
-    desc: "Sprinkle a little universe on your line.", 
+  'Magnetic Bearing Lure': { 
+    price: 25000, 
+    str: 150, int: 0, luck: 0, stam: 0, 
+    tier: 3, 
+    desc: "Attracts metal scales.", 
     stackSize: 1 
   },
-  'Time-Loop Larva': { 
-    price: 150000, 
-    str: 80, int: 0, luck: 0, stam: 0, 
-    tier: 4,
-    desc: "If the fish escapes, time rewinds so you can hook it again.", 
+  'Void Shrimp Bait': {
+    price: 30000, 
+    str: 175, int: 0, luck: 0, stam: 0, 
+    tier: 3, 
+    desc: "Tastes like nothingness.", 
     stackSize: 1 
   },
-  'Reality Glitch Block': { 
-    price: 250000, 
-    str: 100, int: 0, luck: 0, stam: 0, 
-    tier: 4,
-    desc: "Forces the game code to spawn more fish per pull.", 
-    stackSize: 1 
-  },
-  'Concept of Desire': { 
-    price: 350000, 
-    str: 0, int: 0, luck: 100, stam: 0, 
-    tier: 4,
-    desc: "It's not food, it's whatever the fish wants most.", 
-    stackSize: 1 
-  },
-  'Alpha Particle': { 
-    price: 500000, 
+  'Mana Crystal Lure': { 
+    price: 40000, 
     str: 0, int: 0, luck: 150, stam: 0, 
-    tier: 4,
-    desc: "The very first piece of matter. Attracts Origins.", 
+    tier: 3, 
+    desc: "Pure crystallized magic.", 
     stackSize: 1 
   },
-  'The Singularity': { 
-    price: 750000, 
-    str: 150, int: 0, luck: 50, stam: 0, 
-    tier: 4,
-    desc: "A black hole on a hook. Nothing escapes the gravity.", 
+  'Phoenix Feather Lure': {
+    price: 50000, 
+    str: 0, int: 0, luck: 225, stam: 0, 
+    tier: 3, 
+    desc: "Burns underwater.", 
     stackSize: 1 
   },
-  'Dark Matter Chunk': { 
-    price: 900000, 
-    str: 200, int: 0, luck: 0, stam: 0, 
-    tier: 4,
-    desc: "Invisible and heavy. Anchors the biggest fish.", 
-    stackSize: 1 
-  },
-  'Soul Wisp': { 
-    price: 1200000, 
+  'Cyber-Fly Lure': { 
+    price: 65000, 
     str: 100, int: 0, luck: 100, stam: 0, 
-    tier: 4,
-    desc: "A loose soul. Attracts spectral entities.", 
+    tier: 3, 
+    desc: "Robotic insect lure.", 
     stackSize: 1 
   },
-  'Corrupted Code': { 
-    price: 1500000, 
+  'Spectral Minnow Bait': {
+    price: 75000, 
+    str: 130, int: 0, luck: 140, stam: 0, 
+    tier: 3, 
+    desc: "Ghostly small fish.", 
+    stackSize: 1 
+  },
+  'Blood-Worm Bait': { 
+    price: 85000, 
     str: 250, int: 0, luck: 0, stam: 0, 
-    tier: 4,
-    desc: "Breaks the spawn limit cap for one cast.", 
+    tier: 3, 
+    desc: "Frenzies predators.", 
     stackSize: 1 
   },
-  'Prism Shard': { 
-    price: 1800000, 
-    str: 0, int: 0, luck: 250, stam: 0, 
-    tier: 4,
-    desc: "Refracts reality. Shining bait for Crystalline fish.", 
+  'Ink Drop Lure': { 
+    price: 100000, 
+    str: 50, int: 0, luck: 250, stam: 0, 
+    tier: 3, 
+    desc: "Pure void darkness.", 
     stackSize: 1 
   },
-  'Origin Spark': { 
-    price: 2000000, 
+
+  'Nebula Dust Bait': { 
+    price: 200000, 
+    str: 100, int: 0, luck: 400, stam: 0, 
+    tier: 4, 
+    desc: "Star matter.", 
+    stackSize: 1 
+  },
+  'Black Hole Shard': {
+    price: 300000, 
+    str: 525, int: 0, luck: 0, stam: 0, 
+    tier: 4, 
+    desc: "Insanely heavy.", 
+    stackSize: 1 
+  },
+  'Time Larva Bait': { 
+    price: 500000, 
+    str: 500, int: 0, luck: 50, stam: 0, 
+    tier: 4, 
+    desc: "Eats seconds.", 
+    stackSize: 1 
+  },
+  'Hyper-Cube Lure': {
+    price: 750000, 
     str: 300, int: 0, luck: 300, stam: 0, 
-    tier: 4,
-    desc: "The ultimate bait. A piece of the Big Bang.", 
+    tier: 4, 
+    desc: "4D geometrical bait.", 
+    stackSize: 1 
+  },
+  'Glitch Block Lure': { 
+    price: 1000000, 
+    str: 300, int: 0, luck: 350, stam: 0, 
+    tier: 4, 
+    desc: "A texture error.", 
+    stackSize: 1 
+  },
+  'Neutron Star Fragment': {
+    price: 1500000, 
+    str: 700, int: 0, luck: 0, stam: 0, 
+    tier: 4, 
+    desc: "Density unknown.", 
+    stackSize: 1 
+  },
+  'Alpha Particle Bait': { 
+    price: 2000000, 
+    str: 700, int: 0, luck: 25, stam: 0, 
+    tier: 4, 
+    desc: "Heavy atomic bait.", 
+    stackSize: 1 
+  },
+  'Origin Spark Bait': { 
+    price: 3000000, 
+    str: 375, int: 0, luck: 375, stam: 0, 
+    tier: 4, 
+    desc: "A piece of the Big Bang.", 
     stackSize: 1 
   }
 };
