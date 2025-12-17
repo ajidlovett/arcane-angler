@@ -91,6 +91,12 @@ const FishingGame = ({ user, onLogout }) => {
   const [fishing, setFishing] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [lastCatch, setLastCatch] = useState(null);
+
+  // Auto-Cast state
+  const [isAutoCasting, setIsAutoCasting] = useState(false);
+  const [autoCastCooldown, setAutoCastCooldown] = useState(0);
+  const autoCastInterval = React.useRef(null);
+  const autoCastCooldownInterval = React.useRef(null);
   const [selectedRarity, setSelectedRarity] = useState('all');
   const [inventorySortOrder, setInventorySortOrder] = useState('value-desc'); // Default sort by value descending
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -445,7 +451,7 @@ useEffect(() => {
     }
 
     setFishing(true);
-    setCooldown(4);
+    setCooldown(6);
 
     setTimeout(async () => {
       // Set funny line at the same time as showing the fish result
@@ -516,6 +522,133 @@ useEffect(() => {
       }
     }, 1000);
   };
+
+  // Auto-Cast: Single cast execution
+  const performAutoCast = async () => {
+    if (player.stamina < 1) {
+      stopAutoCast();
+      showAlert("Auto-Cast stopped: Out of stamina!");
+      return;
+    }
+
+    // Set funny line
+    setFunnyLine(getFunnyLine());
+
+    try {
+      // Call auto-cast endpoint
+      const response = await window.ApiService.autoCast();
+
+      if (response.success) {
+        const result = response.result;
+
+        // Set last catch for display
+        setLastCatch({
+          fish: result.fish.name,
+          rarity: result.rarity,
+          count: result.count,
+          xp: result.xpGained,
+          gold: 0,
+          relics: 0,
+          titanBonus: 1,
+          xpBonus: result.xpBonus,
+          isAutoCast: true
+        });
+
+        // Update state with server data
+        setPlayer(prev => ({
+          ...prev,
+          gold: result.newGold,
+          xp: result.newXP,
+          level: result.newLevel,
+          relics: result.newRelics,
+          stamina: result.newStamina,
+          statPoints: result.newStatPoints !== undefined ? result.newStatPoints : prev.statPoints,
+          equippedBait: result.equippedBait,
+          baitInventory: {
+            ...prev.baitInventory,
+            [result.equippedBait]: result.baitQuantity
+          }
+        }));
+
+        // Reload full player data to sync inventory
+        const playerData = await window.ApiService.getPlayerData();
+        setPlayer(playerData);
+
+        // Refresh active boosters
+        fetchActiveBoosters();
+
+        // Check if stamina is now 0 (stop auto-cast)
+        if (result.newStamina < 1) {
+          stopAutoCast();
+          showAlert("Auto-Cast complete: All stamina consumed!");
+        }
+      }
+    } catch (error) {
+      console.error('Auto-cast failed:', error);
+      stopAutoCast();
+      showAlert('Auto-cast failed. Stopping auto-cast.');
+    }
+  };
+
+  // Start Auto-Cast
+  const startAutoCast = () => {
+    if (player.stamina < 1) {
+      showAlert("Not enough stamina for auto-cast!");
+      return;
+    }
+
+    setIsAutoCasting(true);
+
+    // Immediately perform first cast
+    performAutoCast();
+
+    // Set 12-second cooldown countdown
+    setAutoCastCooldown(12);
+    autoCastCooldownInterval.current = setInterval(() => {
+      setAutoCastCooldown(prev => {
+        if (prev <= 1) return 12;
+        return prev - 1;
+      });
+    }, 1000);
+
+    // Set interval for subsequent casts (12 seconds)
+    autoCastInterval.current = setInterval(() => {
+      performAutoCast();
+    }, 12000);
+  };
+
+  // Stop Auto-Cast
+  const stopAutoCast = () => {
+    setIsAutoCasting(false);
+    setAutoCastCooldown(0);
+
+    if (autoCastInterval.current) {
+      clearInterval(autoCastInterval.current);
+      autoCastInterval.current = null;
+    }
+
+    if (autoCastCooldownInterval.current) {
+      clearInterval(autoCastCooldownInterval.current);
+      autoCastCooldownInterval.current = null;
+    }
+  };
+
+  // Toggle Auto-Cast
+  const toggleAutoCast = () => {
+    if (isAutoCasting) {
+      stopAutoCast();
+    } else {
+      startAutoCast();
+    }
+  };
+
+  // Cleanup auto-cast on unmount
+  React.useEffect(() => {
+    return () => {
+      if (autoCastInterval.current) clearInterval(autoCastInterval.current);
+      if (autoCastCooldownInterval.current) clearInterval(autoCastCooldownInterval.current);
+    };
+  }, []);
 
   const toggleLock = async (fishName) => {
     const isCurrentlyLocked = player.lockedFish.includes(fishName);
@@ -2973,6 +3106,9 @@ useEffect(() => {
             getRarityColor={getRarityColor}
             isGradientRarity={isGradientRarity}
             getGradientTextStyle={getGradientTextStyle}
+            isAutoCasting={isAutoCasting}
+            toggleAutoCast={toggleAutoCast}
+            autoCastCooldown={autoCastCooldown}
           />}
           {currentPage === 'equipment' && <EquipmentPage />}
           {currentPage === 'biomes' && <BiomesPage />}

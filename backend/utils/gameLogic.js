@@ -42,13 +42,85 @@ function getBiomeRelicRange(biome) {
 }
 
 /**
- * Calculate rarity based on luck stat
- * Uses weighted RNG with luck modifiers (Jackpot Mechanic)
- * Luck only affects high-tier rarities: Legendary, Treasure Chest, Mythic, Exotic, Arcane
+ * Calculate Luck Power from total luck stat (REFACTORED Helper)
+ * Luck (LUCK) - "The Fate Weaver" - Step A: Convert Stat to Luck Power
+ *
+ * Scaling with diminishing returns:
+ * - First 1000 pts: 100% efficiency (1 pt = 1 power)
+ * - 1000-5000 pts: 75% efficiency
+ * - 5000-10000 pts: 50% efficiency
+ * - 10000-15000 pts: 25% efficiency
+ * - 15000-20000 pts: 15% efficiency
+ * - 20000+ pts: 10% efficiency
+ *
  * @param {number} totalLuck - Total luck (base + equipment)
+ * @returns {number} Luck power
+ */
+function calculateLuckPower(totalLuck) {
+  let luckPower = 0;
+  let remainingLuck = totalLuck;
+
+  // Tier 1: 0-1000 = 100% efficiency
+  if (remainingLuck > 0) {
+    const tier1 = Math.min(remainingLuck, 1000);
+    luckPower += tier1 * 1.0;
+    remainingLuck -= tier1;
+  }
+
+  // Tier 2: 1000-5000 = 75% efficiency
+  if (remainingLuck > 0) {
+    const tier2 = Math.min(remainingLuck, 4000);
+    luckPower += tier2 * 0.75;
+    remainingLuck -= tier2;
+  }
+
+  // Tier 3: 5000-10000 = 50% efficiency
+  if (remainingLuck > 0) {
+    const tier3 = Math.min(remainingLuck, 5000);
+    luckPower += tier3 * 0.5;
+    remainingLuck -= tier3;
+  }
+
+  // Tier 4: 10000-15000 = 25% efficiency
+  if (remainingLuck > 0) {
+    const tier4 = Math.min(remainingLuck, 5000);
+    luckPower += tier4 * 0.25;
+    remainingLuck -= tier4;
+  }
+
+  // Tier 5: 15000-20000 = 15% efficiency
+  if (remainingLuck > 0) {
+    const tier5 = Math.min(remainingLuck, 5000);
+    luckPower += tier5 * 0.15;
+    remainingLuck -= tier5;
+  }
+
+  // Tier 6: 20000+ = 10% efficiency
+  if (remainingLuck > 0) {
+    luckPower += remainingLuck * 0.1;
+  }
+
+  return luckPower;
+}
+
+/**
+ * Calculate rarity based on luck stat (REFACTORED)
+ * Luck (LUCK) - "The Fate Weaver" - Step B: Apply Luck Power with Damping
+ *
+ * Uses weighted RNG with damped luck modifiers
+ * Luck affects high-tier rarities with damping factors
+ *
+ * Damping Factors:
+ * - Legendary: 0.5
+ * - Mythic: 0.2
+ * - Exotic: 0.05
+ * - Arcane: 0.01
+ *
+ * @param {number} totalLuck - Total luck (base + equipment)
+ * @param {boolean} isAutoCast - Whether this is an auto-cast (caps at Epic)
  * @returns {string} Rarity tier
  */
-function calculateRarity(totalLuck) {
+function calculateRarity(totalLuck, isAutoCast = false) {
   const baseWeights = {
     'Common': 50000,
     'Uncommon': 28000,
@@ -62,19 +134,33 @@ function calculateRarity(totalLuck) {
     'Arcane': 1
   };
 
-  // High-tier rarities affected by luck (Jackpot Mechanic)
-  const highTierRarities = ['Legendary', 'Treasure Chest', 'Mythic', 'Exotic', 'Arcane'];
+  // Calculate luck power from total luck
+  const luckPower = calculateLuckPower(totalLuck);
+
+  // Damping factors for high-tier rarities
+  const dampingFactors = {
+    'Legendary': 0.5,
+    'Treasure Chest': 0.5, // Same as Legendary
+    'Mythic': 0.2,
+    'Exotic': 0.05,
+    'Arcane': 0.01
+  };
 
   const effectiveWeights = {};
   let poolSize = 0;
 
   for (const [tier, baseWeight] of Object.entries(baseWeights)) {
-    if (highTierRarities.includes(tier)) {
-      // Formula: NewWeight = BaseWeight * (1 + (TotalLuck / 100))
-      // 1 Luck point = +1% Weight for high-tier rarities
-      effectiveWeights[tier] = baseWeight * (1 + (totalLuck / 100));
+    // Auto-Cast caps at Epic rarity
+    if (isAutoCast && ['Treasure Chest', 'Legendary', 'Mythic', 'Exotic', 'Arcane'].includes(tier)) {
+      continue; // Skip these rarities for auto-cast
+    }
+
+    if (dampingFactors[tier] !== undefined) {
+      // High-tier: Base + Floor(Luck Power * Damping)
+      const bonus = Math.floor(luckPower * dampingFactors[tier]);
+      effectiveWeights[tier] = baseWeight + bonus;
     } else {
-      // Common, Uncommon, Fine, Rare, Epic: Not affected by luck
+      // Low-tier (Common, Uncommon, Fine, Rare, Epic): Not affected by luck
       effectiveWeights[tier] = baseWeight;
     }
     poolSize += effectiveWeights[tier];
@@ -92,34 +178,52 @@ function calculateRarity(totalLuck) {
 }
 
 /**
- * Calculate number of fish caught based on strength
- * Higher strength = more fish per cast
+ * Calculate number of fish caught based on strength (REFACTORED)
+ * Strength (STR) - "The Bulk Hauler"
+ * Effect: Increases fish quantity per cast (ACTIVE Play only - Manual Casting)
+ *
  * @param {string} rarity - Fish rarity tier
  * @param {number} totalStrength - Total strength (base + equipment)
+ * @param {boolean} isAutoCast - Whether this is an auto-cast (auto-cast always yields 1)
  * @returns {number} Number of fish caught
  */
-function calculateFishCount(rarity, totalStrength) {
+function calculateFishCount(rarity, totalStrength, isAutoCast = false) {
+  // Auto-Cast always yields 1 fish (ignores STR)
+  if (isAutoCast) {
+    return 1;
+  }
+
   // Boss fish (Legendary, Mythic, Exotic, Arcane) and Treasure Chest always = 1
-  // These get Titan Bonus instead
   const bossFish = ['Legendary', 'Mythic', 'Exotic', 'Arcane', 'Treasure Chest'];
   if (bossFish.includes(rarity)) {
     return 1;
   }
 
-  // Normal fish: Base range + chance-based extra
-  // BaseMax = 1 + FLOOR(TotalSTR / 100)
-  const baseMax = 1 + Math.floor(totalStrength / 100);
+  // STR Scaling:
+  // - If STR <= 1000: Raw Bonus = STR * 0.005
+  // - If STR > 1000: Raw Bonus = 5 + ((STR - 1000) * 0.002)
+  let rawBonus;
+  if (totalStrength <= 1000) {
+    rawBonus = totalStrength * 0.005;
+  } else {
+    rawBonus = 5 + ((totalStrength - 1000) * 0.002);
+  }
 
-  // ChanceForExtra = (TotalSTR % 100)%
-  // Every 1 STR point adds +1% chance to gain +1 extra fish above BaseMax
-  const chanceForExtra = totalStrength % 100;
+  // Efficiency by rarity
+  const efficiencyMap = {
+    'Common': 1.0,
+    'Uncommon': 0.8,
+    'Fine': 0.6,
+    'Rare': 0.4,
+    'Epic': 0.2
+  };
 
-  // Roll for extra fish (0-99)
-  const roll = Math.random() * 100;
-  const finalMax = (roll < chanceForExtra) ? baseMax + 1 : baseMax;
+  const efficiency = efficiencyMap[rarity] || 1.0;
 
-  // Return random integer between 1 and finalMax (inclusive)
-  return Math.floor(Math.random() * finalMax) + 1;
+  // Max Yield = 1 + Floor(Raw Bonus * Efficiency)
+  const maxYield = 1 + Math.floor(rawBonus * efficiency);
+
+  return maxYield;
 }
 
 /**
@@ -136,7 +240,8 @@ function calculateTitanBonus(totalStrength) {
 
 /**
  * Calculate gold multiplier based on Intelligence (with diminishing returns)
- * Uses soft cap to prevent infinite gold generation in late game
+ * DEPRECATED: INT now affects booster duration, not gold
+ * @deprecated Use calculateIntelligenceDuration instead
  * @param {number} totalIntelligence - Total intelligence (base + equipment)
  * @returns {number} Gold multiplier (>= 1.0)
  */
@@ -145,6 +250,62 @@ function calculateGoldMultiplier(totalIntelligence) {
   // Power of 0.7 provides diminishing returns for high INT values
   // Example: 100 INT = ~1.76x, 1000 INT = ~4.48x (not linear!)
   return 1 + (Math.pow(totalIntelligence, 0.7) * 0.05);
+}
+
+/**
+ * Calculate booster item duration based on Intelligence (REFACTORED)
+ * Intelligence (INT) - "The Time Mage"
+ * Effect: Increases Booster Item duration
+ *
+ * Scaling: 5-Tier Cumulative Calculation
+ * - 0-5k pts: +0.5s/pt
+ * - 5k-10k pts: +0.4s/pt
+ * - 10k-15k pts: +0.3s/pt
+ * - 15k-20k pts: +0.2s/pt
+ * - 20k+ pts: +0.1s/pt
+ *
+ * @param {number} totalIntelligence - Total intelligence (base + equipment)
+ * @param {number} baseDurationSeconds - Base booster duration in seconds
+ * @returns {number} Extended duration in seconds
+ */
+function calculateIntelligenceDuration(totalIntelligence, baseDurationSeconds) {
+  let bonusSeconds = 0;
+  let remainingInt = totalIntelligence;
+
+  // Tier 1: 0-5000 pts = +0.5s/pt
+  if (remainingInt > 0) {
+    const tier1 = Math.min(remainingInt, 5000);
+    bonusSeconds += tier1 * 0.5;
+    remainingInt -= tier1;
+  }
+
+  // Tier 2: 5000-10000 pts = +0.4s/pt
+  if (remainingInt > 0) {
+    const tier2 = Math.min(remainingInt, 5000);
+    bonusSeconds += tier2 * 0.4;
+    remainingInt -= tier2;
+  }
+
+  // Tier 3: 10000-15000 pts = +0.3s/pt
+  if (remainingInt > 0) {
+    const tier3 = Math.min(remainingInt, 5000);
+    bonusSeconds += tier3 * 0.3;
+    remainingInt -= tier3;
+  }
+
+  // Tier 4: 15000-20000 pts = +0.2s/pt
+  if (remainingInt > 0) {
+    const tier4 = Math.min(remainingInt, 5000);
+    bonusSeconds += tier4 * 0.2;
+    remainingInt -= tier4;
+  }
+
+  // Tier 5: 20000+ pts = +0.1s/pt
+  if (remainingInt > 0) {
+    bonusSeconds += remainingInt * 0.1;
+  }
+
+  return baseDurationSeconds + bonusSeconds;
 }
 
 /**
@@ -301,9 +462,11 @@ export {
   getTotalStats,
   getBiomeRelicRange,
   calculateRarity,
+  calculateLuckPower,
   calculateFishCount,
   calculateTitanBonus,
   calculateGoldMultiplier,
+  calculateIntelligenceDuration,
   calculateCriticalCatch,
   generateTreasureChest,
   calculateXPForNextLevel,
