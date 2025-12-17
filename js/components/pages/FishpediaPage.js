@@ -4,8 +4,8 @@ window.FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRar
     const [selectedBiome, setSelectedBiome] = useState(1);
     const [selectedRarityFilter, setSelectedRarityFilter] = useState('all');
 
-    // Show all 30 biomes
-    const availableBiomes = Array.from({ length: 30 }, (_, i) => i + 1);
+    // Show all 40 biomes
+    const availableBiomes = Array.from({ length: 40 }, (_, i) => i + 1);
 
     const biome = window.BIOMES[selectedBiome];
     if (!biome) return null;
@@ -177,3 +177,4 @@ window.FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRar
       </div>
     );
   };
+
