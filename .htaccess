@@ -1,0 +1,53 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Force root URL to serve dist/index.html (BEFORE file existence check)
+  RewriteRule ^$ dist/index.html [L]
+
+  # Force index.html to serve dist/index.html (BEFORE file existence check)
+  RewriteRule ^index\.html$ dist/index.html [L]
+
+  # Serve static assets from dist/ directory
+  RewriteCond %{REQUEST_URI} ^/assets/ [OR]
+  RewriteCond %{REQUEST_URI} \.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)$ dist/$1 [L]
+
+  # API requests - proxy to backend (adjust if needed)
+  RewriteCond %{REQUEST_URI} ^/api/
+  RewriteRule ^(.*)$ - [L,PT]
+
+  # SPA fallback - all other requests go to dist/index.html
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ dist/index.html [L]
+</IfModule>
+
+# Enable MIME type handling
+<IfModule mod_mime.c>
+  AddType application/javascript .js .mjs
+  AddType text/css .css
+  AddType application/json .json
+  AddType image/svg+xml .svg
+  AddType font/woff .woff
+  AddType font/woff2 .woff2
+</IfModule>
+
+# Compression (optional but recommended)
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# Cache control (optional but recommended for production)
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
