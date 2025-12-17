@@ -26,6 +26,16 @@ export const getRarityColor = (rarity) => {
 };
 
 /**
+ * Check if rarity uses a gradient
+ * @param {string} rarity - The fish rarity
+ * @returns {boolean} True if rarity uses gradient styling
+ */
+export const isGradientRarity = (rarity) => {
+    const color = window.RARITY_COLORS?.[rarity];
+    return color && color.startsWith('linear-gradient');
+};
+
+/**
  * Get CSS style object for gradient text
  * @param {string} rarity - The fish rarity
  * @returns {object} Style object with gradient or solid color

@@ -223,7 +223,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
       <h3 className="font-bold mb-3 text-sm sm:text-base">Total Fishing Stats</h3>
       <div className={`text-xs sm:text-sm text-${theme.textMuted} space-y-1`}>
         <div>Base Stats: STR {player.stats.strength} | INT {player.stats.intelligence} | LUCK {player.stats.luck} | STAM {player.stats.stamina}</div>
-        <div className="text-green-400">Total Stats: STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
+        <div className="text-green-400">Total Stats (with equipment): STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
+        {activeBoosters.some(b => b.effect_type === 'stat_bonus') && (
+          <div className="text-purple-400">Total Stats (with boosters): STR {(() => {
+            const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
+            return Math.floor(getTotalStats().strength * statBonus);
+          })()} | INT {getTotalStats().intelligence} | LUCK {(() => {
+            const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
+            return Math.floor(getTotalStats().luck * statBonus);
+          })()} | STAM {getTotalStats().stamina}</div>
+        )}
 
         {/* Active Boosters Display */}
         {activeBoosters.length > 0 && (

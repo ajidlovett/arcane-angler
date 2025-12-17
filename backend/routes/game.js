@@ -763,29 +763,6 @@ router.post('/sell', authenticateToken, async (req, res) => {
 
     await connection.beginTransaction();
 
-    // Load player stats and equipment for Intelligence bonus
-    const [playerData] = await connection.query(
-      `SELECT pd.equipped_rod, pd.equipped_bait, ps.intelligence
-       FROM player_data pd
-       JOIN player_stats ps ON pd.user_id = ps.user_id
-       WHERE pd.user_id = ?`,
-      [userId]
-    );
-
-    if (!playerData || playerData.length === 0) {
-      await connection.rollback();
-      return res.status(404).json({ error: 'Player data not found' });
-    }
-
-    const player = playerData[0];
-
-    // Calculate total Intelligence (base + equipment)
-    const totalStats = getTotalStats(
-      { intelligence: player.intelligence },
-      player.equipped_rod,
-      player.equipped_bait
-    );
-
     // Check if player owns the fish
     const [inventory] = await connection.query(
       'SELECT count, base_gold, titan_bonus FROM player_inventory WHERE user_id = ? AND fish_name = ? AND rarity = ?',
@@ -806,9 +783,9 @@ router.post('/sell', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Not enough fish to sell' });
     }
 
-    // Calculate gold value with Intelligence multiplier
-    const goldMultiplier = calculateGoldMultiplier(totalStats.intelligence);
-    const goldEarned = Math.floor(baseGold * titanBonus * quantity * goldMultiplier);
+    // Calculate gold value (base gold × titan bonus × quantity)
+    // Note: INT no longer provides gold multiplier
+    const goldEarned = Math.floor(baseGold * titanBonus * quantity);
 
     // Update inventory (remove sold fish)
     const newCount = ownedCount - quantity;
@@ -1615,42 +1592,17 @@ router.post('/sell-all', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
     await connection.beginTransaction();
 
-    // Get player stats for Intelligence bonus
-    const [playerData] = await connection.query(
-      `SELECT pd.equipped_rod, pd.equipped_bait, ps.intelligence
-       FROM player_data pd
-       JOIN player_stats ps ON pd.user_id = ps.user_id
-       WHERE pd.user_id = ?`,
-      [userId]
-    );
-
-    if (!playerData || playerData.length === 0) {
-      await connection.rollback();
-      return res.status(404).json({ error: 'Player data not found' });
-    }
-
-    const player = playerData[0];
-
-    // Calculate total Intelligence (base + equipment)
-    const totalStats = getTotalStats(
-      { intelligence: player.intelligence },
-      player.equipped_rod,
-      player.equipped_bait
-    );
-
-    // Calculate gold multiplier
-    const goldMultiplier = calculateGoldMultiplier(totalStats.intelligence);
-
     // Use SQL aggregation to calculate totals in a single query (prevents timeout)
+    // Note: INT no longer provides gold multiplier, gold = base_gold × titan_bonus × count
     const [aggregateResult] = await connection.query(
       `SELECT
          SUM(count) as total_fish_count,
-         SUM(FLOOR(base_gold * IFNULL(titan_bonus, 1) * count * ?)) as total_gold
+         SUM(FLOOR(base_gold * IFNULL(titan_bonus, 1) * count)) as total_gold
        FROM player_inventory
        WHERE user_id = ?
          AND (is_locked IS NULL OR is_locked = FALSE)
          AND count > 0`,
-      [goldMultiplier, userId]
+      [userId]
     );
 
     const totalFishCount = Number(aggregateResult[0]?.total_fish_count) || 0;
@@ -1737,43 +1689,18 @@ router.post('/sell-by-rarity', authenticateToken, async (req, res) => {
 
     await connection.beginTransaction();
 
-    // Get player stats for Intelligence bonus
-    const [playerData] = await connection.query(
-      `SELECT pd.equipped_rod, pd.equipped_bait, ps.intelligence
-       FROM player_data pd
-       JOIN player_stats ps ON pd.user_id = ps.user_id
-       WHERE pd.user_id = ?`,
-      [userId]
-    );
-
-    if (!playerData || playerData.length === 0) {
-      await connection.rollback();
-      return res.status(404).json({ error: 'Player data not found' });
-    }
-
-    const player = playerData[0];
-
-    // Calculate total Intelligence (base + equipment)
-    const totalStats = getTotalStats(
-      { intelligence: player.intelligence },
-      player.equipped_rod,
-      player.equipped_bait
-    );
-
-    // Calculate gold multiplier
-    const goldMultiplier = calculateGoldMultiplier(totalStats.intelligence);
-
     // Use SQL aggregation to calculate totals in a single query (prevents timeout)
+    // Note: INT no longer provides gold multiplier, gold = base_gold × titan_bonus × count
     const [aggregateResult] = await connection.query(
       `SELECT
          SUM(count) as total_fish_count,
-         SUM(FLOOR(base_gold * IFNULL(titan_bonus, 1) * count * ?)) as total_gold
+         SUM(FLOOR(base_gold * IFNULL(titan_bonus, 1) * count)) as total_gold
        FROM player_inventory
        WHERE user_id = ?
          AND rarity = ?
          AND (is_locked IS NULL OR is_locked = FALSE)
          AND count > 0`,
-      [goldMultiplier, userId, rarity]
+      [userId, rarity]
     );
 
     const totalFishCount = Number(aggregateResult[0]?.total_fish_count) || 0;
