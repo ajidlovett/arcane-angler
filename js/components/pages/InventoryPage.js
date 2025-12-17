@@ -1,5 +1,5 @@
-// Inventory Page Component - View and sell caught fish
-export const InventoryPage = ({ player, theme, selectedRarity, setSelectedRarity, inventorySortOrder, setInventorySortOrder, getFilteredInventory, getTotalStats, sellAll, sellByRarity, sellFish, toggleLock, rarities, getRarityColor, isGradientRarity, rarityColors, getGradientTextStyle }) => {
+// InventoryPage - Defined as window.InventoryPage
+window.InventoryPage = ({ player, theme, selectedRarity, setSelectedRarity, inventorySortOrder, setInventorySortOrder, getFilteredInventory, getTotalStats, sellAll, sellByRarity, sellFish, toggleLock, rarities, getRarityColor, isGradientRarity, rarityColors, getGradientTextStyle }) => {
   const filteredInventory = getFilteredInventory();
   const unlockedCount = filteredInventory.filter(f => !player.lockedFish.includes(f.name)).reduce((sum, f) => sum + f.count, 0);
   return (

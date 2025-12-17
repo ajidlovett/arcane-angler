@@ -1,5 +1,5 @@
-// Custom Modal Component - Replaces window.alert and window.confirm
-export const CustomModal = ({ isOpen, type, message, onClose, onConfirm }) => {
+// CustomModal - Defined as window.CustomModal
+window.CustomModal = ({ isOpen, type, message, onClose, onConfirm }) => {
   if (!isOpen) return null;
 
   const handleBackdropClick = (e) => {

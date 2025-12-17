@@ -1,5 +1,5 @@
-// Fishing Page Component - Main fishing interface
-export const FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle }) => (
+// FishingPage - Defined as window.FishingPage
+window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle }) => (
   <div className="max-w-6xl mx-auto">
     <div className="grid lg:grid-cols-2 gap-4">
       {/* Left Column: Main Interaction */}

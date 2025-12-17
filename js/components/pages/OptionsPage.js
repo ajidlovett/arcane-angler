@@ -1,5 +1,5 @@
-// Options Page Component - Game settings and preferences
-export const OptionsPage = ({ theme, currentTheme, setCurrentTheme, buttonColors, castButtonColor, setCastButtonColor }) => (
+// OptionsPage - Defined as window.OptionsPage
+window.OptionsPage = ({ theme, currentTheme, setCurrentTheme, buttonColors, castButtonColor, setCastButtonColor }) => (
   <div className="max-w-4xl mx-auto">
     <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-6`}>
       <h2 className="text-[1.05rem] font-bold mb-6 flex items-center gap-2">

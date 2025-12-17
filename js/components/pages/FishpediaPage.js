@@ -1,5 +1,5 @@
-// Fishpedia Page Component - Encyclopedia of discovered fish
-export const FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRarity, rarityColors, getGradientTextStyle }) => {
+// FishpediaPage - Defined as window.FishpediaPage
+window.FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRarity, rarityColors, getGradientTextStyle }) => {
   const { useState } = React;
     const [selectedBiome, setSelectedBiome] = useState(1);
     const [selectedRarityFilter, setSelectedRarityFilter] = useState('all');

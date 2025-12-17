@@ -1,5 +1,5 @@
-// Quest Page Component - Daily, weekly, and monthly quests
-export const QuestPage = ({ theme }) => {
+// QuestPage - Defined as window.QuestPage
+window.QuestPage = ({ theme }) => {
   const { useState, useEffect } = React;
     const [quests, setQuests] = useState({ daily: [], weekly: [], monthly: [] });
     const [serverTime, setServerTime] = useState({ daily: { text: '' }, weekly: { text: '' }, monthly: { text: '' } });

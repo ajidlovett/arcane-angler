@@ -1,5 +1,5 @@
-// Sidebar Component - Navigation menu for the game
-export const Sidebar = ({ player, theme, currentPage, setCurrentPage, sidebarOpen, setSidebarOpen, handleSaveAndLogout, setPlayer }) => {
+// Sidebar - Defined as window.Sidebar
+window.Sidebar = ({ player, theme, currentPage, setCurrentPage, sidebarOpen, setSidebarOpen, handleSaveAndLogout, setPlayer }) => {
   const menuItems = [
     { id: 'fishing', icon: window.Icons.Fish, label: 'Fishing' },
     { id: 'equipment', icon: window.Icons.Award, label: 'Equipment' },

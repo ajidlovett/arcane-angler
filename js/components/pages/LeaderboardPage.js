@@ -1,5 +1,5 @@
-// Leaderboard Page Component - Rankings and global stats
-export const LeaderboardPage = React.memo(({ user, theme }) => {
+// LeaderboardPage - Defined as window.LeaderboardPage
+window.LeaderboardPage = React.memo(({ user, theme }) => {
   const { useState, useEffect } = React;
   const [selectedCategory, setSelectedCategory] = useState('level');
   const [selectedRegion, setSelectedRegion] = useState('global');

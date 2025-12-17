@@ -1,5 +1,5 @@
-// Boosters Page Component - Purchase and manage active boosters
-export const BoostersPage = ({ player, setPlayer, theme, showConfirm, showAlert }) => {
+// BoostersPage - Defined as window.BoostersPage
+window.BoostersPage = ({ player, setPlayer, theme, showConfirm, showAlert }) => {
   const [activeBoosters, setActiveBoosters] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
 

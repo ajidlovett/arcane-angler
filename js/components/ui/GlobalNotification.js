@@ -1,5 +1,5 @@
-// Global Notification Component - Shows rare catch notifications
-export const GlobalNotification = ({ theme, globalNotification, idleNotificationIndex }) => {
+// GlobalNotification - Defined as window.GlobalNotification
+window.GlobalNotification = ({ theme, globalNotification, idleNotificationIndex }) => {
   const messageVariations = [
     '🎉 Congratulations, {username} has caught {fish}!',
     '✨ Amazing! {username} just reeled in {fish}!',

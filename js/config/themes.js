@@ -1,5 +1,5 @@
 // Theme System - Color schemes for the application
-export const themes = {
+window.themes = {
   dark: {
     name: 'Dark',
     primary: { from: 'gray-900', via: 'gray-800', to: 'gray-950' },

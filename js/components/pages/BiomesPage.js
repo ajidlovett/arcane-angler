@@ -1,5 +1,5 @@
-// Biomes Page Component - Select and unlock fishing locations
-export const BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRarityColor }) => {
+// BiomesPage - Defined as window.BiomesPage
+window.BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRarityColor }) => {
   const { useState } = React;
   const [biomePage, setBiomePage] = useState(1);
   const biomesPerPage = 5;
