@@ -121,6 +121,7 @@ router.get('/data', authenticateToken, async (req, res) => {
             xpToNext: playerData[0].xp_to_next,
             gold: playerData[0].gold || 0,
             relics: playerData[0].relics || 0,
+            statPoints: playerData[0].stat_points || 0,
             currentBiome: playerData[0].current_biome || 1,
             equippedRod: playerData[0].equipped_rod,
             equippedBait: playerData[0].equipped_bait,
