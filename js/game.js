@@ -1134,10 +1134,49 @@ useEffect(() => {
             autoCastCooldown={autoCastCooldown}
             currentStamina={currentStamina}
           />}
-          {currentPage === 'equipment' && <EquipmentPage />}
-          {currentPage === 'biomes' && <BiomesPage />}
-          {currentPage === 'inventory' && <InventoryPage />}
-          {currentPage === 'stats' && <StatsPage />}
+          {currentPage === 'equipment' && <EquipmentPage
+            player={player}
+            theme={theme}
+            shopTab={shopTab}
+            setShopTab={setShopTab}
+            buyRod={buyRod}
+            equipRod={equipRod}
+            buyBait={buyBait}
+            equipBait={equipBait}
+          />}
+          {currentPage === 'biomes' && <BiomesPage
+            player={player}
+            setPlayer={setPlayer}
+            theme={theme}
+            setCurrentPage={setCurrentPage}
+            showAlert={showAlert}
+            getRarityColor={getRarityColor}
+          />}
+          {currentPage === 'inventory' && <InventoryPage
+            player={player}
+            theme={theme}
+            selectedRarity={selectedRarity}
+            setSelectedRarity={setSelectedRarity}
+            inventorySortOrder={inventorySortOrder}
+            setInventorySortOrder={setInventorySortOrder}
+            getFilteredInventory={getFilteredInventory}
+            getTotalStats={getTotalStats}
+            sellAll={sellAll}
+            sellByRarity={sellByRarity}
+            sellFish={sellFish}
+            toggleLock={toggleLock}
+            rarities={rarities}
+            getRarityColor={getRarityColor}
+            isGradientRarity={isGradientRarity}
+            rarityColors={rarityColors}
+            getGradientTextStyle={getGradientTextStyle}
+          />}
+          {currentPage === 'stats' && <StatsPage
+            player={player}
+            theme={theme}
+            getTotalStats={getTotalStats}
+            upgradeStat={upgradeStat}
+          />}
           {currentPage === 'boosters' && <BoostersPage
             player={player}
             setPlayer={setPlayer}
@@ -1145,13 +1184,36 @@ useEffect(() => {
             showConfirm={showConfirm}
             showAlert={showAlert}
           />}
-          {currentPage === 'leaderboard' && <LeaderboardPage />}
+          {currentPage === 'leaderboard' && <LeaderboardPage
+            user={user}
+            theme={theme}
+          />}
 
-          {currentPage === 'quests' && <QuestPage />}
+          {currentPage === 'quests' && <QuestPage
+            theme={theme}
+          />}
           {currentPage === 'guilds' && <PlaceholderPage title="Guilds" icon={Icons.Users} theme={theme} />}
-          {currentPage === 'profile' && <ProfilePage />}
-          {currentPage === 'achievements' && <AchievementsPage />}
-          {currentPage === 'fishpedia' && <FishpediaPage />}
+          {currentPage === 'profile' && <ProfilePage
+            user={user}
+            player={player}
+            setPlayer={setPlayer}
+            theme={theme}
+            showAlert={showAlert}
+            getTotalStats={getTotalStats}
+          />}
+          {currentPage === 'achievements' && <AchievementsPage
+            player={player}
+            theme={theme}
+          />}
+          {currentPage === 'fishpedia' && <FishpediaPage
+            player={player}
+            theme={theme}
+            rarities={rarities}
+            getRarityColor={getRarityColor}
+            isGradientRarity={isGradientRarity}
+            rarityColors={rarityColors}
+            getGradientTextStyle={getGradientTextStyle}
+          />}
           {currentPage === 'options' && <OptionsPage
             theme={theme}
             currentTheme={currentTheme}
