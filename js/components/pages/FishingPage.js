@@ -133,7 +133,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                       ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
                     </div>
                   )}
-                  {lastCatch.titanBonus && (
+                  {lastCatch.titanBonus && lastCatch.titanBonus > 1 && ['Legendary', 'Mythic', 'Exotic', 'Arcane'].includes(lastCatch.rarity) && (
                     <div className="text-xs text-orange-400">
                       ⚡ Titan Bonus: {lastCatch.titanBonus.toFixed(2)}x Gold Value!
                     </div>

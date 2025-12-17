@@ -107,11 +107,17 @@ window.FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRar
             {filteredFish.map((fish, idx) => (
               <div
                 key={idx}
-                className={`bg-${theme.surface} p-4 rounded-lg border-2`}
+                className={`p-4 rounded-lg border-2`}
                 style={isGradientRarity(fish.rarity) ? {
-                  borderImage: `${rarityColors[fish.rarity]} 1`,
-                  borderImageSlice: 1
-                } : { borderColor: getRarityColor(fish.rarity) }}
+                  background: `${theme.surface}`,
+                  borderColor: 'transparent',
+                  backgroundImage: `${rarityColors[fish.rarity]}, linear-gradient(${theme.surface}, ${theme.surface})`,
+                  backgroundOrigin: 'border-box',
+                  backgroundClip: 'padding-box, border-box'
+                } : {
+                  backgroundColor: theme.surface,
+                  borderColor: getRarityColor(fish.rarity)
+                }}
               >
                 {fish.isDiscovered ? (
                   <>

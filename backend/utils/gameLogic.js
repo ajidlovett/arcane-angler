@@ -235,9 +235,10 @@ function calculateFishCount(rarity, totalStrength, isAutoCast = false) {
  * @returns {number} Titan bonus multiplier (>= 1.0)
  */
 function calculateTitanBonus(totalStrength) {
-  // Formula: 1 + (TotalSTR * 0.02)
-  // Example: 200 STR = 5x multiplier (1 + 4)
-  return 1 + (totalStrength * 0.02);
+  // Formula: 1 + (TotalSTR * 0.002)
+  // 0.2% increase per STR point
+  // Example: 500 STR = 2x multiplier (1 + 1)
+  return 1 + (totalStrength * 0.002);
 }
 
 /**

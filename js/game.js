@@ -526,7 +526,8 @@ useEffect(() => {
 
   // Auto-Cast: Single cast execution
   const performAutoCast = async () => {
-    if (player.stamina < 1) {
+    // Check local stamina counter (not database stamina)
+    if (currentStamina < 1) {
       stopAutoCast();
       showAlert("Auto-Cast stopped: Out of stamina!");
       return;
