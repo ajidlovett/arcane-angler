@@ -1055,23 +1055,29 @@ const FishingGame = ({ user, onLogout }) => {
     };
   }, []);
 
-  // Fetch active boosters periodically
-  React.useEffect(() => {
-    const fetchBoosters = async () => {
-      try {
-        const response = await window.ApiService.getActiveBoosters();
-        if (response.boosters) {
-          setActiveBoosters(response.boosters);
-        }
-      } catch (error) {
-        console.error('Failed to fetch active boosters:', error);
+  // Fetch active boosters - EVENT-DRIVEN (not polling)
+  const fetchActiveBoosters = React.useCallback(async () => {
+    try {
+      const response = await window.ApiService.getActiveBoosters();
+      if (response.boosters) {
+        setActiveBoosters(response.boosters);
       }
-    };
-
-    fetchBoosters();
-    const interval = setInterval(fetchBoosters, 1000); // Update every second for real-time countdown
-    return () => clearInterval(interval);
+    } catch (error) {
+      console.error('Failed to fetch active boosters:', error);
+    }
   }, []);
+
+  // Fetch boosters on mount and when entering Fishing/Boosters page
+  React.useEffect(() => {
+    fetchActiveBoosters();
+  }, []); // Only on mount
+
+  // Refetch boosters when entering specific pages
+  React.useEffect(() => {
+    if (currentPage === 'fishing' || currentPage === 'boosters') {
+      fetchActiveBoosters();
+    }
+  }, [currentPage, fetchActiveBoosters]);
 
   // Helper function to get time remaining for booster
   const getBoosterTimeRemaining = (expiresAt) => {
@@ -1383,15 +1389,7 @@ useEffect(() => {
             });
           }
 
-          // Show XP Bonus notification if active
-          if (result.xpBonus && result.xpBonus > 1) {
-            const bonusPercent = Math.round((result.xpBonus - 1) * 100);
-            setTimeout(() => {
-              showAlert(`✨ +${bonusPercent}% XP Boost Active!`);
-            }, 100);
-          }
-
-          // Level up notification removed per user request (intrusive popup)
+          // XP Bonus notification removed - now shown passively in Result Card
 
           // Update state with SERVER data only
           setPlayer(prev => ({
@@ -1412,6 +1410,9 @@ useEffect(() => {
           // Reload full player data to sync inventory
           const playerData = await window.ApiService.getPlayerData();
           setPlayer(playerData);
+
+          // Refresh active boosters after cast (event-driven)
+          fetchActiveBoosters();
         }
       } catch (error) {
         console.error('Fishing failed:', error);
@@ -2589,10 +2590,9 @@ useEffect(() => {
               <table className="w-full">
                 <thead className={`bg-${theme.primarySolid}`}>
                   <tr>
-                    <th className={`px-4 py-3 text-left text-sm font-semibold text-${theme.textMuted}`}>Rank</th>
-                    <th className={`px-4 py-3 text-left text-sm font-semibold text-${theme.textMuted}`}>Player</th>
-                    <th className={`px-4 py-3 text-left text-sm font-semibold text-${theme.textMuted}`}>Region</th>
-                    <th className={`px-4 py-3 text-right text-sm font-semibold text-${theme.textMuted}`}>Value</th>
+                    <th className={`px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold text-${theme.textMuted}`}>Rank</th>
+                    <th className={`px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold text-${theme.textMuted}`}>Player</th>
+                    <th className={`px-2 sm:px-4 py-3 text-right text-xs sm:text-sm font-semibold text-${theme.textMuted}`}>Value</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -2605,19 +2605,21 @@ useEffect(() => {
                           player.user_id === user?.id ? `bg-${theme.hover} bg-opacity-50` : `hover:bg-${theme.primarySolid}`
                         }`}
                       >
-                        <td className={`px-4 py-3 font-bold ${getRankColor(rank)}`}>
+                        <td className={`px-2 sm:px-4 py-2 sm:py-3 font-bold text-xs sm:text-sm ${getRankColor(rank)}`}>
                           {getRankIcon(rank)}
                         </td>
-                        <td className="px-4 py-3 text-white font-semibold">
-                          {player.profile_username}
-                          {player.equipped_title && getTitleName(player.equipped_title) && (
-                            <span className="text-yellow-400 ml-2">- {getTitleName(player.equipped_title)}</span>
-                          )}
+                        <td className="px-2 sm:px-4 py-2 sm:py-3 text-white text-xs sm:text-sm">
+                          <div className="flex items-center gap-1 sm:gap-2">
+                            <span className="text-base sm:text-lg">{getCountryFlag(player.nationality)}</span>
+                            <div>
+                              <span className="font-semibold">{player.profile_username}</span>
+                              {player.equipped_title && getTitleName(player.equipped_title) && (
+                                <span className="text-yellow-400 ml-1 sm:ml-2 text-xs">- {getTitleName(player.equipped_title)}</span>
+                              )}
+                            </div>
+                          </div>
                         </td>
-                        <td className={`px-4 py-3 text-${theme.textMuted}`}>
-                          {getCountryFlag(player.nationality)}
-                        </td>
-                        <td className="px-4 py-3 text-right text-white font-bold">
+                        <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-white font-bold text-xs sm:text-sm">
                           {formatNumber(getValueForCategory(player, selectedCategory))}
                         </td>
                       </tr>
