@@ -1,8 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import playerRoutes from './routes/player.js';
 import gameRoutes from './routes/game.js';
@@ -14,10 +12,6 @@ import questRoutes from './routes/quests.js';
 import { authLimiter, passwordResetLimiter, apiLimiter } from './middleware/rateLimiter.js';
 
 dotenv.config();
-
-// ES module __dirname equivalent
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -64,24 +58,9 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Arcane Angler API is running' });
 });
 
-// Serve static files from dist/ (production build)
-const distPath = path.join(__dirname, '../dist');
-app.use(express.static(distPath, {
-    maxAge: '1d', // Cache static assets for 1 day
-    etag: true
-}));
-
-// SPA fallback: serve index.html for all non-API routes
-// This allows React Router to handle client-side routing
-// Express 5 requires named wildcard route (path-to-regexp v8 syntax)
-app.get('/*splat', (req, res, next) => {
-    // Don't serve index.html for API routes
-    if (req.path.startsWith('/api/')) {
-        return res.status(404).json({ error: 'API route not found' });
-    }
-
-    // Serve index.html for all other routes
-    res.sendFile(path.join(distPath, 'index.html'));
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({ error: 'Route not found' });
 });
 
 // Error handler
