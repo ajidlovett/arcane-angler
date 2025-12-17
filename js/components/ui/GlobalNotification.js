@@ -23,25 +23,15 @@ window.GlobalNotification = ({ theme, globalNotification, idleNotificationIndex 
     .replace('{username}', globalNotification.username)
     .replace('{fish}', globalNotification.fishName);
 
-  const getRarityColor = (rarity) => {
-    switch (rarity) {
-      case 'Mythic':
-        return 'text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500';
-      case 'Exotic':
-        return 'text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-300 to-orange-400';
-      case 'Arcane':
-        return 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500';
-      default:
-        return 'text-purple-400';
-    }
-  };
+  // Use global rarity styling function
+  const fishNameStyle = window.getGradientTextStyle(globalNotification.rarity);
 
   const parts = message.split(globalNotification.fishName);
 
   return (
     <div className="text-xs font-bold flex items-center justify-center flex-wrap gap-1">
       <span className={`text-${theme.textMuted}`}>{parts[0]}</span>
-      <span className={getRarityColor(globalNotification.rarity)}>{globalNotification.fishName}</span>
+      <span style={fishNameStyle}>{globalNotification.fishName}</span>
       <span className={`text-${theme.textMuted}`}>{parts[1]}</span>
     </div>
   );
