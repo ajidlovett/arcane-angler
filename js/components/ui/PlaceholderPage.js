@@ -1,5 +1,5 @@
-// Placeholder Page Component - For features under development
-export const PlaceholderPage = ({ title, icon, theme }) => (
+// PlaceholderPage - Defined as window.PlaceholderPage
+window.PlaceholderPage = ({ title, icon, theme }) => (
   <div className="max-w-4xl mx-auto">
     <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-8 sm:p-12 text-center`}>
       <div className="text-6xl mb-4"><span className="text-5xl">{icon()}</span></div>

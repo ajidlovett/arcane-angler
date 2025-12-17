@@ -1,5 +1,5 @@
-// Saving Overlay Component - Shows when saving game data
-export const SavingOverlay = ({ savingProgress, theme }) => {
+// SavingOverlay - Defined as window.SavingOverlay
+window.SavingOverlay = ({ savingProgress, theme }) => {
   if (!savingProgress) return null;
 
   return (

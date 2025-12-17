@@ -21,31 +21,28 @@ const Icons = window.Icons;
 // *** FIX APPLIED: REMOVED THE FOLLOWING DESTRUCTURING LINE TO PREVENT ReferenceError: ***
 // const { Fish, Package, TrendingUp, Target, Users, User, Trophy, Award, Menu, X, Lock, Unlock, ChevronRight } = Icons;
 
-// Import configurations
-import { themes } from './config/themes.js';
-import { buttonColors } from './config/buttonColors.js';
-import { countries } from './config/countries.js';
-
-// Import UI components
-import { CustomModal } from './components/ui/CustomModal.js';
-import { GlobalNotification } from './components/ui/GlobalNotification.js';
-import { PlaceholderPage } from './components/ui/PlaceholderPage.js';
-import { SavingOverlay } from './components/ui/SavingOverlay.js';
-
-// Import page components
-import { Sidebar } from './components/pages/Sidebar.js';
-import { FishingPage } from './components/pages/FishingPage.js';
-import { OptionsPage } from './components/pages/OptionsPage.js';
-import { BoostersPage } from './components/pages/BoostersPage.js';
-import { EquipmentPage } from './components/pages/EquipmentPage.js';
-import { BiomesPage } from './components/pages/BiomesPage.js';
-import { InventoryPage } from './components/pages/InventoryPage.js';
-import { StatsPage } from './components/pages/StatsPage.js';
-import { LeaderboardPage } from './components/pages/LeaderboardPage.js';
-import { ProfilePage } from './components/pages/ProfilePage.js';
-import { AchievementsPage } from './components/pages/AchievementsPage.js';
-import { FishpediaPage } from './components/pages/FishpediaPage.js';
-import { QuestPage } from './components/pages/QuestPage.js';
+// Components are loaded via script tags in index.html and attached to window object
+// Access them via: window.themes, window.Sidebar, window.FishingPage, etc.
+const themes = window.themes;
+const buttonColors = window.buttonColors;
+const countries = window.countries;
+const CustomModal = window.CustomModal;
+const GlobalNotification = window.GlobalNotification;
+const PlaceholderPage = window.PlaceholderPage;
+const SavingOverlay = window.SavingOverlay;
+const Sidebar = window.Sidebar;
+const FishingPage = window.FishingPage;
+const OptionsPage = window.OptionsPage;
+const BoostersPage = window.BoostersPage;
+const EquipmentPage = window.EquipmentPage;
+const BiomesPage = window.BiomesPage;
+const InventoryPage = window.InventoryPage;
+const StatsPage = window.StatsPage;
+const LeaderboardPage = window.LeaderboardPage;
+const ProfilePage = window.ProfilePage;
+const AchievementsPage = window.AchievementsPage;
+const FishpediaPage = window.FishpediaPage;
+const QuestPage = window.QuestPage;
 
 const FishingGame = ({ user, onLogout }) => {
   // State

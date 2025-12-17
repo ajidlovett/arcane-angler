@@ -1,5 +1,5 @@
 // Country list for nationality selection
-export const countries = [
+window.countries = [
   { code: 'AF', name: 'Afghanistan', flag: '🇦🇫' },
   { code: 'AL', name: 'Albania', flag: '🇦🇱' },
   { code: 'DZ', name: 'Algeria', flag: '🇩🇿' },

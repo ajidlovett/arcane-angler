@@ -1,5 +1,5 @@
-// Stats Page Component - Upgrade character stats
-export const StatsPage = ({ player, theme, getTotalStats, upgradeStat }) => {
+// StatsPage - Defined as window.StatsPage
+window.StatsPage = ({ player, theme, getTotalStats, upgradeStat }) => {
   const totalStats = getTotalStats();
 
   // State for bulk upgrade amounts

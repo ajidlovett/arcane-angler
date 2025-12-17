@@ -1,5 +1,5 @@
-// Equipment Page Component - Shop for rods and baits
-export const EquipmentPage = ({ player, theme, shopTab, setShopTab, buyRod, equipRod, buyBait, equipBait }) => {
+// EquipmentPage - Defined as window.EquipmentPage
+window.EquipmentPage = ({ player, theme, shopTab, setShopTab, buyRod, equipRod, buyBait, equipBait }) => {
   const { useState } = React;
   const [tierTab, setTierTab] = useState('all');
 

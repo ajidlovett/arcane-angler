@@ -1,7 +1,6 @@
-// Profile Page Component - User profile and settings
-import { countries } from "../../config/countries.js";
+// ProfilePage - Defined as window.ProfilePage
 
-export const ProfilePage = ({ user, player, setPlayer, theme, showAlert, getTotalStats }) => {
+window.ProfilePage = ({ user, player, setPlayer, theme, showAlert, getTotalStats }) => {
   const { useState, useEffect } = React;
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);

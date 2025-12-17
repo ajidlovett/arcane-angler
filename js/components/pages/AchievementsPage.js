@@ -1,5 +1,5 @@
-// Achievements Page Component - Track unlocked achievements
-export const AchievementsPage = ({ player, theme }) => {
+// AchievementsPage - Defined as window.AchievementsPage
+window.AchievementsPage = ({ player, theme }) => {
     // Safety check for ACHIEVEMENTS
     if (!window.ACHIEVEMENTS || !Array.isArray(window.ACHIEVEMENTS)) {
       return (
