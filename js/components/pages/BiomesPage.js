@@ -26,10 +26,18 @@ window.BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getR
         const response = await window.ApiService.changeBiome(biomeId);
 
         if (response.success) {
-          setPlayer(prev => ({
-            ...prev,
-            currentBiome: biomeId
-          }));
+          // Wait for state update before navigating
+          await new Promise(resolve => {
+            setPlayer(prev => {
+              const newState = {
+                ...prev,
+                currentBiome: biomeId
+              };
+              // Use setTimeout to ensure state is committed
+              setTimeout(resolve, 0);
+              return newState;
+            });
+          });
           setCurrentPage('fishing');
         }
       } catch (error) {
@@ -58,12 +66,20 @@ window.BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getR
         const response = await window.ApiService.unlockBiome(biomeId);
 
         if (response.success) {
-          setPlayer(prev => ({
-            ...prev,
-            currentBiome: biomeId,
-            gold: response.newGold,
-            unlockedBiomes: response.unlockedBiomes
-          }));
+          // Wait for state update before navigating
+          await new Promise(resolve => {
+            setPlayer(prev => {
+              const newState = {
+                ...prev,
+                currentBiome: biomeId,
+                gold: response.newGold,
+                unlockedBiomes: response.unlockedBiomes
+              };
+              // Use setTimeout to ensure state is committed
+              setTimeout(resolve, 0);
+              return newState;
+            });
+          });
           setCurrentPage('fishing');
         }
       } catch (error) {
@@ -140,12 +156,12 @@ window.BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getR
                     <div className={`text-sm text-${theme.textMuted} mt-1`}>Biome {id}</div>
                   </div>
 
-                  {isLocked && (
+                  {!hasBeenUnlocked && (
                     <div className="text-right">
                       <div className={`text-xs text-${theme.textMuted}`}>Requires:</div>
-                      <div className="text-sm font-bold">Level {biome.unlockLevel}</div>
+                      <div className={`text-sm font-bold ${player.level >= biome.unlockLevel ? 'text-green-400' : ''}`}>Level {biome.unlockLevel}</div>
                       {biome.unlockGold > 0 && (
-                        <div className="text-sm text-yellow-400">{biome.unlockGold.toLocaleString()} Gold</div>
+                        <div className={`text-sm ${player.gold >= biome.unlockGold ? 'text-green-400' : 'text-yellow-400'}`}>{biome.unlockGold.toLocaleString()} Gold</div>
                       )}
                     </div>
                   )}

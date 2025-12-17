@@ -1,5 +1,5 @@
 // FishingPage - Defined as window.FishingPage
-window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle, isAutoCasting, toggleAutoCast, autoCastCooldown }) => (
+window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle, isAutoCasting, toggleAutoCast, autoCastCooldown, currentStamina }) => (
   <div className="max-w-6xl mx-auto">
     <div className="grid lg:grid-cols-2 gap-4">
       {/* Left Column: Main Interaction */}
@@ -52,22 +52,25 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
           </div>
         </div>
 
-        <button
-          onClick={handleFish}
-          disabled={cooldown > 0 || fishing || isAutoCasting || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0)}
-          className={`w-full py-3 rounded-lg font-bold text-base sm:text-[1.05rem] transition-all ${cooldown > 0 || fishing || isAutoCasting || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed text-gray-400' : `${buttonColors[castButtonColor].bg} hover:${buttonColors[castButtonColor].hover} ${buttonColors[castButtonColor].text} active:scale-95 shadow-lg`}`}
-        >
-          {fishing ? '🎣 Fishing...' : cooldown > 0 ? `⏱️ Cooldown: ${cooldown}s` : isAutoCasting ? '🚫 Auto-Casting...' : '🎣 Cast Line'}
-        </button>
+        {/* Combined Cast & Auto-Cast Buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={handleFish}
+            disabled={cooldown > 0 || fishing || isAutoCasting || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0)}
+            className={`flex-[85] py-3 rounded-lg font-bold text-base sm:text-[1.05rem] transition-all ${cooldown > 0 || fishing || isAutoCasting || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed text-gray-400' : `${buttonColors[castButtonColor].bg} hover:${buttonColors[castButtonColor].hover} ${buttonColors[castButtonColor].text} active:scale-95 shadow-lg`}`}
+          >
+            {fishing ? '🎣 Fishing...' : cooldown > 0 ? `⏱️ Cooldown: ${cooldown}s` : isAutoCasting ? '🚫 Auto-Casting...' : '🎣 Cast Line'}
+          </button>
 
-        {/* Auto-Cast Button */}
-        <button
-          onClick={toggleAutoCast}
-          disabled={player.stamina < 1}
-          className={`w-full py-3 rounded-lg font-bold text-base sm:text-[1.05rem] transition-all mt-3 ${player.stamina < 1 ? 'bg-gray-600 cursor-not-allowed text-gray-400' : isAutoCasting ? 'bg-red-600 hover:bg-red-500 text-white active:scale-95 shadow-lg' : 'bg-purple-600 hover:bg-purple-500 text-white active:scale-95 shadow-lg'}`}
-        >
-          {isAutoCasting ? `🛑 Stop Auto-Cast (${autoCastCooldown}s)` : `⚡ Auto Cast (${player.stamina} STA)`}
-        </button>
+          <button
+            onClick={toggleAutoCast}
+            disabled={getTotalStats().stamina < 1}
+            className={`flex-[15] py-3 rounded-lg font-bold text-xl transition-all ${getTotalStats().stamina < 1 ? 'bg-gray-600 cursor-not-allowed text-gray-400' : isAutoCasting ? 'bg-red-600 hover:bg-red-500 text-white active:scale-95 shadow-lg' : 'bg-purple-600 hover:bg-purple-500 text-white active:scale-95 shadow-lg'}`}
+            title={isAutoCasting ? 'Stop Auto-Cast' : 'Start Auto-Cast'}
+          >
+            {isAutoCasting ? '🛑' : '🤖'}
+          </button>
+        </div>
 
         {/* Auto-Cast Info */}
         {isAutoCasting && (
@@ -75,7 +78,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
             <div className="text-sm text-center">
               <div className="text-purple-400 font-bold mb-1">Auto-Casting Active</div>
               <div className={`text-xs text-${theme.textMuted}`}>
-                Stamina: <span className="text-yellow-400 font-bold">{player.stamina}</span> remaining
+                Stamina: <span className="text-yellow-400 font-bold">{currentStamina} / {getTotalStats().stamina}</span>
                 <br />
                 Next cast in: <span className="text-blue-400 font-bold">{autoCastCooldown}s</span>
               </div>

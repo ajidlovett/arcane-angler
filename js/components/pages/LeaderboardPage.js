@@ -263,7 +263,10 @@ window.LeaderboardPage = React.memo(({ user, theme }) => {
                       </td>
                       <td className="px-2 sm:px-4 py-2 sm:py-3 text-white text-xs sm:text-sm">
                         <div className="flex items-center gap-1 sm:gap-2">
-                          <span className="text-base sm:text-lg">{getCountryFlag(player.nationality)}</span>
+                          {/* Show flag on mobile only, and only if nationality is set */}
+                          {player.nationality && (
+                            <span className="text-base sm:text-lg sm:hidden">{getCountryFlag(player.nationality)}</span>
+                          )}
                           <div>
                             <span className="font-semibold">{player.profile_username}</span>
                             {player.equipped_title && getTitleName(player.equipped_title) && (

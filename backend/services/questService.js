@@ -413,9 +413,9 @@ class QuestService {
     const description = await this.fillPlaceholders(template, targetAmount, playerProgression, metadata);
 
     // Determine reward
-    let rewardRelics = 1; // daily
-    if (questType === 'weekly') rewardRelics = 3;
-    if (questType === 'monthly') rewardRelics = 5;
+    let rewardRelics = 10; // daily
+    if (questType === 'weekly') rewardRelics = 50;
+    if (questType === 'monthly') rewardRelics = 100;
 
     return {
       quest_template_id: template.id,
