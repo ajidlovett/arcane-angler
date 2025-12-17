@@ -111,8 +111,21 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                 <div className="space-y-1">
                   <div className="text-base sm:text-[1.05rem] text-yellow-400">🎁 Treasure Found!</div>
                   <div className="flex justify-center gap-4 text-sm sm:text-base">
-                    <span className="text-yellow-400">+{lastCatch.gold} Gold</span>
-                    <span className="text-purple-400">+{lastCatch.relics} Relics</span>
+                    <span className="text-yellow-400">+{lastCatch.gold.toLocaleString()} Gold</span>
+                    <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
+                  </div>
+                  <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
+                  {lastCatch.xpBonus > 1 && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
+                    </div>
+                  )}
+                </div>
+              ) : lastCatch.rarity === 'Relic' ? (
+                <div className="space-y-1">
+                  <div className="text-base sm:text-[1.05rem] text-purple-400">🔮 Relic Found!</div>
+                  <div className="flex justify-center gap-4 text-sm sm:text-base">
+                    <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
                   </div>
                   <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
                   {lastCatch.xpBonus > 1 && (
@@ -179,8 +192,21 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
               <div className="space-y-1">
                 <div className="text-base sm:text-[1.05rem] text-yellow-400">🎁 Treasure Found!</div>
                 <div className="flex justify-center gap-4 text-sm sm:text-base">
-                  <span className="text-yellow-400">+{lastCatch.gold} Gold</span>
-                  <span className="text-purple-400">+{lastCatch.relics} Relics</span>
+                  <span className="text-yellow-400">+{lastCatch.gold.toLocaleString()} Gold</span>
+                  <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
+                </div>
+                <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
+                {lastCatch.xpBonus > 1 && (
+                  <div className="text-xs text-yellow-300 font-bold">
+                    ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
+                  </div>
+                )}
+              </div>
+            ) : lastCatch.rarity === 'Relic' ? (
+              <div className="space-y-1">
+                <div className="text-base sm:text-[1.05rem] text-purple-400">🔮 Relic Found!</div>
+                <div className="flex justify-center gap-4 text-sm sm:text-base">
+                  <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
                 </div>
                 <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
                 {lastCatch.xpBonus > 1 && (
@@ -258,7 +284,11 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
 
         <div className={`border-t border-${theme.border} my-2 pt-2`}>
           <div>Normal fish: {(() => {
-            const str = getTotalStats().strength;
+            // Apply booster multiplier to strength
+            const baseStr = getTotalStats().strength;
+            const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
+            const str = Math.floor(baseStr * statBonus);
+
             let rawBonus = 0;
             if (str <= 1000) {
               rawBonus = str * 0.005;
@@ -268,7 +298,13 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
             const maxYield = 1 + Math.floor(rawBonus);
             return `1-${maxYield} per catch`;
           })()}</div>
-          <div>Boss fish value: {(1 + (getTotalStats().strength * 0.002)).toFixed(2)}x multiplier</div>
+          <div>Boss fish value: {(() => {
+            // Apply booster multiplier to strength
+            const baseStr = getTotalStats().strength;
+            const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
+            const str = Math.floor(baseStr * statBonus);
+            return (1 + (str * 0.002)).toFixed(2);
+          })()}x multiplier</div>
           <div>Extra booster duration: +{(() => {
             const int = getTotalStats().intelligence;
             let bonusSeconds = 0;
@@ -282,7 +318,12 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
 
             return Math.floor(bonusSeconds).toLocaleString();
           })()} seconds</div>
-          <div>Rarity Increase: +{getTotalStats().luck}</div>
+          <div>Rarity Increase: +{(() => {
+            // Apply booster multiplier to luck
+            const baseLuck = getTotalStats().luck;
+            const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
+            return Math.floor(baseLuck * statBonus);
+          })()}</div>
         </div>
       </div>
     </div>
