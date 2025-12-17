@@ -1,27 +1,18 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteBase /
 
-  # Force root URL to serve dist/index.html (BEFORE file existence check)
-  RewriteRule ^$ dist/index.html [L]
+  # Proxy ALL requests to Express server on port 3000
+  # Express handles: API routes, static files (dist/), and SPA fallback
+  RewriteCond %{REQUEST_URI} !^/\.well-known/
+  RewriteRule ^(.*)$ http://localhost:3000/$1 [P,L]
+</IfModule>
 
-  # Force index.html to serve dist/index.html (BEFORE file existence check)
-  RewriteRule ^index\.html$ dist/index.html [L]
-
-  # Serve static assets from dist/ directory
-  RewriteCond %{REQUEST_URI} ^/assets/ [OR]
-  RewriteCond %{REQUEST_URI} \.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^(.*)$ dist/$1 [L]
-
-  # API requests - proxy to backend (adjust if needed)
-  RewriteCond %{REQUEST_URI} ^/api/
-  RewriteRule ^(.*)$ - [L,PT]
-
-  # SPA fallback - all other requests go to dist/index.html
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^(.*)$ dist/index.html [L]
+<IfModule mod_proxy.c>
+  # Enable proxy modules (required for [P] flag)
+  ProxyPreserveHost On
+  ProxyPass /.well-known/ !
+  ProxyPass / http://localhost:3000/
+  ProxyPassReverse / http://localhost:3000/
 </IfModule>
 
 # Enable MIME type handling
