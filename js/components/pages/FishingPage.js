@@ -248,10 +248,39 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
         )}
 
         <div className={`border-t border-${theme.border} my-2 pt-2`}>
-          <div>Normal fish: 1-{1 + Math.floor(getTotalStats().strength / 100)} per catch{getTotalStats().strength % 100 > 0 ? ` (${getTotalStats().strength % 100}% chance: 1-${2 + Math.floor(getTotalStats().strength / 100)})` : ''}</div>
-          <div>Boss fish value: {(1 + (getTotalStats().strength * 0.02)).toFixed(2)}x multiplier</div>
-          <div>Gold multiplier: {(1 + (Math.pow(getTotalStats().intelligence, 0.7) * 0.05)).toFixed(2)}x when selling</div>
-          <div>Jackpot weight: +{getTotalStats().luck}% for Legendary/Mythic/Exotic/Arcane/Treasure</div>
+          <div>Normal fish: {(() => {
+            const str = getTotalStats().strength;
+            const maxYield = 1 + Math.floor(str * 0.005);
+            return `1-${maxYield} per catch`;
+          })()}</div>
+          <div>Boss fish value: {(1 + (getTotalStats().strength * 0.002)).toFixed(2)}x multiplier</div>
+          <div>Extra booster duration: +{(() => {
+            const int = getTotalStats().intelligence;
+            let bonusSeconds = 0;
+            let remaining = int;
+
+            if (remaining > 0) { bonusSeconds += Math.min(remaining, 5000) * 0.5; remaining -= Math.min(remaining, 5000); }
+            if (remaining > 0) { bonusSeconds += Math.min(remaining, 5000) * 0.4; remaining -= Math.min(remaining, 5000); }
+            if (remaining > 0) { bonusSeconds += Math.min(remaining, 5000) * 0.3; remaining -= Math.min(remaining, 5000); }
+            if (remaining > 0) { bonusSeconds += Math.min(remaining, 5000) * 0.2; remaining -= Math.min(remaining, 5000); }
+            if (remaining > 0) { bonusSeconds += remaining * 0.1; }
+
+            return Math.floor(bonusSeconds).toLocaleString();
+          })()} seconds</div>
+          <div>Rarity Increase: +{(() => {
+            const luck = getTotalStats().luck;
+            let luckPower = 0;
+            let remaining = luck;
+
+            if (remaining > 0) { luckPower += Math.min(remaining, 1000) * 1.0; remaining -= Math.min(remaining, 1000); }
+            if (remaining > 0) { luckPower += Math.min(remaining, 4000) * 0.75; remaining -= Math.min(remaining, 4000); }
+            if (remaining > 0) { luckPower += Math.min(remaining, 5000) * 0.5; remaining -= Math.min(remaining, 5000); }
+            if (remaining > 0) { luckPower += Math.min(remaining, 5000) * 0.25; remaining -= Math.min(remaining, 5000); }
+            if (remaining > 0) { luckPower += Math.min(remaining, 5000) * 0.15; remaining -= Math.min(remaining, 5000); }
+            if (remaining > 0) { luckPower += remaining * 0.1; }
+
+            return Math.floor(luckPower).toLocaleString();
+          })()}% for Legendary/Mythic/Exotic/Arcane</div>
           <div>Critical Catch: {Math.min(getTotalStats().stamina / 10, 50).toFixed(1)}% chance</div>
         </div>
       </div>
