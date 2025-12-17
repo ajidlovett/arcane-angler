@@ -356,6 +356,17 @@ class ApiService {
     }
 
     /**
+     * Auto-cast fishing line (stamina-based)
+     * Consumes 1 stamina per cast, fixed 12-second cooldown, yields 1 fish, caps at Epic rarity
+     * @returns {Promise<Object>} Auto-cast fishing result
+     */
+    async autoCast() {
+        return await this.request('/game/auto-cast', {
+            method: 'POST'
+        });
+    }
+
+    /**
      * Sell fish from inventory
      * @param {string} fishName - Name of fish to sell
      * @param {string} rarity - Rarity tier

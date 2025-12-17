@@ -91,7 +91,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
       stamina: player.stamina // Stamina not affected by stat boosters
     };
 
-    // Note: Casting does not consume stamina - it has a 4-second cooldown handled client-side
+    // Note: Casting does not consume stamina - it has a 6-second cooldown handled client-side
 
     // Get total stats with equipment bonuses (already includes booster bonuses from baseStats)
     const totalStats = getTotalStats(
@@ -156,7 +156,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
         [rewards.gold, rewards.relics, xpGained, rewards.gold, rewards.relics, userId]
       );
 
-      // Note: Stamina is not consumed for casting (4-second cooldown instead)
+      // Note: Stamina is not consumed for casting (6-second cooldown instead)
     } else {
       // Normal fish catch
       const fish = selectRandomFish(biomeData, rarity);
@@ -312,7 +312,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
         }
       }
 
-      // Note: Stamina is not consumed for casting (4-second cooldown instead)
+      // Note: Stamina is not consumed for casting (6-second cooldown instead)
     }
 
     // Consume bait (if equipped and not the free starter bait)
@@ -446,6 +446,294 @@ router.post('/cast', authenticateToken, async (req, res) => {
     await connection.rollback();
     console.error('Cast fishing error:', error);
     res.status(500).json({ error: 'Failed to process fishing cast' });
+  } finally {
+    connection.release();
+  }
+});
+
+/**
+ * POST /api/game/auto-cast
+ * Automated fishing cast (stamina-based)
+ *
+ * Stamina (STA) - "The Sleep Battery"
+ * - Consumes 1 stamina per cast
+ * - Fixed 12-second cooldown (handled client-side)
+ * - Fixed 1 fish yield (ignores STR)
+ * - Caps at Epic rarity (no Legendary/Chest/Arcane)
+ */
+router.post('/auto-cast', authenticateToken, async (req, res) => {
+  const connection = await db.getConnection();
+
+  try {
+    const userId = req.user.userId;
+    await connection.beginTransaction();
+
+    // Load player data
+    const [playerData] = await connection.query(
+      `SELECT pd.*, ps.strength, ps.intelligence, ps.luck, ps.stamina
+       FROM player_data pd
+       JOIN player_stats ps ON pd.user_id = ps.user_id
+       WHERE pd.user_id = ?`,
+      [userId]
+    );
+
+    if (!playerData || playerData.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Player data not found' });
+    }
+
+    const player = playerData[0];
+
+    // Check stamina availability
+    if (player.stamina < 1) {
+      await connection.rollback();
+      return res.status(400).json({ error: 'Insufficient stamina for auto-cast' });
+    }
+
+    // Load active boosters
+    const [activeBoosters] = await connection.query(
+      `SELECT * FROM player_boosters
+       WHERE user_id = ? AND expires_at > NOW()`,
+      [userId]
+    );
+
+    // Calculate booster bonuses
+    let xpBonus = 1.0; // Multiplier (1.0 = no bonus)
+    let statBonus = 1.0; // Multiplier for strength/luck
+    for (const booster of activeBoosters) {
+      if (booster.effect_type === 'xp_bonus') {
+        xpBonus += booster.bonus_percentage / 100;
+      } else if (booster.effect_type === 'stat_bonus') {
+        statBonus += booster.bonus_percentage / 100;
+      }
+    }
+
+    // Apply stat bonus to base stats
+    const baseStats = {
+      strength: Math.floor(player.strength * statBonus),
+      intelligence: player.intelligence,
+      luck: Math.floor(player.luck * statBonus),
+      stamina: player.stamina
+    };
+
+    // Get total stats with equipment bonuses
+    const totalStats = getTotalStats(
+      baseStats,
+      player.equipped_rod,
+      player.equipped_bait
+    );
+
+    // Get current biome data
+    const currentBiome = player.current_biome || 1;
+    const biomeData = BIOMES[currentBiome];
+
+    if (!biomeData) {
+      await connection.rollback();
+      return res.status(400).json({ error: 'Invalid biome' });
+    }
+
+    // Calculate rarity with auto-cast flag (caps at Epic)
+    const rarity = calculateRarity(totalStats.luck, true);
+
+    // Select random fish
+    const fish = selectRandomFish(biomeData, rarity);
+
+    if (!fish) {
+      await connection.rollback();
+      return res.status(500).json({ error: 'Failed to select fish' });
+    }
+
+    // Auto-cast always yields 1 fish (ignores STR)
+    const count = 1;
+
+    // Calculate XP (no critical catch for auto-cast)
+    const baseXP = fish.xp * count;
+    const levelBonus = player.level * (1 + Math.random()) * count;
+    const xpGained = Math.floor((baseXP + levelBonus) * xpBonus);
+
+    let result = {
+      rarity,
+      fish: {
+        name: fish.name,
+        desc: fish.desc || fish.description || ''
+      },
+      count,
+      xpGained,
+      goldGained: 0,
+      titanBonus: 1,
+      xpBonus,
+      isAutoCast: true
+    };
+
+    // Add to inventory
+    await connection.query(
+      `INSERT INTO player_inventory (user_id, fish_name, rarity, count, base_gold, titan_bonus)
+       VALUES (?, ?, ?, ?, ?, 1)
+       ON DUPLICATE KEY UPDATE
+         count = count + VALUES(count),
+         base_gold = VALUES(base_gold)`,
+      [userId, fish.name, rarity, count, fish.gold]
+    );
+
+    // Add to locked_fish
+    await connection.query(
+      'INSERT IGNORE INTO locked_fish (user_id, fish_name) VALUES (?, ?)',
+      [userId, fish.name]
+    );
+
+    // Update fishpedia_stats
+    await connection.query(
+      `INSERT INTO fishpedia_stats (user_id, fish_name, rarity, total_caught, first_caught_at, last_caught_at)
+       VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+       ON DUPLICATE KEY UPDATE
+         total_caught = total_caught + ?,
+         last_caught_at = CURRENT_TIMESTAMP`,
+      [userId, fish.name, rarity, count, count]
+    );
+
+    // Update player data and consume stamina
+    await connection.query(
+      `UPDATE player_data
+       SET xp = xp + ?,
+           total_fish_caught = total_fish_caught + ?,
+           total_casts = total_casts + 1
+       WHERE user_id = ?`,
+      [xpGained, count, userId]
+    );
+
+    // Consume 1 stamina
+    await connection.query(
+      'UPDATE player_stats SET stamina = stamina - 1 WHERE user_id = ?',
+      [userId]
+    );
+
+    // Update rarity-specific counters
+    const rarityColumn = {
+      'Common': 'commons_caught',
+      'Uncommon': 'uncommons_caught',
+      'Fine': 'fines_caught',
+      'Rare': 'rares_caught',
+      'Epic': 'epics_caught'
+    };
+
+    if (rarityColumn[rarity]) {
+      await connection.query(
+        `UPDATE player_data SET ${rarityColumn[rarity]} = ${rarityColumn[rarity]} + ? WHERE user_id = ?`,
+        [count, userId]
+      );
+    }
+
+    // Consume bait (if equipped and not free)
+    if (player.equipped_bait && player.equipped_bait !== 'Stale Bread Crust') {
+      const [baitInventory] = await connection.query(
+        'SELECT quantity FROM bait_inventory WHERE user_id = ? AND bait_name = ?',
+        [userId, player.equipped_bait]
+      );
+
+      if (baitInventory && baitInventory.length > 0) {
+        const currentQuantity = baitInventory[0].quantity;
+
+        if (currentQuantity > 1) {
+          await connection.query(
+            'UPDATE bait_inventory SET quantity = quantity - 1 WHERE user_id = ? AND bait_name = ?',
+            [userId, player.equipped_bait]
+          );
+        } else {
+          await connection.query(
+            'DELETE FROM bait_inventory WHERE user_id = ? AND bait_name = ?',
+            [userId, player.equipped_bait]
+          );
+          await connection.query(
+            'UPDATE player_data SET equipped_bait = ? WHERE user_id = ?',
+            ['Stale Bread Crust', userId]
+          );
+        }
+      }
+    }
+
+    // Check for level up
+    const [updatedData] = await connection.query(
+      'SELECT level, xp FROM player_data WHERE user_id = ?',
+      [userId]
+    );
+
+    const levelUpResult = calculateLevelUp(
+      updatedData[0].level,
+      updatedData[0].xp,
+      0
+    );
+
+    if (levelUpResult.leveledUp) {
+      const xpToNext = calculateXPForNextLevel(levelUpResult.newLevel);
+      const statPointsGained = levelUpResult.levelsGained * 3;
+
+      await connection.query(
+        `UPDATE player_data
+         SET level = ?, xp = ?, xp_to_next = ?, stat_points = stat_points + ?
+         WHERE user_id = ?`,
+        [levelUpResult.newLevel, levelUpResult.newXP, xpToNext, statPointsGained, userId]
+      );
+      result.leveledUp = true;
+      result.newLevel = levelUpResult.newLevel;
+      result.levelsGained = levelUpResult.levelsGained;
+      result.statPointsGained = statPointsGained;
+    } else {
+      const xpToNext = calculateXPForNextLevel(updatedData[0].level);
+      await connection.query(
+        `UPDATE player_data SET xp_to_next = ? WHERE user_id = ?`,
+        [xpToNext, userId]
+      );
+      result.leveledUp = false;
+      result.newLevel = updatedData[0].level;
+      result.levelsGained = 0;
+      result.statPointsGained = 0;
+    }
+
+    // Get updated balances
+    const [finalData] = await connection.query(
+      `SELECT pd.level, pd.xp, pd.gold, pd.relics, pd.equipped_bait, ps.stamina
+       FROM player_data pd
+       JOIN player_stats ps ON pd.user_id = ps.user_id
+       WHERE pd.user_id = ?`,
+      [userId]
+    );
+
+    result.newGold = finalData[0].gold;
+    result.newRelics = finalData[0].relics;
+    result.newXP = finalData[0].xp;
+    result.newStamina = finalData[0].stamina;
+    result.equippedBait = finalData[0].equipped_bait;
+
+    // Get updated bait quantity
+    if (finalData[0].equipped_bait && finalData[0].equipped_bait !== 'Stale Bread Crust') {
+      const [baitQty] = await connection.query(
+        'SELECT quantity FROM bait_inventory WHERE user_id = ? AND bait_name = ?',
+        [userId, finalData[0].equipped_bait]
+      );
+      result.baitQuantity = baitQty && baitQty.length > 0 ? baitQty[0].quantity : 0;
+    } else {
+      result.baitQuantity = 999999;
+    }
+
+    // Track quest progress (async)
+    trackQuestProgress(userId, 'fish_caught', {
+      rarity: result.rarity,
+      biome: currentBiome,
+      bait: player.equipped_bait
+    }).catch(err => console.error('Quest tracking error:', err));
+
+    trackQuestProgress(userId, 'cast_performed', {}).catch(err => console.error('Quest tracking error:', err));
+
+    if (result.xpGained > 0) {
+      trackQuestProgress(userId, 'xp_gained', { amount: result.xpGained }).catch(err => console.error('Quest tracking error:', err));
+    }
+
+    await connection.commit();
+    res.json({ success: true, result });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Auto-cast fishing error:', error);
+    res.status(500).json({ error: 'Failed to process auto-cast' });
   } finally {
     connection.release();
   }
