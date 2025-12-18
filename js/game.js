@@ -60,10 +60,11 @@ const FishingGame = ({ user, onLogout }) => {
       inventory: [],
       lockedFish: [],
       currentBiome: 1,
-      equippedRod: 'Willow Branch', // Default Rod from equipment.js
-      equippedBait: 'Stale Bread Crust',
-      ownedRods: ['Willow Branch'], // Start with the free rod
-      baitInventory: { 'Stale Bread Crust': 999999 },
+      equippedRod: 'rod_default', // Default Rod ID from equipment.js
+      equippedBait: 'bait_default', // Default Bait ID from equipment.js
+      ownedRods: ['rod_default'], // Start with the default rod
+      rodLevels: { 'rod_default': 1 }, // Track rod levels (default starts at 1)
+      baitInventory: { 'bait_default': 999999 }, // Infinite default bait
       achievements: [],
       totalFishCaught: 0,
       totalFishSold: 0,
@@ -455,7 +456,7 @@ useEffect(() => {
     if (cooldown > 0 || fishing) return;
 
     // Client-side UX check (bait availability)
-    if (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) {
+    if (player.equippedBait !== 'bait_default' && (player.baitInventory[player.equippedBait] || 0) <= 0) {
       showAlert("You need to buy or equip a different bait!");
       return;
     }
@@ -907,71 +908,161 @@ useEffect(() => {
   };
 
   // Equipment functions
-  const buyRod = async (rodName) => {
+  const buyRod = async (rodId) => {
+    const rod = window.getRodById(rodId);
+    if (!rod) {
+      showAlert('Rod not found!');
+      return;
+    }
+
+    // Check if player already owns this rod
+    if (player.ownedRods.includes(rodId)) {
+      showAlert('You already own this rod!');
+      return;
+    }
+
+    // Check if player can afford it
+    if (player.gold < rod.base_cost) {
+      showAlert(`Not enough gold! Need ${rod.base_cost.toLocaleString()} gold.`);
+      return;
+    }
+
     try {
-      const response = await window.ApiService.buyRod(rodName);
+      const response = await window.ApiService.buyRod(rodId);
 
       if (response.success) {
         setPlayer(prev => ({
           ...prev,
-          gold: response.newGold,
-          ownedRods: [...prev.ownedRods, rodName],
-          equippedRod: rodName
+          gold: prev.gold - rod.base_cost,
+          ownedRods: [...prev.ownedRods, rodId],
+          rodLevels: { ...prev.rodLevels, [rodId]: 1 },
+          equippedRod: rodId
         }));
 
         // Also call equipRod endpoint
-        await window.ApiService.equipRod(rodName);
+        await window.ApiService.equipRod(rodId);
+        showAlert(`Purchased and equipped ${rod.name}!`);
       }
     } catch (error) {
       console.error('Buy rod failed:', error);
-      showAlert(error.message || 'Failed to purchase rod. Not enough gold?');
+      showAlert(error.message || 'Failed to purchase rod');
     }
   };
 
-  const equipRod = async (rodName) => {
+  const upgradeRod = async (rodId) => {
+    const rod = window.getRodById(rodId);
+    if (!rod) {
+      showAlert('Rod not found!');
+      return;
+    }
+
+    const currentLevel = player.rodLevels[rodId] || 1;
+
+    // Check if rod is at max level
+    if (currentLevel >= rod.max_level) {
+      showAlert(`${rod.name} is already at max level!`);
+      return;
+    }
+
+    // Calculate upgrade cost
+    const upgradeCost = window.GameHelpers.calculateRodUpgradeCost(rodId, currentLevel);
+
+    // Check if player can afford it
+    if (player.gold < upgradeCost) {
+      showAlert(`Not enough gold! Need ${upgradeCost.toLocaleString()} gold.`);
+      return;
+    }
+
     try {
-      const response = await window.ApiService.equipRod(rodName);
+      const response = await window.ApiService.upgradeRod(rodId);
 
       if (response.success) {
         setPlayer(prev => ({
           ...prev,
-          equippedRod: rodName
+          gold: prev.gold - upgradeCost,
+          rodLevels: { ...prev.rodLevels, [rodId]: currentLevel + 1 }
         }));
+
+        showAlert(`${rod.name} upgraded to level ${currentLevel + 1}!`);
+      }
+    } catch (error) {
+      console.error('Upgrade rod failed:', error);
+      showAlert(error.message || 'Failed to upgrade rod');
+    }
+  };
+
+  const equipRod = async (rodId) => {
+    // Check if player owns this rod
+    if (!player.ownedRods.includes(rodId)) {
+      showAlert('You do not own this rod!');
+      return;
+    }
+
+    try {
+      const response = await window.ApiService.equipRod(rodId);
+
+      if (response.success) {
+        setPlayer(prev => ({
+          ...prev,
+          equippedRod: rodId
+        }));
+
+        const rod = window.getRodById(rodId);
+        showAlert(`Equipped ${rod.name}!`);
       }
     } catch (error) {
       console.error('Equip rod failed:', error);
     }
   };
 
-  const buyBait = async (baitName, multiplier = 1) => {
+  const buyBait = async (baitId, multiplier = 1) => {
+    const bait = window.getBaitById(baitId);
+    if (!bait) {
+      showAlert('Bait not found!');
+      return;
+    }
+
+    const totalCost = bait.price * multiplier;
+
+    // Check if player can afford it
+    if (player.gold < totalCost) {
+      showAlert(`Not enough gold! Need ${totalCost.toLocaleString()} gold.`);
+      return;
+    }
+
     try {
-      const response = await window.ApiService.buyBait(baitName, multiplier);
+      const response = await window.ApiService.buyBait(baitId, multiplier);
 
       if (response.success) {
         setPlayer(prev => ({
           ...prev,
-          gold: response.newGold,
+          gold: prev.gold - totalCost,
           baitInventory: {
             ...prev.baitInventory,
-            [baitName]: response.newBaitQuantity
+            [baitId]: (prev.baitInventory[baitId] || 0) + multiplier
           }
         }));
+
+        showAlert(`Purchased ${multiplier}x ${bait.name}!`);
       }
     } catch (error) {
       console.error('Buy bait failed:', error);
-      showAlert(error.message || 'Failed to purchase bait. Not enough gold?');
+      showAlert(error.message || 'Failed to purchase bait');
     }
   };
 
-  const equipBait = async (baitName) => {
+  const equipBait = async (baitId) => {
     try {
-      const response = await window.ApiService.equipBait(baitName);
+      const response = await window.ApiService.equipBait(baitId);
 
       if (response.success) {
         setPlayer(prev => ({
           ...prev,
-          equippedBait: baitName
+          equippedBait: baitId
         }));
+
+        const bait = window.getBaitById(baitId);
+        showAlert(`Equipped ${bait.name}!`);
       }
     } catch (error) {
       console.error('Equip bait failed:', error);
