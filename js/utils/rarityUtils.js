@@ -50,7 +50,10 @@ window.getGradientTextStyle = (rarity) => {
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    display: 'inline-block',
+    boxDecorationBreak: 'clone',
+    WebkitBoxDecorationBreak: 'clone'
   };
 };
 

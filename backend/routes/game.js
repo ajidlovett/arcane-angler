@@ -1737,9 +1737,9 @@ router.post('/change-biome', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Biome not found' });
     }
 
-    // Get player's unlocked biomes
+    // Get player's unlocked biomes and current equipment
     const [playerData] = await db.query(
-      'SELECT unlocked_biomes FROM player_data WHERE user_id = ?',
+      'SELECT unlocked_biomes, current_biome, equipped_rod, equipped_bait FROM player_data WHERE user_id = ?',
       [userId]
     );
 
@@ -1765,16 +1765,36 @@ router.post('/change-biome', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Biome not unlocked' });
     }
 
-    // Change biome
+    const currentBiome = playerData[0].current_biome;
+    let equippedRod = playerData[0].equipped_rod;
+    let equippedBait = playerData[0].equipped_bait;
+
+    // Check if equipped rod is from the current biome and switch to default if so
+    if (equippedRod && equippedRod === `rod_biome_${currentBiome}`) {
+      equippedRod = 'rod_default';
+    }
+
+    // Check if equipped bait is from the current biome (one of the 4 tiers) and switch to default if so
+    const biomeBaits = [
+      `bait_${currentBiome}_low`,
+      `bait_${currentBiome}_medium`,
+      `bait_${currentBiome}_high`,
+      `bait_${currentBiome}_super`
+    ];
+    if (equippedBait && biomeBaits.includes(equippedBait)) {
+      equippedBait = 'bait_default';
+    }
+
+    // Change biome and update equipment if needed
     await db.query(
-      'UPDATE player_data SET current_biome = ? WHERE user_id = ?',
-      [biomeId, userId]
+      'UPDATE player_data SET current_biome = ?, equipped_rod = ?, equipped_bait = ? WHERE user_id = ?',
+      [biomeId, equippedRod, equippedBait, userId]
     );
 
     // Track quest progress
     trackQuestProgress(userId, 'biome_visited', { biome: biomeId }).catch(err => console.error('Quest tracking error:', err));
 
-      res.json({ success: true, currentBiome: biomeId });
+      res.json({ success: true, currentBiome: biomeId, equippedRod, equippedBait });
   } catch (error) {
     console.error('Change biome error:', error);
     res.status(500).json({ error: 'Failed to change biome' });

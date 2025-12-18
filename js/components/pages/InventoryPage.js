@@ -81,27 +81,25 @@ window.InventoryPage = ({ player, theme, selectedRarity, setSelectedRarity, inve
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {filteredInventory.map((fish, idx) => {
               const isLocked = player.lockedFish.includes(fish.name);
-              const totalStats = getTotalStats();
-              const intelligenceBonus = 1 + (Number(totalStats.intelligence) * 0.02);
               const titanBonus = Number(fish.titanBonus) || 1;
 
               // Handle both old fish (with 'gold') and new fish (with 'baseGold')
               const baseGoldValue = Number(fish.baseGold) || Number(fish.gold) || 0;
-              const sellValue = Math.floor(baseGoldValue * Number(fish.count) * intelligenceBonus * titanBonus);
+              const sellValue = Math.floor(baseGoldValue * Number(fish.count) * titanBonus);
 
               return (
                 <div
                   key={idx}
-                  className={`p-3 sm:p-4 rounded-lg border-2 relative`}
+                  className={`p-3 sm:p-4 rounded-lg relative`}
                   style={isGradientRarity(fish.rarity) ? {
-                    background: `${theme.surface}`,
-                    borderColor: 'transparent',
-                    backgroundImage: `${rarityColors[fish.rarity]}, linear-gradient(${theme.surface}, ${theme.surface})`,
+                    backgroundColor: theme.surface,
+                    border: `2px solid transparent`,
+                    backgroundImage: `linear-gradient(${theme.surface}, ${theme.surface}), ${rarityColors[fish.rarity]}`,
                     backgroundOrigin: 'border-box',
                     backgroundClip: 'padding-box, border-box'
                   } : {
                     backgroundColor: theme.surface,
-                    borderColor: getRarityColor(fish.rarity)
+                    border: `2px solid ${getRarityColor(fish.rarity)}`
                   }}
                 >
                   <button

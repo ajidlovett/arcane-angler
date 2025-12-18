@@ -2,6 +2,8 @@
 window.BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRarityColor }) => {
   const { useState } = React;
   const [biomePage, setBiomePage] = useState(1);
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const [unlockedBiomeName, setUnlockedBiomeName] = useState('');
   const biomesPerPage = 5;
   const totalBiomes = Object.keys(window.BIOMES).length;
   const totalPages = Math.ceil(totalBiomes / biomesPerPage);
@@ -31,7 +33,10 @@ window.BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getR
             setPlayer(prev => {
               const newState = {
                 ...prev,
-                currentBiome: biomeId
+                currentBiome: biomeId,
+                // Update equipment if it was changed by the server
+                ...(response.equippedRod && { equippedRod: response.equippedRod }),
+                ...(response.equippedBait && { equippedBait: response.equippedBait })
               };
               // Use setTimeout to ensure state is committed
               setTimeout(resolve, 0);
@@ -66,21 +71,16 @@ window.BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getR
         const response = await window.ApiService.unlockBiome(biomeId);
 
         if (response.success) {
-          // Wait for state update before navigating
-          await new Promise(resolve => {
-            setPlayer(prev => {
-              const newState = {
-                ...prev,
-                currentBiome: biomeId,
-                gold: response.newGold,
-                unlockedBiomes: response.unlockedBiomes
-              };
-              // Use setTimeout to ensure state is committed
-              setTimeout(resolve, 0);
-              return newState;
-            });
-          });
-          setCurrentPage('fishing');
+          // Update player state but DON'T change current biome or navigate
+          setPlayer(prev => ({
+            ...prev,
+            gold: response.newGold,
+            unlockedBiomes: response.unlockedBiomes
+          }));
+
+          // Show unlock modal
+          setUnlockedBiomeName(biome.name);
+          setShowUnlockModal(true);
         }
       } catch (error) {
         console.error('Unlock biome failed:', error);
@@ -197,6 +197,27 @@ window.BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getR
           })}
         </div>
       </div>
+
+      {/* Biome Unlock Modal */}
+      {showUnlockModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className={`bg-${theme.secondary} rounded-lg p-6 max-w-md w-full border-2 border-${theme.accent} shadow-2xl`}>
+            <div className="text-center">
+              <div className="text-6xl mb-4">🎉</div>
+              <h2 className="text-2xl font-bold mb-2">Biome Unlocked!</h2>
+              <p className={`text-${theme.textMuted} mb-6`}>
+                You've successfully unlocked <span className="text-yellow-400 font-bold">{unlockedBiomeName}</span>!
+              </p>
+              <button
+                onClick={() => setShowUnlockModal(false)}
+                className={`w-full py-3 px-6 rounded-lg font-bold bg-${theme.accent} hover:bg-${theme.accentHover} transition-colors`}
+              >
+                Awesome!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
