@@ -1,5 +1,7 @@
 // FishingPage - Defined as window.FishingPage
 window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle, getGradientBackgroundStyle, isAutoCasting, toggleAutoCast, autoCastCooldown, currentStamina, currentWeather }) => {
+  const [showWeatherTooltip, setShowWeatherTooltip] = React.useState(false);
+
   // Weather display helper
   const getWeatherDisplay = () => {
     const weatherIcons = {
@@ -24,15 +26,24 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
 
     const weather = currentWeather?.weather || 'clear';
     const xpBonus = currentWeather?.xpBonus || 0;
+    const modifiers = currentWeather?.modifiers || {};
 
     return {
       icon: weatherIcons[weather],
       name: weatherNames[weather],
-      xpBonus
+      xpBonus,
+      modifiers
     };
   };
 
   const weatherDisplay = getWeatherDisplay();
+
+  // Format modifier display
+  const formatModifier = (value) => {
+    if (value > 0) return `+${value}%`;
+    if (value < 0) return `${value}%`;
+    return '0%';
+  };
 
   return (
   <div className="max-w-6xl mx-auto">
@@ -53,7 +64,10 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
         </div>
 
         {/* Weather Indicator */}
-        <div className={`mb-4 p-3 rounded-lg border-2 ${weatherDisplay.xpBonus > 0 ? 'border-yellow-400 bg-yellow-900 bg-opacity-20' : `border-${theme.border} bg-${theme.surface}`}`}>
+        <div
+          className={`mb-4 p-3 rounded-lg border-2 cursor-pointer hover:opacity-90 transition-opacity relative ${weatherDisplay.xpBonus > 0 ? 'border-yellow-400 bg-yellow-900 bg-opacity-20' : `border-${theme.border} bg-${theme.surface}`}`}
+          onClick={() => setShowWeatherTooltip(!showWeatherTooltip)}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-2xl">{weatherDisplay.icon}</span>
@@ -68,13 +82,79 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                 )}
               </div>
             </div>
-            {weatherDisplay.xpBonus === 0 && (
+            <div className="flex items-center gap-2">
+              {weatherDisplay.xpBonus === 0 && (
+                <div className={`text-xs text-${theme.textMuted}`}>
+                  No bonuses
+                </div>
+              )}
               <div className={`text-xs text-${theme.textMuted}`}>
-                No bonuses
+                ℹ️
               </div>
-            )}
+            </div>
           </div>
         </div>
+
+        {/* Weather Tooltip Modal */}
+        {showWeatherTooltip && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowWeatherTooltip(false)}>
+            <div className={`bg-${theme.secondary} p-6 rounded-lg max-w-md w-full mx-4 border-2 ${weatherDisplay.xpBonus > 0 ? 'border-yellow-400' : `border-${theme.border}`}`} onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-4xl">{weatherDisplay.icon}</span>
+                  <div>
+                    <h3 className={`text-xl font-bold ${weatherDisplay.xpBonus > 0 ? 'text-yellow-300' : ''}`}>
+                      {weatherDisplay.name}
+                    </h3>
+                    {weatherDisplay.xpBonus > 0 && (
+                      <div className="text-sm text-yellow-400 font-semibold">
+                        +{weatherDisplay.xpBonus}% XP Bonus
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowWeatherTooltip(false)}
+                  className={`text-2xl hover:opacity-70 transition-opacity`}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className={`border-t border-${theme.border} pt-4`}>
+                <h4 className="text-sm font-bold mb-3 text-gray-300">Rarity Modifiers:</h4>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  {Object.entries({
+                    common: 'Common',
+                    uncommon: 'Uncommon',
+                    fine: 'Fine',
+                    rare: 'Rare',
+                    relic: 'Relic',
+                    epic: 'Epic',
+                    legendary: 'Legendary',
+                    mythic: 'Mythic',
+                    exotic: 'Exotic',
+                    arcane: 'Arcane'
+                  }).map(([key, label]) => {
+                    const value = weatherDisplay.modifiers[key] || 0;
+                    return React.createElement('div', {
+                      key: key,
+                      className: `flex justify-between px-2 py-1 rounded ${value > 0 ? 'bg-green-900 bg-opacity-30' : value < 0 ? 'bg-red-900 bg-opacity-30' : `bg-${theme.surface}`}`
+                    }, [
+                      React.createElement('span', { className: 'text-gray-300' }, label),
+                      React.createElement('span', {
+                        className: value > 0 ? 'text-green-400 font-semibold' : value < 0 ? 'text-red-400 font-semibold' : 'text-gray-400'
+                      }, formatModifier(value))
+                    ]);
+                  })}
+                </div>
+                <div className={`mt-3 text-xs text-${theme.textMuted} text-center italic`}>
+                  * Treasure Chest rarity is unaffected by weather
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-2 mb-4">
           <div className={`bg-${theme.surface} p-3 rounded`}>
