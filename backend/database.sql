@@ -34,8 +34,9 @@ CREATE TABLE IF NOT EXISTS player_data (
     relics INT DEFAULT 0,
     stat_points INT DEFAULT 0,
     current_biome INT DEFAULT 1,
-    equipped_rod VARCHAR(100) DEFAULT 'Willow Branch',
-    equipped_bait VARCHAR(100) DEFAULT 'Stale Bread Crust',
+    equipped_rod VARCHAR(100) DEFAULT 'rod_default',
+    equipped_bait VARCHAR(100) DEFAULT 'bait_default',
+    rod_levels JSON,
     unlocked_biomes JSON,
     achievements JSON,
     discovered_fish JSON,
@@ -224,25 +225,27 @@ BEGIN
     -- Create player data with proper JSON initialization
     INSERT INTO player_data (
         user_id,
+        rod_levels,
         unlocked_biomes,
         achievements,
         discovered_fish
     ) VALUES (
         NEW.id,
-        JSON_ARRAY(1),      -- Start with biome 1 unlocked
-        JSON_ARRAY(),       -- Empty achievements array
-        JSON_ARRAY()        -- Empty discovered fish array (deprecated but kept for compatibility)
+        JSON_OBJECT('rod_default', 1),  -- Default rod starts at level 1
+        JSON_ARRAY(1),                  -- Start with biome 1 unlocked
+        JSON_ARRAY(),                   -- Empty achievements array
+        JSON_ARRAY()                    -- Empty discovered fish array (deprecated but kept for compatibility)
     );
 
     -- Create player stats
     INSERT INTO player_stats (user_id) VALUES (NEW.id);
 
-    -- Add default rod
-    INSERT INTO owned_rods (user_id, rod_name) VALUES (NEW.id, 'Willow Branch');
+    -- Add default rod (using ID)
+    INSERT INTO owned_rods (user_id, rod_name) VALUES (NEW.id, 'rod_default');
 
-    -- Add infinite starter bait
+    -- Add infinite starter bait (using ID)
     INSERT INTO bait_inventory (user_id, bait_name, quantity)
-    VALUES (NEW.id, 'Stale Bread Crust', 999999);
+    VALUES (NEW.id, 'bait_default', 999999);
 
     -- Initialize leaderboard stats with profile_username and nationality
     INSERT INTO leaderboard_stats (user_id, profile_username, nationality)

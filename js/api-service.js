@@ -393,6 +393,18 @@ class ApiService {
     }
 
     /**
+     * Upgrade a fishing rod to the next level
+     * @param {string} rodId - ID of rod to upgrade
+     * @returns {Promise<Object>} Upgrade result with new level and gold
+     */
+    async upgradeRod(rodId) {
+        return await this.request('/game/upgrade-rod', {
+            method: 'POST',
+            body: JSON.stringify({ rodId })
+        });
+    }
+
+    /**
      * Purchase bait
      * @param {string} baitName - Name of bait to buy
      * @param {number} quantity - Amount to purchase

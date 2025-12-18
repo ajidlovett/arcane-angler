@@ -10,7 +10,7 @@ import express from 'express';
 import db from '../db.js';
 import { authenticateToken } from '../middleware/auth.js';
 import { BIOMES } from '../data/biomes.js';
-import { RODS, BAITS } from '../data/equipment.js';
+import { RODS, BAITS, getRodById, getBaitById, calculateRodUpgradeCost } from '../data/equipment.js';
 import {
   getTotalStats,
   calculateRarity,
@@ -953,6 +953,117 @@ router.post('/buy-rod', authenticateToken, async (req, res) => {
     await connection.rollback();
     console.error('Buy rod error:', error);
     res.status(500).json({ error: 'Failed to purchase rod' });
+  } finally {
+    connection.release();
+  }
+});
+
+/**
+ * POST /api/game/upgrade-rod
+ * Upgrade a rod to the next level
+ *
+ * Body: { rodId }
+ */
+router.post('/upgrade-rod', authenticateToken, async (req, res) => {
+  const connection = await db.getConnection();
+
+  try {
+    const userId = req.user.userId;
+    const { rodId } = req.body;
+
+    // Validate input
+    if (!rodId) {
+      return res.status(400).json({ error: 'Rod ID is required' });
+    }
+
+    // Check if rod exists
+    const rod = RODS[rodId];
+    if (!rod) {
+      return res.status(404).json({ error: 'Rod not found' });
+    }
+
+    // Check if rod can be upgraded (max_level > 0)
+    if (rod.max_level === 0) {
+      return res.status(400).json({ error: 'This rod cannot be upgraded' });
+    }
+
+    await connection.beginTransaction();
+
+    // Check if player owns the rod
+    const [owned] = await connection.query(
+      'SELECT rod_name FROM owned_rods WHERE user_id = ? AND rod_name = ?',
+      [userId, rodId]
+    );
+
+    if (!owned || owned.length === 0) {
+      await connection.rollback();
+      return res.status(400).json({ error: 'You do not own this rod' });
+    }
+
+    // Get current rod levels
+    const [playerData] = await connection.query(
+      'SELECT rod_levels, gold FROM player_data WHERE user_id = ?',
+      [userId]
+    );
+
+    if (!playerData || playerData.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Player data not found' });
+    }
+
+    // Parse rod_levels JSON
+    let rodLevels = {};
+    try {
+      rodLevels = playerData[0].rod_levels ? JSON.parse(JSON.stringify(playerData[0].rod_levels)) : {};
+    } catch (e) {
+      console.error('Error parsing rod_levels:', e);
+      rodLevels = {};
+    }
+
+    const currentLevel = rodLevels[rodId] || 1;
+
+    // Check if rod is already at max level
+    if (currentLevel >= rod.max_level) {
+      await connection.rollback();
+      return res.status(400).json({ error: 'Rod is already at max level' });
+    }
+
+    // Calculate upgrade cost
+    const upgradeCost = Math.floor(rod.base_cost * Math.pow(rod.cost_multiplier, currentLevel));
+
+    // Check if player has enough gold
+    const currentGold = playerData[0].gold;
+    if (currentGold < upgradeCost) {
+      await connection.rollback();
+      return res.status(400).json({ error: 'Not enough gold' });
+    }
+
+    // Deduct gold and update rod level
+    rodLevels[rodId] = currentLevel + 1;
+
+    await connection.query(
+      'UPDATE player_data SET gold = gold - ?, rod_levels = ? WHERE user_id = ?',
+      [upgradeCost, JSON.stringify(rodLevels), userId]
+    );
+
+    // Get updated gold balance
+    const [updated] = await connection.query(
+      'SELECT gold FROM player_data WHERE user_id = ?',
+      [userId]
+    );
+
+    await connection.commit();
+    res.json({
+      success: true,
+      rodId,
+      newLevel: currentLevel + 1,
+      newGold: updated[0].gold,
+      upgradeCost
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Upgrade rod error:', error);
+    res.status(500).json({ error: 'Failed to upgrade rod' });
   } finally {
     connection.release();
   }
