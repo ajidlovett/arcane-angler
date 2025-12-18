@@ -15,15 +15,49 @@ import { RODS, BAITS } from '../data/equipment.js';
  * @param {string|null} equippedBait - Bait name or null
  * @returns {Object} Total stats with equipment bonuses
  */
-function getTotalStats(baseStats, equippedRod, equippedBait) {
+function getTotalStats(baseStats, equippedRod, equippedBait, rodLevels = {}, currentBiome = 1) {
   const rod = equippedRod && RODS[equippedRod] ? RODS[equippedRod] : null;
   const bait = equippedBait && BAITS[equippedBait] ? BAITS[equippedBait] : null;
 
+  // Calculate rod stats based on level
+  let rodStats = { strength: 0, luck: 0, relicWeight: 0, treasureWeight: 0, xpBonus: 0 };
+  if (rod && rod.effect_per_level) {
+    const rodLevel = rodLevels[equippedRod] || 1;
+
+    // Parse effect_per_level to determine stat type and bonus
+    const effectStr = rod.effect_per_level;
+    if (effectStr.includes('Strength')) {
+      const match = effectStr.match(/\+(\d+)/);
+      if (match) rodStats.strength = parseInt(match[1]) * rodLevel;
+    } else if (effectStr.includes('Luck')) {
+      const match = effectStr.match(/\+(\d+)/);
+      if (match) rodStats.luck = parseInt(match[1]) * rodLevel;
+    } else if (effectStr.includes('Relic')) {
+      const match = effectStr.match(/\+(\d+)/);
+      if (match) rodStats.relicWeight = parseInt(match[1]) * rodLevel;
+    } else if (effectStr.includes('Treasure')) {
+      const match = effectStr.match(/\+(\d+)/);
+      if (match) rodStats.treasureWeight = parseInt(match[1]) * rodLevel;
+    } else if (effectStr.includes('XP')) {
+      // XP bonus only applies if fishing in the rod's matching biome
+      if (rod.biome_id && rod.biome_id === currentBiome) {
+        const match = effectStr.match(/\+([\d.]+)/);
+        if (match) rodStats.xpBonus = parseFloat(match[1]) * rodLevel;
+      }
+    }
+  }
+
+  // Get bait luck bonus (new bait structure only has luck)
+  const baitLuck = bait?.luck || 0;
+
   return {
-    strength: Number(baseStats.strength) + (rod?.str || 0) + (bait?.str || 0),
-    intelligence: Number(baseStats.intelligence) + (rod?.int || 0) + (bait?.int || 0),
-    luck: Number(baseStats.luck) + (rod?.luck || 0) + (bait?.luck || 0),
-    stamina: Number(baseStats.stamina) + (rod?.stam || 0) + (bait?.stam || 0)
+    strength: Number(baseStats.strength) + rodStats.strength,
+    intelligence: Number(baseStats.intelligence),
+    luck: Number(baseStats.luck) + rodStats.luck + baitLuck,
+    stamina: Number(baseStats.stamina),
+    relicWeight: rodStats.relicWeight,
+    treasureWeight: rodStats.treasureWeight,
+    xpBonus: rodStats.xpBonus
   };
 }
 
@@ -120,7 +154,7 @@ function calculateLuckPower(totalLuck) {
  * @param {boolean} isAutoCast - Whether this is an auto-cast (caps at Epic)
  * @returns {string} Rarity tier
  */
-function calculateRarity(totalLuck, isAutoCast = false) {
+function calculateRarity(totalLuck, isAutoCast = false, equippedBaitId = null, relicWeight = 0, treasureWeight = 0) {
   const baseWeights = {
     'Common': 60046,
     'Uncommon': 23000,
@@ -134,6 +168,23 @@ function calculateRarity(totalLuck, isAutoCast = false) {
     'Exotic': 3,
     'Arcane': 1
   };
+
+  // Apply Relic and Treasure weight bonuses from rods
+  if (relicWeight > 0) {
+    baseWeights['Relic'] = 2000 + relicWeight;
+  }
+  if (treasureWeight > 0) {
+    baseWeights['Treasure Chest'] = 150 + treasureWeight;
+  }
+
+  // Get bait rarity restrictions
+  let allowedRarities = Object.keys(baseWeights);
+  if (equippedBaitId && BAITS[equippedBaitId]) {
+    const bait = BAITS[equippedBaitId];
+    if (bait.rarity_limit && !bait.rarity_limit.includes('All')) {
+      allowedRarities = bait.rarity_limit;
+    }
+  }
 
   // Calculate luck power from total luck
   const luckPower = calculateLuckPower(totalLuck);
@@ -151,6 +202,11 @@ function calculateRarity(totalLuck, isAutoCast = false) {
   let poolSize = 0;
 
   for (const [tier, baseWeight] of Object.entries(baseWeights)) {
+    // Skip if not allowed by bait
+    if (!allowedRarities.includes(tier)) {
+      continue;
+    }
+
     // Auto-Cast caps at Epic rarity
     if (isAutoCast && ['Relic', 'Treasure Chest', 'Legendary', 'Mythic', 'Exotic', 'Arcane'].includes(tier)) {
       continue; // Skip these rarities for auto-cast

@@ -1239,6 +1239,7 @@ useEffect(() => {
             shopTab={shopTab}
             setShopTab={setShopTab}
             buyRod={buyRod}
+            upgradeRod={upgradeRod}
             equipRod={equipRod}
             buyBait={buyBait}
             equipBait={equipBait}

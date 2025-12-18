@@ -94,15 +94,26 @@ router.post('/cast', authenticateToken, async (req, res) => {
 
     // Note: Casting does not consume stamina - it has a 6-second cooldown handled client-side
 
+    // Parse rod_levels JSON
+    let rodLevels = {};
+    try {
+      rodLevels = player.rod_levels ? (typeof player.rod_levels === 'string' ? JSON.parse(player.rod_levels) : player.rod_levels) : {};
+    } catch (e) {
+      console.error('Error parsing rod_levels:', e);
+      rodLevels = {};
+    }
+
+    // Get current biome data
+    const currentBiome = player.current_biome || 1;
+
     // Get total stats with equipment bonuses (already includes booster bonuses from baseStats)
     const totalStats = getTotalStats(
       baseStats,
       player.equipped_rod,
-      player.equipped_bait
+      player.equipped_bait,
+      rodLevels,
+      currentBiome
     );
-
-    // Get current biome data
-    const currentBiome = player.current_biome || 1;
     const biomeData = BIOMES[currentBiome];
 
     if (!biomeData) {
@@ -110,8 +121,14 @@ router.post('/cast', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Invalid biome' });
     }
 
-    // Calculate rarity based on luck
-    const rarity = calculateRarity(totalStats.luck);
+    // Calculate rarity based on luck, equipped bait, and rod weights
+    const rarity = calculateRarity(
+      totalStats.luck,
+      false, // isAutoCast
+      player.equipped_bait,
+      totalStats.relicWeight || 0,
+      totalStats.treasureWeight || 0
+    );
 
     let result = {
       rarity,
@@ -549,15 +566,26 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
       stamina: player.stamina
     };
 
+    // Parse rod_levels JSON
+    let rodLevels = {};
+    try {
+      rodLevels = player.rod_levels ? (typeof player.rod_levels === 'string' ? JSON.parse(player.rod_levels) : player.rod_levels) : {};
+    } catch (e) {
+      console.error('Error parsing rod_levels:', e);
+      rodLevels = {};
+    }
+
+    // Get current biome data
+    const currentBiome = player.current_biome || 1;
+
     // Get total stats with equipment bonuses
     const totalStats = getTotalStats(
       baseStats,
       player.equipped_rod,
-      player.equipped_bait
+      player.equipped_bait,
+      rodLevels,
+      currentBiome
     );
-
-    // Get current biome data
-    const currentBiome = player.current_biome || 1;
     const biomeData = BIOMES[currentBiome];
 
     if (!biomeData) {
@@ -566,7 +594,13 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     }
 
     // Calculate rarity with auto-cast flag (caps at Epic)
-    const rarity = calculateRarity(totalStats.luck, true);
+    const rarity = calculateRarity(
+      totalStats.luck,
+      true, // isAutoCast
+      player.equipped_bait,
+      totalStats.relicWeight || 0,
+      totalStats.treasureWeight || 0
+    );
 
     // Select random fish
     const fish = selectRandomFish(biomeData, rarity);
@@ -1353,7 +1387,7 @@ router.post('/buy-booster', authenticateToken, async (req, res) => {
 
     // Get player data and stats for Intelligence bonus calculation
     const [playerData] = await connection.query(
-      `SELECT pd.relics, pd.equipped_rod, pd.equipped_bait, ps.intelligence
+      `SELECT pd.relics, pd.equipped_rod, pd.equipped_bait, pd.rod_levels, pd.current_biome, ps.intelligence
        FROM player_data pd
        JOIN player_stats ps ON pd.user_id = ps.user_id
        WHERE pd.user_id = ?`,
@@ -1372,6 +1406,17 @@ router.post('/buy-booster', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Not enough relics' });
     }
 
+    // Parse rod_levels JSON
+    let rodLevels = {};
+    try {
+      rodLevels = player.rod_levels ? (typeof player.rod_levels === 'string' ? JSON.parse(player.rod_levels) : player.rod_levels) : {};
+    } catch (e) {
+      console.error('Error parsing rod_levels:', e);
+      rodLevels = {};
+    }
+
+    const currentBiome = player.current_biome || 1;
+
     // Calculate total Intelligence (base + equipment bonuses)
     const totalStats = getTotalStats(
       {
@@ -1381,7 +1426,9 @@ router.post('/buy-booster', authenticateToken, async (req, res) => {
         stamina: 0
       },
       player.equipped_rod,
-      player.equipped_bait
+      player.equipped_bait,
+      rodLevels,
+      currentBiome
     );
 
     // Calculate booster duration with Intelligence bonus

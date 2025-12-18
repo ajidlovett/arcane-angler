@@ -24,31 +24,60 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
         <div className="grid grid-cols-2 gap-2 mb-4">
           <div className={`bg-${theme.surface} p-3 rounded`}>
             <div className={`text-xs text-${theme.textDim} mb-1`}>🎣 Rod</div>
-            <div className="text-sm font-bold">{player.equippedRod || 'None'}</div>
-            {player.equippedRod && window.RODS[player.equippedRod] && (
-              <div className="text-xs text-green-400 mt-1">
-                {window.RODS[player.equippedRod].str > 0 && `+${window.RODS[player.equippedRod].str} STR `}
-                {window.RODS[player.equippedRod].int > 0 && `+${window.RODS[player.equippedRod].int} INT `}
-                {window.RODS[player.equippedRod].luck > 0 && `+${window.RODS[player.equippedRod].luck} LUCK `}
-                {window.RODS[player.equippedRod].stam > 0 && `+${window.RODS[player.equippedRod].stam} STAM`}
-              </div>
-            )}
+            {(() => {
+              const rod = player.equippedRod ? window.getRodById(player.equippedRod) : null;
+              const rodLevel = player.rodLevels?.[player.equippedRod] || 1;
+              const rodStats = rod && rodLevel ? window.GameHelpers.getRodStats(player.equippedRod, rodLevel, player.currentBiome) : null;
+
+              return (
+                <>
+                  <div className="text-sm font-bold">
+                    {rod ? rod.name : 'None'}
+                    {rod && rod.max_level > 0 && (
+                      <span className="text-xs text-blue-400 ml-1">(Lv {rodLevel})</span>
+                    )}
+                  </div>
+                  {rodStats && (
+                    <div className="text-xs text-green-400 mt-1">
+                      {rodStats.strength > 0 && `+${rodStats.strength} STR `}
+                      {rodStats.luck > 0 && `+${rodStats.luck} LUCK `}
+                      {rodStats.relicWeight > 0 && `+${rodStats.relicWeight} RELIC `}
+                      {rodStats.treasureWeight > 0 && `+${rodStats.treasureWeight} TREASURE `}
+                      {rodStats.xpBonus > 0 && `+${rodStats.xpBonus}% XP`}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
           <div className={`bg-${theme.surface} p-3 rounded`}>
             <div className={`text-xs text-${theme.textDim} mb-1`}>🪱 Bait</div>
-            <div className="text-sm font-bold">{player.equippedBait}</div>
-            {player.equippedBait && player.equippedBait !== 'Stale Bread Crust' && (
-              <div className={`text-xs text-${theme.textMuted} mt-1`}>
-                {player.baitInventory[player.equippedBait] || 0} left
-              </div>
-            )}
-            {player.equippedBait && window.BAITS[player.equippedBait] && (
-              <div className="text-xs text-green-400 mt-1">
-                {window.BAITS[player.equippedBait].str > 0 && `+${window.BAITS[player.equippedBait].str} STR `}
-                {window.BAITS[player.equippedBait].int > 0 && `+${window.BAITS[player.equippedBait].int} INT `}
-                {window.BAITS[player.equippedBait].luck > 0 && `+${window.BAITS[player.equippedBait].luck} LUCK`}
-              </div>
-            )}
+            {(() => {
+              const bait = player.equippedBait ? window.getBaitById(player.equippedBait) : null;
+              const baitCount = player.baitInventory[player.equippedBait] || 0;
+              const isDefaultBait = player.equippedBait === 'bait_default';
+
+              return (
+                <>
+                  <div className="text-sm font-bold">{bait ? bait.name : 'None'}</div>
+                  {bait && !isDefaultBait && (
+                    <div className={`text-xs text-${theme.textMuted} mt-1`}>
+                      {baitCount} left
+                    </div>
+                  )}
+                  {bait && bait.luck > 0 && (
+                    <div className="text-xs text-green-400 mt-1">
+                      +{bait.luck} LUCK
+                    </div>
+                  )}
+                  {bait && bait.rarity_limit && !bait.rarity_limit.includes('All') && (
+                    <div className="text-xs text-yellow-400 mt-1">
+                      Limited rarities
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
 
@@ -56,8 +85,8 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
         <div className="flex gap-2">
           <button
             onClick={handleFish}
-            disabled={cooldown > 0 || fishing || isAutoCasting || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0)}
-            className={`flex-[85] py-3 rounded-lg font-bold text-base sm:text-[1.05rem] transition-all ${cooldown > 0 || fishing || isAutoCasting || (player.equippedBait !== 'Stale Bread Crust' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed text-gray-400' : `${buttonColors[castButtonColor].bg} hover:${buttonColors[castButtonColor].hover} ${buttonColors[castButtonColor].text} active:scale-95 shadow-lg`}`}
+            disabled={cooldown > 0 || fishing || isAutoCasting || (player.equippedBait !== 'bait_default' && (player.baitInventory[player.equippedBait] || 0) <= 0)}
+            className={`flex-[85] py-3 rounded-lg font-bold text-base sm:text-[1.05rem] transition-all ${cooldown > 0 || fishing || isAutoCasting || (player.equippedBait !== 'bait_default' && (player.baitInventory[player.equippedBait] || 0) <= 0) ? 'bg-gray-600 cursor-not-allowed text-gray-400' : `${buttonColors[castButtonColor].bg} hover:${buttonColors[castButtonColor].hover} ${buttonColors[castButtonColor].text} active:scale-95 shadow-lg`}`}
           >
             {fishing ? '🎣 Fishing...' : cooldown > 0 ? `⏱️ Cooldown: ${cooldown}s` : isAutoCasting ? '🚫 Auto-Casting...' : '🎣 Cast Line'}
           </button>
