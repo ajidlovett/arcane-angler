@@ -1,5 +1,5 @@
 // InventoryPage - Defined as window.InventoryPage
-window.InventoryPage = ({ player, theme, selectedRarity, setSelectedRarity, inventorySortOrder, setInventorySortOrder, getFilteredInventory, getTotalStats, sellAll, sellByRarity, sellFish, toggleLock, rarities, getRarityColor, isGradientRarity, rarityColors, getGradientTextStyle }) => {
+window.InventoryPage = ({ player, theme, selectedRarity, setSelectedRarity, inventorySortOrder, setInventorySortOrder, getFilteredInventory, getTotalStats, sellAll, sellByRarity, sellFish, toggleLock, rarities, getRarityColor, isGradientRarity, rarityColors, getGradientTextStyle, getGradientBackgroundStyle }) => {
   const filteredInventory = getFilteredInventory();
   const unlockedCount = filteredInventory.filter(f => !player.lockedFish.includes(f.name)).reduce((sum, f) => sum + f.count, 0);
   return (
@@ -90,17 +90,8 @@ window.InventoryPage = ({ player, theme, selectedRarity, setSelectedRarity, inve
               return (
                 <div
                   key={idx}
-                  className={`p-3 sm:p-4 rounded-lg relative`}
-                  style={isGradientRarity(fish.rarity) ? {
-                    backgroundColor: theme.surface,
-                    border: `2px solid transparent`,
-                    backgroundImage: `linear-gradient(${theme.surface}, ${theme.surface}), ${rarityColors[fish.rarity]}`,
-                    backgroundOrigin: 'border-box',
-                    backgroundClip: 'padding-box, border-box'
-                  } : {
-                    backgroundColor: theme.surface,
-                    border: `2px solid ${getRarityColor(fish.rarity)}`
-                  }}
+                  className={`p-3 sm:p-4 rounded-lg relative border-2`}
+                  style={getGradientBackgroundStyle(fish.rarity, theme.surface)}
                 >
                   <button
                     onClick={() => toggleLock(fish.name)}

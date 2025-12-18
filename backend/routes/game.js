@@ -476,7 +476,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       trackQuestProgress(userId, 'fish_caught', {
         rarity: result.rarity,
         biome: currentBiome,
-        bait: player.equipped_bait
+        bait: player.equipped_bait,
+        count: result.count || 1
       }).catch(err => console.error('Quest tracking error:', err));
 
       trackQuestProgress(userId, 'cast_performed', {}).catch(err => console.error('Quest tracking error:', err));
@@ -791,7 +792,8 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     trackQuestProgress(userId, 'fish_caught', {
       rarity: result.rarity,
       biome: currentBiome,
-      bait: player.equipped_bait
+      bait: player.equipped_bait,
+      count: 1
     }).catch(err => console.error('Quest tracking error:', err));
 
     trackQuestProgress(userId, 'cast_performed', {}).catch(err => console.error('Quest tracking error:', err));

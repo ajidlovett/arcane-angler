@@ -371,6 +371,7 @@ useEffect(() => {
   const isGradientRarity = window.isGradientRarity;
   const getGradientTextStyle = window.getGradientTextStyle;
   const getGradientBorderStyle = window.getGradientBorderStyle;
+  const getGradientBackgroundStyle = window.getGradientBackgroundStyle;
 
   // Check and unlock achievements - using window.GameHelpers
   const checkAchievements = async () => {
@@ -1228,6 +1229,7 @@ useEffect(() => {
             getRarityColor={getRarityColor}
             isGradientRarity={isGradientRarity}
             getGradientTextStyle={getGradientTextStyle}
+            getGradientBackgroundStyle={getGradientBackgroundStyle}
             isAutoCasting={isAutoCasting}
             toggleAutoCast={toggleAutoCast}
             autoCastCooldown={autoCastCooldown}
@@ -1270,6 +1272,7 @@ useEffect(() => {
             isGradientRarity={isGradientRarity}
             rarityColors={rarityColors}
             getGradientTextStyle={getGradientTextStyle}
+            getGradientBackgroundStyle={getGradientBackgroundStyle}
           />}
           {currentPage === 'stats' && <StatsPage
             player={player}
@@ -1313,6 +1316,7 @@ useEffect(() => {
             isGradientRarity={isGradientRarity}
             rarityColors={rarityColors}
             getGradientTextStyle={getGradientTextStyle}
+            getGradientBackgroundStyle={getGradientBackgroundStyle}
           />}
           {currentPage === 'options' && <OptionsPage
             theme={theme}

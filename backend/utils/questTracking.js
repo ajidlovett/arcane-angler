@@ -289,6 +289,11 @@ export async function trackQuestProgress(userId, action, data = {}) {
                   shouldUpdate = false;
                 }
               }
+
+              // Use count from multi-catch for quest progress
+              if (shouldUpdate && data.count) {
+                progressIncrement = data.count;
+              }
             }
             break;
 
