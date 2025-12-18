@@ -909,18 +909,18 @@ router.post('/sell', authenticateToken, async (req, res) => {
  * POST /api/game/buy-rod
  * Purchase a fishing rod
  *
- * Body: { rodName }
+ * Body: { rodName } - Should be rodId now
  */
 router.post('/buy-rod', authenticateToken, async (req, res) => {
   const connection = await db.getConnection();
 
   try {
     const userId = req.user.userId;
-    const { rodName } = req.body;
+    const { rodName } = req.body; // Actually rodId in new system
 
     // Validate input
     if (!rodName) {
-      return res.status(400).json({ error: 'Rod name is required' });
+      return res.status(400).json({ error: 'Rod ID is required' });
     }
 
     // Check if rod exists
@@ -942,9 +942,9 @@ router.post('/buy-rod', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'You already own this rod' });
     }
 
-    // Check if player has enough gold
+    // Get player data including rod_levels
     const [playerData] = await connection.query(
-      'SELECT gold FROM player_data WHERE user_id = ?',
+      'SELECT gold, rod_levels FROM player_data WHERE user_id = ?',
       [userId]
     );
 
@@ -954,15 +954,29 @@ router.post('/buy-rod', authenticateToken, async (req, res) => {
     }
 
     const currentGold = playerData[0].gold;
-    if (currentGold < rod.price) {
+    const rodCost = rod.base_cost || 0; // Use base_cost, not price
+
+    if (currentGold < rodCost) {
       await connection.rollback();
       return res.status(400).json({ error: 'Not enough gold' });
     }
 
-    // Deduct gold
+    // Parse rod_levels and add new rod at level 1
+    let rodLevels = {};
+    try {
+      rodLevels = playerData[0].rod_levels ? (typeof playerData[0].rod_levels === 'string' ? JSON.parse(playerData[0].rod_levels) : playerData[0].rod_levels) : {};
+    } catch (e) {
+      console.error('Error parsing rod_levels:', e);
+      rodLevels = {};
+    }
+
+    // Initialize new rod at level 1
+    rodLevels[rodName] = 1;
+
+    // Deduct gold and update rod_levels
     await connection.query(
-      'UPDATE player_data SET gold = gold - ? WHERE user_id = ?',
-      [rod.price, userId]
+      'UPDATE player_data SET gold = gold - ?, rod_levels = ? WHERE user_id = ?',
+      [rodCost, JSON.stringify(rodLevels), userId]
     );
 
     // Add rod to owned_rods
