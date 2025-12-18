@@ -11,16 +11,80 @@ window.GameHelpers = {
     return Object.values(biomeFish).flat();
   },
 
+  // Calculate rod upgrade cost based on current level
+  // Formula: Cost = BaseCost × Multiplier^CurrentLevel
+  calculateRodUpgradeCost: (rodId, currentLevel) => {
+    const rod = window.getRodById(rodId);
+    if (!rod || rod.max_level === 0) return 0; // Can't upgrade default rod
+
+    const cost = Math.floor(rod.base_cost * Math.pow(rod.cost_multiplier, currentLevel));
+    return cost;
+  },
+
+  // Get rod stats based on rod ID and level
+  getRodStats: (rodId, level, currentBiome) => {
+    const rod = window.getRodById(rodId);
+    if (!rod) return { strength: 0, luck: 0, relicWeight: 0, treasureWeight: 0, xpBonus: 0 };
+
+    const stats = {
+      strength: 0,
+      luck: 0,
+      relicWeight: 0,
+      treasureWeight: 0,
+      xpBonus: 0
+    };
+
+    // Parse effect_per_level to determine stat type and bonus
+    if (typeof rod.effect_per_level === 'string') {
+      if (rod.effect_per_level.includes('Strength')) {
+        const match = rod.effect_per_level.match(/\+(\d+)/);
+        if (match) stats.strength = parseInt(match[1]) * level;
+      } else if (rod.effect_per_level.includes('Luck')) {
+        const match = rod.effect_per_level.match(/\+(\d+)/);
+        if (match) stats.luck = parseInt(match[1]) * level;
+      } else if (rod.effect_per_level.includes('Relic Weight')) {
+        const match = rod.effect_per_level.match(/\+(\d+)/);
+        if (match) stats.relicWeight = parseInt(match[1]) * level;
+      } else if (rod.effect_per_level.includes('Treasure Weight')) {
+        const match = rod.effect_per_level.match(/\+(\d+)/);
+        if (match) stats.treasureWeight = parseInt(match[1]) * level;
+      } else if (rod.effect_per_level.includes('XP')) {
+        // XP bonus: +2.5% per level (additive)
+        // Only applies if fishing in the matching biome
+        if (rod.biome_id === currentBiome) {
+          const match = rod.effect_per_level.match(/\+([\d.]+)%/);
+          if (match) stats.xpBonus = parseFloat(match[1]) * level;
+        }
+      }
+    }
+
+    return stats;
+  },
+
   // Calculate total stats including equipment bonuses
   getTotalStats: (player) => {
-    const rod = player.equippedRod ? window.RODS[player.equippedRod] : null;
-    const bait = player.equippedBait ? window.BAITS[player.equippedBait] : null;
+    // Get equipped rod stats based on level
+    let rodStats = { strength: 0, luck: 0, relicWeight: 0, treasureWeight: 0, xpBonus: 0 };
+    if (player.equippedRod) {
+      const rodLevel = player.rodLevels?.[player.equippedRod] || 1;
+      rodStats = window.GameHelpers.getRodStats(player.equippedRod, rodLevel, player.currentBiome);
+    }
+
+    // Get equipped bait luck bonus
+    let baitLuck = 0;
+    if (player.equippedBait) {
+      const bait = window.getBaitById(player.equippedBait);
+      if (bait) baitLuck = bait.luck || 0;
+    }
 
     return {
-      strength: Number(player.stats.strength) + (rod?.str || 0) + (bait?.str || 0),
-      intelligence: Number(player.stats.intelligence) + (rod?.int || 0) + (bait?.int || 0),
-      luck: Number(player.stats.luck) + (rod?.luck || 0) + (bait?.luck || 0),
-      stamina: Number(player.stats.stamina) + (rod?.stam || 0) + (bait?.stam || 0)
+      strength: Number(player.stats.strength) + rodStats.strength,
+      intelligence: Number(player.stats.intelligence),
+      luck: Number(player.stats.luck) + rodStats.luck + baitLuck,
+      stamina: Number(player.stats.stamina),
+      relicWeight: rodStats.relicWeight,
+      treasureWeight: rodStats.treasureWeight,
+      xpBonus: rodStats.xpBonus
     };
   },
 
@@ -34,9 +98,10 @@ window.GameHelpers = {
     return { min: 70, max: 100 };
   },
 
-  // Calculate rarity based on luck (Jackpot Mechanic)
+  // Calculate rarity based on luck (Jackpot Mechanic) and bait restrictions
   // Luck only affects high-tier rarities: Legendary, Treasure Chest, Mythic, Exotic, Arcane
-  calculateRarity: (totalLuck) => {
+  // Bait can restrict which rarities can be caught
+  calculateRarity: (totalLuck, equippedBaitId, relicWeight = 0, treasureWeight = 0) => {
     const baseWeights = {
       'Common': 50000,
       'Uncommon': 28000,
@@ -47,16 +112,38 @@ window.GameHelpers = {
       'Legendary': 150,
       'Mythic': 25,
       'Exotic': 4,
-      'Arcane': 1
+      'Arcane': 1,
+      'Relic': 0 // Special rarity, weight set by rod
     };
 
+    // Apply Relic and Treasure weight bonuses from rods
+    if (relicWeight > 0) {
+      baseWeights['Relic'] = relicWeight;
+    }
+    if (treasureWeight > 0) {
+      baseWeights['Treasure Chest'] = 250 + treasureWeight;
+    }
+
+    // Get bait rarity restrictions
+    let allowedRarities = Object.keys(baseWeights);
+    if (equippedBaitId) {
+      const bait = window.getBaitById(equippedBaitId);
+      if (bait && bait.rarity_limit && !bait.rarity_limit.includes('All')) {
+        // Bait restricts rarities - only allow specified rarities
+        allowedRarities = bait.rarity_limit;
+      }
+    }
+
     // High-tier rarities affected by luck (Jackpot Mechanic)
-    const highTierRarities = ['Legendary', 'Treasure Chest', 'Mythic', 'Exotic', 'Arcane'];
+    const highTierRarities = ['Legendary', 'Treasure Chest', 'Mythic', 'Exotic', 'Arcane', 'Relic'];
 
     const effectiveWeights = {};
     let poolSize = 0;
 
     for (const [tier, baseWeight] of Object.entries(baseWeights)) {
+      // Skip if rarity is not allowed by bait
+      if (!allowedRarities.includes(tier)) continue;
+
       if (highTierRarities.includes(tier)) {
         // Formula: NewWeight = BaseWeight * (1 + (TotalLuck / 100))
         // 1 Luck point = +1% Weight for high-tier rarities
@@ -76,7 +163,7 @@ window.GameHelpers = {
       if (roll <= cumulative) return tier;
     }
 
-    return 'Common';
+    return allowedRarities.includes('Common') ? 'Common' : allowedRarities[0];
   },
 
   // Calculate fish count based on strength

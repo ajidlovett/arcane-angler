@@ -437,7 +437,15 @@ useEffect(() => {
   const getAllCurrentBiomeFish = () => window.GameHelpers.getAllCurrentBiomeFish(player.currentBiome);
   const getTotalStats = () => window.GameHelpers.getTotalStats(player);
   const getBiomeRelicRange = (biome) => window.GameHelpers.getBiomeRelicRange(biome);
-  const calculateRarity = () => window.GameHelpers.calculateRarity(getTotalStats().luck);
+  const calculateRarity = () => {
+    const stats = getTotalStats();
+    return window.GameHelpers.calculateRarity(
+      stats.luck,
+      player.equippedBait,
+      stats.relicWeight || 0,
+      stats.treasureWeight || 0
+    );
+  };
   const calculateFishCount = (rarity) => window.GameHelpers.calculateFishCount(rarity, getTotalStats().strength);
   const calculateTitanBonus = () => window.GameHelpers.calculateTitanBonus(getTotalStats().strength);
   const generateTreasureChest = () => window.GameHelpers.generateTreasureChest(player.currentBiome, getTotalStats().luck);
