@@ -343,7 +343,29 @@ class QuestService {
         this.matchesRotationRules(t, questType, selectedCategories, rarityCount, legendaryMythicCount)
       );
 
-      if (validTemplates.length === 0) break;
+      // If no valid templates but we still need more quests, relax the rotation rules
+      if (validTemplates.length === 0) {
+        if (selectedQuests.length < questCount && availableTemplates.length > 0) {
+          // Allow any template to fill the remaining slots
+          console.log(`[QuestService] Relaxing rotation rules to ensure ${questCount} quests for ${questType}`);
+          const validTemplates = availableTemplates;
+          if (validTemplates.length > 0) {
+            const selectedTemplate = validTemplates[0];
+            const quest = await this.createQuestFromTemplate(selectedTemplate, userId, questType, playerProgression);
+            if (quest) {
+              selectedQuests.push(quest);
+              selectedCategories[selectedTemplate.category]++;
+              if (selectedTemplate.rarity_rule) rarityCount++;
+              if (selectedTemplate.rarity_rule === 'Legendary' || selectedTemplate.rarity_rule === 'Mythic') {
+                legendaryMythicCount++;
+              }
+            }
+            availableTemplates = availableTemplates.filter(t => t.id !== selectedTemplate.id);
+            continue;
+          }
+        }
+        break;
+      }
 
       // Weighted random selection
       const totalWeight = validTemplates.reduce((sum, t) => sum + t.weight, 0);
@@ -413,9 +435,9 @@ class QuestService {
     const description = await this.fillPlaceholders(template, targetAmount, playerProgression, metadata);
 
     // Determine reward
-    let rewardRelics = 10; // daily
-    if (questType === 'weekly') rewardRelics = 50;
-    if (questType === 'monthly') rewardRelics = 100;
+    let rewardRelics = 25; // daily
+    if (questType === 'weekly') rewardRelics = 75;
+    if (questType === 'monthly') rewardRelics = 150;
 
     return {
       quest_template_id: template.id,

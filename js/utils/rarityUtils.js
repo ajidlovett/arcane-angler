@@ -75,3 +75,31 @@ window.getGradientBorderStyle = (rarity) => {
     backgroundClip: 'padding-box, border-box'
   };
 };
+
+/**
+ * Get CSS style object for gradient background with solid border (for Exotic/Arcane)
+ * @param {string} rarity - The fish rarity
+ * @param {string} surfaceColor - The base surface color
+ * @returns {object} Style object with gradient background and solid border
+ */
+window.getGradientBackgroundStyle = (rarity, surfaceColor) => {
+  if (!window.isGradientRarity(rarity)) {
+    return {
+      backgroundColor: surfaceColor,
+      borderColor: window.getRarityColor(rarity)
+    };
+  }
+
+  // Extract first color from gradient for solid border
+  const gradient = window.RARITY_COLORS[rarity];
+  const firstColorMatch = gradient.match(/#[0-9a-fA-F]{6}/);
+  const borderColor = firstColorMatch ? firstColorMatch[0] : '#9ca3af';
+
+  // Create a dimmed gradient background overlay
+  return {
+    backgroundColor: surfaceColor,
+    borderColor: borderColor,
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), ${gradient}`,
+    backgroundBlendMode: 'overlay'
+  };
+};

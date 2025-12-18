@@ -35,7 +35,7 @@ window.QuestPage = ({ theme }) => {
     const QuestCard = ({ quest, type }) => {
       const progressPercentage = Math.min((quest.current_progress / quest.target_amount) * 100, 100);
       const isCompleted = quest.completed;
-      const rewardAmount = type === 'daily' ? 1 : type === 'weekly' ? 3 : 5;
+      const rewardAmount = type === 'daily' ? 25 : type === 'weekly' ? 75 : 150;
 
       return (
         <div className={`bg-${theme.surface} rounded-lg p-4 border-2 ${isCompleted ? 'border-green-500' : `border-${theme.border}`} transition-all`}>
@@ -51,13 +51,13 @@ window.QuestPage = ({ theme }) => {
           </div>
           <div className="mt-3">
             <div className="flex justify-between text-xs mb-1">
-              <span className="text-gray-400">{quest.current_progress} / {quest.target_amount}</span>
+              <span className="text-gray-400">{quest.current_progress.toLocaleString()} / {quest.target_amount.toLocaleString()}</span>
               <span className={isCompleted ? 'text-green-400 font-bold' : 'text-gray-400'}>
                 {isCompleted ? '✓ Completed' : `${Math.floor(progressPercentage)}%`}
               </span>
             </div>
             <div className={`bg-${theme.secondary} rounded-full h-2`}>
-              <div className={`h-full rounded-full transition-all ${isCompleted ? 'bg-green-500' : 'bg-blue-500'}`} style={{ width: `${progressPercentage}%` }} />
+              <div className={`h-full rounded-full transition-all ${isCompleted ? 'bg-green-500' : 'bg-blue-500'}`} style={{ width: `${Math.min(progressPercentage, 100)}%` }} />
             </div>
           </div>
         </div>
@@ -146,9 +146,9 @@ window.QuestPage = ({ theme }) => {
           {/* Rewards Info */}
           <div className="mt-6 p-4 bg-gray-800 bg-opacity-50 rounded-lg">
             <div className="text-xs sm:text-sm text-gray-400 flex flex-wrap gap-4 justify-center">
-              <span>🔮 Daily: 1 relic each</span>
-              <span>🔮 Weekly: 3 relics each</span>
-              <span>🔮 Monthly: 5 relics each</span>
+              <span>🔮 Daily: 25 relics each</span>
+              <span>🔮 Weekly: 75 relics each</span>
+              <span>🔮 Monthly: 150 relics each</span>
             </div>
           </div>
         </div>
