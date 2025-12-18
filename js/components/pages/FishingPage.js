@@ -1,5 +1,40 @@
 // FishingPage - Defined as window.FishingPage
-window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle, getGradientBackgroundStyle, isAutoCasting, toggleAutoCast, autoCastCooldown, currentStamina }) => (
+window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle, getGradientBackgroundStyle, isAutoCasting, toggleAutoCast, autoCastCooldown, currentStamina, currentWeather }) => {
+  // Weather display helper
+  const getWeatherDisplay = () => {
+    const weatherIcons = {
+      'clear': '☀️',
+      'rain': '🌧️',
+      'windy': '💨',
+      'foggy': '🌫️',
+      'heatwave': '🔥',
+      'storm': '⛈️',
+      'arcane_surge': '✨'
+    };
+
+    const weatherNames = {
+      'clear': 'Clear Skies',
+      'rain': 'Rainy',
+      'windy': 'Windy',
+      'foggy': 'Foggy',
+      'heatwave': 'Heatwave',
+      'storm': 'Stormy',
+      'arcane_surge': 'Arcane Surge'
+    };
+
+    const weather = currentWeather?.weather || 'clear';
+    const xpBonus = currentWeather?.xpBonus || 0;
+
+    return {
+      icon: weatherIcons[weather],
+      name: weatherNames[weather],
+      xpBonus
+    };
+  };
+
+  const weatherDisplay = getWeatherDisplay();
+
+  return (
   <div className="max-w-6xl mx-auto">
     <div className="grid lg:grid-cols-2 gap-4">
       {/* Left Column: Main Interaction */}
@@ -17,9 +52,29 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
           </button>
         </div>
 
-        <p className={`text-xs text-${theme.textMuted} mb-4 italic`}>
-          {window.BIOMES[player.currentBiome].description}
-        </p>
+        {/* Weather Indicator */}
+        <div className={`mb-4 p-3 rounded-lg border-2 ${weatherDisplay.xpBonus > 0 ? 'border-yellow-400 bg-yellow-900 bg-opacity-20' : `border-${theme.border} bg-${theme.surface}`}`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{weatherDisplay.icon}</span>
+              <div>
+                <div className={`text-sm font-bold ${weatherDisplay.xpBonus > 0 ? 'text-yellow-300' : ''}`}>
+                  {weatherDisplay.name}
+                </div>
+                {weatherDisplay.xpBonus > 0 && (
+                  <div className="text-xs text-yellow-400 font-semibold">
+                    +{weatherDisplay.xpBonus}% XP Bonus
+                  </div>
+                )}
+              </div>
+            </div>
+            {weatherDisplay.xpBonus === 0 && (
+              <div className={`text-xs text-${theme.textMuted}`}>
+                No bonuses
+              </div>
+            )}
+          </div>
+        </div>
 
         <div className="grid grid-cols-2 gap-2 mb-4">
           <div className={`bg-${theme.surface} p-3 rounded`}>
@@ -361,4 +416,5 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
       </div>
     </div>
   </div>
-);
+  );
+};

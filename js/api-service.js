@@ -631,6 +631,29 @@ class ApiService {
             method: 'GET'
         });
     }
+
+    /**
+     * Get current weather for all biomes
+     * @returns {Promise<Object>} Weather data for all biomes
+     */
+    async getAllWeather() {
+        return await this.request('/game/weather', {
+            method: 'GET',
+            requiresAuth: false
+        });
+    }
+
+    /**
+     * Get current weather for a specific biome
+     * @param {number} biomeId - Biome ID
+     * @returns {Promise<Object>} Weather data { weather, xpBonus, modifiers }
+     */
+    async getBiomeWeather(biomeId) {
+        return await this.request(`/game/weather/${biomeId}`, {
+            method: 'GET',
+            requiresAuth: false
+        });
+    }
 }
 
 // Export singleton instance

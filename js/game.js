@@ -111,6 +111,7 @@ const FishingGame = ({ user, onLogout }) => {
   const [idleNotificationIndex, setIdleNotificationIndex] = useState(0); // Index for rotating idle messages
   const shownNotifications = React.useRef(new Set()); // Track timestamps of notifications we've already shown
   const [activeBoosters, setActiveBoosters] = useState([]); // Track active boosters for display
+  const [currentWeather, setCurrentWeather] = useState({ weather: 'clear', xpBonus: 0 }); // Current biome weather
 
   // Modal state - replaces window.alert and window.confirm
   const [modalState, setModalState] = useState({
@@ -209,6 +210,20 @@ React.useEffect(() => {
   };
   loadData();
 }, []);
+
+// Fetch weather for current biome
+React.useEffect(() => {
+  const fetchWeather = async () => {
+    try {
+      const weatherData = await window.ApiService.getBiomeWeather(player.currentBiome);
+      setCurrentWeather(weatherData);
+    } catch (err) {
+      console.error('Failed to fetch weather:', err);
+      // Keep default weather on error
+    }
+  };
+  fetchWeather();
+}, [player.currentBiome]); // Re-fetch when biome changes
 
 // Handle global notification timeout (minimum 60 seconds)
 React.useEffect(() => {
@@ -1234,6 +1249,7 @@ useEffect(() => {
             toggleAutoCast={toggleAutoCast}
             autoCastCooldown={autoCastCooldown}
             currentStamina={currentStamina}
+            currentWeather={currentWeather}
           />}
           {currentPage === 'equipment' && <EquipmentPage
             player={player}
