@@ -103,25 +103,25 @@ window.GameHelpers = {
   // Bait can restrict which rarities can be caught
   calculateRarity: (totalLuck, equippedBaitId, relicWeight = 0, treasureWeight = 0) => {
     const baseWeights = {
-      'Common': 50000,
-      'Uncommon': 28000,
-      'Fine': 15000,
-      'Rare': 5000,
-      'Epic': 1575,
-      'Treasure Chest': 250,
-      'Legendary': 150,
-      'Mythic': 25,
-      'Exotic': 4,
-      'Arcane': 1,
-      'Relic': 0 // Special rarity, weight set by rod
+      'Common': 60046,
+      'Uncommon': 23000,
+      'Fine': 10000,
+      'Rare': 4000,
+      'Relic': 2000,
+      'Epic': 750,
+      'Treasure Chest': 150,
+      'Legendary': 40,
+      'Mythic': 10,
+      'Exotic': 3,
+      'Arcane': 1
     };
 
     // Apply Relic and Treasure weight bonuses from rods
     if (relicWeight > 0) {
-      baseWeights['Relic'] = relicWeight;
+      baseWeights['Relic'] = 2000 + relicWeight;
     }
     if (treasureWeight > 0) {
-      baseWeights['Treasure Chest'] = 250 + treasureWeight;
+      baseWeights['Treasure Chest'] = 150 + treasureWeight;
     }
 
     // Get bait rarity restrictions
