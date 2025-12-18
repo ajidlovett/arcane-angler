@@ -170,7 +170,7 @@ window.LeaderboardPage = React.memo(({ user, theme }) => {
         <div className="flex flex-col md:grid md:grid-cols-4 gap-1 md:gap-4 mb-6">
           <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg px-4 py-2 md:p-4 flex md:flex-col items-center justify-between md:items-start`}>
             <div className={`text-xs md:text-sm text-${theme.textMuted}`}>Total Players</div>
-            <div className="text-xs md:text-[1.05rem] font-bold text-white">{globalStats.total_players?.toLocaleString() || 0}</div>
+            <div className="text-xs md:text-[1.05rem] font-bold text-white">{formatNumber(globalStats.total_players || 0)}</div>
           </div>
           <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg px-4 py-2 md:p-4 flex md:flex-col items-center justify-between md:items-start`}>
             <div className={`text-xs md:text-sm text-${theme.textMuted}`}>Highest Level</div>

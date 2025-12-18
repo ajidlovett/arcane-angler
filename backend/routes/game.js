@@ -74,11 +74,11 @@ router.post('/cast', authenticateToken, async (req, res) => {
     );
 
     // Calculate booster bonuses
-    let xpBonus = 1.0; // Multiplier (1.0 = no bonus)
+    let xpBonusFromBoosters = 1.0; // Multiplier (1.0 = no bonus)
     let statBonus = 1.0; // Multiplier for strength/luck
     for (const booster of activeBoosters) {
       if (booster.effect_type === 'xp_bonus') {
-        xpBonus += booster.bonus_percentage / 100;
+        xpBonusFromBoosters += booster.bonus_percentage / 100;
       } else if (booster.effect_type === 'stat_bonus') {
         statBonus += booster.bonus_percentage / 100;
       }
@@ -114,6 +114,10 @@ router.post('/cast', authenticateToken, async (req, res) => {
       rodLevels,
       currentBiome
     );
+
+    // Calculate final XP bonus: booster XP bonus + rod XP bonus (additive)
+    // Rod xpBonus is a percentage (e.g., 5 for 5%), convert to multiplier and add
+    const xpBonus = xpBonusFromBoosters + (totalStats.xpBonus / 100);
     const biomeData = BIOMES[currentBiome];
 
     if (!biomeData) {
@@ -548,11 +552,11 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     );
 
     // Calculate booster bonuses
-    let xpBonus = 1.0; // Multiplier (1.0 = no bonus)
+    let xpBonusFromBoosters = 1.0; // Multiplier (1.0 = no bonus)
     let statBonus = 1.0; // Multiplier for strength/luck
     for (const booster of activeBoosters) {
       if (booster.effect_type === 'xp_bonus') {
-        xpBonus += booster.bonus_percentage / 100;
+        xpBonusFromBoosters += booster.bonus_percentage / 100;
       } else if (booster.effect_type === 'stat_bonus') {
         statBonus += booster.bonus_percentage / 100;
       }
@@ -586,6 +590,10 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
       rodLevels,
       currentBiome
     );
+
+    // Calculate final XP bonus: booster XP bonus + rod XP bonus (additive)
+    // Rod xpBonus is a percentage (e.g., 5 for 5%), convert to multiplier and add
+    const xpBonus = xpBonusFromBoosters + (totalStats.xpBonus / 100);
     const biomeData = BIOMES[currentBiome];
 
     if (!biomeData) {
@@ -1774,15 +1782,22 @@ router.post('/change-biome', authenticateToken, async (req, res) => {
       equippedRod = 'rod_default';
     }
 
-    // Check if equipped bait is from the current biome (one of the 4 tiers) and switch to default if so
-    const biomeBaits = [
-      `bait_${currentBiome}_low`,
-      `bait_${currentBiome}_medium`,
-      `bait_${currentBiome}_high`,
-      `bait_${currentBiome}_super`
+    // Check if equipped bait is biome-specific and NOT from the new biome we're switching to
+    // Biome-specific baits follow the pattern: bait_{biome_id}_{tier}
+    const newBiomeBaits = [
+      `bait_${biomeId}_low`,
+      `bait_${biomeId}_medium`,
+      `bait_${biomeId}_high`,
+      `bait_${biomeId}_super`
     ];
-    if (equippedBait && biomeBaits.includes(equippedBait)) {
-      equippedBait = 'bait_default';
+
+    // If equipped bait is biome-specific (not default) and NOT from the new biome, reset to default
+    if (equippedBait && equippedBait !== 'bait_default' && !newBiomeBaits.includes(equippedBait)) {
+      // Check if it's a biome-specific bait (matches pattern bait_X_tier)
+      const biomeBaitPattern = /^bait_\d+_(low|medium|high|super)$/;
+      if (biomeBaitPattern.test(equippedBait)) {
+        equippedBait = 'bait_default';
+      }
     }
 
     // Change biome and update equipment if needed
@@ -1868,15 +1883,21 @@ router.post('/sell-all', authenticateToken, async (req, res) => {
       [userId]
     );
 
-    // Track quest progress for each rarity sold
-    for (const row of rarityGroups) {
-      await trackQuestProgress(userId, 'fish_sold', {
-        rarity: row.rarity,
-        amount: Number(row.total_count) || 0
-      }).catch(err => console.error('Quest tracking error:', err));
-    }
-
+    // Commit transaction BEFORE quest tracking to avoid holding the lock
     await connection.commit();
+
+    // Track quest progress for each rarity sold (in parallel, outside transaction)
+    // This significantly improves performance by not blocking the main transaction
+    Promise.all(
+      rarityGroups.map(row =>
+        trackQuestProgress(userId, 'fish_sold', {
+          rarity: row.rarity,
+          amount: Number(row.total_count) || 0
+        }).catch(err => console.error('Quest tracking error:', err))
+      )
+    ).catch(err => console.error('Quest tracking batch error:', err));
+
+    // Return response immediately without waiting for quest tracking
     res.json({
       success: true,
       goldEarned: totalGold,
