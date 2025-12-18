@@ -1,515 +1,238 @@
-window.RODS = {
-  'Willow Branch Pole': { 
-    price: 1000, 
-    str: 5, int: 0, luck: 0, stam: 0, 
-    tier: 1, 
-    desc: "A flexible stick found near the riverbank. Good for beginners.", 
-    stackSize: 1 
-  },
-  'Reinforced Bamboo Rod': { 
-    price: 5000, 
-    str: 10, int: 0, luck: 0, stam: 0, 
-    tier: 1, 
-    desc: "Wrapped in hemp for extra durability.", 
-    stackSize: 1 
-  },
-  'Tinker\'s Mechanical Rod': { 
-    price: 15000, 
-    str: 10, int: 0, luck: 10, stam: 0, 
-    tier: 1, 
-    desc: "A mechanical rod that hums slightly.", 
-    stackSize: 1 
-  },
-  'Fiberglass Caster': { 
-    price: 35000, 
-    str: 25, int: 0, luck: 0, stam: 0, 
-    tier: 1, 
-    desc: "Lightweight and reliable standard issue rod.", 
-    stackSize: 1 
-  },
-  'Reed-Weaver Pole': {
-    price: 60000, 
-    str: 15, int: 0, luck: 15, stam: 0, 
-    tier: 1, 
-    desc: "Woven from sturdy river reeds. Surprisingly strong.", 
-    stackSize: 1 
-  },
-  'Lucky Charm Rod': { 
-    price: 75000, 
-    str: 5, int: 0, luck: 30, stam: 0, 
-    tier: 1, 
-    desc: "Adorned with four-leaf clovers.", 
-    stackSize: 1 
-  },
-  'Copper-Wired Rod': {
-    price: 100000, 
-    str: 35, int: 0, luck: 5, stam: 0, 
-    tier: 1, 
-    desc: "Conductive wiring runs through the core.", 
-    stackSize: 1 
-  },
-  'Graphite Pro Rod': { 
-    price: 150000, 
-    str: 40, int: 0, luck: 5, stam: 0, 
-    tier: 1, 
-    desc: "Professional grade graphite for serious anglers.", 
-    stackSize: 1 
-  },
-  'Ceramic Composite Pole': {
-    price: 200000, 
-    str: 48, int: 0, luck: 0, stam: 0, 
-    tier: 1, 
-    desc: "Space-age ceramics. Very brittle but very stiff.", 
-    stackSize: 1 
-  },
-  'River King\'s Scepter': { 
-    price: 250000, 
-    str: 30, int: 0, luck: 20, stam: 0, 
-    tier: 1, 
-    desc: "The gold standard for river fishing.", 
-    stackSize: 1 
-  },
+// Equipment data - Rods and Baits
+// Loaded from backend JSON files
 
-  'The Cheese-Master Pole': { 
-    price: 500000, 
-    str: 50, int: 0, luck: 50, stam: 0, 
-    tier: 2, 
-    desc: "Surprisingly effective bait delivery system.", 
-    stackSize: 1 
-  },
-  'Ironwood Staff': {
-    price: 1000000, 
-    str: 105, int: 0, luck: 0, stam: 0, 
-    tier: 2, 
-    desc: "Carved from wood as hard as steel.", 
-    stackSize: 1 
-  },
-  'Deep-Dive Heavy Rod': { 
-    price: 1500000, 
-    str: 110, int: 0, luck: 0, stam: 0, 
-    tier: 2, 
-    desc: "Weighted to reach the bottom quickly.", 
-    stackSize: 1 
-  },
-  'Whispering Cane Rod': {
-    price: 3000000, 
-    str: 60, int: 0, luck: 60, stam: 0, 
-    tier: 2, 
-    desc: "The wind whistles through holes in the shaft.", 
-    stackSize: 1 
-  },
-  'Jade Emperor\'s Pole': { 
-    price: 5000000, 
-    str: 40, int: 0, luck: 80, stam: 0, 
-    tier: 2, 
-    desc: "Carved from holy jade. Attracts fortune.", 
-    stackSize: 1 
-  },
-  'Magma Forged Rod': { 
-    price: 12000000, 
-    str: 150, int: 0, luck: 10, stam: 0, 
-    tier: 2, 
-    desc: "Warm to the touch. Never breaks.", 
-    stackSize: 1 
-  },
-  'Gilded Trident Spear': { 
-    price: 25000000, 
-    str: 100, int: 0, luck: 100, stam: 0, 
-    tier: 2, 
-    desc: "A royal weapon repurposed for peace.", 
-    stackSize: 1 
-  },
-  'Crystal Shard Staff': { 
-    price: 35000000, 
-    str: 180, int: 0, luck: 40, stam: 0, 
-    tier: 2, 
-    desc: "Resonates with the song of the ocean.", 
-    stackSize: 1 
-  },
-  'Abyssal Anchor Rod': {
-    price: 42000000, 
-    str: 240, int: 0, luck: 0, stam: 0, 
-    tier: 2, 
-    desc: "So heavy only the strongest can lift it.", 
-    stackSize: 1 
-  },
-  'Void-Touched Harpoon': { 
-    price: 50000000, 
-    str: 250, int: 0, luck: 0, stam: 0, 
-    tier: 2, 
-    desc: "Darkness radiates from the tip.", 
-    stackSize: 1 
-  },
+window.RODS = [
+  {"id": "rod_default", "name": "Bamboo Pole", "type": "Global", "description": "A simple bamboo pole. It has no special effects but gets the job done.", "base_cost": 0, "max_level": 0, "effect_per_level": 0, "cost_multiplier": 0, "biome_id": "global"},
+  {"id": "rod_strength", "name": "Ironwood Caster", "type": "Global", "description": "A sturdy rod reinforced with ironwood. Increases Strength.", "base_cost": 2000, "max_level": 100, "effect_per_level": "Strength +25", "cost_multiplier": 1.07, "biome_id": "global"},
+  {"id": "rod_luck", "name": "Fortune's Whim", "type": "Global", "description": "A rod that feels lucky in your hands. Increases Luck.", "base_cost": 10000, "max_level": 100, "effect_per_level": "Luck +25", "cost_multiplier": 1.065, "biome_id": "global"},
+  {"id": "rod_relic", "name": "Archaeologist's Rod", "type": "Global", "description": "Equipped with sensors for ancient materials. Increases Relic rarity weight.", "base_cost": 25000, "max_level": 100, "effect_per_level": "Relic Weight +50", "cost_multiplier": 1.05, "biome_id": "global"},
+  {"id": "rod_treasure", "name": "Gilded Seeker", "type": "Global", "description": "A luxurious rod that seems to attract gold. Increases Treasure Chest rarity weight.", "base_cost": 50000, "max_level": 100, "effect_per_level": "Treasure Weight +25", "cost_multiplier": 1.05, "biome_id": "global"},
+  {"id": "rod_biome_1", "name": "River Rod", "type": "Biome", "description": "A specialized rod crafted for the Tinker River. Increases XP gained while fishing here.", "base_cost": 124, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.122, "biome_id": 1},
+  {"id": "rod_biome_2", "name": "Lake Line", "type": "Biome", "description": "A specialized rod crafted for the Misty Pine Lake. Increases XP gained while fishing here.", "base_cost": 124, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.124, "biome_id": 2},
+  {"id": "rod_biome_3", "name": "Coast Rod", "type": "Biome", "description": "A specialized rod crafted for the Sapphire Coast. Increases XP gained while fishing here.", "base_cost": 132, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.123, "biome_id": 3},
+  {"id": "rod_biome_4", "name": "Bay Staff", "type": "Biome", "description": "A specialized rod crafted for the Thundercliff Bay. Increases XP gained while fishing here.", "base_cost": 132, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.124, "biome_id": 4},
+  {"id": "rod_biome_5", "name": "Grotto Rod", "type": "Biome", "description": "A specialized rod crafted for the Stoneheart Grotto. Increases XP gained while fishing here.", "base_cost": 140, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.124, "biome_id": 5},
+  {"id": "rod_biome_6", "name": "Frosthollow Rod", "type": "Biome", "description": "A specialized rod crafted for the Frosthollow Fjord. Increases XP gained while fishing here.", "base_cost": 140, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.125, "biome_id": 6},
+  {"id": "rod_biome_7", "name": "River Fisher", "type": "Biome", "description": "A specialized rod crafted for the Verdant Canopy River. Increases XP gained while fishing here.", "base_cost": 148, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.124, "biome_id": 7},
+  {"id": "rod_biome_8", "name": "Flow Rod", "type": "Biome", "description": "A specialized rod crafted for the Obsidian Flow River. Increases XP gained while fishing here.", "base_cost": 148, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.125, "biome_id": 8},
+  {"id": "rod_biome_9", "name": "Caldera Line", "type": "Biome", "description": "A specialized rod crafted for the Infernal Caldera. Increases XP gained while fishing here.", "base_cost": 156, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.125, "biome_id": 9},
+  {"id": "rod_biome_10", "name": "Basin Wand", "type": "Biome", "description": "A specialized rod crafted for the Primordial Basin. Increases XP gained while fishing here.", "base_cost": 156, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.126, "biome_id": 10},
+  {"id": "rod_biome_11", "name": "Harbor Seeker", "type": "Biome", "description": "A specialized rod crafted for the The Drowned Harbor. Increases XP gained while fishing here.", "base_cost": 164, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.125, "biome_id": 11},
+  {"id": "rod_biome_12", "name": "Canal Caster", "type": "Biome", "description": "A specialized rod crafted for the The Grand Canal. Increases XP gained while fishing here.", "base_cost": 164, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.126, "biome_id": 12},
+  {"id": "rod_biome_13", "name": "Aethelgard Wand", "type": "Biome", "description": "A specialized rod crafted for the Sunken City of Aethelgard. Increases XP gained while fishing here.", "base_cost": 172, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.126, "biome_id": 13},
+  {"id": "rod_biome_14", "name": "Crystal Grip", "type": "Biome", "description": "A specialized rod crafted for the The Crystal Archives. Increases XP gained while fishing here.", "base_cost": 172, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.126, "biome_id": 14},
+  {"id": "rod_biome_15", "name": "Deep Rod", "type": "Biome", "description": "A specialized rod crafted for the The Throne of the Deep. Increases XP gained while fishing here.", "base_cost": 180, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.126, "biome_id": 15},
+  {"id": "rod_biome_16", "name": "Gorge Line", "type": "Biome", "description": "A specialized rod crafted for the The Cheddar Gorge. Increases XP gained while fishing here.", "base_cost": 180, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.127, "biome_id": 16},
+  {"id": "rod_biome_17", "name": "Falls Rod", "type": "Biome", "description": "A specialized rod crafted for the Soda Pop Falls. Increases XP gained while fishing here.", "base_cost": 188, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.126, "biome_id": 17},
+  {"id": "rod_biome_18", "name": "River Rod", "type": "Biome", "description": "A specialized rod crafted for the The Sizzle Spice River. Increases XP gained while fishing here.", "base_cost": 188, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.127, "biome_id": 18},
+  {"id": "rod_biome_19", "name": "Baker's Hook", "type": "Biome", "description": "A specialized rod crafted for the The Baker's Bay. Increases XP gained while fishing here.", "base_cost": 196, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.127, "biome_id": 19},
+  {"id": "rod_biome_20", "name": "Titans Wand", "type": "Biome", "description": "A specialized rod crafted for the The Banquet of Titans. Increases XP gained while fishing here.", "base_cost": 196, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.127, "biome_id": 20},
+  {"id": "rod_biome_21", "name": "Chlorophyll Caster", "type": "Biome", "description": "A specialized rod crafted for the The Chlorophyll Canopy. Increases XP gained while fishing here.", "base_cost": 180, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.132, "biome_id": 21},
+  {"id": "rod_biome_22", "name": "Riverbeds Line", "type": "Biome", "description": "A specialized rod crafted for the The Rooted Riverbeds. Increases XP gained while fishing here.", "base_cost": 188, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.132, "biome_id": 22},
+  {"id": "rod_biome_23", "name": "Spore Pole", "type": "Biome", "description": "A specialized rod crafted for the The Spore Light Caverns. Increases XP gained while fishing here.", "base_cost": 196, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.131, "biome_id": 23},
+  {"id": "rod_biome_24", "name": "Coral Fisher", "type": "Biome", "description": "A specialized rod crafted for the The Thorn Coral Gardens. Increases XP gained while fishing here.", "base_cost": 204, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.131, "biome_id": 24},
+  {"id": "rod_biome_25", "name": "Blossom Rod", "type": "Biome", "description": "A specialized rod crafted for the The Blossom Basin. Increases XP gained while fishing here.", "base_cost": 212, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.131, "biome_id": 25},
+  {"id": "rod_biome_26", "name": "Pools Caster", "type": "Biome", "description": "A specialized rod crafted for the The Paleolithic Pools. Increases XP gained while fishing here.", "base_cost": 220, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.128, "biome_id": 26},
+  {"id": "rod_biome_27", "name": "Totem Grip", "type": "Biome", "description": "A specialized rod crafted for the The Totem Atoll. Increases XP gained while fishing here.", "base_cost": 228, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.128, "biome_id": 27},
+  {"id": "rod_biome_28", "name": "Cenote Hook", "type": "Biome", "description": "A specialized rod crafted for the The Sun Gold Cenote. Increases XP gained while fishing here.", "base_cost": 236, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.128, "biome_id": 28},
+  {"id": "rod_biome_29", "name": "Lantern Caster", "type": "Biome", "description": "A specialized rod crafted for the The Jade Lantern Lake. Increases XP gained while fishing here.", "base_cost": 244, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.128, "biome_id": 29},
+  {"id": "rod_biome_30", "name": "Fjords Hook", "type": "Biome", "description": "A specialized rod crafted for the The Runic Fjords. Increases XP gained while fishing here.", "base_cost": 260, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.129, "biome_id": 30},
+  {"id": "rod_biome_31", "name": "Delta Caster", "type": "Biome", "description": "A specialized rod crafted for the The Steam Forge Delta. Increases XP gained while fishing here.", "base_cost": 276, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.129, "biome_id": 31},
+  {"id": "rod_biome_32", "name": "Dockyards Hook", "type": "Biome", "description": "A specialized rod crafted for the The Diesel Dredge Dockyards. Increases XP gained while fishing here.", "base_cost": 292, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.13, "biome_id": 32},
+  {"id": "rod_biome_33", "name": "Neon Hook", "type": "Biome", "description": "A specialized rod crafted for the The Neon Grid Reef. Increases XP gained while fishing here.", "base_cost": 308, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.13, "biome_id": 33},
+  {"id": "rod_biome_34", "name": "Nuclear Rod", "type": "Biome", "description": "A specialized rod crafted for the The Nuclear Abyssal Reactor. Increases XP gained while fishing here.", "base_cost": 324, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.131, "biome_id": 34},
+  {"id": "rod_biome_35", "name": "Nanotech Staff", "type": "Biome", "description": "A specialized rod crafted for the The Nanotech Singularity. Increases XP gained while fishing here.", "base_cost": 340, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.131, "biome_id": 35},
+  {"id": "rod_biome_36", "name": "Aether Wand", "type": "Biome", "description": "A specialized rod crafted for the The Aether Flux Stream. Increases XP gained while fishing here.", "base_cost": 356, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.131, "biome_id": 36},
+  {"id": "rod_biome_37", "name": "Grotto Seeker", "type": "Biome", "description": "A specialized rod crafted for the The Gravity Well Grotto. Increases XP gained while fishing here.", "base_cost": 372, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.132, "biome_id": 37},
+  {"id": "rod_biome_38", "name": "Estuary Rod", "type": "Biome", "description": "A specialized rod crafted for the The Ectoplasmic Estuary. Increases XP gained while fishing here.", "base_cost": 388, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.132, "biome_id": 38},
+  {"id": "rod_biome_39", "name": "Expanse Caster", "type": "Biome", "description": "A specialized rod crafted for the The Cosmic Void Expanse. Increases XP gained while fishing here.", "base_cost": 404, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.132, "biome_id": 39},
+  {"id": "rod_biome_40", "name": "Reality Hook", "type": "Biome", "description": "A specialized rod crafted for the The Reality Rift Reef. Increases XP gained while fishing here.", "base_cost": 420, "max_level": 50, "effect_per_level": "XP +2.5%", "cost_multiplier": 1.133, "biome_id": 40}
+];
 
-  'Neon-Pulse Rod': { 
-    price: 100000000, 
-    str: 200, int: 0, luck: 50, stam: 0, 
-    tier: 3, 
-    desc: "Vaporwave aesthetics meets high-tech fishing.", 
-    stackSize: 1 
-  },
-  'Solar-Flare Staff': {
-    price: 250000000, 
-    str: 275, int: 0, luck: 0, stam: 0, 
-    tier: 3, 
-    desc: "Emits a blinding light that pierces the deep.", 
-    stackSize: 1 
-  },
-  'Vampiric Blood-Rod': { 
-    price: 500000000, 
-    str: 300, int: 0, luck: 0, stam: 0, 
-    tier: 3, 
-    desc: "It pulses like a heartbeat in your hand.", 
-    stackSize: 1 
-  },
-  'Chrono-Shifter Pole': {
-    price: 1000000000, 
-    str: 150, int: 0, luck: 175, stam: 0, 
-    tier: 3, 
-    desc: "Seems to vibrate out of phase with time.", 
-    stackSize: 1 
-  },
-  'Stardust Spindle Rod': { 
-    price: 1500000000, 
-    str: 100, int: 0, luck: 250, stam: 0, 
-    tier: 3, 
-    desc: "Woven from threads of cosmic light.", 
-    stackSize: 1 
-  },
-  'Leviathan\'s Spine Rod': { 
-    price: 3500000000, 
-    str: 400, int: 0, luck: 20, stam: 0, 
-    tier: 3, 
-    desc: "Carved from the bone of a sea monster.", 
-    stackSize: 1 
-  },
-  'Nebula Weaver Rod': {
-    price: 5000000000, 
-    str: 220, int: 0, luck: 220, stam: 0, 
-    tier: 3, 
-    desc: "Creates small gas clouds in the water.", 
-    stackSize: 1 
-  },
-  'Celestial Harpoon': { 
-    price: 7000000000, 
-    str: 350, int: 0, luck: 100, stam: 0, 
-    tier: 3, 
-    desc: "Used by angels to hunt sky-whales.", 
-    stackSize: 1 
-  },
-  'Event Horizon Rod': { 
-    price: 10000000000, 
-    str: 250, int: 0, luck: 250, stam: 0, 
-    tier: 3, 
-    desc: "The hook creates a tiny singularity.", 
-    stackSize: 1 
-  },
+window.BAITS = [
+  {"id": "bait_default", "name": "Stale Bread Crust", "rarity_limit": ["Common", "Uncommon"], "luck": 0, "price": 0, "description": "A hard, dry piece of leftover bread. It dissolves slowly and can only catch common and uncommon fish.", "biome_id": "global"},
+  {"id": "bait_1_low", "name": "Tinker Dough", "rarity_limit": ["All"], "luck": 50, "price": 10, "description": "A simple translucent dough that smells faintly of stretch. Common fish in the Tinker River find it palatable.", "biome_id": 1, "tier": "low"},
+  {"id": "bait_1_medium", "name": "Tinker Larva", "rarity_limit": ["All"], "luck": 150, "price": 30, "description": "Modeled after current, this opaque larva is a favorite treat for uncommon fish. It stands out against the Tinker River waters.", "biome_id": 1, "tier": "medium"},
+  {"id": "bait_1_high", "name": "River Nymph", "rarity_limit": ["All"], "luck": 300, "price": 60, "description": "An artisan nymph designed to mimic the movement of spirits. Its opaque finish attracts fine fish from a distance.", "biome_id": 1, "tier": "high"},
+  {"id": "bait_1_super", "name": "Tinker Jig", "rarity_limit": ["All"], "luck": 750, "price": 120, "description": "A legendary jig pulsing with the energy of fish. Rare fish in the Tinker River cannot resist its bright glow.", "biome_id": 1, "tier": "super"},
+  {"id": "bait_2_low", "name": "Pine Morsel", "rarity_limit": ["All"], "luck": 50, "price": 10, "description": "A simple bright morsel that smells faintly of grace. Common fish in the Misty Pine Lake find it palatable.", "biome_id": 2, "tier": "low"},
+  {"id": "bait_2_medium", "name": "Pine Larva", "rarity_limit": ["All"], "luck": 150, "price": 31, "description": "Modeled after slows, this dull larva is a favorite treat for uncommon fish. It stands out against the Misty Pine Lake waters.", "biome_id": 2, "tier": "medium"},
+  {"id": "bait_2_high", "name": "Lake Minnow", "rarity_limit": ["All"], "luck": 300, "price": 63, "description": "An artisan minnow designed to mimic the movement of sight. Its vibrant finish attracts fine fish from a distance.", "biome_id": 2, "tier": "high"},
+  {"id": "bait_2_super", "name": "Misty Plug", "rarity_limit": ["All"], "luck": 750, "price": 126, "description": "A legendary plug pulsing with the energy of river. Rare fish in the Misty Pine Lake cannot resist its bright glow.", "biome_id": 2, "tier": "super"},
+  {"id": "bait_3_low", "name": "Coast Pellet", "rarity_limit": ["All"], "luck": 50, "price": 11, "description": "A simple dull pellet that smells faintly of fish. Common fish in the Sapphire Coast find it palatable.", "biome_id": 3, "tier": "low"},
+  {"id": "bait_3_medium", "name": "Sapphire Cricket", "rarity_limit": ["All"], "luck": 150, "price": 33, "description": "Modeled after transparent, this translucent cricket is a favorite treat for uncommon fish. It stands out against the Sapphire Coast waters.", "biome_id": 3, "tier": "medium"},
+  {"id": "bait_3_high", "name": "Sapphire Nymph", "rarity_limit": ["All"], "luck": 300, "price": 66, "description": "An artisan nymph designed to mimic the movement of rhythm. Its bright finish attracts fine fish from a distance.", "biome_id": 3, "tier": "high"},
+  {"id": "bait_3_super", "name": "Coast Lure", "rarity_limit": ["All"], "luck": 750, "price": 132, "description": "A legendary lure pulsing with the energy of gems. Rare fish in the Sapphire Coast cannot resist its dark glow.", "biome_id": 3, "tier": "super"},
+  {"id": "bait_4_low", "name": "Thundercliff Pellet", "rarity_limit": ["All"], "luck": 50, "price": 11, "description": "A simple dull pellet that smells faintly of thundercliff. Common fish in the Thundercliff Bay find it palatable.", "biome_id": 4, "tier": "low"},
+  {"id": "bait_4_medium", "name": "Thundercliff Beetle", "rarity_limit": ["All"], "luck": 150, "price": 34, "description": "Modeled after walls, this glowing beetle is a favorite treat for uncommon fish. It stands out against the Thundercliff Bay waters.", "biome_id": 4, "tier": "medium"},
+  {"id": "bait_4_high", "name": "Thundercliff Minnow", "rarity_limit": ["All"], "luck": 300, "price": 69, "description": "An artisan minnow designed to mimic the movement of own. Its vibrant finish attracts fine fish from a distance.", "biome_id": 4, "tier": "high"},
+  {"id": "bait_4_super", "name": "Thundercliff Jig", "rarity_limit": ["All"], "luck": 750, "price": 138, "description": "A legendary jig pulsing with the energy of violent. Rare fish in the Thundercliff Bay cannot resist its bright glow.", "biome_id": 4, "tier": "super"},
+  {"id": "bait_5_low", "name": "Stoneheart Paste", "rarity_limit": ["All"], "luck": 50, "price": 12, "description": "A simple glowing paste that smells faintly of still. Common fish in the Stoneheart Grotto find it palatable.", "biome_id": 5, "tier": "low"},
+  {"id": "bait_5_medium", "name": "Stoneheart Worm", "rarity_limit": ["All"], "luck": 150, "price": 36, "description": "Modeled after caverns, this opaque worm is a favorite treat for uncommon fish. It stands out against the Stoneheart Grotto waters.", "biome_id": 5, "tier": "medium"},
+  {"id": "bait_5_high", "name": "Stoneheart Fly", "rarity_limit": ["All"], "luck": 300, "price": 72, "description": "An artisan fly designed to mimic the movement of grotto. Its dark finish attracts fine fish from a distance.", "biome_id": 5, "tier": "high"},
+  {"id": "bait_5_super", "name": "Stoneheart Spoon", "rarity_limit": ["All"], "luck": 750, "price": 144, "description": "A legendary spoon pulsing with the energy of sight. Rare fish in the Stoneheart Grotto cannot resist its dull glow.", "biome_id": 5, "tier": "super"},
+  {"id": "bait_6_low", "name": "Fjord Paste", "rarity_limit": ["All"], "luck": 50, "price": 12, "description": "A simple pale paste that smells faintly of zero. Common fish in the Frosthollow Fjord find it palatable.", "biome_id": 6, "tier": "low"},
+  {"id": "bait_6_medium", "name": "Frosthollow Beetle", "rarity_limit": ["All"], "luck": 150, "price": 37, "description": "Modeled after out, this dark beetle is a favorite treat for uncommon fish. It stands out against the Frosthollow Fjord waters.", "biome_id": 6, "tier": "medium"},
+  {"id": "bait_6_high", "name": "Frosthollow Leech", "rarity_limit": ["All"], "luck": 300, "price": 75, "description": "An artisan leech designed to mimic the movement of thick. Its shimmering finish attracts fine fish from a distance.", "biome_id": 6, "tier": "high"},
+  {"id": "bait_6_super", "name": "Fjord Lure", "rarity_limit": ["All"], "luck": 750, "price": 150, "description": "A legendary lure pulsing with the energy of fjord. Rare fish in the Frosthollow Fjord cannot resist its bright glow.", "biome_id": 6, "tier": "super"},
+  {"id": "bait_7_low", "name": "Canopy Morsel", "rarity_limit": ["All"], "luck": 50, "price": 13, "description": "A simple shimmering morsel that smells faintly of teems. Common fish in the Verdant Canopy River find it palatable.", "biome_id": 7, "tier": "low"},
+  {"id": "bait_7_medium", "name": "Canopy Worm", "rarity_limit": ["All"], "luck": 150, "price": 39, "description": "Modeled after insects, this vibrant worm is a favorite treat for uncommon fish. It stands out against the Verdant Canopy River waters.", "biome_id": 7, "tier": "medium"},
+  {"id": "bait_7_high", "name": "Canopy Shrimp", "rarity_limit": ["All"], "luck": 300, "price": 78, "description": "An artisan shrimp designed to mimic the movement of fast. Its shimmering finish attracts fine fish from a distance.", "biome_id": 7, "tier": "high"},
+  {"id": "bait_7_super", "name": "Canopy Spinner", "rarity_limit": ["All"], "luck": 750, "price": 156, "description": "A legendary spinner pulsing with the energy of colorful. Rare fish in the Verdant Canopy River cannot resist its opaque glow.", "biome_id": 7, "tier": "super"},
+  {"id": "bait_8_low", "name": "River Pellet", "rarity_limit": ["All"], "luck": 50, "price": 13, "description": "A simple dark pellet that smells faintly of steams. Common fish in the Obsidian Flow River find it palatable.", "biome_id": 8, "tier": "low"},
+  {"id": "bait_8_medium", "name": "Obsidian Cricket", "rarity_limit": ["All"], "luck": 150, "price": 40, "description": "Modeled after ash, this opaque cricket is a favorite treat for uncommon fish. It stands out against the Obsidian Flow River waters.", "biome_id": 8, "tier": "medium"},
+  {"id": "bait_8_high", "name": "Obsidian Fly", "rarity_limit": ["All"], "luck": 300, "price": 81, "description": "An artisan fly designed to mimic the movement of its. Its sparkling finish attracts fine fish from a distance.", "biome_id": 8, "tier": "high"},
+  {"id": "bait_8_super", "name": "River Spinner", "rarity_limit": ["All"], "luck": 750, "price": 162, "description": "A legendary spinner pulsing with the energy of scales. Rare fish in the Obsidian Flow River cannot resist its shimmering glow.", "biome_id": 8, "tier": "super"},
+  {"id": "bait_9_low", "name": "Infernal Morsel", "rarity_limit": ["All"], "luck": 50, "price": 14, "description": "A simple pale morsel that smells faintly of heat. Common fish in the Infernal Caldera find it palatable.", "biome_id": 9, "tier": "low"},
+  {"id": "bait_9_medium", "name": "Infernal Grub", "rarity_limit": ["All"], "luck": 150, "price": 42, "description": "Modeled after acidic, this opaque grub is a favorite treat for uncommon fish. It stands out against the Infernal Caldera waters.", "biome_id": 9, "tier": "medium"},
+  {"id": "bait_9_high", "name": "Infernal Shrimp", "rarity_limit": ["All"], "luck": 300, "price": 84, "description": "An artisan shrimp designed to mimic the movement of lake. Its pale finish attracts fine fish from a distance.", "biome_id": 9, "tier": "high"},
+  {"id": "bait_9_super", "name": "Caldera Spoon", "rarity_limit": ["All"], "luck": 750, "price": 168, "description": "A legendary spoon pulsing with the energy of lake. Rare fish in the Infernal Caldera cannot resist its translucent glow.", "biome_id": 9, "tier": "super"},
+  {"id": "bait_10_low", "name": "Primordial Paste", "rarity_limit": ["All"], "luck": 50, "price": 14, "description": "A simple glowing paste that smells faintly of mix. Common fish in the Primordial Basin find it palatable.", "biome_id": 10, "tier": "low"},
+  {"id": "bait_10_medium", "name": "Primordial Larva", "rarity_limit": ["All"], "luck": 150, "price": 43, "description": "Modeled after environment, this shimmering larva is a favorite treat for uncommon fish. It stands out against the Primordial Basin waters.", "biome_id": 10, "tier": "medium"},
+  {"id": "bait_10_high", "name": "Basin Shrimp", "rarity_limit": ["All"], "luck": 300, "price": 87, "description": "An artisan shrimp designed to mimic the movement of environment. Its dark finish attracts fine fish from a distance.", "biome_id": 10, "tier": "high"},
+  {"id": "bait_10_super", "name": "Primordial Spinner", "rarity_limit": ["All"], "luck": 750, "price": 174, "description": "A legendary spinner pulsing with the energy of environment. Rare fish in the Primordial Basin cannot resist its vibrant glow.", "biome_id": 10, "tier": "super"},
+  {"id": "bait_11_low", "name": "Harbor Dough", "rarity_limit": ["All"], "luck": 50, "price": 15, "description": "A simple shimmering dough that smells faintly of predators. Common fish in the The Drowned Harbor find it palatable.", "biome_id": 11, "tier": "low"},
+  {"id": "bait_11_medium", "name": "Harbor Larva", "rarity_limit": ["All"], "luck": 150, "price": 45, "description": "Modeled after iron, this glowing larva is a favorite treat for uncommon fish. It stands out against the The Drowned Harbor waters.", "biome_id": 11, "tier": "medium"},
+  {"id": "bait_11_high", "name": "Harbor Fly", "rarity_limit": ["All"], "luck": 300, "price": 90, "description": "An artisan fly designed to mimic the movement of predators. Its opaque finish attracts fine fish from a distance.", "biome_id": 11, "tier": "high"},
+  {"id": "bait_11_super", "name": "Drowned Spoon", "rarity_limit": ["All"], "luck": 750, "price": 180, "description": "A legendary spoon pulsing with the energy of the. Rare fish in the The Drowned Harbor cannot resist its opaque glow.", "biome_id": 11, "tier": "super"},
+  {"id": "bait_12_low", "name": "Canal Dough", "rarity_limit": ["All"], "luck": 50, "price": 15, "description": "A simple pale dough that smells faintly of streets. Common fish in the The Grand Canal find it palatable.", "biome_id": 12, "tier": "low"},
+  {"id": "bait_12_medium", "name": "Grand Grub", "rarity_limit": ["All"], "luck": 150, "price": 46, "description": "Modeled after civilization, this vibrant grub is a favorite treat for uncommon fish. It stands out against the The Grand Canal waters.", "biome_id": 12, "tier": "medium"},
+  {"id": "bait_12_high", "name": "Canal Fly", "rarity_limit": ["All"], "luck": 300, "price": 93, "description": "An artisan fly designed to mimic the movement of known. Its translucent finish attracts fine fish from a distance.", "biome_id": 12, "tier": "high"},
+  {"id": "bait_12_super", "name": "Grand Spoon", "rarity_limit": ["All"], "luck": 750, "price": 186, "description": "A legendary spoon pulsing with the energy of harbor. Rare fish in the The Grand Canal cannot resist its translucent glow.", "biome_id": 12, "tier": "super"},
+  {"id": "bait_13_low", "name": "City Morsel", "rarity_limit": ["All"], "luck": 50, "price": 16, "description": "A simple translucent morsel that smells faintly of power. Common fish in the Sunken City of Aethelgard find it palatable.", "biome_id": 13, "tier": "low"},
+  {"id": "bait_13_medium", "name": "Sunken Cricket", "rarity_limit": ["All"], "luck": 150, "price": 48, "description": "Modeled after aethelgard, this translucent cricket is a favorite treat for uncommon fish. It stands out against the Sunken City of Aethelgard waters.", "biome_id": 13, "tier": "medium"},
+  {"id": "bait_13_high", "name": "Aethelgard Nymph", "rarity_limit": ["All"], "luck": 300, "price": 96, "description": "An artisan nymph designed to mimic the movement of powerful. Its dark finish attracts fine fish from a distance.", "biome_id": 13, "tier": "high"},
+  {"id": "bait_13_super", "name": "Sunken Spoon", "rarity_limit": ["All"], "luck": 750, "price": 192, "description": "A legendary spoon pulsing with the energy of luminescence. Rare fish in the Sunken City of Aethelgard cannot resist its dull glow.", "biome_id": 13, "tier": "super"},
+  {"id": "bait_14_low", "name": "Crystal Morsel", "rarity_limit": ["All"], "luck": 50, "price": 16, "description": "A simple dark morsel that smells faintly of canyon. Common fish in the The Crystal Archives find it palatable.", "biome_id": 14, "tier": "low"},
+  {"id": "bait_14_medium", "name": "Crystal Beetle", "rarity_limit": ["All"], "luck": 150, "price": 49, "description": "Modeled after clear, this vibrant beetle is a favorite treat for uncommon fish. It stands out against the The Crystal Archives waters.", "biome_id": 14, "tier": "medium"},
+  {"id": "bait_14_high", "name": "Archives Minnow", "rarity_limit": ["All"], "luck": 300, "price": 99, "description": "An artisan minnow designed to mimic the movement of magic. Its shimmering finish attracts fine fish from a distance.", "biome_id": 14, "tier": "high"},
+  {"id": "bait_14_super", "name": "Crystal Spoon", "rarity_limit": ["All"], "luck": 750, "price": 198, "description": "A legendary spoon pulsing with the energy of deep. Rare fish in the The Crystal Archives cannot resist its vibrant glow.", "biome_id": 14, "tier": "super"},
+  {"id": "bait_15_low", "name": "of Paste", "rarity_limit": ["All"], "luck": 50, "price": 17, "description": "A simple dull paste that smells faintly of thin. Common fish in the The Throne of the Deep find it palatable.", "biome_id": 15, "tier": "low"},
+  {"id": "bait_15_medium", "name": "Deep Worm", "rarity_limit": ["All"], "luck": 150, "price": 51, "description": "Modeled after ancient, this pale worm is a favorite treat for uncommon fish. It stands out against the The Throne of the Deep waters.", "biome_id": 15, "tier": "medium"},
+  {"id": "bait_15_high", "name": "Deep Minnow", "rarity_limit": ["All"], "luck": 300, "price": 102, "description": "An artisan minnow designed to mimic the movement of void. Its shimmering finish attracts fine fish from a distance.", "biome_id": 15, "tier": "high"},
+  {"id": "bait_15_super", "name": "Deep Lure", "rarity_limit": ["All"], "luck": 750, "price": 204, "description": "A legendary lure pulsing with the energy of chamber. Rare fish in the The Throne of the Deep cannot resist its glowing glow.", "biome_id": 15, "tier": "super"},
+  {"id": "bait_16_low", "name": "Gorge Morsel", "rarity_limit": ["All"], "luck": 50, "price": 17, "description": "A simple shimmering morsel that smells faintly of high. Common fish in the The Cheddar Gorge find it palatable.", "biome_id": 16, "tier": "low"},
+  {"id": "bait_16_medium", "name": "Gorge Beetle", "rarity_limit": ["All"], "luck": 150, "price": 52, "description": "Modeled after environment, this shimmering beetle is a favorite treat for uncommon fish. It stands out against the The Cheddar Gorge waters.", "biome_id": 16, "tier": "medium"},
+  {"id": "bait_16_high", "name": "Gorge Nymph", "rarity_limit": ["All"], "luck": 300, "price": 105, "description": "An artisan nymph designed to mimic the movement of milk. Its translucent finish attracts fine fish from a distance.", "biome_id": 16, "tier": "high"},
+  {"id": "bait_16_super", "name": "Gorge Lure", "rarity_limit": ["All"], "luck": 750, "price": 210, "description": "A legendary lure pulsing with the energy of emulsion. Rare fish in the The Cheddar Gorge cannot resist its dark glow.", "biome_id": 16, "tier": "super"},
+  {"id": "bait_17_low", "name": "Falls Morsel", "rarity_limit": ["All"], "luck": 50, "price": 18, "description": "A simple dull morsel that smells faintly of basin. Common fish in the Soda Pop Falls find it palatable.", "biome_id": 17, "tier": "low"},
+  {"id": "bait_17_medium", "name": "Soda Grub", "rarity_limit": ["All"], "luck": 150, "price": 54, "description": "Modeled after pops, this glowing grub is a favorite treat for uncommon fish. It stands out against the Soda Pop Falls waters.", "biome_id": 17, "tier": "medium"},
+  {"id": "bait_17_high", "name": "Pop Fly", "rarity_limit": ["All"], "luck": 300, "price": 108, "description": "An artisan fly designed to mimic the movement of dairy. Its glowing finish attracts fine fish from a distance.", "biome_id": 17, "tier": "high"},
+  {"id": "bait_17_super", "name": "Pop Lure", "rarity_limit": ["All"], "luck": 750, "price": 216, "description": "A legendary lure pulsing with the energy of the. Rare fish in the Soda Pop Falls cannot resist its glowing glow.", "biome_id": 17, "tier": "super"},
+  {"id": "bait_18_low", "name": "River Paste", "rarity_limit": ["All"], "luck": 50, "price": 18, "description": "A simple dull paste that smells faintly of and. Common fish in the The Sizzle Spice River find it palatable.", "biome_id": 18, "tier": "low"},
+  {"id": "bait_18_medium", "name": "River Beetle", "rarity_limit": ["All"], "luck": 150, "price": 55, "description": "Modeled after fish, this dark beetle is a favorite treat for uncommon fish. It stands out against the The Sizzle Spice River waters.", "biome_id": 18, "tier": "medium"},
+  {"id": "bait_18_high", "name": "River Fly", "rarity_limit": ["All"], "luck": 300, "price": 111, "description": "An artisan fly designed to mimic the movement of banks. Its vibrant finish attracts fine fish from a distance.", "biome_id": 18, "tier": "high"},
+  {"id": "bait_18_super", "name": "Spice Spinner", "rarity_limit": ["All"], "luck": 750, "price": 222, "description": "A legendary spinner pulsing with the energy of broth. Rare fish in the The Sizzle Spice River cannot resist its sparkling glow.", "biome_id": 18, "tier": "super"},
+  {"id": "bait_19_low", "name": "Baker's Pellet", "rarity_limit": ["All"], "luck": 50, "price": 19, "description": "A simple pale pellet that smells faintly of cools. Common fish in the The Baker's Bay find it palatable.", "biome_id": 19, "tier": "low"},
+  {"id": "bait_19_medium", "name": "Baker's Grub", "rarity_limit": ["All"], "luck": 150, "price": 57, "description": "Modeled after soft, this vibrant grub is a favorite treat for uncommon fish. It stands out against the The Baker's Bay waters.", "biome_id": 19, "tier": "medium"},
+  {"id": "bait_19_high", "name": "Baker's Fly", "rarity_limit": ["All"], "luck": 300, "price": 114, "description": "An artisan fly designed to mimic the movement of golden. Its dark finish attracts fine fish from a distance.", "biome_id": 19, "tier": "high"},
+  {"id": "bait_19_super", "name": "Bay Plug", "rarity_limit": ["All"], "luck": 750, "price": 228, "description": "A legendary plug pulsing with the energy of puffy. Rare fish in the The Baker's Bay cannot resist its sparkling glow.", "biome_id": 19, "tier": "super"},
+  {"id": "bait_20_low", "name": "Banquet Dough", "rarity_limit": ["All"], "luck": 50, "price": 19, "description": "A simple dark dough that smells faintly of gluttonous. Common fish in the The Banquet of Titans find it palatable.", "biome_id": 20, "tier": "low"},
+  {"id": "bait_20_medium", "name": "Titans Cricket", "rarity_limit": ["All"], "luck": 150, "price": 58, "description": "Modeled after for, this dark cricket is a favorite treat for uncommon fish. It stands out against the The Banquet of Titans waters.", "biome_id": 20, "tier": "medium"},
+  {"id": "bait_20_high", "name": "Titans Fly", "rarity_limit": ["All"], "luck": 300, "price": 117, "description": "An artisan fly designed to mimic the movement of size. Its opaque finish attracts fine fish from a distance.", "biome_id": 20, "tier": "high"},
+  {"id": "bait_20_super", "name": "of Jig", "rarity_limit": ["All"], "luck": 750, "price": 234, "description": "A legendary jig pulsing with the energy of fruit. Rare fish in the The Banquet of Titans cannot resist its dark glow.", "biome_id": 20, "tier": "super"},
+  {"id": "bait_21_low", "name": "Canopy Pellet", "rarity_limit": ["All"], "luck": 50, "price": 18, "description": "A simple dark pellet that smells faintly of translucent. Common fish in the The Chlorophyll Canopy find it palatable.", "biome_id": 21, "tier": "low"},
+  {"id": "bait_21_medium", "name": "Chlorophyll Beetle", "rarity_limit": ["All"], "luck": 150, "price": 55, "description": "Modeled after current, this opaque beetle is a favorite treat for uncommon fish. It stands out against the The Chlorophyll Canopy waters.", "biome_id": 21, "tier": "medium"},
+  {"id": "bait_21_high", "name": "Canopy Fly", "rarity_limit": ["All"], "luck": 300, "price": 110, "description": "An artisan fly designed to mimic the movement of photosynthesis. Its opaque finish attracts fine fish from a distance.", "biome_id": 21, "tier": "high"},
+  {"id": "bait_21_super", "name": "Canopy Plug", "rarity_limit": ["All"], "luck": 750, "price": 220, "description": "A legendary plug pulsing with the energy of filters. Rare fish in the The Chlorophyll Canopy cannot resist its shimmering glow.", "biome_id": 21, "tier": "super"},
+  {"id": "bait_22_low", "name": "Riverbeds Paste", "rarity_limit": ["All"], "luck": 50, "price": 19, "description": "A simple bright paste that smells faintly of burrow. Common fish in the The Rooted Riverbeds find it palatable.", "biome_id": 22, "tier": "low"},
+  {"id": "bait_22_medium", "name": "Rooted Beetle", "rarity_limit": ["All"], "luck": 150, "price": 58, "description": "Modeled after tangle, this shimmering beetle is a favorite treat for uncommon fish. It stands out against the The Rooted Riverbeds waters.", "biome_id": 22, "tier": "medium"},
+  {"id": "bait_22_high", "name": "Riverbeds Leech", "rarity_limit": ["All"], "luck": 300, "price": 120, "description": "An artisan leech designed to mimic the movement of vegetables. Its glowing finish attracts fine fish from a distance.", "biome_id": 22, "tier": "high"},
+  {"id": "bait_22_super", "name": "Riverbeds Lure", "rarity_limit": ["All"], "luck": 750, "price": 230, "description": "A legendary lure pulsing with the energy of starchy. Rare fish in the The Rooted Riverbeds cannot resist its pale glow.", "biome_id": 22, "tier": "super"},
+  {"id": "bait_23_low", "name": "Light Paste", "rarity_limit": ["All"], "luck": 50, "price": 20, "description": "A simple pale paste that smells faintly of cave. Common fish in the The Spore Light Caverns find it palatable.", "biome_id": 23, "tier": "low"},
+  {"id": "bait_23_medium", "name": "Spore Grub", "rarity_limit": ["All"], "luck": 150, "price": 60, "description": "Modeled after bioluminescent, this bright grub is a favorite treat for uncommon fish. It stands out against the The Spore Light Caverns waters.", "biome_id": 23, "tier": "medium"},
+  {"id": "bait_23_high", "name": "Caverns Minnow", "rarity_limit": ["All"], "luck": 300, "price": 130, "description": "An artisan minnow designed to mimic the movement of dark. Its sparkling finish attracts fine fish from a distance.", "biome_id": 23, "tier": "high"},
+  {"id": "bait_23_super", "name": "Light Spoon", "rarity_limit": ["All"], "luck": 750, "price": 240, "description": "A legendary spoon pulsing with the energy of the. Rare fish in the The Spore Light Caverns cannot resist its sparkling glow.", "biome_id": 23, "tier": "super"},
+  {"id": "bait_24_low", "name": "Gardens Pellet", "rarity_limit": ["All"], "luck": 50, "price": 21, "description": "A simple dark pellet that smells faintly of coral. Common fish in the The Thorn Coral Gardens find it palatable.", "biome_id": 24, "tier": "low"},
+  {"id": "bait_24_medium", "name": "Gardens Cricket", "rarity_limit": ["All"], "luck": 150, "price": 65, "description": "Modeled after structures, this dull cricket is a favorite treat for uncommon fish. It stands out against the The Thorn Coral Gardens waters.", "biome_id": 24, "tier": "medium"},
+  {"id": "bait_24_high", "name": "Coral Nymph", "rarity_limit": ["All"], "luck": 300, "price": 140, "description": "An artisan nymph designed to mimic the movement of hostile. Its glowing finish attracts fine fish from a distance.", "biome_id": 24, "tier": "high"},
+  {"id": "bait_24_super", "name": "Coral Jig", "rarity_limit": ["All"], "luck": 750, "price": 250, "description": "A legendary jig pulsing with the energy of defensive. Rare fish in the The Thorn Coral Gardens cannot resist its pale glow.", "biome_id": 24, "tier": "super"},
+  {"id": "bait_25_low", "name": "Basin Pellet", "rarity_limit": ["All"], "luck": 50, "price": 22, "description": "A simple shimmering pellet that smells faintly of giant. Common fish in the The Blossom Basin find it palatable.", "biome_id": 25, "tier": "low"},
+  {"id": "bait_25_medium", "name": "Basin Grub", "rarity_limit": ["All"], "luck": 150, "price": 68, "description": "Modeled after final, this bright grub is a favorite treat for uncommon fish. It stands out against the The Blossom Basin waters.", "biome_id": 25, "tier": "medium"},
+  {"id": "bait_25_high", "name": "Basin Leech", "rarity_limit": ["All"], "luck": 300, "price": 145, "description": "An artisan leech designed to mimic the movement of and. Its dark finish attracts fine fish from a distance.", "biome_id": 25, "tier": "high"},
+  {"id": "bait_25_super", "name": "Basin Lure", "rarity_limit": ["All"], "luck": 750, "price": 260, "description": "A legendary lure pulsing with the energy of fruits. Rare fish in the The Blossom Basin cannot resist its glowing glow.", "biome_id": 25, "tier": "super"},
+  {"id": "bait_26_low", "name": "Pools Pellet", "rarity_limit": ["All"], "luck": 50, "price": 23, "description": "A simple vibrant pellet that smells faintly of the. Common fish in the The Paleolithic Pools find it palatable.", "biome_id": 26, "tier": "low"},
+  {"id": "bait_26_medium", "name": "Pools Cricket", "rarity_limit": ["All"], "luck": 150, "price": 67, "description": "Modeled after primal, this shimmering cricket is a favorite treat for uncommon fish. It stands out against the The Paleolithic Pools waters.", "biome_id": 26, "tier": "medium"},
+  {"id": "bait_26_high", "name": "Pools Shrimp", "rarity_limit": ["All"], "luck": 300, "price": 135, "description": "An artisan shrimp designed to mimic the movement of paintings. Its pale finish attracts fine fish from a distance.", "biome_id": 26, "tier": "high"},
+  {"id": "bait_26_super", "name": "Pools Lure", "rarity_limit": ["All"], "luck": 750, "price": 275, "description": "A legendary lure pulsing with the energy of time. Rare fish in the The Paleolithic Pools cannot resist its dark glow.", "biome_id": 26, "tier": "super"},
+  {"id": "bait_27_low", "name": "Atoll Crumb", "rarity_limit": ["All"], "luck": 50, "price": 24, "description": "A simple bright crumb that smells faintly of drums. Common fish in the The Totem Atoll find it palatable.", "biome_id": 27, "tier": "low"},
+  {"id": "bait_27_medium", "name": "Totem Larva", "rarity_limit": ["All"], "luck": 150, "price": 69, "description": "Modeled after coral, this translucent larva is a favorite treat for uncommon fish. It stands out against the The Totem Atoll waters.", "biome_id": 27, "tier": "medium"},
+  {"id": "bait_27_high", "name": "Atoll Shrimp", "rarity_limit": ["All"], "luck": 300, "price": 138, "description": "An artisan shrimp designed to mimic the movement of turns. Its dark finish attracts fine fish from a distance.", "biome_id": 27, "tier": "high"},
+  {"id": "bait_27_super", "name": "Atoll Lure", "rarity_limit": ["All"], "luck": 750, "price": 280, "description": "A legendary lure pulsing with the energy of sound. Rare fish in the The Totem Atoll cannot resist its bright glow.", "biome_id": 27, "tier": "super"},
+  {"id": "bait_28_low", "name": "Cenote Dough", "rarity_limit": ["All"], "luck": 50, "price": 25, "description": "A simple sparkling dough that smells faintly of deep. Common fish in the The Sun Gold Cenote find it palatable.", "biome_id": 28, "tier": "low"},
+  {"id": "bait_28_medium", "name": "Gold Beetle", "rarity_limit": ["All"], "luck": 150, "price": 72, "description": "Modeled after the, this dull beetle is a favorite treat for uncommon fish. It stands out against the The Sun Gold Cenote waters.", "biome_id": 28, "tier": "medium"},
+  {"id": "bait_28_high", "name": "Cenote Nymph", "rarity_limit": ["All"], "luck": 300, "price": 140, "description": "An artisan nymph designed to mimic the movement of the. Its sparkling finish attracts fine fish from a distance.", "biome_id": 28, "tier": "high"},
+  {"id": "bait_28_super", "name": "Gold Plug", "rarity_limit": ["All"], "luck": 750, "price": 290, "description": "A legendary plug pulsing with the energy of fish. Rare fish in the The Sun Gold Cenote cannot resist its translucent glow.", "biome_id": 28, "tier": "super"},
+  {"id": "bait_29_low", "name": "Lantern Morsel", "rarity_limit": ["All"], "luck": 50, "price": 26, "description": "A simple shimmering morsel that smells faintly of fine. Common fish in the The Jade Lantern Lake find it palatable.", "biome_id": 29, "tier": "low"},
+  {"id": "bait_29_medium", "name": "Jade Beetle", "rarity_limit": ["All"], "luck": 150, "price": 75, "description": "Modeled after ink, this translucent beetle is a favorite treat for uncommon fish. It stands out against the The Jade Lantern Lake waters.", "biome_id": 29, "tier": "medium"},
+  {"id": "bait_29_high", "name": "Lantern Shrimp", "rarity_limit": ["All"], "luck": 300, "price": 150, "description": "An artisan shrimp designed to mimic the movement of float. Its vibrant finish attracts fine fish from a distance.", "biome_id": 29, "tier": "high"},
+  {"id": "bait_29_super", "name": "Lantern Jig", "rarity_limit": ["All"], "luck": 750, "price": 300, "description": "A legendary jig pulsing with the energy of and. Rare fish in the The Jade Lantern Lake cannot resist its pale glow.", "biome_id": 29, "tier": "super"},
+  {"id": "bait_30_low", "name": "Runic Dough", "rarity_limit": ["All"], "luck": 50, "price": 28, "description": "A simple dark dough that smells faintly of fish. Common fish in the The Runic Fjords find it palatable.", "biome_id": 30, "tier": "low"},
+  {"id": "bait_30_medium", "name": "Fjords Beetle", "rarity_limit": ["All"], "luck": 150, "price": 78, "description": "Modeled after warriors, this shimmering beetle is a favorite treat for uncommon fish. It stands out against the The Runic Fjords waters.", "biome_id": 30, "tier": "medium"},
+  {"id": "bait_30_high", "name": "Fjords Shrimp", "rarity_limit": ["All"], "luck": 300, "price": 155, "description": "An artisan shrimp designed to mimic the movement of the. Its vibrant finish attracts fine fish from a distance.", "biome_id": 30, "tier": "high"},
+  {"id": "bait_30_super", "name": "Fjords Spinner", "rarity_limit": ["All"], "luck": 750, "price": 320, "description": "A legendary spinner pulsing with the energy of cliffs. Rare fish in the The Runic Fjords cannot resist its shimmering glow.", "biome_id": 30, "tier": "super"},
+  {"id": "bait_31_low", "name": "Delta Crumb", "rarity_limit": ["All"], "luck": 50, "price": 30, "description": "A simple dull crumb that smells faintly of way. Common fish in the The Steam Forge Delta find it palatable.", "biome_id": 31, "tier": "low"},
+  {"id": "bait_31_medium", "name": "Delta Grub", "rarity_limit": ["All"], "luck": 150, "price": 80, "description": "Modeled after the, this glowing grub is a favorite treat for uncommon fish. It stands out against the The Steam Forge Delta waters.", "biome_id": 31, "tier": "medium"},
+  {"id": "bait_31_high", "name": "Steam Fly", "rarity_limit": ["All"], "luck": 300, "price": 160, "description": "An artisan fly designed to mimic the movement of way. Its dark finish attracts fine fish from a distance.", "biome_id": 31, "tier": "high"},
+  {"id": "bait_31_super", "name": "Forge Spinner", "rarity_limit": ["All"], "luck": 750, "price": 330, "description": "A legendary spinner pulsing with the energy of gears. Rare fish in the The Steam Forge Delta cannot resist its glowing glow.", "biome_id": 31, "tier": "super"},
+  {"id": "bait_32_low", "name": "Dockyards Morsel", "rarity_limit": ["All"], "luck": 50, "price": 32, "description": "A simple vibrant morsel that smells faintly of massive. Common fish in the The Diesel Dredge Dockyards find it palatable.", "biome_id": 32, "tier": "low"},
+  {"id": "bait_32_medium", "name": "Dockyards Cricket", "rarity_limit": ["All"], "luck": 150, "price": 85, "description": "Modeled after steel, this sparkling cricket is a favorite treat for uncommon fish. It stands out against the The Diesel Dredge Dockyards waters.", "biome_id": 32, "tier": "medium"},
+  {"id": "bait_32_high", "name": "Dockyards Leech", "rarity_limit": ["All"], "luck": 300, "price": 170, "description": "An artisan leech designed to mimic the movement of overhead. Its shimmering finish attracts fine fish from a distance.", "biome_id": 32, "tier": "high"},
+  {"id": "bait_32_super", "name": "Dockyards Spinner", "rarity_limit": ["All"], "luck": 750, "price": 340, "description": "A legendary spinner pulsing with the energy of way. Rare fish in the The Diesel Dredge Dockyards cannot resist its shimmering glow.", "biome_id": 32, "tier": "super"},
+  {"id": "bait_33_low", "name": "Grid Dough", "rarity_limit": ["All"], "luck": 50, "price": 34, "description": "A simple translucent dough that smells faintly of you. Common fish in the The Neon Grid Reef find it palatable.", "biome_id": 33, "tier": "low"},
+  {"id": "bait_33_medium", "name": "Grid Larva", "rarity_limit": ["All"], "luck": 150, "price": 90, "description": "Modeled after light, this shimmering larva is a favorite treat for uncommon fish. It stands out against the The Neon Grid Reef waters.", "biome_id": 33, "tier": "medium"},
+  {"id": "bait_33_high", "name": "Neon Nymph", "rarity_limit": ["All"], "luck": 300, "price": 180, "description": "An artisan nymph designed to mimic the movement of fiber. Its dark finish attracts fine fish from a distance.", "biome_id": 33, "tier": "high"},
+  {"id": "bait_33_super", "name": "Grid Spoon", "rarity_limit": ["All"], "luck": 750, "price": 360, "description": "A legendary spoon pulsing with the energy of lines. Rare fish in the The Neon Grid Reef cannot resist its vibrant glow.", "biome_id": 33, "tier": "super"},
+  {"id": "bait_34_low", "name": "Abyssal Morsel", "rarity_limit": ["All"], "luck": 50, "price": 36, "description": "A simple bright morsel that smells faintly of plant. Common fish in the The Nuclear Abyssal Reactor find it palatable.", "biome_id": 34, "tier": "low"},
+  {"id": "bait_34_medium", "name": "Reactor Worm", "rarity_limit": ["All"], "luck": 150, "price": 95, "description": "Modeled after plant, this vibrant worm is a favorite treat for uncommon fish. It stands out against the The Nuclear Abyssal Reactor waters.", "biome_id": 34, "tier": "medium"},
+  {"id": "bait_34_high", "name": "Nuclear Shrimp", "rarity_limit": ["All"], "luck": 300, "price": 190, "description": "An artisan shrimp designed to mimic the movement of and. Its pale finish attracts fine fish from a distance.", "biome_id": 34, "tier": "high"},
+  {"id": "bait_34_super", "name": "Reactor Lure", "rarity_limit": ["All"], "luck": 750, "price": 380, "description": "A legendary lure pulsing with the energy of power. Rare fish in the The Nuclear Abyssal Reactor cannot resist its translucent glow.", "biome_id": 34, "tier": "super"},
+  {"id": "bait_35_low", "name": "Singularity Pellet", "rarity_limit": ["All"], "luck": 50, "price": 38, "description": "A simple sparkling pellet that smells faintly of hive. Common fish in the The Nanotech Singularity find it palatable.", "biome_id": 35, "tier": "low"},
+  {"id": "bait_35_medium", "name": "Nanotech Worm", "rarity_limit": ["All"], "luck": 150, "price": 100, "description": "Modeled after perfect, this pale worm is a favorite treat for uncommon fish. It stands out against the The Nanotech Singularity waters.", "biome_id": 35, "tier": "medium"},
+  {"id": "bait_35_high", "name": "Singularity Minnow", "rarity_limit": ["All"], "luck": 300, "price": 200, "description": "An artisan minnow designed to mimic the movement of end. Its translucent finish attracts fine fish from a distance.", "biome_id": 35, "tier": "high"},
+  {"id": "bait_35_super", "name": "Singularity Jig", "rarity_limit": ["All"], "luck": 750, "price": 400, "description": "A legendary jig pulsing with the energy of and. Rare fish in the The Nanotech Singularity cannot resist its pale glow.", "biome_id": 35, "tier": "super"},
+  {"id": "bait_36_low", "name": "Aether Crumb", "rarity_limit": ["All"], "luck": 50, "price": 40, "description": "A simple shimmering crumb that smells faintly of far. Common fish in the The Aether Flux Stream find it palatable.", "biome_id": 36, "tier": "low"},
+  {"id": "bait_36_medium", "name": "Stream Grub", "rarity_limit": ["All"], "luck": 150, "price": 105, "description": "Modeled after violet, this bright grub is a favorite treat for uncommon fish. It stands out against the The Aether Flux Stream waters.", "biome_id": 36, "tier": "medium"},
+  {"id": "bait_36_high", "name": "Stream Shrimp", "rarity_limit": ["All"], "luck": 300, "price": 210, "description": "An artisan shrimp designed to mimic the movement of mana. Its dark finish attracts fine fish from a distance.", "biome_id": 36, "tier": "high"},
+  {"id": "bait_36_super", "name": "Stream Spoon", "rarity_limit": ["All"], "luck": 750, "price": 420, "description": "A legendary spoon pulsing with the energy of far. Rare fish in the The Aether Flux Stream cannot resist its pale glow.", "biome_id": 36, "tier": "super"},
+  {"id": "bait_37_low", "name": "Well Pellet", "rarity_limit": ["All"], "luck": 50, "price": 42, "description": "A simple glowing pellet that smells faintly of gravity. Common fish in the The Gravity Well Grotto find it palatable.", "biome_id": 37, "tier": "low"},
+  {"id": "bait_37_medium", "name": "Well Worm", "rarity_limit": ["All"], "luck": 150, "price": 110, "description": "Modeled after light, this dark worm is a favorite treat for uncommon fish. It stands out against the The Gravity Well Grotto waters.", "biome_id": 37, "tier": "medium"},
+  {"id": "bait_37_high", "name": "Grotto Shrimp", "rarity_limit": ["All"], "luck": 300, "price": 220, "description": "An artisan shrimp designed to mimic the movement of around. Its glowing finish attracts fine fish from a distance.", "biome_id": 37, "tier": "high"},
+  {"id": "bait_37_super", "name": "Gravity Plug", "rarity_limit": ["All"], "luck": 750, "price": 440, "description": "A legendary plug pulsing with the energy of around. Rare fish in the The Gravity Well Grotto cannot resist its dark glow.", "biome_id": 37, "tier": "super"},
+  {"id": "bait_38_low", "name": "Estuary Morsel", "rarity_limit": ["All"], "luck": 50, "price": 44, "description": "A simple pale morsel that smells faintly of phantoms. Common fish in the The Ectoplasmic Estuary find it palatable.", "biome_id": 38, "tier": "low"},
+  {"id": "bait_38_medium", "name": "Estuary Beetle", "rarity_limit": ["All"], "luck": 150, "price": 115, "description": "Modeled after slime, this dull beetle is a favorite treat for uncommon fish. It stands out against the The Ectoplasmic Estuary waters.", "biome_id": 38, "tier": "medium"},
+  {"id": "bait_38_high", "name": "Estuary Minnow", "rarity_limit": ["All"], "luck": 300, "price": 230, "description": "An artisan minnow designed to mimic the movement of horrors. Its pale finish attracts fine fish from a distance.", "biome_id": 38, "tier": "high"},
+  {"id": "bait_38_super", "name": "Estuary Spinner", "rarity_limit": ["All"], "luck": 750, "price": 460, "description": "A legendary spinner pulsing with the energy of green. Rare fish in the The Ectoplasmic Estuary cannot resist its glowing glow.", "biome_id": 38, "tier": "super"},
+  {"id": "bait_39_low", "name": "Expanse Morsel", "rarity_limit": ["All"], "luck": 50, "price": 46, "description": "A simple vibrant morsel that smells faintly of space. Common fish in the The Cosmic Void Expanse find it palatable.", "biome_id": 39, "tier": "low"},
+  {"id": "bait_39_medium", "name": "Void Larva", "rarity_limit": ["All"], "luck": 150, "price": 120, "description": "Modeled after silence, this sparkling larva is a favorite treat for uncommon fish. It stands out against the The Cosmic Void Expanse waters.", "biome_id": 39, "tier": "medium"},
+  {"id": "bait_39_high", "name": "Cosmic Nymph", "rarity_limit": ["All"], "luck": 300, "price": 240, "description": "An artisan nymph designed to mimic the movement of vacuum. Its opaque finish attracts fine fish from a distance.", "biome_id": 39, "tier": "high"},
+  {"id": "bait_39_super", "name": "Expanse Lure", "rarity_limit": ["All"], "luck": 750, "price": 480, "description": "A legendary lure pulsing with the energy of and. Rare fish in the The Cosmic Void Expanse cannot resist its bright glow.", "biome_id": 39, "tier": "super"},
+  {"id": "bait_40_low", "name": "Reef Crumb", "rarity_limit": ["All"], "luck": 50, "price": 48, "description": "A simple opaque crumb that smells faintly of form. Common fish in the The Reality Rift Reef find it palatable.", "biome_id": 40, "tier": "low"},
+  {"id": "bait_40_medium", "name": "Reef Worm", "rarity_limit": ["All"], "luck": 150, "price": 125, "description": "Modeled after shapes, this translucent worm is a favorite treat for uncommon fish. It stands out against the The Reality Rift Reef waters.", "biome_id": 40, "tier": "medium"},
+  {"id": "bait_40_high", "name": "Reality Minnow", "rarity_limit": ["All"], "luck": 300, "price": 250, "description": "An artisan minnow designed to mimic the movement of effect. Its dark finish attracts fine fish from a distance.", "biome_id": 40, "tier": "high"},
+  {"id": "bait_40_super", "name": "Reality Spinner", "rarity_limit": ["All"], "luck": 750, "price": 500, "description": "A legendary spinner pulsing with the energy of euclidean. Rare fish in the The Reality Rift Reef cannot resist its pale glow.", "biome_id": 40, "tier": "super"}
+];
 
-  'Quantum Weaver Rod': { 
-    price: 50000000000, 
-    str: 500, int: 0, luck: 250, stam: 0, 
-    tier: 4, 
-    desc: "Exists in a superposition of caught and not caught.", 
-    stackSize: 1 
-  },
-  'Antimatter Caster': {
-    price: 100000000000, 
-    str: 850, int: 0, luck: 0, stam: 0, 
-    tier: 4, 
-    desc: "Don't cross the streams.", 
-    stackSize: 1 
-  },
-  'The Glitch Stick': { 
-    price: 250000000000, 
-    str: 800, int: 0, luck: 200, stam: 0, 
-    tier: 4, 
-    desc: "MISSINGNO texture detected.", 
-    stackSize: 1 
-  },
-  'Dark Energy Scepter': {
-    price: 500000000000, 
-    str: 600, int: 0, luck: 600, stam: 0, 
-    tier: 4, 
-    desc: "Expands the space between fish.", 
-    stackSize: 1 
-  },
-  'Geometry Prime Rod': { 
-    price: 1000000000000, 
-    str: 200, int: 0, luck: 1100, stam: 0, 
-    tier: 4, 
-    desc: "Mathematical perfection made physical.", 
-    stackSize: 1 
-  },
-  'The Eraser Rod': { 
-    price: 5000000000000, 
-    str: 1600, int: 0, luck: 0, stam: 0, 
-    tier: 4, 
-    desc: "Deletes the water around the fish.", 
-    stackSize: 1 
-  },
-  'Multiverse Rift Pole': {
-    price: 10000000000000, 
-    str: 1900, int: 0, luck: 0, stam: 0, 
-    tier: 4, 
-    desc: "Fishing in timeline B.", 
-    stackSize: 1 
-  },
-  'Rod of Genesis': { 
-    price: 25000000000000, 
-    str: 1100, int: 0, luck: 1100, stam: 0, 
-    tier: 4, 
-    desc: "The tool used to create the first ocean.", 
-    stackSize: 1 
-  },
-  'The Omni-Null Scepter': { 
-    price: 50000000000000, 
-    str: 1250, int: 0, luck: 1250, stam: 0, 
-    tier: 4, 
-    desc: "The end of all things. The final rod.", 
-    stackSize: 1 
-  }
+// Helper function to get rod by ID
+window.getRodById = (id) => {
+  return window.RODS.find(rod => rod.id === id);
 };
 
-window.BAITS = {
-  'Stale Bread Crust': { 
-    price: 0, 
-    str: 0, int: 0, luck: 0, stam: 0, 
-    tier: 1, 
-    desc: "Better than a bare hook.", 
-    stackSize: 999999 
-  },
-  'Garden Worm Bait': { 
-    price: 15, 
-    str: 2, int: 0, luck: 0, stam: 0, 
-    tier: 1, 
-    desc: "A classic.", 
-    stackSize: 1 
-  },
-  'Shiny Pebble Lure': { 
-    price: 30, 
-    str: 0, int: 0, luck: 5, stam: 0, 
-    tier: 1, 
-    desc: "Sparkles in the water.", 
-    stackSize: 1 
-  },
-  'Dough Ball Bait': { 
-    price: 50, 
-    str: 10, int: 0, luck: 0, stam: 0, 
-    tier: 1, 
-    desc: "Simple flour mix.", 
-    stackSize: 1 
-  },
-  'Cricket Lure': {
-    price: 75, 
-    str: 0, int: 0, luck: 12, stam: 0, 
-    tier: 1, 
-    desc: "Mimics a drowning bug.", 
-    stackSize: 1 
-  },
-  'Neon Cricket Lure': { 
-    price: 120, 
-    str: 0, int: 0, luck: 15, stam: 0, 
-    tier: 1, 
-    desc: "Glows in the dark.", 
-    stackSize: 1 
-  },
-  'Fish Flakes Bait': {
-    price: 200, 
-    str: 18, int: 0, luck: 0, stam: 0, 
-    tier: 1, 
-    desc: "Compressed fish meal.", 
-    stackSize: 1 
-  },
-  'Fat Maggot Bait': { 
-    price: 400, 
-    str: 20, int: 0, luck: 0, stam: 0, 
-    tier: 1, 
-    desc: "Fish love the protein.", 
-    stackSize: 1 
-  },
-  'Spider Leg Bait': {
-    price: 550, 
-    str: 25, int: 0, luck: 0, stam: 0, 
-    tier: 1, 
-    desc: "Twitches in the water.", 
-    stackSize: 1 
-  },
-  'River Snail Meat': { 
-    price: 750, 
-    str: 15, int: 0, luck: 15, stam: 0, 
-    tier: 1, 
-    desc: "A crunchy snack.", 
-    stackSize: 1 
-  },
+// Helper function to get bait by ID
+window.getBaitById = (id) => {
+  return window.BAITS.find(bait => bait.id === id);
+};
 
-  'Aged Cheddar Chunk': { 
-    price: 3000, 
-    str: 50, int: 0, luck: 0, stam: 0, 
-    tier: 2, 
-    desc: "The funk attracts them.", 
-    stackSize: 1 
-  },
-  'Spicy Meatball Bait': {
-    price: 4000, 
-    str: 55, int: 0, luck: 0, stam: 0, 
-    tier: 2, 
-    desc: "Packed with heat.", 
-    stackSize: 1 
-  },
-  'Sand-Worm Segment': { 
-    price: 5000, 
-    str: 0, int: 0, luck: 50, stam: 0, 
-    tier: 2, 
-    desc: "From the desert dunes.", 
-    stackSize: 1 
-  },
-  'Beetle Larva Bait': {
-    price: 6500, 
-    str: 65, int: 0, luck: 0, stam: 0, 
-    tier: 2, 
-    desc: "Juicy and thick.", 
-    stackSize: 1 
-  },
-  'Electric Grub Lure': { 
-    price: 8000, 
-    str: 70, int: 0, luck: 0, stam: 0, 
-    tier: 2, 
-    desc: "Zaps the tongue.", 
-    stackSize: 1 
-  },
-  'Glowing Algae Ball': {
-    price: 10000, 
-    str: 0, int: 0, luck: 75, stam: 0, 
-    tier: 2, 
-    desc: "Bioluminescent snack.", 
-    stackSize: 1 
-  },
-  'Gilded Wing Lure': { 
-    price: 12000, 
-    str: 20, int: 0, luck: 60, stam: 0, 
-    tier: 2, 
-    desc: "Dipped in gold leaf.", 
-    stackSize: 1 
-  },
-  'Ghost Moth Lure': { 
-    price: 15000, 
-    str: 50, int: 0, luck: 50, stam: 0, 
-    tier: 2, 
-    desc: "Phases through water.", 
-    stackSize: 1 
-  },
+// Helper function to get rods for current biome
+window.getRodsForBiome = (currentBiome) => {
+  return window.RODS.filter(rod =>
+    rod.biome_id === 'global' || rod.biome_id === currentBiome
+  );
+};
 
-  'Magnetic Bearing Lure': { 
-    price: 25000, 
-    str: 150, int: 0, luck: 0, stam: 0, 
-    tier: 3, 
-    desc: "Attracts metal scales.", 
-    stackSize: 1 
-  },
-  'Void Shrimp Bait': {
-    price: 30000, 
-    str: 175, int: 0, luck: 0, stam: 0, 
-    tier: 3, 
-    desc: "Tastes like nothingness.", 
-    stackSize: 1 
-  },
-  'Mana Crystal Lure': { 
-    price: 40000, 
-    str: 0, int: 0, luck: 150, stam: 0, 
-    tier: 3, 
-    desc: "Pure crystallized magic.", 
-    stackSize: 1 
-  },
-  'Phoenix Feather Lure': {
-    price: 50000, 
-    str: 0, int: 0, luck: 225, stam: 0, 
-    tier: 3, 
-    desc: "Burns underwater.", 
-    stackSize: 1 
-  },
-  'Cyber-Fly Lure': { 
-    price: 65000, 
-    str: 100, int: 0, luck: 100, stam: 0, 
-    tier: 3, 
-    desc: "Robotic insect lure.", 
-    stackSize: 1 
-  },
-  'Spectral Minnow Bait': {
-    price: 75000, 
-    str: 130, int: 0, luck: 140, stam: 0, 
-    tier: 3, 
-    desc: "Ghostly small fish.", 
-    stackSize: 1 
-  },
-  'Blood-Worm Bait': { 
-    price: 85000, 
-    str: 250, int: 0, luck: 0, stam: 0, 
-    tier: 3, 
-    desc: "Frenzies predators.", 
-    stackSize: 1 
-  },
-  'Ink Drop Lure': { 
-    price: 100000, 
-    str: 50, int: 0, luck: 250, stam: 0, 
-    tier: 3, 
-    desc: "Pure void darkness.", 
-    stackSize: 1 
-  },
-
-  'Nebula Dust Bait': { 
-    price: 200000, 
-    str: 100, int: 0, luck: 400, stam: 0, 
-    tier: 4, 
-    desc: "Star matter.", 
-    stackSize: 1 
-  },
-  'Black Hole Shard': {
-    price: 300000, 
-    str: 525, int: 0, luck: 0, stam: 0, 
-    tier: 4, 
-    desc: "Insanely heavy.", 
-    stackSize: 1 
-  },
-  'Time Larva Bait': { 
-    price: 500000, 
-    str: 500, int: 0, luck: 50, stam: 0, 
-    tier: 4, 
-    desc: "Eats seconds.", 
-    stackSize: 1 
-  },
-  'Hyper-Cube Lure': {
-    price: 750000, 
-    str: 300, int: 0, luck: 300, stam: 0, 
-    tier: 4, 
-    desc: "4D geometrical bait.", 
-    stackSize: 1 
-  },
-  'Glitch Block Lure': { 
-    price: 1000000, 
-    str: 300, int: 0, luck: 350, stam: 0, 
-    tier: 4, 
-    desc: "A texture error.", 
-    stackSize: 1 
-  },
-  'Neutron Star Fragment': {
-    price: 1500000, 
-    str: 700, int: 0, luck: 0, stam: 0, 
-    tier: 4, 
-    desc: "Density unknown.", 
-    stackSize: 1 
-  },
-  'Alpha Particle Bait': { 
-    price: 2000000, 
-    str: 700, int: 0, luck: 25, stam: 0, 
-    tier: 4, 
-    desc: "Heavy atomic bait.", 
-    stackSize: 1 
-  },
-  'Origin Spark Bait': { 
-    price: 3000000, 
-    str: 375, int: 0, luck: 375, stam: 0, 
-    tier: 4, 
-    desc: "A piece of the Big Bang.", 
-    stackSize: 1 
-  }
+// Helper function to get baits for current biome
+window.getBaitsForBiome = (currentBiome) => {
+  return window.BAITS.filter(bait =>
+    bait.biome_id === 'global' || bait.biome_id === currentBiome
+  );
 };
