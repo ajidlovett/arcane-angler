@@ -26,6 +26,7 @@ import {
   selectRandomFish
 } from '../utils/gameLogic.js';
 import { trackQuestProgress } from '../utils/questTracking.js';
+import { getBiomeWeather, getAllBiomeWeather, getWeatherXpBonus, applyWeatherToWeights } from '../utils/weatherService.js';
 
 const router = express.Router();
 
@@ -125,13 +126,33 @@ router.post('/cast', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Invalid biome' });
     }
 
-    // Calculate rarity based on luck, equipped bait, and rod weights
+    // Get weather-modified weights for current biome
+    const baseWeights = {
+      'Common': 60046,
+      'Uncommon': 23000,
+      'Fine': 10000,
+      'Rare': 4000,
+      'Relic': 2000,
+      'Epic': 750,
+      'Treasure Chest': 150,
+      'Legendary': 40,
+      'Mythic': 10,
+      'Exotic': 3,
+      'Arcane': 1
+    };
+    const weatherModifiedWeights = applyWeatherToWeights(baseWeights, currentBiome);
+
+    // Get weather XP bonus
+    const weatherXpBonus = getWeatherXpBonus(currentBiome) / 100; // Convert percentage to multiplier
+
+    // Calculate rarity based on luck, equipped bait, rod weights, and weather
     const rarity = calculateRarity(
       totalStats.luck,
       false, // isAutoCast
       player.equipped_bait,
       totalStats.relicWeight || 0,
-      totalStats.treasureWeight || 0
+      totalStats.treasureWeight || 0,
+      weatherModifiedWeights
     );
 
     let result = {
@@ -157,12 +178,15 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const minBonus = (player.level - 1) * 10;
       const maxBonus = (player.level - 1) * 20;
       const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
-      const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier * xpBonus);
+      // Apply weather XP bonus (additive with other bonuses)
+      const totalXpMultiplier = xpBonus + weatherXpBonus;
+      const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier * (1 + totalXpMultiplier));
 
       result.relicsGained = relicsDropped;
       result.xpGained = xpGained;
       result.critMultiplier = critMultiplier;
       result.xpBonus = xpBonus;
+      result.weatherXpBonus = weatherXpBonus;
 
       // Update player stats
       await connection.query(
@@ -187,7 +211,9 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const minBonus = (player.level - 1) * 10;
       const maxBonus = (player.level - 1) * 20;
       const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
-      const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier * xpBonus);
+      // Apply weather XP bonus (additive with other bonuses)
+      const totalXpMultiplier = xpBonus + weatherXpBonus;
+      const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier * (1 + totalXpMultiplier));
 
       result.treasureChest = rewards;
       result.goldGained = rewards.gold;
@@ -195,6 +221,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.xpGained = xpGained;
       result.critMultiplier = critMultiplier;
       result.xpBonus = xpBonus;
+      result.weatherXpBonus = weatherXpBonus;
 
       // Update player stats
       await connection.query(
@@ -239,8 +266,9 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const minBonus = (player.level - 1) * 10;
       const maxBonus = (player.level - 1) * 20;
       const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
-      const xpWithLevelBonus = Math.floor((baseXP + levelBonus) * critMultiplier * xpBonus);
-      const xpGained = xpWithLevelBonus;
+      // Apply weather XP bonus (additive with other bonuses)
+      const totalXpMultiplier = xpBonus + weatherXpBonus;
+      const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier * (1 + totalXpMultiplier));
 
       result.fish = {
         name: fish.name,
@@ -252,6 +280,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.titanBonus = titanBonus;
       result.critMultiplier = critMultiplier;
       result.xpBonus = xpBonus;
+      result.weatherXpBonus = weatherXpBonus;
 
       // Add to inventory (or update if exists)
       await connection.query(
@@ -602,13 +631,33 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Invalid biome' });
     }
 
-    // Calculate rarity with auto-cast flag (caps at Epic)
+    // Get weather-modified weights for current biome
+    const baseWeights = {
+      'Common': 60046,
+      'Uncommon': 23000,
+      'Fine': 10000,
+      'Rare': 4000,
+      'Relic': 2000,
+      'Epic': 750,
+      'Treasure Chest': 150,
+      'Legendary': 40,
+      'Mythic': 10,
+      'Exotic': 3,
+      'Arcane': 1
+    };
+    const weatherModifiedWeights = applyWeatherToWeights(baseWeights, currentBiome);
+
+    // Get weather XP bonus
+    const weatherXpBonus = getWeatherXpBonus(currentBiome) / 100; // Convert percentage to multiplier
+
+    // Calculate rarity with auto-cast flag (caps at Epic) and weather effects
     const rarity = calculateRarity(
       totalStats.luck,
       true, // isAutoCast
       player.equipped_bait,
       totalStats.relicWeight || 0,
-      totalStats.treasureWeight || 0
+      totalStats.treasureWeight || 0,
+      weatherModifiedWeights
     );
 
     // Select random fish
@@ -628,7 +677,9 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     const minBonus = (player.level - 1) * 10;
     const maxBonus = (player.level - 1) * 20;
     const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
-    const xpGained = Math.floor((baseXP + levelBonus) * xpBonus);
+    // Apply weather XP bonus (additive with other bonuses)
+    const totalXpMultiplier = xpBonus + weatherXpBonus;
+    const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
 
     let result = {
       rarity,
@@ -641,6 +692,7 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
       goldGained: 0,
       titanBonus: 1,
       xpBonus,
+      weatherXpBonus,
       isAutoCast: true
     };
 
@@ -2123,6 +2175,44 @@ router.get('/global-catches', async (req, res) => {
   } catch (error) {
     console.error('Get global catches error:', error);
     res.status(500).json({ error: 'Failed to fetch global catches' });
+  }
+});
+
+/**
+ * GET /api/game/weather
+ * Get current weather for all biomes
+ *
+ * Returns: { weather: { 1: { weather: 'clear', xpBonus: 0 }, 2: { ... }, ... } }
+ */
+router.get('/weather', async (req, res) => {
+  try {
+    const allWeather = getAllBiomeWeather();
+    res.json({ weather: allWeather });
+  } catch (error) {
+    console.error('Get weather error:', error);
+    res.status(500).json({ error: 'Failed to fetch weather data' });
+  }
+});
+
+/**
+ * GET /api/game/weather/:biomeId
+ * Get current weather for a specific biome
+ *
+ * Returns: { weather: 'clear', xpBonus: 0, modifiers: {...} }
+ */
+router.get('/weather/:biomeId', async (req, res) => {
+  try {
+    const biomeId = parseInt(req.params.biomeId);
+
+    if (isNaN(biomeId) || biomeId < 1) {
+      return res.status(400).json({ error: 'Invalid biome ID' });
+    }
+
+    const weather = getBiomeWeather(biomeId);
+    res.json(weather);
+  } catch (error) {
+    console.error('Get biome weather error:', error);
+    res.status(500).json({ error: 'Failed to fetch biome weather' });
   }
 });
 

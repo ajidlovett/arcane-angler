@@ -152,10 +152,15 @@ function calculateLuckPower(totalLuck) {
  *
  * @param {number} totalLuck - Total luck (base + equipment)
  * @param {boolean} isAutoCast - Whether this is an auto-cast (caps at Epic)
+ * @param {string|null} equippedBaitId - Equipped bait ID
+ * @param {number} relicWeight - Relic weight bonus from equipment
+ * @param {number} treasureWeight - Treasure weight bonus from equipment
+ * @param {Object|null} weatherModifiedWeights - Optional weather-modified weights (overrides baseWeights)
  * @returns {string} Rarity tier
  */
-function calculateRarity(totalLuck, isAutoCast = false, equippedBaitId = null, relicWeight = 0, treasureWeight = 0) {
-  const baseWeights = {
+function calculateRarity(totalLuck, isAutoCast = false, equippedBaitId = null, relicWeight = 0, treasureWeight = 0, weatherModifiedWeights = null) {
+  // Use weather-modified weights if provided, otherwise use base weights
+  let baseWeights = weatherModifiedWeights || {
     'Common': 60046,
     'Uncommon': 23000,
     'Fine': 10000,
@@ -169,12 +174,17 @@ function calculateRarity(totalLuck, isAutoCast = false, equippedBaitId = null, r
     'Arcane': 1
   };
 
+  // If weather weights provided, make a copy so we don't mutate the original
+  if (weatherModifiedWeights) {
+    baseWeights = { ...weatherModifiedWeights };
+  }
+
   // Apply Relic and Treasure weight bonuses from rods
   if (relicWeight > 0) {
-    baseWeights['Relic'] = 2000 + relicWeight;
+    baseWeights['Relic'] = (baseWeights['Relic'] || 2000) + relicWeight;
   }
   if (treasureWeight > 0) {
-    baseWeights['Treasure Chest'] = 150 + treasureWeight;
+    baseWeights['Treasure Chest'] = (baseWeights['Treasure Chest'] || 150) + treasureWeight;
   }
 
   // Get bait rarity restrictions
