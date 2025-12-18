@@ -115,6 +115,28 @@ router.get('/data', authenticateToken, async (req, res) => {
             unlockedBiomes = [1];
         }
 
+        // Parse rod_levels JSON if it exists (handle both string and object)
+        // Default to { rod_default: 1 } for existing players who don't have this field yet
+        let rodLevels = { rod_default: 1 };
+        try {
+            const rawData = playerData[0].rod_levels;
+            if (rawData) {
+                if (typeof rawData === 'object' && !Array.isArray(rawData)) {
+                    rodLevels = rawData; // Already an object
+                } else if (typeof rawData === 'string') {
+                    const parsed = JSON.parse(rawData);
+                    rodLevels = typeof parsed === 'object' ? parsed : { rod_default: 1 };
+                }
+            }
+            // Ensure rod_default is always at least level 1
+            if (!rodLevels.rod_default) {
+                rodLevels.rod_default = 1;
+            }
+        } catch (e) {
+            console.error('Error parsing rod_levels:', e);
+            rodLevels = { rod_default: 1 };
+        }
+
         res.json({
             level: playerData[0].level,
             xp: playerData[0].xp,
@@ -123,8 +145,9 @@ router.get('/data', authenticateToken, async (req, res) => {
             relics: playerData[0].relics || 0,
             statPoints: playerData[0].stat_points || 0,
             currentBiome: playerData[0].current_biome || 1,
-            equippedRod: playerData[0].equipped_rod,
-            equippedBait: playerData[0].equipped_bait,
+            equippedRod: playerData[0].equipped_rod || 'rod_default',
+            equippedBait: playerData[0].equipped_bait || 'bait_default',
+            rodLevels: rodLevels,
             stats: playerStats[0] || { strength: 0, intelligence: 0, luck: 0, stamina: 0 },
             inventory: formattedInventory,
             lockedFish: formattedLockedFish,
