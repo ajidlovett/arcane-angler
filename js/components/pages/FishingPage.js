@@ -120,11 +120,17 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
       <div className="lg:block hidden">
         {lastCatch ? (
           <div
-            className={`p-3 sm:p-4 bg-${theme.surface} rounded-lg border-4 shadow-xl h-full ${(lastCatch.xpBonus > 1 || activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir')) ? 'bg-gradient-to-br from-yellow-900/20 via-transparent to-purple-900/20' : ''}`}
+            className={`p-3 sm:p-4 rounded-lg border-4 shadow-xl h-full ${(lastCatch.xpBonus > 1 || activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir')) ? 'bg-gradient-to-br from-yellow-900/20 via-transparent to-purple-900/20' : ''}`}
             style={isGradientRarity(lastCatch.rarity) ? {
-              borderImage: `${rarityColors[lastCatch.rarity]} 1`,
-              borderImageSlice: 1
-            } : { borderColor: getRarityColor(lastCatch.rarity) }}
+              backgroundColor: theme.surface,
+              border: `4px solid transparent`,
+              backgroundImage: `linear-gradient(${theme.surface}, ${theme.surface}), ${rarityColors[lastCatch.rarity]}`,
+              backgroundOrigin: 'border-box',
+              backgroundClip: 'padding-box, border-box'
+            } : {
+              backgroundColor: theme.surface,
+              borderColor: getRarityColor(lastCatch.rarity)
+            }}
           >
             <div className={`text-center mb-3 pb-3 border-b border-${theme.border}`}>
               <p className={`text-xs sm:text-sm text-${theme.textMuted} italic`}>{funnyLine}</p>
@@ -201,11 +207,17 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
     {lastCatch && (
       <div className="lg:hidden mt-4">
         <div
-          className={`p-3 sm:p-4 bg-${theme.surface} rounded-lg border-4 shadow-xl ${(lastCatch.xpBonus > 1 || activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir')) ? 'bg-gradient-to-br from-yellow-900/20 via-transparent to-purple-900/20' : ''}`}
+          className={`p-3 sm:p-4 rounded-lg border-4 shadow-xl ${(lastCatch.xpBonus > 1 || activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir')) ? 'bg-gradient-to-br from-yellow-900/20 via-transparent to-purple-900/20' : ''}`}
           style={isGradientRarity(lastCatch.rarity) ? {
-            borderImage: `${rarityColors[lastCatch.rarity]} 1`,
-            borderImageSlice: 1
-          } : { borderColor: getRarityColor(lastCatch.rarity) }}
+            backgroundColor: theme.surface,
+            border: `4px solid transparent`,
+            backgroundImage: `linear-gradient(${theme.surface}, ${theme.surface}), ${rarityColors[lastCatch.rarity]}`,
+            backgroundOrigin: 'border-box',
+            backgroundClip: 'padding-box, border-box'
+          } : {
+            backgroundColor: theme.surface,
+            borderColor: getRarityColor(lastCatch.rarity)
+          }}
         >
           <div className={`text-center mb-3 pb-3 border-b border-${theme.border}`}>
             <p className={`text-xs sm:text-sm text-${theme.textMuted} italic`}>{funnyLine}</p>
