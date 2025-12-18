@@ -18,7 +18,6 @@ import {
   calculateTitanBonus,
   calculateGoldMultiplier,
   calculateIntelligenceDuration,
-  calculateCriticalCatch,
   generateTreasureChest,
   calculateLevelUp,
   calculateXPForNextLevel,
@@ -170,9 +169,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
     if (rarity === 'Relic') {
       const relicsDropped = Math.floor(Math.random() * 5) + 1; // 1-5 relics
 
-      // Apply Critical Catch to XP with level scaling
+      // Calculate XP with level scaling
       const baseXP = 50; // Fixed base XP for relic drops
-      const critMultiplier = calculateCriticalCatch(totalStats.stamina);
 
       // Add level-based XP bonus: (Level - 1) * random(10-20)
       const minBonus = (player.level - 1) * 10;
@@ -180,11 +178,10 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
       // Apply weather XP bonus (additive with other bonuses)
       const totalXpMultiplier = xpBonus + weatherXpBonus;
-      const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier * (1 + totalXpMultiplier));
+      const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
 
       result.relicsGained = relicsDropped;
       result.xpGained = xpGained;
-      result.critMultiplier = critMultiplier;
       result.xpBonus = xpBonus;
       result.weatherXpBonus = weatherXpBonus;
 
@@ -203,9 +200,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
     } else if (rarity === 'Treasure Chest') {
       const rewards = generateTreasureChest(currentBiome, totalStats.luck, biomeData);
 
-      // Apply Critical Catch to XP with level scaling
+      // Calculate XP with level scaling
       const baseXP = 100; // Fixed XP for treasure chests
-      const critMultiplier = calculateCriticalCatch(totalStats.stamina);
 
       // Add level-based XP bonus: (Level - 1) * random(10-20)
       const minBonus = (player.level - 1) * 10;
@@ -213,13 +209,12 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
       // Apply weather XP bonus (additive with other bonuses)
       const totalXpMultiplier = xpBonus + weatherXpBonus;
-      const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier * (1 + totalXpMultiplier));
+      const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
 
       result.treasureChest = rewards;
       result.goldGained = rewards.gold;
       result.relicsGained = rewards.relics;
       result.xpGained = xpGained;
-      result.critMultiplier = critMultiplier;
       result.xpBonus = xpBonus;
       result.weatherXpBonus = weatherXpBonus;
 
@@ -257,9 +252,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
         titanBonus = calculateTitanBonus(totalStats.strength);
       }
 
-      // Calculate XP with Critical Catch multiplier and level scaling
+      // Calculate XP with level scaling
       const baseXP = fish.xp * count;
-      const critMultiplier = calculateCriticalCatch(totalStats.stamina);
 
       // Add level-based XP bonus: (Level - 1) * random(10-20)
       // Level 2: +10-20 XP, Level 3: +20-40 XP, Level 4: +30-60 XP, etc.
@@ -268,7 +262,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
       // Apply weather XP bonus (additive with other bonuses)
       const totalXpMultiplier = xpBonus + weatherXpBonus;
-      const xpGained = Math.floor((baseXP + levelBonus) * critMultiplier * (1 + totalXpMultiplier));
+      const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
 
       result.fish = {
         name: fish.name,
@@ -278,7 +272,6 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.xpGained = xpGained;
       result.goldGained = 0; // No gold from catching fish
       result.titanBonus = titanBonus;
-      result.critMultiplier = critMultiplier;
       result.xpBonus = xpBonus;
       result.weatherXpBonus = weatherXpBonus;
 
