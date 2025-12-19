@@ -28,6 +28,7 @@ import { trackQuestProgress } from '../utils/questTracking.js';
 import { getBiomeWeather, getAllBiomeWeather, getWeatherXpBonus, applyWeatherToWeights } from '../utils/weatherService.js';
 import { checkForCheating, applyPunishment } from '../utils/antiCheat.js';
 import sseService from '../services/sseService.js';
+import chatSSEService from '../services/chatSSEService.js';
 
 const router = express.Router();
 
@@ -448,6 +449,34 @@ router.post('/cast', authenticateToken, async (req, res) => {
             rarity: rarity,
             caught_at: new Date().toISOString()
           });
+
+          // Also add to chat notification channel
+          const notificationMessage = `🎣 ${userData[0].profile_username} caught a ${rarity} ${fish.name}!`;
+          const [chatResult] = await connection.query(
+            `INSERT INTO chat_messages (user_id, profile_username, equipped_title, channel, message_text)
+             VALUES (0, 'Global Catch', NULL, 'notification', ?)`,
+            [notificationMessage]
+          );
+
+          // Get the inserted message and broadcast via chat SSE
+          const [insertedMessage] = await connection.query(
+            'SELECT * FROM chat_messages WHERE id = ?',
+            [chatResult.insertId]
+          );
+
+          if (insertedMessage && insertedMessage.length > 0) {
+            chatSSEService.broadcastMessage('notification', {
+              id: insertedMessage[0].id,
+              user_id: insertedMessage[0].user_id,
+              profile_username: insertedMessage[0].profile_username,
+              equipped_title: insertedMessage[0].equipped_title,
+              channel: insertedMessage[0].channel,
+              message_text: insertedMessage[0].message_text,
+              created_at: insertedMessage[0].created_at,
+              type: 'global_catch',
+              rarity: rarity
+            });
+          }
         }
       }
 

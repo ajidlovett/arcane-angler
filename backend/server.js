@@ -9,6 +9,7 @@ import profileRoutes from './routes/profile.js';
 import friendsRoutes from './routes/friends.js';
 import commentsRoutes from './routes/comments.js';
 import questRoutes from './routes/quests.js';
+import chatRoutes from './routes/chat.js';
 import { authLimiter, passwordResetLimiter, apiLimiter } from './middleware/rateLimiter.js';
 
 dotenv.config();
@@ -48,6 +49,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/friends', friendsRoutes);
 app.use('/api/comments', commentsRoutes);
 app.use('/api/quests', questRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Export rate limiters for use in route files
 app.locals.authLimiter = authLimiter;
