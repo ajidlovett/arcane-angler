@@ -702,9 +702,8 @@ class ApiService {
             }
         };
 
-        eventSource.onerror = (error) => {
-            console.error('Chat SSE error:', error);
-        };
+        // Don't add onerror handler here - let the Chat component handle it
+        // This prevents duplicate error handling and reconnection conflicts
 
         return eventSource;
     }

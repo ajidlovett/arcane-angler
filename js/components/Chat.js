@@ -103,9 +103,21 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
 
   // Connect to SSE for a channel with auto-reconnect
   const connectSSE = (channel, isReconnect = false) => {
-    // If already connected, skip
+    // If already connected, close it first to prevent duplicates
     if (sseConnections[channel]) {
-      return;
+      console.log(`Closing existing ${channel} connection before reconnecting`);
+      sseConnections[channel].close();
+      setSSEConnections(prev => {
+        const newConnections = { ...prev };
+        delete newConnections[channel];
+        return newConnections;
+      });
+    }
+
+    // Clear any pending reconnect timeout
+    if (reconnectTimeoutsRef.current[channel]) {
+      clearTimeout(reconnectTimeoutsRef.current[channel]);
+      delete reconnectTimeoutsRef.current[channel];
     }
 
     // Initialize retry count if not exists
@@ -144,13 +156,22 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     });
 
     // Handle connection errors and reconnect
+    // Use a flag to prevent multiple error handlers from firing
+    let errorHandled = false;
+
     eventSource.addEventListener('error', (error) => {
+      // Prevent duplicate error handling
+      if (errorHandled) {
+        return;
+      }
+      errorHandled = true;
+
       console.error(`SSE error for ${channel}:`, error);
 
       // Set status to disconnected
       setConnectionStatus(prev => ({ ...prev, [channel]: 'disconnected' }));
 
-      // Close the current connection
+      // Close the current connection immediately to prevent auto-reconnect
       eventSource.close();
       setSSEConnections(prev => {
         const newConnections = { ...prev };
