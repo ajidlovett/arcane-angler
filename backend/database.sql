@@ -534,3 +534,19 @@ CREATE TABLE IF NOT EXISTS anti_cheat_flags (
     INDEX idx_user_active (user_id, is_active, expires_at),
     INDEX idx_expires_at (expires_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Chat System
+-- Live chat with global, guild, and notification channels
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    profile_username VARCHAR(50) NOT NULL,
+    equipped_title VARCHAR(255) DEFAULT NULL,
+    channel ENUM('global', 'guild', 'notification') NOT NULL DEFAULT 'global',
+    message_text VARCHAR(200) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_channel_time (channel, created_at DESC),
+    INDEX idx_user (user_id),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -654,6 +654,60 @@ class ApiService {
             requiresAuth: false
         });
     }
+
+    // ============================================================
+    // Chat endpoints
+    // ============================================================
+
+    /**
+     * Send a chat message to a specific channel
+     * @param {string} channel - Channel name (global, guild, notification)
+     * @param {string} message - Message text (max 200 chars)
+     * @returns {Promise<Object>} { success: true, message: {...} }
+     */
+    async sendChatMessage(channel, message) {
+        return await this.request('/chat/send', {
+            method: 'POST',
+            body: JSON.stringify({ channel, message })
+        });
+    }
+
+    /**
+     * Get chat history for a specific channel
+     * @param {string} channel - Channel name (global, guild, notification)
+     * @returns {Promise<Object>} { messages: [...] }
+     */
+    async getChatHistory(channel) {
+        return await this.request(`/chat/history/${channel}`, {
+            method: 'GET'
+        });
+    }
+
+    /**
+     * Create SSE connection for real-time chat updates
+     * @param {string} channel - Channel name (global, guild, notification)
+     * @param {Function} onMessage - Callback for new messages
+     * @returns {EventSource} SSE connection
+     */
+    createChatStream(channel, onMessage) {
+        const url = `${API_BASE_URL}/chat/stream/${channel}`;
+        const eventSource = new EventSource(url);
+
+        eventSource.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                onMessage(data);
+            } catch (error) {
+                console.error('Failed to parse chat SSE message:', error);
+            }
+        };
+
+        eventSource.onerror = (error) => {
+            console.error('Chat SSE error:', error);
+        };
+
+        return eventSource;
+    }
 }
 
 // Export singleton instance

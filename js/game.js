@@ -43,11 +43,13 @@ const ProfilePage = window.ProfilePage;
 const AchievementsPage = window.AchievementsPage;
 const FishpediaPage = window.FishpediaPage;
 const QuestPage = window.QuestPage;
+const Chat = window.Chat;
 
 const FishingGame = ({ user, onLogout }) => {
   // State
   const [currentPage, setCurrentPage] = useState('fishing');
   const [savingProgress, setSavingProgress] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const [player, setPlayer] = useState(() => {
     const defaultPlayerState = {
       level: 1,
@@ -1156,6 +1158,13 @@ useEffect(() => {
             </button>
             <div className="flex-1"></div>
             <button
+              onClick={() => setChatOpen(true)}
+              className={`p-2 hover:bg-${theme.hover} rounded text-sm`}
+              title="Open Chat"
+            >
+              💬
+            </button>
+            <button
               onClick={() => {
                 if (!document.fullscreenElement) {
                   document.documentElement.requestFullscreen();
@@ -1371,6 +1380,14 @@ useEffect(() => {
           />}
         </div>
       </div>
+
+      {/* Chat Component - Right Sidebar on Desktop, Modal on Mobile */}
+      <Chat
+        theme={theme}
+        user={user}
+        chatOpen={chatOpen}
+        setChatOpen={setChatOpen}
+      />
       </div>
     </>
   );
