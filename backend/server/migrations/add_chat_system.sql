@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 -- ========================================
 -- Automatic Cleanup Event (removes messages older than 7 days)
 -- This runs daily at midnight
+-- NOTE: Requires event_scheduler to be enabled (see below)
 -- ========================================
 CREATE EVENT IF NOT EXISTS cleanup_old_chat_messages
 ON SCHEDULE EVERY 1 DAY
@@ -31,8 +32,24 @@ STARTS (CURRENT_DATE + INTERVAL 1 DAY)
 DO
   DELETE FROM chat_messages WHERE created_at < DATE_SUB(NOW(), INTERVAL 7 DAY);
 
--- Enable the event scheduler (if not already enabled)
-SET GLOBAL event_scheduler = ON;
+-- ========================================
+-- IMPORTANT: Enable Event Scheduler
+-- ========================================
+-- The event scheduler must be enabled for automatic cleanup.
+--
+-- If you have SUPER privileges, run this command:
+--   SET GLOBAL event_scheduler = ON;
+--
+-- Otherwise, contact your hosting provider to enable event_scheduler
+-- in your MySQL configuration file (my.cnf or my.ini):
+--   [mysqld]
+--   event_scheduler = ON
+--
+-- To verify if events are enabled:
+--   SHOW VARIABLES LIKE 'event_scheduler';
+--
+-- To manually cleanup old messages (if event scheduler is not available):
+--   DELETE FROM chat_messages WHERE created_at < DATE_SUB(NOW(), INTERVAL 7 DAY);
 
 -- ========================================
 -- Migration Complete
