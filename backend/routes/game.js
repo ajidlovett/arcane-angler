@@ -81,7 +81,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
     );
 
     // Calculate booster bonuses
-    let xpBonusFromBoosters = 1.0; // Multiplier (1.0 = no bonus)
+    let xpBonusFromBoosters = 0; // Additive bonus (0 = no bonus, will be added to 1 in formula)
     let statBonus = 1.0; // Multiplier for strength/luck
     for (const booster of activeBoosters) {
       if (booster.effect_type === 'xp_bonus') {
@@ -218,8 +218,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
 
       // Skip normal reward logic - jump to level check
     } else if (rarity === 'Relic') {
-      // Normal Relic drop (special case - gives 1-5 relics + XP, no fish)
-      const relicsDropped = Math.floor(Math.random() * 5) + 1; // 1-5 relics
+      // Normal Relic drop (special case - gives 5-15 relics + XP, no fish)
+      const relicsDropped = Math.floor(Math.random() * 11) + 5; // 5-15 relics
 
       // Calculate XP with level scaling
       const baseXP = 50; // Fixed base XP for relic drops
@@ -633,7 +633,7 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     );
 
     // Calculate booster bonuses
-    let xpBonusFromBoosters = 1.0; // Multiplier (1.0 = no bonus)
+    let xpBonusFromBoosters = 0; // Additive bonus (0 = no bonus, will be added to 1 in formula)
     let statBonus = 1.0; // Multiplier for strength/luck
     for (const booster of activeBoosters) {
       if (booster.effect_type === 'xp_bonus') {
