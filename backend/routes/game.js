@@ -27,6 +27,7 @@ import {
 import { trackQuestProgress } from '../utils/questTracking.js';
 import { getBiomeWeather, getAllBiomeWeather, getWeatherXpBonus, applyWeatherToWeights } from '../utils/weatherService.js';
 import { checkForCheating, applyPunishment } from '../utils/antiCheat.js';
+import sseService from '../services/sseService.js';
 
 const router = express.Router();
 
@@ -439,6 +440,14 @@ router.post('/cast', authenticateToken, async (req, res) => {
             'INSERT INTO global_catches (user_id, profile_username, fish_name, rarity) VALUES (?, ?, ?, ?)',
             [userId, userData[0].profile_username, fish.name, rarity]
           );
+
+          // Broadcast via SSE to all connected clients
+          sseService.broadcastGlobalCatch({
+            profile_username: userData[0].profile_username,
+            fish_name: fish.name,
+            rarity: rarity,
+            caught_at: new Date().toISOString()
+          });
         }
       }
 
@@ -446,7 +455,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
     }
 
     // Consume bait (if equipped and not the free starter bait)
-    if (player.equipped_bait && player.equipped_bait !== 'Stale Bread Crust') {
+    if (player.equipped_bait && player.equipped_bait !== 'bait_default') {
       // Check bait inventory
       const [baitInventory] = await connection.query(
         'SELECT quantity FROM bait_inventory WHERE user_id = ? AND bait_name = ?',
@@ -470,7 +479,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
           );
           await connection.query(
             'UPDATE player_data SET equipped_bait = ? WHERE user_id = ?',
-            ['Stale Bread Crust', userId]
+            ['bait_default', userId]
           );
         }
       }
@@ -535,7 +544,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
     result.equippedBait = finalData[0].equipped_bait;
 
     // Get updated bait quantity if bait is equipped
-    if (finalData[0].equipped_bait && finalData[0].equipped_bait !== 'Stale Bread Crust') {
+    if (finalData[0].equipped_bait && finalData[0].equipped_bait !== 'bait_default') {
       const [baitQty] = await connection.query(
         'SELECT quantity FROM bait_inventory WHERE user_id = ? AND bait_name = ?',
         [userId, finalData[0].equipped_bait]
@@ -560,7 +569,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
         trackQuestProgress(userId, 'multi_catch', {}).catch(err => console.error('Quest tracking error:', err));
       }
 
-      if (player.equipped_bait && player.equipped_bait !== 'Stale Bread Crust') {
+      if (player.equipped_bait && player.equipped_bait !== 'bait_default') {
         trackQuestProgress(userId, 'bait_used', { bait: player.equipped_bait }).catch(err => console.error('Quest tracking error:', err));
       }
     } else {
@@ -829,7 +838,7 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     }
 
     // Consume bait (if equipped and not free)
-    if (player.equipped_bait && player.equipped_bait !== 'Stale Bread Crust') {
+    if (player.equipped_bait && player.equipped_bait !== 'bait_default') {
       const [baitInventory] = await connection.query(
         'SELECT quantity FROM bait_inventory WHERE user_id = ? AND bait_name = ?',
         [userId, player.equipped_bait]
@@ -850,7 +859,7 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
           );
           await connection.query(
             'UPDATE player_data SET equipped_bait = ? WHERE user_id = ?',
-            ['Stale Bread Crust', userId]
+            ['bait_default', userId]
           );
         }
       }
@@ -910,7 +919,7 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     result.equippedBait = finalData[0].equipped_bait;
 
     // Get updated bait quantity
-    if (finalData[0].equipped_bait && finalData[0].equipped_bait !== 'Stale Bread Crust') {
+    if (finalData[0].equipped_bait && finalData[0].equipped_bait !== 'bait_default') {
       const [baitQty] = await connection.query(
         'SELECT quantity FROM bait_inventory WHERE user_id = ? AND bait_name = ?',
         [userId, finalData[0].equipped_bait]
@@ -2237,7 +2246,22 @@ router.post('/sync-achievements', authenticateToken, async (req, res) => {
   }
 });
 
+// SSE endpoint for real-time global catch notifications
+router.get('/global-catches/stream', (req, res) => {
+  // Set headers for SSE
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  // Add client to SSE service
+  sseService.addClient(res);
+
+  console.log(`SSE client connected. Total clients: ${sseService.getClientCount()}`);
+});
+
 // Get recent global rare catches (for global notifications)
+// NOTE: This endpoint is kept for backward compatibility but SSE is preferred
 router.get('/global-catches', async (req, res) => {
   try {
     // Get the most recent 10 global catches (Mythic, Exotic, Arcane)
