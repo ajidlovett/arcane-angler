@@ -274,7 +274,7 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
 
     if (channelMessages.length === 0) {
       return (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center overflow-hidden">
           <p className={`text-${theme.textMuted} text-sm`}>
             {activeChannel === 'notification'
               ? 'No notifications yet...'
@@ -285,7 +285,7 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     }
 
     return (
-      <div className="flex-1 overflow-y-auto space-y-2 p-3 max-h-[600px]">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-2 p-3" style={{ WebkitOverflowScrolling: 'touch' }}>
         {channelMessages.map((msg, index) => (
           <div key={msg.id || index} className={`${
             msg.type === 'global_catch'
@@ -353,17 +353,23 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
 
   return (
     <>
-      {/* Desktop - Right Sidebar */}
-      <div className={`hidden lg:block w-80 bg-${theme.primarySolid} border-l-2 border-${theme.border} flex flex-col`}>
-        <div className={`bg-${theme.secondary} p-3 border-b-2 border-${theme.border}`}>
+      {/* Desktop - Right Sidebar docked to bottom */}
+      <div className={`hidden lg:flex w-80 bg-${theme.primarySolid} border-l-2 border-${theme.border} flex-col`} style={{ height: 'calc(100vh - 4rem)' }}>
+        <div className={`bg-${theme.secondary} p-3 border-b-2 border-${theme.border} flex-shrink-0`}>
           <h2 className="text-sm font-bold text-white">💬 Live Chat</h2>
         </div>
-        {renderChannelTabs()}
-        {renderMessages()}
-        {renderInput()}
+        <div className="flex-shrink-0">
+          {renderChannelTabs()}
+        </div>
+        <div className="flex-1 flex flex-col min-h-0">
+          {renderMessages()}
+        </div>
+        <div className="flex-shrink-0">
+          {renderInput()}
+        </div>
       </div>
 
-      {/* Mobile - Slide-in Panel */}
+      {/* Mobile - Slide-in Panel docked to bottom half */}
       {chatOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           {/* Backdrop */}
@@ -372,9 +378,9 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
             onClick={() => setChatOpen(false)}
           />
 
-          {/* Chat Panel */}
-          <div className={`relative ml-auto w-80 max-w-full bg-${theme.primarySolid} flex flex-col shadow-xl`}>
-            <div className={`bg-${theme.secondary} p-3 border-b-2 border-${theme.border} flex items-center justify-between`}>
+          {/* Chat Panel - Bottom 60% of screen */}
+          <div className={`relative ml-auto w-80 max-w-full bg-${theme.primarySolid} flex flex-col shadow-xl`} style={{ height: '60vh', marginTop: '40vh' }}>
+            <div className={`bg-${theme.secondary} p-3 border-b-2 border-${theme.border} flex items-center justify-between flex-shrink-0`}>
               <h2 className="text-sm font-bold text-white">💬 Live Chat</h2>
               <button
                 onClick={() => setChatOpen(false)}
@@ -383,9 +389,15 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
                 <span className="text-xl">×</span>
               </button>
             </div>
-            {renderChannelTabs()}
-            {renderMessages()}
-            {renderInput()}
+            <div className="flex-shrink-0">
+              {renderChannelTabs()}
+            </div>
+            <div className="flex-1 flex flex-col min-h-0">
+              {renderMessages()}
+            </div>
+            <div className="flex-shrink-0">
+              {renderInput()}
+            </div>
           </div>
         </div>
       )}
