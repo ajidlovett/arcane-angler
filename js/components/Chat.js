@@ -15,16 +15,36 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sseConnections, setSSEConnections] = useState({});
+  const [loadedChannels, setLoadedChannels] = useState(new Set());
   const messagesEndRef = useRef(null);
+  const previousChannelRef = useRef(activeChannel);
+  const reconnectTimeoutsRef = useRef({});
+  const retryCountsRef = useRef({});
   const apiService = window.ApiService;
 
   // Scroll to bottom when new messages arrive
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToBottom = (instant = false) => {
+    // Use setTimeout to ensure DOM is updated before scrolling
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: instant ? 'instant' : 'smooth'
+      });
+    }, 0);
   };
 
   useEffect(() => {
-    scrollToBottom();
+    const isChannelSwitch = previousChannelRef.current !== activeChannel;
+    const isFirstLoadForChannel = !loadedChannels.has(activeChannel);
+
+    // Scroll instantly on initial load or channel switch, smoothly for new messages
+    scrollToBottom(isFirstLoadForChannel || isChannelSwitch);
+
+    // Mark channel as loaded
+    if (isFirstLoadForChannel && messages[activeChannel]?.length > 0) {
+      setLoadedChannels(prev => new Set(prev).add(activeChannel));
+    }
+
+    previousChannelRef.current = activeChannel;
   }, [messages, activeChannel]);
 
   // Load chat history for a channel
@@ -40,13 +60,46 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     }
   };
 
-  // Connect to SSE for a channel
-  const connectSSE = (channel) => {
+  // Disconnect SSE for a channel
+  const disconnectSSE = (channel) => {
     if (sseConnections[channel]) {
-      return; // Already connected
+      sseConnections[channel].close();
+      setSSEConnections(prev => {
+        const newConnections = { ...prev };
+        delete newConnections[channel];
+        return newConnections;
+      });
+    }
+
+    // Clear any pending reconnect timeout
+    if (reconnectTimeoutsRef.current[channel]) {
+      clearTimeout(reconnectTimeoutsRef.current[channel]);
+      delete reconnectTimeoutsRef.current[channel];
+    }
+  };
+
+  // Connect to SSE for a channel with auto-reconnect
+  const connectSSE = (channel, isReconnect = false) => {
+    // If already connected, skip
+    if (sseConnections[channel]) {
+      return;
+    }
+
+    // Initialize retry count if not exists
+    if (!retryCountsRef.current[channel]) {
+      retryCountsRef.current[channel] = 0;
+    }
+
+    // Max 5 retries with exponential backoff
+    if (isReconnect && retryCountsRef.current[channel] >= 5) {
+      console.error(`Max reconnection attempts reached for ${channel} chat`);
+      return;
     }
 
     const eventSource = apiService.createChatStream(channel, (newMessage) => {
+      // Reset retry count on successful message
+      retryCountsRef.current[channel] = 0;
+
       setMessages(prev => {
         const channelMessages = [...(prev[channel] || []), newMessage];
         // Keep only last 50 messages
@@ -58,6 +111,30 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
           [channel]: channelMessages
         };
       });
+    });
+
+    // Handle connection errors and reconnect
+    eventSource.addEventListener('error', (error) => {
+      console.error(`SSE error for ${channel}:`, error);
+
+      // Close the current connection
+      eventSource.close();
+      setSSEConnections(prev => {
+        const newConnections = { ...prev };
+        delete newConnections[channel];
+        return newConnections;
+      });
+
+      // Attempt to reconnect with exponential backoff
+      const retryCount = retryCountsRef.current[channel] || 0;
+      const delay = Math.min(1000 * Math.pow(2, retryCount), 30000); // Max 30 seconds
+
+      console.log(`Reconnecting to ${channel} chat in ${delay}ms (attempt ${retryCount + 1}/5)`);
+
+      reconnectTimeoutsRef.current[channel] = setTimeout(() => {
+        retryCountsRef.current[channel] = retryCount + 1;
+        connectSSE(channel, true);
+      }, delay);
     });
 
     setSSEConnections(prev => ({
@@ -79,11 +156,26 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
 
     // Cleanup on unmount
     return () => {
-      Object.values(sseConnections).forEach(conn => {
-        if (conn) conn.close();
+      // Disconnect all SSE connections
+      Object.keys(sseConnections).forEach(channel => {
+        disconnectSSE(channel);
       });
+
+      // Clear all reconnect timeouts
+      Object.values(reconnectTimeoutsRef.current).forEach(timeout => {
+        clearTimeout(timeout);
+      });
+      reconnectTimeoutsRef.current = {};
+      retryCountsRef.current = {};
     };
   }, []);
+
+  // Scroll to bottom when chat opens on mobile
+  useEffect(() => {
+    if (chatOpen) {
+      scrollToBottom(true);
+    }
+  }, [chatOpen]);
 
   // Send message
   const sendMessage = async (e) => {
@@ -193,7 +285,7 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     }
 
     return (
-      <div className="flex-1 overflow-y-auto space-y-2 p-3">
+      <div className="flex-1 overflow-y-auto space-y-2 p-3 max-h-[600px]">
         {channelMessages.map((msg, index) => (
           <div key={msg.id || index} className={`${
             msg.type === 'global_catch'

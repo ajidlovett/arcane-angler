@@ -1,5 +1,5 @@
 // FishingPage - Defined as window.FishingPage
-window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle, getGradientBackgroundStyle, isAutoCasting, toggleAutoCast, autoCastCooldown, currentStamina, currentWeather }) => {
+window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle, getGradientBackgroundStyle, isAutoCasting, toggleAutoCast, autoCastCooldown, autoCastButtonCooldown, currentStamina, currentWeather }) => {
   const [showWeatherTooltip, setShowWeatherTooltip] = React.useState(false);
 
   // Weather display helper
@@ -228,9 +228,9 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
 
           <button
             onClick={toggleAutoCast}
-            disabled={getTotalStats().stamina < 1 || (cooldown > 0 && !isAutoCasting)}
-            className={`flex-[15] py-3 rounded-lg font-bold text-xl transition-all ${(getTotalStats().stamina < 1 || (cooldown > 0 && !isAutoCasting)) ? 'bg-gray-600 cursor-not-allowed text-gray-400' : isAutoCasting ? 'bg-red-600 hover:bg-red-500 text-white active:scale-95 shadow-lg' : 'bg-purple-600 hover:bg-purple-500 text-white active:scale-95 shadow-lg'}`}
-            title={isAutoCasting ? 'Stop Auto-Cast' : 'Start Auto-Cast'}
+            disabled={getTotalStats().stamina < 1 || (cooldown > 0 && !isAutoCasting) || autoCastButtonCooldown > 0}
+            className={`flex-[15] py-3 rounded-lg font-bold text-xl transition-all ${(getTotalStats().stamina < 1 || (cooldown > 0 && !isAutoCasting) || autoCastButtonCooldown > 0) ? 'bg-gray-600 cursor-not-allowed text-gray-400' : isAutoCasting ? 'bg-red-600 hover:bg-red-500 text-white active:scale-95 shadow-lg' : 'bg-purple-600 hover:bg-purple-500 text-white active:scale-95 shadow-lg'}`}
+            title={autoCastButtonCooldown > 0 ? `Cooldown: ${autoCastButtonCooldown}s` : (isAutoCasting ? 'Stop Auto-Cast' : 'Start Auto-Cast')}
           >
             {isAutoCasting ? '🛑' : '🤖'}
           </button>
