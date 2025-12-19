@@ -16,6 +16,11 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
   const [isLoading, setIsLoading] = useState(false);
   const [sseConnections, setSSEConnections] = useState({});
   const [loadedChannels, setLoadedChannels] = useState(new Set());
+  const [connectionStatus, setConnectionStatus] = useState({
+    global: 'connected',
+    guild: 'connected',
+    notification: 'connected'
+  });
   const messagesEndRef = useRef(null);
   const previousChannelRef = useRef(activeChannel);
   const reconnectTimeoutsRef = useRef({});
@@ -60,6 +65,24 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     }
   };
 
+  // Manual reconnect handler
+  const handleManualReconnect = (channel) => {
+    // Clear any pending auto-reconnect timeout
+    if (reconnectTimeoutsRef.current[channel]) {
+      clearTimeout(reconnectTimeoutsRef.current[channel]);
+      delete reconnectTimeoutsRef.current[channel];
+    }
+
+    // Reset retry count for fresh start
+    retryCountsRef.current[channel] = 0;
+
+    // Disconnect existing connection if any
+    disconnectSSE(channel);
+
+    // Attempt immediate reconnection
+    connectSSE(channel, false);
+  };
+
   // Disconnect SSE for a channel
   const disconnectSSE = (channel) => {
     if (sseConnections[channel]) {
@@ -93,12 +116,19 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     // Max 5 retries with exponential backoff
     if (isReconnect && retryCountsRef.current[channel] >= 5) {
       console.error(`Max reconnection attempts reached for ${channel} chat`);
+      setConnectionStatus(prev => ({ ...prev, [channel]: 'disconnected' }));
       return;
     }
+
+    // Set status to connecting
+    setConnectionStatus(prev => ({ ...prev, [channel]: 'connecting' }));
 
     const eventSource = apiService.createChatStream(channel, (newMessage) => {
       // Reset retry count on successful message
       retryCountsRef.current[channel] = 0;
+
+      // Set status to connected
+      setConnectionStatus(prev => ({ ...prev, [channel]: 'connected' }));
 
       setMessages(prev => {
         const channelMessages = [...(prev[channel] || []), newMessage];
@@ -116,6 +146,9 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     // Handle connection errors and reconnect
     eventSource.addEventListener('error', (error) => {
       console.error(`SSE error for ${channel}:`, error);
+
+      // Set status to disconnected
+      setConnectionStatus(prev => ({ ...prev, [channel]: 'disconnected' }));
 
       // Close the current connection
       eventSource.close();
@@ -268,13 +301,55 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     </div>
   );
 
+  // Render reconnect overlay
+  const renderReconnectOverlay = () => {
+    const status = connectionStatus[activeChannel];
+
+    if (status === 'connected') {
+      return null;
+    }
+
+    return (
+      <div className="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center z-10 backdrop-blur-sm">
+        <div className="text-center p-6">
+          {status === 'connecting' ? (
+            <>
+              <div className="mb-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+              </div>
+              <p className="text-white text-sm font-bold mb-2">Reconnecting...</p>
+              <p className={`text-${theme.textMuted} text-xs`}>
+                Attempting to restore chat connection
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="mb-4 text-4xl">⚠️</div>
+              <p className="text-white text-sm font-bold mb-2">Chat Disconnected</p>
+              <p className={`text-${theme.textMuted} text-xs mb-4`}>
+                Lost connection to chat server
+              </p>
+              <button
+                onClick={() => handleManualReconnect(activeChannel)}
+                className={`px-6 py-3 bg-${theme.accent} text-white text-sm font-bold rounded hover:opacity-90 transition-opacity`}
+              >
+                🔄 Reconnect Chat
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   // Render messages
   const renderMessages = () => {
     const channelMessages = messages[activeChannel] || [];
 
     if (channelMessages.length === 0) {
       return (
-        <div className="flex-1 flex items-center justify-center overflow-hidden">
+        <div className="flex-1 flex items-center justify-center overflow-hidden relative">
+          {renderReconnectOverlay()}
           <p className={`text-${theme.textMuted} text-sm`}>
             {activeChannel === 'notification'
               ? 'No notifications yet...'
@@ -285,7 +360,8 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     }
 
     return (
-      <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-2 p-3" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-2 p-3 relative" style={{ WebkitOverflowScrolling: 'touch' }}>
+        {renderReconnectOverlay()}
         {channelMessages.map((msg, index) => (
           <div key={msg.id || index} className={`${
             msg.type === 'global_catch'
