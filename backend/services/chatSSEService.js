@@ -13,6 +13,11 @@ class ChatSSEService {
       guild: new Set(),
       notification: new Set()
     };
+
+    // Start heartbeat interval (send ping every 30 seconds to keep connections alive)
+    this.heartbeatInterval = setInterval(() => {
+      this.sendHeartbeat();
+    }, 30000); // 30 seconds
   }
 
   /**
@@ -76,6 +81,35 @@ class ChatSSEService {
    */
   getTotalClientCount() {
     return Object.values(this.channels).reduce((sum, clients) => sum + clients.size, 0);
+  }
+
+  /**
+   * Send heartbeat ping to all connected clients to keep connections alive
+   * Sends a comment (: ping) which browsers ignore but keeps the connection active
+   */
+  sendHeartbeat() {
+    const heartbeatMessage = ': ping\n\n';
+
+    Object.entries(this.channels).forEach(([channel, clients]) => {
+      clients.forEach(client => {
+        try {
+          client.write(heartbeatMessage);
+        } catch (error) {
+          console.error(`Error sending heartbeat to ${channel}:`, error);
+          clients.delete(client);
+        }
+      });
+    });
+  }
+
+  /**
+   * Cleanup method to clear heartbeat interval
+   * Call this when shutting down the service
+   */
+  cleanup() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+    }
   }
 }
 
