@@ -98,10 +98,12 @@ const FishingGame = ({ user, onLogout }) => {
   // Auto-Cast state
   const [isAutoCasting, setIsAutoCasting] = useState(false);
   const [autoCastCooldown, setAutoCastCooldown] = useState(0);
+  const [autoCastButtonCooldown, setAutoCastButtonCooldown] = useState(0); // Cooldown for toggling the button
   const [currentStamina, setCurrentStamina] = useState(0); // Local stamina counter for auto-cast (for display)
   const currentStaminaRef = React.useRef(0); // Ref for synchronous stamina tracking
   const autoCastInterval = React.useRef(null);
   const autoCastCooldownInterval = React.useRef(null);
+  const autoCastButtonCooldownInterval = React.useRef(null);
   const [selectedRarity, setSelectedRarity] = useState('all');
   const [inventorySortOrder, setInventorySortOrder] = useState('value-desc'); // Default sort by value descending
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -707,11 +709,34 @@ useEffect(() => {
 
   // Toggle Auto-Cast
   const toggleAutoCast = () => {
+    // Prevent rapid toggling (cooldown check)
+    if (autoCastButtonCooldown > 0) {
+      return;
+    }
+
     if (isAutoCasting) {
       stopAutoCast();
     } else {
       startAutoCast();
     }
+
+    // Set 2-second cooldown on the button
+    setAutoCastButtonCooldown(2);
+    if (autoCastButtonCooldownInterval.current) {
+      clearInterval(autoCastButtonCooldownInterval.current);
+    }
+    autoCastButtonCooldownInterval.current = setInterval(() => {
+      setAutoCastButtonCooldown(prev => {
+        if (prev <= 1) {
+          if (autoCastButtonCooldownInterval.current) {
+            clearInterval(autoCastButtonCooldownInterval.current);
+            autoCastButtonCooldownInterval.current = null;
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
   };
 
   // Cleanup auto-cast on unmount
@@ -719,6 +744,7 @@ useEffect(() => {
     return () => {
       if (autoCastInterval.current) clearInterval(autoCastInterval.current);
       if (autoCastCooldownInterval.current) clearInterval(autoCastCooldownInterval.current);
+      if (autoCastButtonCooldownInterval.current) clearInterval(autoCastButtonCooldownInterval.current);
     };
   }, []);
 
@@ -1284,6 +1310,7 @@ useEffect(() => {
             isAutoCasting={isAutoCasting}
             toggleAutoCast={toggleAutoCast}
             autoCastCooldown={autoCastCooldown}
+            autoCastButtonCooldown={autoCastButtonCooldown}
             currentStamina={currentStamina}
             currentWeather={currentWeather}
           />}
