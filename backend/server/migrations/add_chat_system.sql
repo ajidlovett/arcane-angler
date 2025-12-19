@@ -7,7 +7,7 @@
 -- Stores all chat messages with automatic 7-day expiration
 CREATE TABLE IF NOT EXISTS chat_messages (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
+  user_id INT DEFAULT NULL COMMENT 'NULL for system messages',
   profile_username VARCHAR(50) NOT NULL,
   equipped_title VARCHAR(255) DEFAULT NULL,
   channel ENUM('global', 'guild', 'notification') NOT NULL DEFAULT 'global',

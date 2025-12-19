@@ -539,7 +539,7 @@ CREATE TABLE IF NOT EXISTS anti_cheat_flags (
 -- Live chat with global, guild, and notification channels
 CREATE TABLE IF NOT EXISTS chat_messages (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
+    user_id INT DEFAULT NULL COMMENT 'NULL for system messages',
     profile_username VARCHAR(50) NOT NULL,
     equipped_title VARCHAR(255) DEFAULT NULL,
     channel ENUM('global', 'guild', 'notification') NOT NULL DEFAULT 'global',
