@@ -33,10 +33,23 @@ router.post('/send', authenticateToken, async (req, res) => {
     }
 
     // Get user's profile_username and equipped_title
-    const [userData] = await db.execute(
-      'SELECT profile_username, equipped_title FROM users WHERE id = ?',
-      [userId]
-    );
+    let userData;
+    try {
+      [userData] = await db.execute(
+        'SELECT profile_username, equipped_title FROM users WHERE id = ?',
+        [userId]
+      );
+    } catch (dbError) {
+      console.error('Database query error (possibly missing column):', dbError);
+
+      // If equipped_title column doesn't exist, provide helpful error
+      if (dbError.code === 'ER_BAD_FIELD_ERROR') {
+        return res.status(500).json({
+          error: 'Database schema error: equipped_title column is missing. Please run the profile features migration.'
+        });
+      }
+      throw dbError; // Re-throw other errors
+    }
 
     if (!userData || userData.length === 0) {
       return res.status(404).json({ error: 'User not found' });
