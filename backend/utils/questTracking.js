@@ -330,12 +330,13 @@ export async function trackQuestProgress(userId, action, data = {}) {
               }
             }
 
-            // Different bait types quest - track unique baits
+            // Different bait types quest - track unique baits (excluding Stale Bread Crust)
             if (quest.quest_template_id === 'equip_bait_type_01') {
               const usedBaits = metadata.used_baits || [];
               const baitName = data.bait;
 
-              if (baitName && !usedBaits.includes(baitName)) {
+              // Only track purchased baits (exclude Stale Bread Crust)
+              if (baitName && baitName !== 'Stale Bread Crust' && !usedBaits.includes(baitName)) {
                 // New bait type used
                 usedBaits.push(baitName);
                 metadata.used_baits = usedBaits;
