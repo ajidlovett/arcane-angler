@@ -68,8 +68,20 @@ window.StatsPage = ({ player, theme, getTotalStats, upgradeStat }) => {
                       max={player.statPoints}
                       value={upgradeAmounts[stat]}
                       onChange={(e) => {
-                        const value = Math.max(1, Math.min(player.statPoints, parseInt(e.target.value) || 1));
+                        const inputValue = e.target.value;
+                        // Allow empty input for editing
+                        if (inputValue === '') {
+                          setUpgradeAmounts(prev => ({ ...prev, [stat]: '' }));
+                          return;
+                        }
+                        const value = Math.max(1, Math.min(player.statPoints, parseInt(inputValue) || 1));
                         setUpgradeAmounts(prev => ({ ...prev, [stat]: value }));
+                      }}
+                      onBlur={(e) => {
+                        // On blur, ensure value is at least 1
+                        if (e.target.value === '' || parseInt(e.target.value) < 1) {
+                          setUpgradeAmounts(prev => ({ ...prev, [stat]: 1 }));
+                        }
                       }}
                       className="px-3 py-2 rounded bg-gray-800 text-white border border-gray-600 w-full sm:w-24 text-center"
                       placeholder="Amount"
