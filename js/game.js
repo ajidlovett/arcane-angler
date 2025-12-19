@@ -1287,7 +1287,7 @@ useEffect(() => {
           </div>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 p-4">
           {currentPage === 'fishing' && <FishingPage
             player={player}
             theme={theme}
@@ -1313,6 +1313,8 @@ useEffect(() => {
             autoCastButtonCooldown={autoCastButtonCooldown}
             currentStamina={currentStamina}
             currentWeather={currentWeather}
+            equipRod={equipRod}
+            equipBait={equipBait}
           />}
           {currentPage === 'equipment' && <EquipmentPage
             player={player}

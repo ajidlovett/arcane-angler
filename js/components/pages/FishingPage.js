@@ -1,6 +1,22 @@
 // FishingPage - Defined as window.FishingPage
-window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle, getGradientBackgroundStyle, isAutoCasting, toggleAutoCast, autoCastCooldown, autoCastButtonCooldown, currentStamina, currentWeather }) => {
+window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle, getGradientBackgroundStyle, isAutoCasting, toggleAutoCast, autoCastCooldown, autoCastButtonCooldown, currentStamina, currentWeather, equipRod, equipBait }) => {
   const [showWeatherTooltip, setShowWeatherTooltip] = React.useState(false);
+
+  // Get available rods and baits for current biome
+  const getAvailableRods = () => {
+    const filteredRods = window.getRodsForBiome(player.currentBiome);
+    return filteredRods.filter(rod => player.ownedRods.includes(rod.id));
+  };
+
+  const getAvailableBaits = () => {
+    const filteredBaits = window.getBaitsForBiome(player.currentBiome);
+    return filteredBaits.filter(bait => {
+      // Default bait is always available
+      if (bait.id === 'bait_default') return true;
+      // Other baits must have inventory
+      return (player.baitInventory[bait.id] || 0) > 0;
+    });
+  };
 
   // Weather display helper
   const getWeatherDisplay = () => {
@@ -158,59 +174,64 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
 
         <div className="grid grid-cols-2 gap-2 mb-4">
           <div className={`bg-${theme.surface} p-3 rounded`}>
-            <div className={`text-xs text-${theme.textDim} mb-1`}>🎣 Rod</div>
+            <div className={`text-xs text-${theme.textDim} mb-2`}>🎣 Rod</div>
+            <select
+              value={player.equippedRod}
+              onChange={(e) => equipRod(e.target.value)}
+              className={`w-full px-2 py-1.5 bg-${theme.secondary} border border-${theme.border} rounded text-sm text-white focus:outline-none focus:border-${theme.accent}`}
+            >
+              {getAvailableRods().map(rod => {
+                const rodLevel = player.rodLevels?.[rod.id] || 1;
+                return (
+                  <option key={rod.id} value={rod.id}>
+                    {rod.name}{rod.max_level > 0 ? ` (Lv ${rodLevel})` : ''}
+                  </option>
+                );
+              })}
+            </select>
             {(() => {
               const rod = player.equippedRod ? window.getRodById(player.equippedRod) : null;
               const rodLevel = player.rodLevels?.[player.equippedRod] || 1;
               const rodStats = rod && rodLevel ? window.GameHelpers.getRodStats(player.equippedRod, rodLevel, player.currentBiome) : null;
 
-              return (
-                <>
-                  <div className="text-sm font-bold">
-                    {rod ? rod.name : 'None'}
-                    {rod && rod.max_level > 0 && (
-                      <span className="text-xs text-blue-400 ml-1">(Lv {rodLevel})</span>
-                    )}
-                  </div>
-                  {rodStats && (
-                    <div className="text-xs text-green-400 mt-1">
-                      {rodStats.strength > 0 && `+${rodStats.strength} STR `}
-                      {rodStats.luck > 0 && `+${rodStats.luck} LUCK `}
-                      {rodStats.relicWeight > 0 && `+${rodStats.relicWeight} RELIC `}
-                      {rodStats.treasureWeight > 0 && `+${rodStats.treasureWeight} TREASURE `}
-                      {rodStats.xpBonus > 0 && `+${rodStats.xpBonus}% XP`}
-                    </div>
-                  )}
-                </>
+              return rodStats && (
+                <div className="text-xs text-green-400 mt-2">
+                  {rodStats.strength > 0 && `+${rodStats.strength} STR `}
+                  {rodStats.luck > 0 && `+${rodStats.luck} LUCK `}
+                  {rodStats.relicWeight > 0 && `+${rodStats.relicWeight} RELIC `}
+                  {rodStats.treasureWeight > 0 && `+${rodStats.treasureWeight} TREASURE `}
+                  {rodStats.xpBonus > 0 && `+${rodStats.xpBonus}% XP`}
+                </div>
               );
             })()}
           </div>
           <div className={`bg-${theme.surface} p-3 rounded`}>
-            <div className={`text-xs text-${theme.textDim} mb-1`}>🪱 Bait</div>
+            <div className={`text-xs text-${theme.textDim} mb-2`}>🪱 Bait</div>
+            <select
+              value={player.equippedBait}
+              onChange={(e) => equipBait(e.target.value)}
+              className={`w-full px-2 py-1.5 bg-${theme.secondary} border border-${theme.border} rounded text-sm text-white focus:outline-none focus:border-${theme.accent}`}
+            >
+              {getAvailableBaits().map(bait => {
+                const baitCount = player.baitInventory[bait.id] || 0;
+                const isDefaultBait = bait.id === 'bait_default';
+                return (
+                  <option key={bait.id} value={bait.id}>
+                    {bait.name}{!isDefaultBait ? ` (${baitCount})` : ''}
+                  </option>
+                );
+              })}
+            </select>
             {(() => {
               const bait = player.equippedBait ? window.getBaitById(player.equippedBait) : null;
-              const baitCount = player.baitInventory[player.equippedBait] || 0;
-              const isDefaultBait = player.equippedBait === 'bait_default';
 
-              return (
-                <>
-                  <div className="text-sm font-bold">{bait ? bait.name : 'None'}</div>
-                  {bait && !isDefaultBait && (
-                    <div className={`text-xs text-${theme.textMuted} mt-1`}>
-                      {baitCount} left
-                    </div>
+              return bait && (
+                <div className="text-xs text-green-400 mt-2">
+                  {bait.luck > 0 && `+${bait.luck} LUCK`}
+                  {bait.rarity_limit && !bait.rarity_limit.includes('All') && (
+                    <div className="text-yellow-400">Limited rarities</div>
                   )}
-                  {bait && bait.luck > 0 && (
-                    <div className="text-xs text-green-400 mt-1">
-                      +{bait.luck} LUCK
-                    </div>
-                  )}
-                  {bait && bait.rarity_limit && !bait.rarity_limit.includes('All') && (
-                    <div className="text-xs text-yellow-400 mt-1">
-                      Limited rarities
-                    </div>
-                  )}
-                </>
+                </div>
               );
             })()}
           </div>
