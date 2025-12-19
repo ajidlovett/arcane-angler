@@ -250,58 +250,85 @@ React.useEffect(() => {
   return () => clearInterval(interval);
 }, []);
 
-// Poll for global rare catches every 10 seconds
-// Pause polling when a notification is active (for 30 seconds)
+// SSE connection for real-time global catch notifications
 React.useEffect(() => {
-  const pollGlobalCatches = async () => {
+  let eventSource = null;
+  let reconnectTimeout = null;
+
+  const connectSSE = () => {
     try {
-      const response = await window.ApiService.getGlobalCatches();
-      if (response.catches && response.catches.length > 0) {
-        const latestCatch = response.catches[0];
-        const catchTimestamp = new Date(latestCatch.caught_at).getTime();
+      // Connect to SSE endpoint
+      const baseURL = window.ApiService.baseURL || 'https://arcaneangler.com/api';
+      eventSource = new EventSource(`${baseURL}/game/global-catches/stream`);
 
-        // Check if we've already shown this notification
-        if (shownNotifications.current.has(catchTimestamp)) {
-          return; // Skip this catch, we've already shown it
-        }
+      eventSource.onmessage = (event) => {
+        try {
+          const catchData = JSON.parse(event.data);
+          const catchTimestamp = new Date(catchData.caught_at).getTime();
 
-        // Clean up old timestamps (older than 5 minutes) to prevent memory leaks
-        const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
-        shownNotifications.current.forEach(timestamp => {
-          if (timestamp < fiveMinutesAgo) {
-            shownNotifications.current.delete(timestamp);
+          // Check if we've already shown this notification
+          if (shownNotifications.current.has(catchTimestamp)) {
+            return;
           }
-        });
 
-        // This is a new catch we haven't shown yet
-        shownNotifications.current.add(catchTimestamp);
-        setGlobalNotification({
-          username: latestCatch.profile_username,
-          fishName: latestCatch.fish_name,
-          rarity: latestCatch.rarity,
-          messageIndex: Math.floor(Math.random() * 10),
-          timestamp: catchTimestamp
-        });
-      }
+          // Clean up old timestamps (older than 5 minutes) to prevent memory leaks
+          const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+          shownNotifications.current.forEach(timestamp => {
+            if (timestamp < fiveMinutesAgo) {
+              shownNotifications.current.delete(timestamp);
+            }
+          });
+
+          // This is a new catch we haven't shown yet
+          shownNotifications.current.add(catchTimestamp);
+
+          // Only show if no notification is currently active
+          if (!globalNotification) {
+            setGlobalNotification({
+              username: catchData.profile_username,
+              fishName: catchData.fish_name,
+              rarity: catchData.rarity,
+              messageIndex: Math.floor(Math.random() * 10),
+              timestamp: catchTimestamp
+            });
+          }
+        } catch (error) {
+          console.error('Error parsing SSE message:', error);
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error('SSE connection error:', error);
+        eventSource.close();
+
+        // Reconnect after 5 seconds
+        reconnectTimeout = setTimeout(connectSSE, 5000);
+      };
+
+      eventSource.onopen = () => {
+        console.log('SSE connection established');
+      };
     } catch (error) {
-      console.error('Failed to fetch global catches:', error);
+      console.error('Failed to connect to SSE:', error);
+
+      // Reconnect after 5 seconds
+      reconnectTimeout = setTimeout(connectSSE, 5000);
     }
   };
 
-  // If there's an active notification, wait 60 seconds before polling again
-  // The notification will be cleared by another useEffect after 60 seconds,
-  // which will trigger this effect to resume regular polling
-  if (globalNotification) {
-    const resumeTimeout = setTimeout(pollGlobalCatches, 60000);
-    return () => clearTimeout(resumeTimeout);
-  }
+  // Connect on mount
+  connectSSE();
 
-  // No active notification - poll immediately and continue every 15 seconds
-  pollGlobalCatches();
-  const interval = setInterval(pollGlobalCatches, 15000);
-
-  return () => clearInterval(interval);
-}, [globalNotification]);
+  // Cleanup on unmount
+  return () => {
+    if (eventSource) {
+      eventSource.close();
+    }
+    if (reconnectTimeout) {
+      clearTimeout(reconnectTimeout);
+    }
+  };
+}, []); // Only run once on mount
 
 const [currentTheme, setCurrentTheme] = useState(() => {
   const saved = localStorage.getItem('arcaneAnglerTheme');

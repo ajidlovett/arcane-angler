@@ -228,8 +228,8 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
 
           <button
             onClick={toggleAutoCast}
-            disabled={getTotalStats().stamina < 1}
-            className={`flex-[15] py-3 rounded-lg font-bold text-xl transition-all ${getTotalStats().stamina < 1 ? 'bg-gray-600 cursor-not-allowed text-gray-400' : isAutoCasting ? 'bg-red-600 hover:bg-red-500 text-white active:scale-95 shadow-lg' : 'bg-purple-600 hover:bg-purple-500 text-white active:scale-95 shadow-lg'}`}
+            disabled={getTotalStats().stamina < 1 || (cooldown > 0 && !isAutoCasting)}
+            className={`flex-[15] py-3 rounded-lg font-bold text-xl transition-all ${(getTotalStats().stamina < 1 || (cooldown > 0 && !isAutoCasting)) ? 'bg-gray-600 cursor-not-allowed text-gray-400' : isAutoCasting ? 'bg-red-600 hover:bg-red-500 text-white active:scale-95 shadow-lg' : 'bg-purple-600 hover:bg-purple-500 text-white active:scale-95 shadow-lg'}`}
             title={isAutoCasting ? 'Stop Auto-Cast' : 'Start Auto-Cast'}
           >
             {isAutoCasting ? '🛑' : '🤖'}
@@ -312,7 +312,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                       ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
                     </div>
                   )}
-                  {lastCatch.titanBonus && lastCatch.titanBonus > 1 && ['Legendary', 'Mythic', 'Exotic', 'Arcane'].includes(lastCatch.rarity) && (
+                  {lastCatch.titanBonus && lastCatch.titanBonus > 1 && ['Legendary', 'Mythic', 'Exotic', 'Arcane'].includes(lastCatch.rarity) && !lastCatch.isAutoCast && (
                     <div className="text-xs text-orange-400">
                       ⚡ Titan Bonus: {lastCatch.titanBonus.toFixed(2)}x Gold Value!
                     </div>
@@ -395,7 +395,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                     ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
                   </div>
                 )}
-                {lastCatch.titanBonus && (
+                {lastCatch.titanBonus && lastCatch.titanBonus > 1 && ['Legendary', 'Mythic', 'Exotic', 'Arcane'].includes(lastCatch.rarity) && !lastCatch.isAutoCast && (
                   <div className="text-xs text-orange-400">
                     ⚡ Titan Bonus: {lastCatch.titanBonus.toFixed(2)}x Gold Value!
                   </div>
@@ -416,16 +416,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
     <div className={`mt-4 bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
       <h3 className="font-bold mb-3 text-sm sm:text-base">Total Fishing Stats</h3>
       <div className={`text-xs sm:text-sm text-${theme.textMuted} space-y-1`}>
-        <div>Base Stats: STR {player.stats.strength} | INT {player.stats.intelligence} | LUCK {player.stats.luck} | STAM {player.stats.stamina}</div>
-        <div className="text-green-400">Total Stats (with equipment): STR {getTotalStats().strength} | INT {getTotalStats().intelligence} | LUCK {getTotalStats().luck} | STAM {getTotalStats().stamina}</div>
+        <div>Base Stats: STR {player.stats.strength.toLocaleString()} | INT {player.stats.intelligence.toLocaleString()} | LUCK {player.stats.luck.toLocaleString()} | STAM {player.stats.stamina.toLocaleString()}</div>
+        <div className="text-green-400">Total Stats (with equipment): STR {getTotalStats().strength.toLocaleString()} | INT {getTotalStats().intelligence.toLocaleString()} | LUCK {getTotalStats().luck.toLocaleString()} | STAM {getTotalStats().stamina.toLocaleString()}</div>
         {activeBoosters.some(b => b.effect_type === 'stat_bonus') && (
           <div className="text-purple-400">Total Stats (with boosters): STR {(() => {
             const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
-            return Math.floor(getTotalStats().strength * statBonus);
-          })()} | INT {getTotalStats().intelligence} | LUCK {(() => {
+            return Math.floor(getTotalStats().strength * statBonus).toLocaleString();
+          })()} | INT {getTotalStats().intelligence.toLocaleString()} | LUCK {(() => {
             const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
-            return Math.floor(getTotalStats().luck * statBonus);
-          })()} | STAM {getTotalStats().stamina}</div>
+            return Math.floor(getTotalStats().luck * statBonus).toLocaleString();
+          })()} | STAM {getTotalStats().stamina.toLocaleString()}</div>
         )}
 
         {/* Active Boosters Display */}
@@ -464,7 +464,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
               rawBonus = 5 + ((str - 1000) * 0.002);
             }
             const maxYield = 1 + Math.floor(rawBonus);
-            return `1-${maxYield} per catch`;
+            return `1-${maxYield.toLocaleString()} per catch`;
           })()}</div>
           <div>Boss fish value: {(() => {
             // Apply booster multiplier to strength
@@ -490,8 +490,8 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
             // Apply booster multiplier to luck
             const baseLuck = getTotalStats().luck;
             const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
-            return Math.floor(baseLuck * statBonus);
-          })()}</div>
+            return Math.floor(baseLuck * statBonus).toLocaleString();
+          })()} %</div>
         </div>
       </div>
     </div>
