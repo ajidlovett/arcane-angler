@@ -1205,6 +1205,8 @@ useEffect(() => {
             autoCastButtonCooldown={autoCastButtonCooldown}
             currentStamina={currentStamina}
             currentWeather={currentWeather}
+            equipRod={equipRod}
+            equipBait={equipBait}
           />}
           {currentPage === 'equipment' && <EquipmentPage
             player={player}
