@@ -58,10 +58,11 @@ router.post('/send', authenticateToken, async (req, res) => {
     const { profile_username, equipped_title } = userData[0];
 
     // Insert message into database
+    // Convert undefined to null for SQL compatibility
     const [result] = await db.execute(
       `INSERT INTO chat_messages (user_id, profile_username, equipped_title, channel, message_text)
        VALUES (?, ?, ?, ?, ?)`,
-      [userId, profile_username, equipped_title, channel, validation.cleaned]
+      [userId, profile_username, equipped_title || null, channel, validation.cleaned]
     );
 
     // Get the inserted message with timestamp
