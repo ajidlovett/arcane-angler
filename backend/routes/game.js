@@ -454,7 +454,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
           const notificationMessage = `🎣 ${userData[0].profile_username} caught a ${rarity} ${fish.name}!`;
           const [chatResult] = await connection.query(
             `INSERT INTO chat_messages (user_id, profile_username, equipped_title, channel, message_text)
-             VALUES (0, 'Global Catch', NULL, 'notification', ?)`,
+             VALUES (NULL, 'Global Catch', NULL, 'notification', ?)`,
             [notificationMessage]
           );
 

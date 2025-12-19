@@ -33,7 +33,7 @@ router.post('/send', authenticateToken, async (req, res) => {
     }
 
     // Get user's profile_username and equipped_title
-    const [userData] = await db.query(
+    const [userData] = await db.execute(
       'SELECT profile_username, equipped_title FROM users WHERE id = ?',
       [userId]
     );
@@ -45,14 +45,14 @@ router.post('/send', authenticateToken, async (req, res) => {
     const { profile_username, equipped_title } = userData[0];
 
     // Insert message into database
-    const [result] = await db.query(
+    const [result] = await db.execute(
       `INSERT INTO chat_messages (user_id, profile_username, equipped_title, channel, message_text)
        VALUES (?, ?, ?, ?, ?)`,
       [userId, profile_username, equipped_title, channel, validation.cleaned]
     );
 
     // Get the inserted message with timestamp
-    const [insertedMessage] = await db.query(
+    const [insertedMessage] = await db.execute(
       'SELECT * FROM chat_messages WHERE id = ?',
       [result.insertId]
     );
@@ -92,7 +92,7 @@ router.get('/history/:channel', authenticateToken, async (req, res) => {
     }
 
     // Get last 50 messages from this channel (most recent first, then reverse for chronological order)
-    const [messages] = await db.query(
+    const [messages] = await db.execute(
       `SELECT id, user_id, profile_username, equipped_title, channel, message_text, created_at
        FROM chat_messages
        WHERE channel = ?
@@ -149,15 +149,15 @@ router.post('/notification', async (req, res) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    // Insert as system message (user_id 0, profile_username 'System')
-    const [result] = await db.query(
+    // Insert as system message (user_id NULL, profile_username 'System')
+    const [result] = await db.execute(
       `INSERT INTO chat_messages (user_id, profile_username, equipped_title, channel, message_text)
-       VALUES (0, ?, NULL, 'notification', ?)`,
+       VALUES (NULL, ?, NULL, 'notification', ?)`,
       [type === 'global_catch' ? 'Global Catch' : 'System', message]
     );
 
     // Get the inserted message
-    const [insertedMessage] = await db.query(
+    const [insertedMessage] = await db.execute(
       'SELECT * FROM chat_messages WHERE id = ?',
       [result.insertId]
     );
