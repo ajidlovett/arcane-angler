@@ -26,6 +26,7 @@ import {
 } from '../utils/gameLogic.js';
 import { trackQuestProgress } from '../utils/questTracking.js';
 import { getBiomeWeather, getAllBiomeWeather, getWeatherXpBonus, applyWeatherToWeights } from '../utils/weatherService.js';
+import { checkForCheating, applyPunishment } from '../utils/antiCheat.js';
 
 const router = express.Router();
 
@@ -50,7 +51,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
     await connection.beginTransaction();
 
-    // Load player data
+    // Load player data (including anti-cheat tracking fields)
     const [playerData] = await connection.query(
       `SELECT pd.*, ps.strength, ps.intelligence, ps.luck, ps.stamina
        FROM player_data pd
@@ -65,6 +66,12 @@ router.post('/cast', authenticateToken, async (req, res) => {
     }
 
     const player = playerData[0];
+
+    // Anti-cheat check - detect autoclickers and multi-session abuse
+    const cheatCheck = await checkForCheating(userId, player, connection);
+
+    // If flagged for cheating, we'll override the result later
+    const isPunished = cheatCheck.isViolation;
 
     // Load active boosters
     const [activeBoosters] = await connection.query(
@@ -165,8 +172,53 @@ router.post('/cast', authenticateToken, async (req, res) => {
       treasureChest: null
     };
 
-    // Handle Relic drop (special case - gives 1-5 relics + XP, no fish)
-    if (rarity === 'Relic') {
+    // ANTI-CHEAT: If player is flagged, override result with punishment
+    if (isPunished) {
+      const punishedResult = applyPunishment(biomeData, cheatCheck.activeFlag);
+
+      // Override result with punishment
+      result.rarity = punishedResult.rarity;
+      result.fish = punishedResult.fish;
+      result.count = punishedResult.count;
+      result.xpGained = 0; // NO XP
+      result.goldGained = 0;
+      result.relicsGained = 0;
+      result.titanBonus = 1;
+      result.isPunished = true;
+      result.punishmentReason = punishedResult.punishmentReason;
+      result.punishmentExpiresAt = punishedResult.punishmentExpiresAt;
+
+      // Still add fish to inventory and update stats (but with 0 XP)
+      const fish = punishedResult.fish;
+
+      // Add to inventory
+      await connection.query(
+        `INSERT INTO player_inventory (user_id, fish_name, rarity, count, base_gold, titan_bonus)
+         VALUES (?, ?, ?, ?, ?, 1)
+         ON DUPLICATE KEY UPDATE
+           count = count + VALUES(count)`,
+        [userId, fish.name, 'Common', 1, 10]
+      );
+
+      // Add to locked_fish
+      await connection.query(
+        'INSERT IGNORE INTO locked_fish (user_id, fish_name) VALUES (?, ?)',
+        [userId, fish.name]
+      );
+
+      // Update player data (NO XP, but increment cast counter)
+      await connection.query(
+        `UPDATE player_data
+         SET total_fish_caught = total_fish_caught + 1,
+             total_casts = total_casts + 1,
+             commons_caught = commons_caught + 1
+         WHERE user_id = ?`,
+        [userId]
+      );
+
+      // Skip normal reward logic - jump to level check
+    } else if (rarity === 'Relic') {
+      // Normal Relic drop (special case - gives 1-5 relics + XP, no fish)
       const relicsDropped = Math.floor(Math.random() * 5) + 1; // 1-5 relics
 
       // Calculate XP with level scaling
@@ -548,7 +600,7 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
     await connection.beginTransaction();
 
-    // Load player data
+    // Load player data (including anti-cheat tracking fields)
     const [playerData] = await connection.query(
       `SELECT pd.*, ps.strength, ps.intelligence, ps.luck, ps.stamina
        FROM player_data pd
@@ -563,6 +615,12 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     }
 
     const player = playerData[0];
+
+    // Anti-cheat check - detect autoclickers and multi-session abuse
+    const cheatCheck = await checkForCheating(userId, player, connection);
+
+    // If flagged for cheating, we'll override the result later
+    const isPunished = cheatCheck.isViolation;
 
     // Note: Stamina is NOT consumed - it represents batch capacity for auto-cast
     // The frontend manages the local stamina counter for UX
@@ -653,41 +711,70 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
       weatherModifiedWeights
     );
 
-    // Select random fish
-    const fish = selectRandomFish(biomeData, rarity);
+    // ANTI-CHEAT: Override result if player is punished
+    let result;
+    let fish;
+    let count;
+    let xpGained;
 
-    if (!fish) {
-      await connection.rollback();
-      return res.status(500).json({ error: 'Failed to select fish' });
+    if (isPunished) {
+      // Apply punishment: 0 XP and 1 common fish
+      const punishedResult = applyPunishment(biomeData, cheatCheck.activeFlag);
+      fish = { name: punishedResult.fish.name, desc: punishedResult.fish.desc };
+      count = 1;
+      xpGained = 0; // NO XP
+
+      result = {
+        rarity: 'Common',
+        fish,
+        count,
+        xpGained: 0,
+        goldGained: 0,
+        titanBonus: 1,
+        xpBonus: 0,
+        weatherXpBonus: 0,
+        isAutoCast: true,
+        isPunished: true,
+        punishmentReason: punishedResult.punishmentReason,
+        punishmentExpiresAt: punishedResult.punishmentExpiresAt
+      };
+    } else {
+      // Normal auto-cast
+      fish = selectRandomFish(biomeData, rarity);
+
+      if (!fish) {
+        await connection.rollback();
+        return res.status(500).json({ error: 'Failed to select fish' });
+      }
+
+      // Auto-cast always yields 1 fish (ignores STR)
+      count = 1;
+
+      // Calculate XP (no critical catch for auto-cast)
+      const baseXP = fish.xp * count;
+      // Add level-based XP bonus: (Level - 1) * random(10-20)
+      const minBonus = (player.level - 1) * 10;
+      const maxBonus = (player.level - 1) * 20;
+      const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
+      // Apply weather XP bonus (additive with other bonuses)
+      const totalXpMultiplier = xpBonus + weatherXpBonus;
+      xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
+
+      result = {
+        rarity,
+        fish: {
+          name: fish.name,
+          desc: fish.desc || fish.description || ''
+        },
+        count,
+        xpGained,
+        goldGained: 0,
+        titanBonus: 1,
+        xpBonus,
+        weatherXpBonus,
+        isAutoCast: true
+      };
     }
-
-    // Auto-cast always yields 1 fish (ignores STR)
-    const count = 1;
-
-    // Calculate XP (no critical catch for auto-cast)
-    const baseXP = fish.xp * count;
-    // Add level-based XP bonus: (Level - 1) * random(10-20)
-    const minBonus = (player.level - 1) * 10;
-    const maxBonus = (player.level - 1) * 20;
-    const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
-    // Apply weather XP bonus (additive with other bonuses)
-    const totalXpMultiplier = xpBonus + weatherXpBonus;
-    const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
-
-    let result = {
-      rarity,
-      fish: {
-        name: fish.name,
-        desc: fish.desc || fish.description || ''
-      },
-      count,
-      xpGained,
-      goldGained: 0,
-      titanBonus: 1,
-      xpBonus,
-      weatherXpBonus,
-      isAutoCast: true
-    };
 
     // Add to inventory
     await connection.query(
@@ -2206,6 +2293,58 @@ router.get('/weather/:biomeId', async (req, res) => {
   } catch (error) {
     console.error('Get biome weather error:', error);
     res.status(500).json({ error: 'Failed to fetch biome weather' });
+  }
+});
+
+/**
+ * GET /api/game/anti-cheat-status
+ * Check if the current user has an active anti-cheat punishment
+ *
+ * Returns: {
+ *   isPunished: boolean,
+ *   reason: string|null,
+ *   expiresAt: string|null,
+ *   remainingTime: number|null (milliseconds)
+ * }
+ */
+router.get('/anti-cheat-status', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Check for active punishment
+    const [flags] = await db.query(
+      `SELECT * FROM anti_cheat_flags
+       WHERE user_id = ?
+         AND is_active = TRUE
+         AND expires_at > NOW()
+       ORDER BY expires_at DESC
+       LIMIT 1`,
+      [userId]
+    );
+
+    if (flags.length === 0) {
+      return res.json({
+        isPunished: false,
+        reason: null,
+        expiresAt: null,
+        remainingTime: null
+      });
+    }
+
+    const flag = flags[0];
+    const expiresAt = new Date(flag.expires_at);
+    const remainingTime = expiresAt.getTime() - Date.now();
+
+    res.json({
+      isPunished: true,
+      reason: flag.reason,
+      expiresAt: expiresAt.toISOString(),
+      remainingTime: Math.max(0, remainingTime),
+      castCount: flag.cast_count
+    });
+  } catch (error) {
+    console.error('Get anti-cheat status error:', error);
+    res.status(500).json({ error: 'Failed to fetch anti-cheat status' });
   }
 });
 

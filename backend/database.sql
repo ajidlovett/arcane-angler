@@ -40,11 +40,14 @@ CREATE TABLE IF NOT EXISTS player_data (
     unlocked_biomes JSON,
     achievements JSON,
     discovered_fish JSON,
+    last_cast_time BIGINT DEFAULT NULL COMMENT 'Timestamp (ms) of last cast for anti-cheat',
+    recent_cast_timings JSON DEFAULT NULL COMMENT 'Array of last 20 cast intervals for pattern detection',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_level (level),
     INDEX idx_gold (gold),
-    INDEX idx_relics (relics)
+    INDEX idx_relics (relics),
+    INDEX idx_last_cast_time (user_id, last_cast_time)
 );
 
 -- Player stats table
@@ -516,3 +519,18 @@ VALUES
   ('weekly', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 1 WEEK)),
   ('monthly', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 1 MONTH))
 ON DUPLICATE KEY UPDATE last_rotation_date = last_rotation_date;
+
+-- Anti-Cheat System Tables
+-- Tracks players flagged for autoclicker or multi-session abuse
+CREATE TABLE IF NOT EXISTS anti_cheat_flags (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    flagged_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NOT NULL,
+    reason VARCHAR(100) NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    cast_count INT DEFAULT 1 COMMENT 'Number of times flagged (auto-increments on re-flag)',
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_active (user_id, is_active, expires_at),
+    INDEX idx_expires_at (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
