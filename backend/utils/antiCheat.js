@@ -254,7 +254,20 @@ export async function checkForCheating(userId, playerData, connection) {
  */
 export function applyPunishment(biomeData, activeFlag) {
   // Select a random common fish from the biome
-  const commonFish = biomeData.Common;
+  // Handle both array format (Common: [...]) and object format (fish: { Common: [...] })
+  let commonFish = biomeData?.Common || biomeData?.fish?.Common;
+
+  // Fallback to a default common fish if structure is unexpected
+  if (!commonFish || !Array.isArray(commonFish) || commonFish.length === 0) {
+    console.error('[ANTI-CHEAT] Invalid biomeData structure:', biomeData);
+    commonFish = [{
+      name: 'Guppy',
+      desc: 'A tiny, common fish',
+      xp: 10,
+      gold: 5
+    }];
+  }
+
   const fish = commonFish[Math.floor(Math.random() * commonFish.length)];
 
   return {
