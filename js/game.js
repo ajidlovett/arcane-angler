@@ -1162,7 +1162,7 @@ useEffect(() => {
         onConfirm={modalState.onConfirm}
       />
       <SavingOverlay savingProgress={savingProgress} theme={theme} />
-      <div className={`min-h-screen bg-gradient-to-b from-${theme.primary.from} via-${theme.primary.via} to-${theme.primary.to} text-white flex`}>
+      <div className={`h-screen bg-gradient-to-b from-${theme.primary.from} via-${theme.primary.via} to-${theme.primary.to} text-white flex overflow-hidden`}>
         <Sidebar
           player={player}
           theme={theme}
