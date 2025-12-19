@@ -354,7 +354,7 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
   return (
     <>
       {/* Desktop - Right Sidebar docked to bottom */}
-      <div className={`hidden lg:flex w-80 bg-${theme.primarySolid} border-l-2 border-${theme.border} flex-col`} style={{ height: 'calc(100vh - 4rem)' }}>
+      <div className={`hidden lg:flex w-80 bg-${theme.primarySolid} border-l-2 border-${theme.border} flex-col h-full`}>
         <div className={`bg-${theme.secondary} p-3 border-b-2 border-${theme.border} flex-shrink-0`}>
           <h2 className="text-sm font-bold text-white">💬 Live Chat</h2>
         </div>
