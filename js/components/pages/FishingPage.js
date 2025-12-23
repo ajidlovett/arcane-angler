@@ -67,7 +67,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
 
   return (
   <div className="max-w-6xl mx-auto">
-    <div className="grid lg:grid-cols-2 gap-4">
+    <div className="grid lg:grid-cols-2 gap-2 lg:gap-4">
       {/* Left Column: Main Interaction */}
       <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
         <div className="flex items-center justify-between mb-3">
@@ -85,7 +85,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
 
         {/* Weather Indicator */}
         <div
-          className={`mb-4 p-3 rounded-lg border-2 cursor-pointer hover:opacity-90 transition-opacity relative ${weatherDisplay.xpBonus > 0 ? 'border-yellow-400 bg-yellow-900 bg-opacity-20' : `border-${theme.border} bg-${theme.surface}`}`}
+          className={`mb-2 lg:mb-4 p-2 lg:p-3 rounded-lg border-2 cursor-pointer hover:opacity-90 transition-opacity relative ${weatherDisplay.xpBonus > 0 ? 'border-yellow-400 bg-yellow-900 bg-opacity-20' : `border-${theme.border} bg-${theme.surface}`}`}
           onClick={() => setShowWeatherTooltip(!showWeatherTooltip)}
         >
           <div className="flex items-center justify-between">
@@ -176,7 +176,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-2 mb-4">
+        <div className="grid grid-cols-2 gap-2 mb-2 lg:mb-4">
           <div className={`bg-${theme.surface} p-3 rounded`}>
             <div className={`text-xs text-${theme.textDim} mb-2`}>🎣 Rod</div>
             <select
@@ -371,7 +371,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
 
     {/* Mobile: Catch Result Below */}
     {lastCatch && (
-      <div className="lg:hidden mt-4">
+      <div className="lg:hidden mt-2">
         <div
           className={`p-3 sm:p-4 rounded-lg border-4 shadow-xl ${(lastCatch.xpBonus > 1 || activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir')) ? '' : ''}`}
           style={{
@@ -458,7 +458,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
     )}
 
     {/* Fishing Stats - Full Width at Bottom */}
-    <div className={`mt-4 bg-${theme.secondary} bg-opacity-50 rounded-lg p-4 sm:p-6`}>
+    <div className={`mt-2 lg:mt-4 bg-${theme.secondary} bg-opacity-50 rounded-lg p-3 sm:p-6`}>
       <h3 className="font-bold mb-3 text-sm sm:text-base">Total Fishing Stats</h3>
       <div className={`text-xs sm:text-sm text-${theme.textMuted} space-y-1`}>
         <div>Base Stats: STR {player.stats.strength.toLocaleString()} | INT {player.stats.intelligence.toLocaleString()} | LUCK {player.stats.luck.toLocaleString()} | STAM {player.stats.stamina.toLocaleString()}</div>

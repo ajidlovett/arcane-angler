@@ -1,6 +1,6 @@
 // ProfilePage - Defined as window.ProfilePage
 
-window.ProfilePage = ({ user, player, setPlayer, theme, showAlert, getTotalStats }) => {
+window.ProfilePage = ({ user, player, setPlayer, theme, showAlert, getTotalStats, onTitleChange }) => {
   const { useState, useEffect } = React;
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -90,6 +90,11 @@ window.ProfilePage = ({ user, player, setPlayer, theme, showAlert, getTotalStats
           const data = await window.ApiService.getMyProfile();
           setProfileData(data.profile);
           setEquippedTitle(data.profile.equipped_title);
+
+          // Notify parent component to update the title in the top bar
+          if (onTitleChange) {
+            onTitleChange();
+          }
         } catch (loadErr) {
           console.error('Failed to reload profile:', loadErr);
         }
