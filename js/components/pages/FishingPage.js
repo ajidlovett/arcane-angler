@@ -85,19 +85,25 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
 
         {/* Weather Indicator */}
         <div
-          className={`mb-2 lg:mb-4 p-2 lg:p-3 rounded-lg border-2 cursor-pointer hover:opacity-90 transition-opacity relative ${weatherDisplay.xpBonus > 0 ? 'border-yellow-400 bg-yellow-900 bg-opacity-20' : `border-${theme.border} bg-${theme.surface}`}`}
+          className={`mb-2 lg:mb-4 p-2 lg:p-3 rounded-lg border-2 cursor-pointer hover:opacity-90 transition-opacity relative ${
+            weatherDisplay.xpBonus > 0
+              ? 'border-yellow-400 bg-yellow-900 bg-opacity-20'
+              : weatherDisplay.xpBonus < 0
+              ? 'border-red-400 bg-red-900 bg-opacity-20'
+              : `border-${theme.border} bg-${theme.surface}`
+          }`}
           onClick={() => setShowWeatherTooltip(!showWeatherTooltip)}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-2xl">{weatherDisplay.icon}</span>
               <div>
-                <div className={`text-sm font-bold ${weatherDisplay.xpBonus > 0 ? 'text-yellow-300' : ''}`}>
+                <div className={`text-sm font-bold ${weatherDisplay.xpBonus > 0 ? 'text-yellow-300' : weatherDisplay.xpBonus < 0 ? 'text-red-400' : ''}`}>
                   {weatherDisplay.name}
                 </div>
-                {weatherDisplay.xpBonus > 0 && (
-                  <div className="text-xs text-yellow-400 font-semibold">
-                    +{weatherDisplay.xpBonus}% XP Bonus
+                {weatherDisplay.xpBonus !== 0 && (
+                  <div className={`text-xs font-semibold ${weatherDisplay.xpBonus > 0 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    {weatherDisplay.xpBonus > 0 ? '+' : ''}{weatherDisplay.xpBonus}% XP
                   </div>
                 )}
               </div>
@@ -118,17 +124,23 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
         {/* Weather Tooltip Modal */}
         {showWeatherTooltip && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowWeatherTooltip(false)}>
-            <div className={`bg-${theme.secondary} p-6 rounded-lg max-w-md w-full mx-4 border-2 ${weatherDisplay.xpBonus > 0 ? 'border-yellow-400' : `border-${theme.border}`}`} onClick={(e) => e.stopPropagation()}>
+            <div className={`bg-${theme.secondary} p-6 rounded-lg max-w-md w-full mx-4 border-2 ${
+              weatherDisplay.xpBonus > 0
+                ? 'border-yellow-400'
+                : weatherDisplay.xpBonus < 0
+                ? 'border-red-400'
+                : `border-${theme.border}`
+            }`} onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <span className="text-4xl">{weatherDisplay.icon}</span>
                   <div>
-                    <h3 className={`text-xl font-bold ${weatherDisplay.xpBonus > 0 ? 'text-yellow-300' : ''}`}>
+                    <h3 className={`text-xl font-bold ${weatherDisplay.xpBonus > 0 ? 'text-yellow-300' : weatherDisplay.xpBonus < 0 ? 'text-red-400' : ''}`}>
                       {weatherDisplay.name}
                     </h3>
-                    {weatherDisplay.xpBonus > 0 && (
-                      <div className="text-sm text-yellow-400 font-semibold">
-                        +{weatherDisplay.xpBonus}% XP Bonus
+                    {weatherDisplay.xpBonus !== 0 && (
+                      <div className={`text-sm font-semibold ${weatherDisplay.xpBonus > 0 ? 'text-yellow-400' : 'text-red-400'}`}>
+                        {weatherDisplay.xpBonus > 0 ? '+' : ''}{weatherDisplay.xpBonus}% XP
                       </div>
                     )}
                   </div>

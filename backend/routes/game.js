@@ -1529,7 +1529,7 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
 
 /**
  * POST /api/game/reset-stats
- * Reset all stats to 1 and refund all spent stat points
+ * Reset all stats to 0 and refund all spent stat points
  * Cost: 100 relics
  */
 router.post('/reset-stats', authenticateToken, async (req, res) => {
@@ -1573,12 +1573,12 @@ router.post('/reset-stats', authenticateToken, async (req, res) => {
 
     const stats = currentStats[0];
 
-    // Calculate total spent stat points (each stat starts at 1)
-    const spentPoints = (stats.strength - 1) + (stats.intelligence - 1) + (stats.luck - 1) + (stats.stamina - 1);
+    // Calculate total spent stat points (each stat starts at 0)
+    const spentPoints = stats.strength + stats.intelligence + stats.luck + stats.stamina;
 
-    // Reset all stats to 1
+    // Reset all stats to 0
     await connection.query(
-      'UPDATE player_stats SET strength = 1, intelligence = 1, luck = 1, stamina = 1 WHERE user_id = ?',
+      'UPDATE player_stats SET strength = 0, intelligence = 0, luck = 0, stamina = 0 WHERE user_id = ?',
       [userId]
     );
 
@@ -1597,7 +1597,7 @@ router.post('/reset-stats', authenticateToken, async (req, res) => {
     await connection.commit();
     res.json({
       success: true,
-      stats: { strength: 1, intelligence: 1, luck: 1, stamina: 1 },
+      stats: { strength: 0, intelligence: 0, luck: 0, stamina: 0 },
       statPoints: updated[0].stat_points,
       relics: updated[0].relics,
       refundedPoints: spentPoints
