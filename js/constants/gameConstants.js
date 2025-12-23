@@ -1,7 +1,7 @@
 // Game Constants
 // Rarity definitions and color mappings for fish rarities
 
-window.RARITIES = ['Common', 'Uncommon', 'Fine', 'Rare', 'Relic', 'Epic', 'Legendary', 'Mythic', 'Exotic', 'Arcane'];
+window.RARITIES = ['Common', 'Uncommon', 'Fine', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Exotic', 'Arcane'];
 
 window.RARITY_COLORS = {
   'Common': '#9ca3af',

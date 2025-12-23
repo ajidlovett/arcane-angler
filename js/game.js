@@ -482,6 +482,16 @@ useEffect(() => {
               isTreasure: true,
               xpBonus: result.xpBonus
             });
+          } else if (result.rarity === 'Relic') {
+            setLastCatch({
+              fish: 'Relic',
+              rarity: 'Relic',
+              count: 1,
+              xp: result.xpGained,
+              relics: result.relicsGained,
+              gold: 0,
+              xpBonus: result.xpBonus
+            });
           } else {
             setLastCatch({
               fish: result.fish.name,
