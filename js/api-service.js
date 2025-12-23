@@ -356,13 +356,37 @@ class ApiService {
     }
 
     /**
+     * Start an autocast session
+     * @returns {Promise<Object>} { success: boolean, sessionId: string }
+     */
+    async startAutoCastSession() {
+        return await this.request('/game/auto-cast/start', {
+            method: 'POST'
+        });
+    }
+
+    /**
+     * Stop an autocast session
+     * @param {string} sessionId - Session ID
+     * @returns {Promise<Object>} { success: boolean }
+     */
+    async stopAutoCastSession(sessionId) {
+        return await this.request('/game/auto-cast/stop', {
+            method: 'POST',
+            body: JSON.stringify({ sessionId })
+        });
+    }
+
+    /**
      * Auto-cast fishing line (stamina-based)
      * Consumes 1 stamina per cast, fixed 12-second cooldown, yields 1 fish, caps at Epic rarity
+     * @param {string} sessionId - Session ID from startAutoCastSession
      * @returns {Promise<Object>} Auto-cast fishing result
      */
-    async autoCast() {
+    async autoCast(sessionId) {
         return await this.request('/game/auto-cast', {
-            method: 'POST'
+            method: 'POST',
+            body: JSON.stringify({ sessionId })
         });
     }
 

@@ -29,6 +29,7 @@ import { getBiomeWeather, getAllBiomeWeather, getWeatherXpBonus, applyWeatherToW
 import { checkForCheating, applyPunishment } from '../utils/antiCheat.js';
 import sseService from '../services/sseService.js';
 import chatSSEService from '../services/chatSSEService.js';
+import autoCastSessionService from '../services/autoCastSessionService.js';
 
 const router = express.Router();
 
@@ -643,6 +644,48 @@ router.post('/cast', authenticateToken, async (req, res) => {
 });
 
 /**
+ * POST /api/game/auto-cast/start
+ * Start an autocast session (prevent multi-instance abuse)
+ */
+router.post('/auto-cast/start', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const result = autoCastSessionService.startSession(userId);
+
+    if (!result.success) {
+      return res.status(409).json({ error: result.error });
+    }
+
+    res.json({ success: true, sessionId: result.sessionId });
+  } catch (error) {
+    console.error('Auto-cast start error:', error);
+    res.status(500).json({ error: 'Failed to start autocast session' });
+  }
+});
+
+/**
+ * POST /api/game/auto-cast/stop
+ * Stop an autocast session
+ */
+router.post('/auto-cast/stop', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { sessionId } = req.body;
+
+    if (!sessionId) {
+      return res.status(400).json({ error: 'Session ID required' });
+    }
+
+    const result = autoCastSessionService.endSession(userId, sessionId);
+
+    res.json({ success: result });
+  } catch (error) {
+    console.error('Auto-cast stop error:', error);
+    res.status(500).json({ error: 'Failed to stop autocast session' });
+  }
+});
+
+/**
  * POST /api/game/auto-cast
  * Automated fishing cast (stamina capacity-based)
  *
@@ -658,9 +701,22 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
 
   try {
     const userId = req.user.userId;
+    const { sessionId } = req.body;
+
+    // Validate autocast session (prevent multi-instance abuse)
+    if (!sessionId) {
+      connection.release();
+      return res.status(400).json({ error: 'Session ID required' });
+    }
+
+    if (!autoCastSessionService.validateSession(userId, sessionId)) {
+      connection.release();
+      return res.status(403).json({ error: 'Invalid or expired autocast session. Please restart autocast.' });
+    }
+
     await connection.beginTransaction();
 
-    // Load player data (no anti-cheat tracking needed for auto-cast)
+    // Load player data
     const [playerData] = await connection.query(
       `SELECT pd.*, ps.strength, ps.intelligence, ps.luck, ps.stamina
        FROM player_data pd

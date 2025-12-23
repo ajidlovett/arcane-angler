@@ -97,6 +97,7 @@ const FishingGame = ({ user, onLogout }) => {
   const autoCastInterval = React.useRef(null);
   const autoCastCooldownInterval = React.useRef(null);
   const autoCastButtonCooldownInterval = React.useRef(null);
+  const autoCastSessionIdRef = React.useRef(null);
   const [selectedRarity, setSelectedRarity] = useState('all');
   const [inventorySortOrder, setInventorySortOrder] = useState('value-desc');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -550,10 +551,16 @@ useEffect(() => {
       return;
     }
 
+    if (!autoCastSessionIdRef.current) {
+      stopAutoCast();
+      showAlert("Auto-Cast stopped: Invalid session!");
+      return;
+    }
+
     setFunnyLine(getFunnyLine());
 
     try {
-      const response = await window.ApiService.autoCast();
+      const response = await window.ApiService.autoCast(autoCastSessionIdRef.current);
 
       if (response.success) {
         const result = response.result;
@@ -606,7 +613,7 @@ useEffect(() => {
     }
   };
 
-  const startAutoCast = () => {
+  const startAutoCast = async () => {
     const maxStamina = getTotalStats().stamina;
 
     if (maxStamina < 1) {
@@ -614,11 +621,26 @@ useEffect(() => {
       return;
     }
 
-    currentStaminaRef.current = maxStamina;
-    setCurrentStamina(maxStamina);
-    setIsAutoCasting(true);
+    try {
+      // Start autocast session
+      const sessionResponse = await window.ApiService.startAutoCastSession();
 
-    performAutoCast();
+      if (!sessionResponse.success) {
+        showAlert(sessionResponse.error || "Failed to start auto-cast session. Another session may be active.");
+        return;
+      }
+
+      autoCastSessionIdRef.current = sessionResponse.sessionId;
+      currentStaminaRef.current = maxStamina;
+      setCurrentStamina(maxStamina);
+      setIsAutoCasting(true);
+
+      performAutoCast();
+    } catch (error) {
+      console.error('Failed to start auto-cast session:', error);
+      showAlert(error.message || "Failed to start auto-cast. Please try again.");
+      return;
+    }
 
     setAutoCastCooldown(12);
     autoCastCooldownInterval.current = setInterval(() => {
@@ -633,7 +655,7 @@ useEffect(() => {
     }, 12000);
   };
 
-  const stopAutoCast = () => {
+  const stopAutoCast = async () => {
     setIsAutoCasting(false);
     setAutoCastCooldown(0);
 
@@ -649,6 +671,16 @@ useEffect(() => {
     if (autoCastCooldownInterval.current) {
       clearInterval(autoCastCooldownInterval.current);
       autoCastCooldownInterval.current = null;
+    }
+
+    // End autocast session
+    if (autoCastSessionIdRef.current) {
+      try {
+        await window.ApiService.stopAutoCastSession(autoCastSessionIdRef.current);
+      } catch (error) {
+        console.error('Failed to stop auto-cast session:', error);
+      }
+      autoCastSessionIdRef.current = null;
     }
   };
 
@@ -688,6 +720,29 @@ useEffect(() => {
       if (autoCastButtonCooldownInterval.current) clearInterval(autoCastButtonCooldownInterval.current);
     };
   }, []);
+
+  // Handle page visibility changes for autocast background support
+  React.useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Tab is now hidden - autocast will continue in background (may be throttled by browser)
+        if (isAutoCasting) {
+          console.log('[AutoCast] Tab hidden - autocast continues in background (may be slower due to browser throttling)');
+        }
+      } else {
+        // Tab is now visible
+        if (isAutoCasting) {
+          console.log('[AutoCast] Tab visible - autocast running normally');
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isAutoCasting]);
 
   const toggleLock = async (fishName) => {
     const isCurrentlyLocked = player.lockedFish.includes(fishName);
