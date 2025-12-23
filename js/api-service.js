@@ -239,27 +239,49 @@ class ApiService {
         });
     }
 
+    // Avatar management
+    async getOwnedAvatars() {
+        return await this.request('/profile/avatars/owned', {
+            method: 'GET'
+        });
+    }
+
+    async selectAvatar(avatarId) {
+        return await this.request('/profile/avatars/select', {
+            method: 'POST',
+            body: JSON.stringify({ avatarId })
+        });
+    }
+
+    async unlockAvatar(avatarId, cost = 0) {
+        return await this.request('/profile/avatars/unlock', {
+            method: 'POST',
+            body: JSON.stringify({ avatarId, cost })
+        });
+    }
+
+    // Showcase management
     async getAchievementShowcase(userId) {
-        return await this.request(`/profile/${userId}/showcase`, {
+        return await this.request(`/profile/${userId}/showcase/achievements`, {
             method: 'GET'
         });
     }
 
     async updateAchievementShowcase(achievementIds) {
-        return await this.request('/profile/showcase', {
+        return await this.request('/profile/showcase/achievements', {
             method: 'POST',
             body: JSON.stringify({ achievementIds })
         });
     }
 
-    async getFavoriteFish(userId) {
-        return await this.request(`/profile/${userId}/favorite-fish`, {
+    async getFishShowcase(userId) {
+        return await this.request(`/profile/${userId}/showcase/fish`, {
             method: 'GET'
         });
     }
 
-    async updateFavoriteFish(fishList) {
-        return await this.request('/profile/favorite-fish', {
+    async updateFishShowcase(fishList) {
+        return await this.request('/profile/showcase/fish', {
             method: 'POST',
             body: JSON.stringify({ fishList })
         });
