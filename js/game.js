@@ -213,8 +213,8 @@ React.useEffect(() => {
   // Fetch weather immediately when biome changes
   fetchWeather();
 
-  // Set up periodic weather fetching (every 30 seconds)
-  const weatherInterval = setInterval(fetchWeather, 30000);
+  // Set up periodic weather fetching (every 1 minute)
+  const weatherInterval = setInterval(fetchWeather, 60000);
 
   return () => clearInterval(weatherInterval);
 }, [player.currentBiome]);

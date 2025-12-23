@@ -349,7 +349,12 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   )}
                   {activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir') && (
                     <div className="text-xs text-purple-300 font-bold mt-1">
-                      💪 +20% STR & LUCK Boost Active!
+                      💪 +10% STR Boost Active!
+                    </div>
+                  )}
+                  {activeBoosters.some(b => b.booster_type === 'fortune_charm' || b.booster_type === 'fate_elixir') && (
+                    <div className="text-xs text-green-300 font-bold mt-1">
+                      🍀 +10% LUCK Boost Active!
                     </div>
                   )}
                 </div>
@@ -437,7 +442,12 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                 )}
                 {activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir') && (
                   <div className="text-xs text-purple-300 font-bold mt-1">
-                    💪 +20% STR & LUCK Boost Active!
+                    💪 +10% STR Boost Active!
+                  </div>
+                )}
+                {activeBoosters.some(b => b.booster_type === 'fortune_charm' || b.booster_type === 'fate_elixir') && (
+                  <div className="text-xs text-green-300 font-bold mt-1">
+                    🍀 +10% LUCK Boost Active!
                   </div>
                 )}
               </div>
@@ -453,13 +463,13 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
       <div className={`text-xs sm:text-sm text-${theme.textMuted} space-y-1`}>
         <div>Base Stats: STR {player.stats.strength.toLocaleString()} | INT {player.stats.intelligence.toLocaleString()} | LUCK {player.stats.luck.toLocaleString()} | STAM {player.stats.stamina.toLocaleString()}</div>
         <div className="text-green-400">Total Stats (with equipment): STR {getTotalStats().strength.toLocaleString()} | INT {getTotalStats().intelligence.toLocaleString()} | LUCK {getTotalStats().luck.toLocaleString()} | STAM {getTotalStats().stamina.toLocaleString()}</div>
-        {activeBoosters.some(b => b.effect_type === 'stat_bonus') && (
+        {activeBoosters.some(b => b.effect_type === 'stat_bonus' || b.effect_type === 'strength_bonus' || b.effect_type === 'luck_bonus') && (
           <div className="text-purple-400">Total Stats (with boosters): STR {(() => {
-            const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
-            return Math.floor(getTotalStats().strength * statBonus).toLocaleString();
+            const strengthBonus = activeBoosters.reduce((acc, b) => (b.effect_type === 'stat_bonus' || b.effect_type === 'strength_bonus') ? acc + (b.bonus_percentage / 100) : acc, 1.0);
+            return Math.floor(getTotalStats().strength * strengthBonus).toLocaleString();
           })()} | INT {getTotalStats().intelligence.toLocaleString()} | LUCK {(() => {
-            const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
-            return Math.floor(getTotalStats().luck * statBonus).toLocaleString();
+            const luckBonus = activeBoosters.reduce((acc, b) => (b.effect_type === 'stat_bonus' || b.effect_type === 'luck_bonus') ? acc + (b.bonus_percentage / 100) : acc, 1.0);
+            return Math.floor(getTotalStats().luck * luckBonus).toLocaleString();
           })()} | STAM {getTotalStats().stamina.toLocaleString()}</div>
         )}
 
@@ -472,7 +482,9 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                 'knowledge_scroll': { name: 'Knowledge Scroll', icon: '📜' },
                 'ancient_tome': { name: 'Ancient Tome', icon: '📚' },
                 'giants_potion': { name: "Giant's Potion", icon: '🧪' },
-                'titans_elixir': { name: "Titan's Elixir", icon: '⚗️' }
+                'titans_elixir': { name: "Titan's Elixir", icon: '⚗️' },
+                'fortune_charm': { name: "Fortune Charm", icon: '🍀' },
+                'fate_elixir': { name: "Fate Elixir", icon: '🔮' }
               };
               const boosterInfo = boosterNames[booster.booster_type] || { name: booster.booster_type, icon: '✨' };
 
@@ -489,8 +501,8 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
           <div>Normal fish: {(() => {
             // Apply booster multiplier to strength
             const baseStr = getTotalStats().strength;
-            const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
-            const str = Math.floor(baseStr * statBonus);
+            const strengthBonus = activeBoosters.reduce((acc, b) => (b.effect_type === 'stat_bonus' || b.effect_type === 'strength_bonus') ? acc + (b.bonus_percentage / 100) : acc, 1.0);
+            const str = Math.floor(baseStr * strengthBonus);
 
             let rawBonus = 0;
             if (str <= 1000) {
@@ -504,9 +516,9 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
           <div>Boss fish value: {(() => {
             // Apply booster multiplier to strength
             const baseStr = getTotalStats().strength;
-            const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
-            const str = Math.floor(baseStr * statBonus);
-            return (1 + (str * 0.002)).toFixed(2);
+            const strengthBonus = activeBoosters.reduce((acc, b) => (b.effect_type === 'stat_bonus' || b.effect_type === 'strength_bonus') ? acc + (b.bonus_percentage / 100) : acc, 1.0);
+            const str = Math.floor(baseStr * strengthBonus);
+            return (1 + (str * 0.0005)).toFixed(2);
           })()}x multiplier</div>
           <div>Extra booster duration: +{(() => {
             const int = getTotalStats().intelligence;
@@ -524,8 +536,8 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
           <div>Rarity Increase: +{(() => {
             // Apply booster multiplier to luck
             const baseLuck = getTotalStats().luck;
-            const statBonus = activeBoosters.reduce((acc, b) => b.effect_type === 'stat_bonus' ? acc + (b.bonus_percentage / 100) : acc, 1.0);
-            return Math.floor(baseLuck * statBonus).toLocaleString();
+            const luckBonus = activeBoosters.reduce((acc, b) => (b.effect_type === 'stat_bonus' || b.effect_type === 'luck_bonus') ? acc + (b.bonus_percentage / 100) : acc, 1.0);
+            return Math.floor(baseLuck * luckBonus).toLocaleString();
           })()} %</div>
         </div>
       </div>

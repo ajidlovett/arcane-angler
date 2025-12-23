@@ -192,9 +192,10 @@ window.GameHelpers = {
   // Calculate titan bonus for Boss fish (Legendary, Mythic, Exotic, Arcane)
   // Boss fish get a massive gold multiplier based on strength instead of quantity
   calculateTitanBonus: (totalStrength) => {
-    // Formula: 1 + (TotalSTR * 0.02)
-    // Example: 200 STR = 5x multiplier (1 + 4)
-    return 1 + (totalStrength * 0.02);
+    // Formula: 1 + (TotalSTR * 0.0005)
+    // 0.05% increase per STR point
+    // Example: 2000 STR = 2x multiplier (1 + 1)
+    return 1 + (totalStrength * 0.0005);
   },
 
   // Generate treasure chest rewards

@@ -84,20 +84,23 @@ router.post('/cast', authenticateToken, async (req, res) => {
 
     // Calculate booster bonuses
     let xpBonusFromBoosters = 0; // Additive bonus (0 = no bonus, will be added to 1 in formula)
-    let statBonus = 1.0; // Multiplier for strength/luck
+    let strengthBonus = 1.0; // Multiplier for strength
+    let luckBonus = 1.0; // Multiplier for luck
     for (const booster of activeBoosters) {
       if (booster.effect_type === 'xp_bonus') {
         xpBonusFromBoosters += booster.bonus_percentage / 100;
-      } else if (booster.effect_type === 'stat_bonus') {
-        statBonus += booster.bonus_percentage / 100;
+      } else if (booster.effect_type === 'stat_bonus' || booster.effect_type === 'strength_bonus') {
+        strengthBonus += booster.bonus_percentage / 100;
+      } else if (booster.effect_type === 'luck_bonus') {
+        luckBonus += booster.bonus_percentage / 100;
       }
     }
 
-    // Apply stat bonus to base stats
+    // Apply stat bonuses to base stats
     const baseStats = {
-      strength: Math.floor(player.strength * statBonus),
+      strength: Math.floor(player.strength * strengthBonus),
       intelligence: player.intelligence, // Intelligence not affected by stat boosters
-      luck: Math.floor(player.luck * statBonus),
+      luck: Math.floor(player.luck * luckBonus),
       stamina: player.stamina // Stamina not affected by stat boosters
     };
 
@@ -342,8 +345,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
          VALUES (?, ?, ?, ?, ?, ?)
          ON DUPLICATE KEY UPDATE
            count = count + VALUES(count),
-           base_gold = VALUES(base_gold),
-           titan_bonus = VALUES(titan_bonus)`,
+           base_gold = VALUES(base_gold)`,
         [userId, fish.name, rarity, count, fish.gold, titanBonus]
       );
 
@@ -690,20 +692,23 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
 
     // Calculate booster bonuses
     let xpBonusFromBoosters = 0; // Additive bonus (0 = no bonus, will be added to 1 in formula)
-    let statBonus = 1.0; // Multiplier for strength/luck
+    let strengthBonus = 1.0; // Multiplier for strength
+    let luckBonus = 1.0; // Multiplier for luck
     for (const booster of activeBoosters) {
       if (booster.effect_type === 'xp_bonus') {
         xpBonusFromBoosters += booster.bonus_percentage / 100;
-      } else if (booster.effect_type === 'stat_bonus') {
-        statBonus += booster.bonus_percentage / 100;
+      } else if (booster.effect_type === 'stat_bonus' || booster.effect_type === 'strength_bonus') {
+        strengthBonus += booster.bonus_percentage / 100;
+      } else if (booster.effect_type === 'luck_bonus') {
+        luckBonus += booster.bonus_percentage / 100;
       }
     }
 
-    // Apply stat bonus to base stats
+    // Apply stat bonuses to base stats
     const baseStats = {
-      strength: Math.floor(player.strength * statBonus),
+      strength: Math.floor(player.strength * strengthBonus),
       intelligence: player.intelligence,
-      luck: Math.floor(player.luck * statBonus),
+      luck: Math.floor(player.luck * luckBonus),
       stamina: player.stamina
     };
 
@@ -1623,8 +1628,10 @@ router.post('/buy-booster', authenticateToken, async (req, res) => {
     const boosters = {
       'knowledge_scroll': { cost: 10, duration: 30, effect: 'xp_bonus', bonus: 20 },
       'ancient_tome': { cost: 20, duration: 60, effect: 'xp_bonus', bonus: 20 },
-      'giants_potion': { cost: 10, duration: 30, effect: 'stat_bonus', bonus: 20 },
-      'titans_elixir': { cost: 20, duration: 60, effect: 'stat_bonus', bonus: 20 }
+      'giants_potion': { cost: 25, duration: 30, effect: 'strength_bonus', bonus: 10 },
+      'titans_elixir': { cost: 50, duration: 60, effect: 'strength_bonus', bonus: 10 },
+      'fortune_charm': { cost: 25, duration: 30, effect: 'luck_bonus', bonus: 10 },
+      'fate_elixir': { cost: 50, duration: 60, effect: 'luck_bonus', bonus: 10 }
     };
 
     if (!boosters[boosterType]) {
@@ -1637,7 +1644,8 @@ router.post('/buy-booster', authenticateToken, async (req, res) => {
 
     // Category-based stacking check: boosters of the same category cannot stack
     // XP Category: knowledge_scroll, ancient_tome (xp_bonus)
-    // Stats Category: giants_potion, titans_elixir (stat_bonus)
+    // STR Category: giants_potion, titans_elixir (strength_bonus)
+    // LUCK Category: fortune_charm, fate_elixir (luck_bonus)
     const [activeBoosters] = await connection.query(
       `SELECT booster_type, effect_type FROM player_boosters
        WHERE user_id = ? AND expires_at > NOW()`,
@@ -1648,7 +1656,9 @@ router.post('/buy-booster', authenticateToken, async (req, res) => {
     for (const activeBooster of activeBoosters) {
       if (activeBooster.effect_type === booster.effect) {
         await connection.rollback();
-        const categoryName = booster.effect === 'xp_bonus' ? 'XP Booster' : 'Stats Booster';
+        const categoryName = booster.effect === 'xp_bonus' ? 'XP Booster' :
+                            booster.effect === 'strength_bonus' ? 'Strength Booster' :
+                            'Luck Booster';
         return res.status(400).json({ error: `${categoryName} already active` });
       }
     }

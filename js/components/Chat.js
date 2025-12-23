@@ -287,6 +287,11 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     return displayName;
   };
 
+  // Handle refresh button click
+  const handleRefresh = () => {
+    loadChatHistory(activeChannel);
+  };
+
   // Render channel tabs
   const renderChannelTabs = () => (
     <div className={`flex border-b-2 border-${theme.border}`}>
@@ -466,8 +471,15 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     <>
       {/* Desktop - Right Sidebar docked to bottom */}
       <div className={`hidden lg:flex w-80 bg-${theme.primarySolid} border-l-2 border-${theme.border} flex-col h-full`}>
-        <div className={`bg-${theme.secondary} p-3 border-b-2 border-${theme.border} flex-shrink-0`}>
+        <div className={`bg-${theme.secondary} p-3 border-b-2 border-${theme.border} flex-shrink-0 flex items-center justify-between`}>
           <h2 className="text-sm font-bold text-white">💬 Live Chat</h2>
+          <button
+            onClick={handleRefresh}
+            className={`px-2 py-1 bg-${theme.surface} hover:bg-${theme.hover} rounded text-xs font-bold transition-colors`}
+            title="Refresh chat"
+          >
+            🔄
+          </button>
         </div>
         <div className="flex-shrink-0">
           {renderChannelTabs()}
@@ -493,12 +505,21 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
           <div className={`relative ml-auto w-80 max-w-full bg-${theme.primarySolid} flex flex-col shadow-xl`} style={{ height: '60vh', marginTop: '40vh' }}>
             <div className={`bg-${theme.secondary} p-3 border-b-2 border-${theme.border} flex items-center justify-between flex-shrink-0`}>
               <h2 className="text-sm font-bold text-white">💬 Live Chat</h2>
-              <button
-                onClick={() => setChatOpen(false)}
-                className={`p-1 hover:bg-${theme.hover} rounded`}
-              >
-                <span className="text-xl">×</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleRefresh}
+                  className={`px-2 py-1 bg-${theme.surface} hover:bg-${theme.hover} rounded text-xs font-bold transition-colors`}
+                  title="Refresh chat"
+                >
+                  🔄
+                </button>
+                <button
+                  onClick={() => setChatOpen(false)}
+                  className={`p-1 hover:bg-${theme.hover} rounded`}
+                >
+                  <span className="text-xl">×</span>
+                </button>
+              </div>
             </div>
             <div className="flex-shrink-0">
               {renderChannelTabs()}
