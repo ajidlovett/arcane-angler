@@ -1,6 +1,6 @@
 // ProfileModal.js - Player Profile Viewing Component
 const { useState, useEffect } = React;
-const apiService = window.apiService;
+const apiService = window.ApiService;
 
 function ProfileModal({ userId, onClose, currentUserId, achievements }) {
     const [profileData, setProfileData] = useState(null);

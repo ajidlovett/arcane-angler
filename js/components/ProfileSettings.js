@@ -1,6 +1,6 @@
 // ProfileSettings.js - Player's Own Profile Management Component
 const { useState, useEffect } = React;
-const apiService = window.apiService;
+const apiService = window.ApiService;
 
 function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, onUpdate }) {
     const [activeTab, setActiveTab] = useState('avatar');
