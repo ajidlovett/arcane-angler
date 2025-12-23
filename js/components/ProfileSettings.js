@@ -10,9 +10,23 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
     const [selectedShowcaseFish, setSelectedShowcaseFish] = useState([]);
     const [loading, setLoading] = useState(false);
     const [saveMessage, setSaveMessage] = useState('');
+    const [unlockedAchievements, setUnlockedAchievements] = useState([]);
 
     const showcaseLimit = currentProfile?.achievement_showcase_limit || 6;
     const fishShowcaseLimit = currentProfile?.favorite_fish_limit || 3;
+
+    // Convert achievement IDs to full achievement objects
+    useEffect(() => {
+        if (achievements && window.ACHIEVEMENTS) {
+            // achievements is an array of IDs like ['fish_1', 'mythic_1']
+            // We need to look up the full achievement objects
+            const achievementIds = Array.isArray(achievements) ? achievements : [];
+            const fullAchievements = achievementIds
+                .map(id => window.ACHIEVEMENTS.find(ach => ach.id === id))
+                .filter(Boolean); // Remove any undefined values
+            setUnlockedAchievements(fullAchievements);
+        }
+    }, [achievements]);
 
     useEffect(() => {
         loadAvatars();
@@ -163,7 +177,7 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
 
                     {activeTab === 'achievements' && (
                         <AchievementShowcaseTab
-                            achievements={achievements}
+                            achievements={unlockedAchievements}
                             selectedAchievements={selectedShowcaseAchievements}
                             onToggleAchievement={toggleAchievement}
                             onSave={handleSaveAchievementShowcase}
@@ -285,9 +299,9 @@ function AchievementShowcaseTab({ achievements, selectedAchievements, onToggleAc
                                 <div className="text-3xl">{achievement.icon || '🏆'}</div>
                                 <div className="flex-1">
                                     <div className={`font-bold ${isSelected ? 'text-yellow-400' : 'text-white'}`}>
-                                        {achievement.name}
+                                        {achievement.name || achievement.title || 'Unknown Achievement'}
                                     </div>
-                                    <div className="text-gray-400 text-sm">{achievement.description}</div>
+                                    <div className="text-gray-400 text-sm">{achievement.desc || achievement.description || ''}</div>
                                 </div>
                                 {isSelected && (
                                     <div className="text-yellow-400 text-2xl">✓</div>
