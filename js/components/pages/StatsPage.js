@@ -1,5 +1,5 @@
 // StatsPage - Defined as window.StatsPage
-window.StatsPage = ({ player, theme, getTotalStats, upgradeStat }) => {
+window.StatsPage = ({ player, theme, getTotalStats, upgradeStat, showAlert, showConfirm, setPlayer }) => {
   const totalStats = getTotalStats();
 
   // State for bulk upgrade amounts
@@ -9,6 +9,38 @@ window.StatsPage = ({ player, theme, getTotalStats, upgradeStat }) => {
     luck: 1,
     stamina: 1
   });
+
+  // Stats Reset function
+  const handleStatsReset = async () => {
+    const RESET_COST = 100;
+
+    if (player.relics < RESET_COST) {
+      showAlert(`You need ${RESET_COST} relics to reset your stats. You currently have ${player.relics} relics.`);
+      return;
+    }
+
+    showConfirm(
+      `Are you sure you want to reset all your stats for ${RESET_COST} relics? This will refund all stat points you've spent.`,
+      async () => {
+        try {
+          const response = await window.ApiService.resetStats();
+          if (response.success) {
+            // Update player state with new data
+            setPlayer(prev => ({
+              ...prev,
+              stats: response.stats,
+              statPoints: response.statPoints,
+              relics: response.relics
+            }));
+            showAlert('Stats have been successfully reset! All stat points refunded.');
+          }
+        } catch (error) {
+          console.error('Stats reset failed:', error);
+          showAlert(error.message || 'Failed to reset stats. Please try again.');
+        }
+      }
+    );
+  };
 
   const statDescriptions = {
     strength: {
@@ -41,10 +73,23 @@ window.StatsPage = ({ player, theme, getTotalStats, upgradeStat }) => {
           Character Stats
         </h2>
 
-        {/* Display Stat Points */}
+        {/* Display Stat Points and Stats Reset */}
         <div className={`bg-${theme.surface} p-4 rounded-lg mb-6`}>
-          <div className="text-center text-base sm:text-lg">
-            ⭐ <span className="font-bold text-purple-400">{player.statPoints}</span> Stat Points Available
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-center sm:text-left text-base sm:text-lg">
+              ⭐ <span className="font-bold text-purple-400">{player.statPoints}</span> Stat Points Available
+            </div>
+            <button
+              onClick={handleStatsReset}
+              disabled={player.relics < 100}
+              className={`px-4 py-2 rounded font-bold text-sm ${
+                player.relics >= 100
+                  ? 'bg-red-600 hover:bg-red-500 text-white'
+                  : 'bg-gray-600 cursor-not-allowed text-gray-400'
+              }`}
+            >
+              🔄 Reset Stats (100 Relics)
+            </button>
           </div>
         </div>
 

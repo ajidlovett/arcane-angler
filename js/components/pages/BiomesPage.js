@@ -1,12 +1,61 @@
 // BiomesPage - Defined as window.BiomesPage
 window.BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getRarityColor }) => {
-  const { useState } = React;
+  const { useState, useEffect } = React;
   const [biomePage, setBiomePage] = useState(1);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [unlockedBiomeName, setUnlockedBiomeName] = useState('');
+  const [biomeWeather, setBiomeWeather] = useState({});
   const biomesPerPage = 5;
   const totalBiomes = Object.keys(window.BIOMES).length;
   const totalPages = Math.ceil(totalBiomes / biomesPerPage);
+
+  // Fetch all biome weather
+  useEffect(() => {
+    const fetchAllWeather = async () => {
+      try {
+        const response = await window.ApiService.getAllBiomeWeather();
+        setBiomeWeather(response.weather || {});
+      } catch (error) {
+        console.error('Failed to fetch biome weather:', error);
+      }
+    };
+
+    fetchAllWeather();
+    // Refresh weather every 30 seconds
+    const interval = setInterval(fetchAllWeather, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Weather icon helper
+  const getWeatherIcon = (weather) => {
+    const icons = {
+      'clear': '☀️',
+      'rain': '🌧️',
+      'windy': '💨',
+      'foggy': '🌫️',
+      'heatwave': '🔥',
+      'storm': '⛈️',
+      'blight': '☠️',
+      'gold_breeze': '💰',
+      'arcane_surge': '✨'
+    };
+    return icons[weather] || '☀️';
+  };
+
+  const getWeatherName = (weather) => {
+    const names = {
+      'clear': 'Clear',
+      'rain': 'Rain',
+      'windy': 'Windy',
+      'foggy': 'Foggy',
+      'heatwave': 'Heatwave',
+      'storm': 'Storm',
+      'blight': 'Blight',
+      'gold_breeze': 'Gold Breeze',
+      'arcane_surge': 'Arcane Surge'
+    };
+    return names[weather] || 'Clear';
+  };
 
   const isBiomeUnlocked = (biomeId) => {
     // Ensure unlockedBiomes is an array (null safety)
@@ -16,7 +65,9 @@ window.BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getR
 
   const canUnlockBiome = (biomeId) => {
     const biome = window.BIOMES[biomeId];
-    return player.level >= biome.unlockLevel && player.gold >= biome.unlockGold;
+    // Check if previous biome is unlocked (for biomeId > 1)
+    const isPreviousBiomeUnlocked = biomeId === 1 || isBiomeUnlocked(biomeId - 1);
+    return player.level >= biome.unlockLevel && player.gold >= biome.unlockGold && isPreviousBiomeUnlocked;
   };
 
   const visitOrUnlockBiome = async (biomeId) => {
@@ -53,6 +104,12 @@ window.BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getR
       const biome = window.BIOMES[biomeId];
       if (!biome) {
         showAlert('Biome not found');
+        return;
+      }
+
+      // Check if previous biome is unlocked (for sequential unlocking)
+      if (biomeId > 1 && !isBiomeUnlocked(biomeId - 1)) {
+        showAlert(`You must unlock Biome ${biomeId - 1} before unlocking ${biome.name}.`);
         return;
       }
 
@@ -170,6 +227,25 @@ window.BiomesPage = ({ player, setPlayer, theme, setCurrentPage, showAlert, getR
                 <p className={`text-xs sm:text-sm text-${theme.textMuted} italic mb-3`}>
                   {biome.description}
                 </p>
+
+                {/* Weather Indicator */}
+                {biomeWeather[biomeId] && (
+                  <div className={`mb-3 px-3 py-2 rounded border ${biomeWeather[biomeId].xpBonus > 0 ? 'border-yellow-400 bg-yellow-900 bg-opacity-20' : biomeWeather[biomeId].xpBonus < 0 ? 'border-red-400 bg-red-900 bg-opacity-20' : `border-${theme.border} bg-${theme.surface}`}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{getWeatherIcon(biomeWeather[biomeId].weather)}</span>
+                        <span className={`text-xs font-semibold ${biomeWeather[biomeId].xpBonus > 0 ? 'text-yellow-300' : biomeWeather[biomeId].xpBonus < 0 ? 'text-red-300' : ''}`}>
+                          {getWeatherName(biomeWeather[biomeId].weather)}
+                        </span>
+                      </div>
+                      {biomeWeather[biomeId].xpBonus !== 0 && (
+                        <span className={`text-xs font-bold ${biomeWeather[biomeId].xpBonus > 0 ? 'text-yellow-400' : 'text-red-400'}`}>
+                          {biomeWeather[biomeId].xpBonus > 0 ? '+' : ''}{biomeWeather[biomeId].xpBonus}% XP
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {biome.boatRequired && (
                   <div className={`text-xs text-${theme.textDim} mb-2`}>

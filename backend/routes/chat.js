@@ -100,7 +100,7 @@ router.get('/history/:channel', authenticateToken, async (req, res) => {
     const { channel } = req.params;
 
     // Validate channel
-    const validChannels = ['global', 'guild', 'notification'];
+    const validChannels = ['global', 'guild', 'notification', 'weather'];
     if (!validChannels.includes(channel)) {
       return res.status(400).json({ error: 'Invalid channel' });
     }

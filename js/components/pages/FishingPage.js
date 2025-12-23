@@ -27,6 +27,8 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
       'foggy': '🌫️',
       'heatwave': '🔥',
       'storm': '⛈️',
+      'blight': '☠️',
+      'gold_breeze': '💰',
       'arcane_surge': '✨'
     };
 
@@ -37,6 +39,8 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
       'foggy': 'Foggy',
       'heatwave': 'Heatwave',
       'storm': 'Stormy',
+      'blight': 'Blight',
+      'gold_breeze': 'Gold Breeze',
       'arcane_surge': 'Arcane Surge'
     };
 
@@ -302,9 +306,9 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                     <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
                   </div>
                   <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
-                  {lastCatch.xpBonus > 1 && (
+                  {lastCatch.xpBonus > 0 && (
                     <div className="text-xs text-yellow-300 font-bold">
-                      ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
+                      ✨ +{Math.round(lastCatch.xpBonus * 100)}% XP Boost Active!
                     </div>
                   )}
                 </div>
@@ -315,9 +319,9 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                     <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
                   </div>
                   <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
-                  {lastCatch.xpBonus > 1 && (
+                  {lastCatch.xpBonus > 0 && (
                     <div className="text-xs text-yellow-300 font-bold">
-                      ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
+                      ✨ +{Math.round(lastCatch.xpBonus * 100)}% XP Boost Active!
                     </div>
                   )}
                 </div>
@@ -328,9 +332,14 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                     <span className={`text-${theme.textDim}`}>|</span>
                     <span className="text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</span>
                   </div>
-                  {lastCatch.xpBonus > 1 && (
+                  {lastCatch.gold > 0 && (
+                    <div className="text-sm text-yellow-400 font-bold mb-1">
+                      💰 +{lastCatch.gold.toLocaleString()} Gold (Gold Breeze!)
+                    </div>
+                  )}
+                  {lastCatch.xpBonus > 0 && (
                     <div className="text-xs text-yellow-300 font-bold">
-                      ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
+                      ✨ +{Math.round(lastCatch.xpBonus * 100)}% XP Boost Active!
                     </div>
                   )}
                   {lastCatch.titanBonus && lastCatch.titanBonus > 1 && ['Legendary', 'Mythic', 'Exotic', 'Arcane'].includes(lastCatch.rarity) && !lastCatch.isAutoCast && (
@@ -411,6 +420,11 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   <span className={`text-${theme.textDim}`}>|</span>
                   <span className="text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</span>
                 </div>
+                {lastCatch.gold > 0 && (
+                  <div className="text-sm text-yellow-400 font-bold mb-1">
+                    💰 +{lastCatch.gold.toLocaleString()} Gold (Gold Breeze!)
+                  </div>
+                )}
                 {lastCatch.xpBonus > 1 && (
                   <div className="text-xs text-yellow-300 font-bold">
                     ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!

@@ -23,6 +23,8 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import chatSSEService from '../services/chatSSEService.js';
+import db from '../db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,18 +47,22 @@ try {
     foggy: { modifiers: {}, xpBonus: 12 },
     heatwave: { modifiers: {}, xpBonus: 15 },
     storm: { modifiers: {}, xpBonus: 25 },
+    blight: { modifiers: {}, xpBonus: -50 },
+    gold_breeze: { modifiers: {}, xpBonus: -25 },
     arcane_surge: { modifiers: {}, xpBonus: 50 }
   };
 }
 
 // Weather roll probabilities (sum to 100)
 const WEATHER_PROBABILITIES = {
-  clear: 40,
-  rain: 20,
-  windy: 15,
+  clear: 35,
+  rain: 18,
+  windy: 13,
   foggy: 10,
   heatwave: 8,
   storm: 6,
+  blight: 5,
+  gold_breeze: 4,
   arcane_surge: 1
 };
 
@@ -102,6 +108,76 @@ function initializeBiomeWeather(biomeId) {
 }
 
 /**
+ * Broadcast weather change to weather chat channel
+ * @param {number} biomeId - Biome ID
+ * @param {string} newWeather - New weather type
+ */
+async function broadcastWeatherChange(biomeId, newWeather) {
+  // Don't broadcast Clear weather
+  if (newWeather === 'clear') {
+    return;
+  }
+
+  try {
+    // Weather display names
+    const weatherNames = {
+      rain: 'Rain',
+      windy: 'Windy',
+      foggy: 'Foggy',
+      heatwave: 'Heatwave',
+      storm: 'Storm',
+      blight: 'Blight',
+      gold_breeze: 'Gold Breeze',
+      arcane_surge: 'Arcane Surge'
+    };
+
+    // Weather icons
+    const weatherIcons = {
+      rain: '🌧️',
+      windy: '💨',
+      foggy: '🌫️',
+      heatwave: '🔥',
+      storm: '⛈️',
+      blight: '☠️',
+      gold_breeze: '💰',
+      arcane_surge: '✨'
+    };
+
+    const weatherName = weatherNames[newWeather] || newWeather;
+    const weatherIcon = weatherIcons[newWeather] || '🌤️';
+    const message = `${weatherIcon} Biome ${biomeId} weather changed to ${weatherName}!`;
+
+    // Insert as system message
+    const [result] = await db.execute(
+      `INSERT INTO chat_messages (user_id, profile_username, equipped_title, channel, message_text)
+       VALUES (NULL, 'Weather System', NULL, 'weather', ?)`,
+      [message]
+    );
+
+    // Get the inserted message
+    const [insertedMessage] = await db.execute(
+      'SELECT * FROM chat_messages WHERE id = ?',
+      [result.insertId]
+    );
+
+    const messageData = {
+      id: insertedMessage[0].id,
+      user_id: insertedMessage[0].user_id,
+      profile_username: insertedMessage[0].profile_username,
+      equipped_title: insertedMessage[0].equipped_title,
+      channel: insertedMessage[0].channel,
+      message_text: insertedMessage[0].message_text,
+      created_at: insertedMessage[0].created_at
+    };
+
+    // Broadcast to weather channel
+    chatSSEService.broadcastMessage('weather', messageData);
+  } catch (error) {
+    console.error('[WeatherService] Failed to broadcast weather change:', error);
+  }
+}
+
+/**
  * Update weather for a specific biome if 2 hours have passed
  * @param {number} biomeId - Biome ID
  */
@@ -124,6 +200,9 @@ function updateBiomeWeatherIfNeeded(biomeId) {
       lastUpdate: Date.now()
     });
     console.log(`[WeatherService] Updated biome ${biomeId} weather: ${state.weather} -> ${newWeather}`);
+
+    // Broadcast weather change to chat (excluding Clear weather)
+    broadcastWeatherChange(biomeId, newWeather);
   }
 }
 
