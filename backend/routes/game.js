@@ -220,8 +220,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
 
       // Skip normal reward logic - jump to level check
     } else if (rarity === 'Relic') {
-      // Normal Relic drop (special case - gives 5-15 relics + XP, no fish)
-      const relicsDropped = Math.floor(Math.random() * 11) + 5; // 5-15 relics
+      // Normal Relic drop (special case - gives 3-10 relics + XP, no fish)
+      const relicsDropped = Math.floor(Math.random() * 8) + 3; // 3-10 relics
 
       // Calculate XP with level scaling
       const baseXP = 50; // Fixed base XP for relic drops
