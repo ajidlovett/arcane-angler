@@ -167,7 +167,7 @@ window.LeaderboardPage = React.memo(({ user, theme }) => {
 
       {/* Global Stats Summary */}
       {globalStats && (
-        <div className="flex flex-col md:grid md:grid-cols-4 gap-1 md:gap-4 mb-6">
+        <div className="flex flex-col md:grid md:grid-cols-4 gap-1 md:gap-4 mb-3">
           <div className={`bg-${theme.secondary} bg-opacity-50 rounded-lg px-4 py-2 md:p-4 flex md:flex-col items-center justify-between md:items-start`}>
             <div className={`text-xs md:text-sm text-${theme.textMuted}`}>Total Players</div>
             <div className="text-xs md:text-[1.05rem] font-bold text-white">{formatNumber(globalStats.total_players || 0)}</div>
@@ -198,7 +198,7 @@ window.LeaderboardPage = React.memo(({ user, theme }) => {
             <select
               value={selectedRegion}
               onChange={(e) => setSelectedRegion(e.target.value)}
-              className={`w-full px-4 py-3 bg-${theme.primarySolid} text-white rounded-lg border-2 border-${theme.border} focus:border-${theme.accent} focus:outline-none text-[1.05rem]`}
+              className={`w-full px-3 py-2 bg-${theme.primarySolid} text-white rounded-lg border-2 border-${theme.border} focus:border-${theme.accent} focus:outline-none text-sm`}
             >
               <option value="global">🌍 Global</option>
               {userNationality && (
@@ -215,7 +215,7 @@ window.LeaderboardPage = React.memo(({ user, theme }) => {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className={`w-full px-4 py-3 bg-${theme.primarySolid} text-white rounded-lg border-2 border-${theme.border} focus:border-${theme.accent} focus:outline-none text-[1.05rem]`}
+              className={`w-full px-3 py-2 bg-${theme.primarySolid} text-white rounded-lg border-2 border-${theme.border} focus:border-${theme.accent} focus:outline-none text-sm`}
             >
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>

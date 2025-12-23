@@ -181,6 +181,16 @@ router.post('/change-name', authenticateToken, async (req, res) => {
             );
         }
 
+        // Also update leaderboard_stats table to reflect the new profile_username
+        try {
+            await db.query(
+                'UPDATE leaderboard_stats SET profile_username = ? WHERE user_id = ?',
+                [validation.cleaned, userId]
+            );
+        } catch (dbError) {
+            console.warn('Could not update leaderboard_stats profile_username:', dbError.message);
+        }
+
         res.json({
             success: true,
             newProfileName: validation.cleaned,

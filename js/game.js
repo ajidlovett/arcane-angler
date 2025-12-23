@@ -361,19 +361,20 @@ const getDisplayTitle = () => {
   return achievement ? achievement.title : null;
 };
 
-useEffect(() => {
-  const loadEquippedTitle = async () => {
-    try {
-      const profile = await window.ApiService.getMyProfile();
-      if (profile && profile.profile && profile.profile.equipped_title) {
-        setEquippedTitle(profile.profile.equipped_title);
-      }
-    } catch (error) {
-      console.error('Failed to load equipped title:', error);
+const loadEquippedTitle = React.useCallback(async () => {
+  try {
+    const profile = await window.ApiService.getMyProfile();
+    if (profile && profile.profile) {
+      setEquippedTitle(profile.profile.equipped_title);
     }
-  };
-  loadEquippedTitle();
+  } catch (error) {
+    console.error('Failed to load equipped title:', error);
+  }
 }, []);
+
+useEffect(() => {
+  loadEquippedTitle();
+}, [loadEquippedTitle]);
 
 
   const rarities = window.RARITIES;
@@ -1113,19 +1114,19 @@ useEffect(() => {
             </button>
           </div>
 
-          <div className="space-y-1.5">
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-8 flex items-center justify-center`}>
+          <div className="space-y-1">
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-2 h-7 flex items-center justify-center`}>
               <div className={`text-xs font-bold text-${theme.textMuted}`}>
                 {user?.profile_username || user?.profileUsername || user?.username}
                 {getDisplayTitle() && <span> - {getDisplayTitle()}</span>}
               </div>
             </div>
 
-            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-3 h-8`}>
+            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-2 h-7`}>
               <div className="flex items-center gap-2">
                 <span className={`text-xs text-${theme.textMuted}`}>Level: {player.level}</span>
               </div>
-              <div className="flex-1 mx-3">
+              <div className="flex-1 mx-2">
                 <div className={`bg-${theme.surface} rounded-full h-1.5`}>
                   <div
                     className="bg-gradient-to-r from-green-400 to-green-500 h-1.5 rounded-full transition-all"
@@ -1136,38 +1137,43 @@ useEffect(() => {
               <span className={`text-xs text-${theme.textMuted}`}>{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
             </div>
 
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-8 flex items-center gap-2`}>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-2 h-7 flex items-center gap-1.5`}>
               <div className="flex items-center gap-1 flex-[7]">
                 <span>🪙</span>
                 <span className="text-[10px] font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
               </div>
               <div className={`h-4 w-px bg-${theme.borderLight}`}></div>
-              <div className="flex items-center gap-1 flex-[3]">
+              <div className="flex items-center gap-1 flex-[1.5]">
                 <span>🔮</span>
                 <span className="text-[10px] font-bold text-purple-400">{player.relics.toLocaleString()}</span>
               </div>
+              <div className={`h-4 w-px bg-${theme.borderLight}`}></div>
+              <div className="flex items-center gap-1 flex-[1.5]">
+                <span>⭐</span>
+                <span className="text-[10px] font-bold text-green-400">{player.statPoints.toLocaleString()}</span>
+              </div>
             </div>
 
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-8 flex items-center justify-center`}>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-2 h-7 flex items-center justify-center`}>
               <GlobalNotification theme={theme} globalNotification={globalNotification} idleNotificationIndex={idleNotificationIndex} />
             </div>
           </div>
         </div>
 
-        <div className={`hidden lg:block bg-${theme.primarySolid} border-b-2 border-${theme.border} p-3`}>
-          <div className="max-w-4xl mx-auto space-y-1.5">
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 h-8 flex items-center justify-center`}>
+        <div className={`hidden lg:block bg-${theme.primarySolid} border-b-2 border-${theme.border} p-2.5`}>
+          <div className="max-w-4xl mx-auto space-y-1">
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-7 flex items-center justify-center`}>
               <div className={`text-xs font-bold text-${theme.textMuted}`}>
                 {user?.profile_username || user?.profileUsername || user?.username}
                 {getDisplayTitle() && <span> - {getDisplayTitle()}</span>}
               </div>
             </div>
 
-            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-4 h-8`}>
+            <div className={`flex items-center justify-between bg-${theme.secondary} bg-opacity-50 rounded px-3 h-7`}>
               <div className="flex items-center gap-2">
                 <span className={`text-sm text-${theme.textMuted}`}>Level: {player.level}</span>
               </div>
-              <div className="flex-1 mx-4 max-w-md">
+              <div className="flex-1 mx-3 max-w-md">
                 <div className={`bg-${theme.surface} rounded-full h-2`}>
                   <div
                     className="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full transition-all"
@@ -1178,19 +1184,24 @@ useEffect(() => {
               <span className={`text-sm text-${theme.textMuted}`}>{Math.floor((player.xp / player.xpToNext) * 100)}%</span>
             </div>
 
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 h-8 flex items-center gap-3`}>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-7 flex items-center gap-2`}>
               <div className="flex items-center gap-2 flex-[7]">
                 <span>🪙</span>
                 <span className="text-sm font-bold text-yellow-400">{player.gold.toLocaleString()}</span>
               </div>
               <div className={`h-5 w-px bg-${theme.borderLight}`}></div>
-              <div className="flex items-center gap-2 flex-[3]">
+              <div className="flex items-center gap-2 flex-[1.5]">
                 <span>🔮</span>
                 <span className="text-sm font-bold text-purple-400">{player.relics.toLocaleString()}</span>
               </div>
+              <div className={`h-5 w-px bg-${theme.borderLight}`}></div>
+              <div className="flex items-center gap-2 flex-[1.5]">
+                <span>⭐</span>
+                <span className="text-sm font-bold text-green-400">{player.statPoints.toLocaleString()}</span>
+              </div>
             </div>
 
-            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-4 h-8 flex items-center justify-center`}>
+            <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-7 flex items-center justify-center`}>
               <GlobalNotification theme={theme} globalNotification={globalNotification} idleNotificationIndex={idleNotificationIndex} />
             </div>
           </div>
@@ -1296,6 +1307,7 @@ useEffect(() => {
             theme={theme}
             showAlert={showAlert}
             getTotalStats={getTotalStats}
+            onTitleChange={loadEquippedTitle}
           />}
           {currentPage === 'achievements' && <AchievementsPage
             player={player}
