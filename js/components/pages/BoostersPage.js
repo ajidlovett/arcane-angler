@@ -7,8 +7,10 @@ window.BoostersPage = ({ player, setPlayer, theme, showConfirm, showAlert }) => 
   const boosters = [
     { id: 'knowledge_scroll', name: 'Knowledge Scroll', cost: 10, duration: 30, icon: '📜', effect: '+20% XP', description: 'Gain 20% more XP from catches for 30 minutes' },
     { id: 'ancient_tome', name: 'Ancient Tome', cost: 20, duration: 60, icon: '📚', effect: '+20% XP', description: 'Gain 20% more XP from catches for 1 hour' },
-    { id: 'giants_potion', name: "Giant's Potion", cost: 10, duration: 30, icon: '🧪', effect: '+20% STR & LUCK', description: 'Increase Strength and Luck by 20% for 30 minutes' },
-    { id: 'titans_elixir', name: "Titan's Elixir", cost: 20, duration: 60, icon: '⚗️', effect: '+20% STR & LUCK', description: 'Increase Strength and Luck by 20% for 1 hour' }
+    { id: 'giants_potion', name: "Giant's Potion", cost: 25, duration: 30, icon: '🧪', effect: '+10% STR', description: 'Increase Strength by 10% for 30 minutes' },
+    { id: 'titans_elixir', name: "Titan's Elixir", cost: 50, duration: 60, icon: '⚗️', effect: '+10% STR', description: 'Increase Strength by 10% for 1 hour' },
+    { id: 'fortune_charm', name: "Fortune Charm", cost: 25, duration: 30, icon: '🍀', effect: '+10% LUCK', description: 'Increase Luck by 10% for 30 minutes' },
+    { id: 'fate_elixir', name: "Fate Elixir", cost: 50, duration: 60, icon: '🔮', effect: '+10% LUCK', description: 'Increase Luck by 10% for 1 hour' }
   ];
 
   // Fetch active boosters
@@ -169,9 +171,11 @@ window.BoostersPage = ({ player, setPlayer, theme, showConfirm, showAlert }) => 
           <ul className={`text-sm text-${theme.textMuted} space-y-1`}>
             <li>• Boosters stack with your equipment bonuses</li>
             <li>• XP Boosters help you level up faster and unlock biomes quicker</li>
-            <li>• STR & LUCK Boosters increase your catch rates and fish counts</li>
+            <li>• STR Boosters increase fish counts and Titan Value for boss fish</li>
+            <li>• LUCK Boosters increase your chances of catching rare fish</li>
             <li>• Boosters remain active even if you log out</li>
-            <li>• You can have multiple boosters active at once</li>
+            <li>• You can have multiple different category boosters active at once</li>
+            <li>• Only one booster per category (XP/STR/LUCK) can be active at a time</li>
           </ul>
         </div>
       </div>
