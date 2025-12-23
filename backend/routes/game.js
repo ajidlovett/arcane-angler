@@ -628,7 +628,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
  * - Stamina is BATCH CAPACITY, not consumed per cast
  * - Frontend manages local stamina counter (current/max)
  * - Fixed 12-second cooldown (handled client-side)
- * - Fixed 1 fish yield (ignores STR)
+ * - Yields 1 fish with 50% STR benefit
  * - Caps at Epic rarity (no Legendary/Chest/Arcane)
  */
 router.post('/auto-cast', authenticateToken, async (req, res) => {
@@ -638,7 +638,7 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
     await connection.beginTransaction();
 
-    // Load player data (including anti-cheat tracking fields)
+    // Load player data (no anti-cheat tracking needed for auto-cast)
     const [playerData] = await connection.query(
       `SELECT pd.*, ps.strength, ps.intelligence, ps.luck, ps.stamina
        FROM player_data pd
@@ -654,11 +654,9 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
 
     const player = playerData[0];
 
-    // Anti-cheat check - detect autoclickers and multi-session abuse
-    const cheatCheck = await checkForCheating(userId, player, connection);
-
-    // If flagged for cheating, we'll override the result later
-    const isPunished = cheatCheck.isViolation;
+    // Skip anti-cheat for auto-cast - it's a legitimate game feature with built-in timing (12s cooldown)
+    // Auto-cast is designed to be consistent, so it would trigger false positives
+    const isPunished = false;
 
     // Note: Stamina is NOT consumed - it represents batch capacity for auto-cast
     // The frontend manages the local stamina counter for UX
@@ -749,70 +747,41 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
       weatherModifiedWeights
     );
 
-    // ANTI-CHEAT: Override result if player is punished
-    let result;
-    let fish;
-    let count;
-    let xpGained;
+    // Select random fish
+    const fish = selectRandomFish(biomeData, rarity);
 
-    if (isPunished) {
-      // Apply punishment: 0 XP and 1 common fish
-      const punishedResult = applyPunishment(biomeData, cheatCheck.activeFlag);
-      fish = { name: punishedResult.fish.name, desc: punishedResult.fish.desc };
-      count = 1;
-      xpGained = 0; // NO XP
-
-      result = {
-        rarity: 'Common',
-        fish,
-        count,
-        xpGained: 0,
-        goldGained: 0,
-        titanBonus: 1,
-        xpBonus: 0,
-        weatherXpBonus: 0,
-        isAutoCast: true,
-        isPunished: true,
-        punishmentReason: punishedResult.punishmentReason,
-        punishmentExpiresAt: punishedResult.punishmentExpiresAt
-      };
-    } else {
-      // Normal auto-cast
-      fish = selectRandomFish(biomeData, rarity);
-
-      if (!fish) {
-        await connection.rollback();
-        return res.status(500).json({ error: 'Failed to select fish' });
-      }
-
-      // Auto-cast always yields 1 fish (ignores STR)
-      count = 1;
-
-      // Calculate XP (no critical catch for auto-cast)
-      const baseXP = fish.xp * count;
-      // Add level-based XP bonus: (Level - 1) * random(10-20)
-      const minBonus = (player.level - 1) * 10;
-      const maxBonus = (player.level - 1) * 20;
-      const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
-      // Apply weather XP bonus (additive with other bonuses)
-      const totalXpMultiplier = xpBonus + weatherXpBonus;
-      xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
-
-      result = {
-        rarity,
-        fish: {
-          name: fish.name,
-          desc: fish.desc || fish.description || ''
-        },
-        count,
-        xpGained,
-        goldGained: 0,
-        titanBonus: 1,
-        xpBonus,
-        weatherXpBonus,
-        isAutoCast: true
-      };
+    if (!fish) {
+      await connection.rollback();
+      return res.status(500).json({ error: 'Failed to select fish' });
     }
+
+    // Auto-cast yields fish count with 50% STR benefit
+    const count = calculateFishCount(rarity, totalStats.strength, true);
+
+    // Calculate XP (no critical catch for auto-cast)
+    const baseXP = fish.xp * count;
+    // Add level-based XP bonus: (Level - 1) * random(10-20)
+    const minBonus = (player.level - 1) * 10;
+    const maxBonus = (player.level - 1) * 20;
+    const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
+    // Apply weather XP bonus (additive with other bonuses)
+    const totalXpMultiplier = xpBonus + weatherXpBonus;
+    const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
+
+    const result = {
+      rarity,
+      fish: {
+        name: fish.name,
+        desc: fish.desc || fish.description || ''
+      },
+      count,
+      xpGained,
+      goldGained: 0,
+      titanBonus: 1,
+      xpBonus,
+      weatherXpBonus,
+      isAutoCast: true
+    };
 
     // Add to inventory
     await connection.query(

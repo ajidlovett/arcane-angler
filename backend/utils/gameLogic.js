@@ -247,20 +247,17 @@ function calculateRarity(totalLuck, isAutoCast = false, equippedBaitId = null, r
 /**
  * Calculate number of fish caught based on strength (REFACTORED)
  * Strength (STR) - "The Bulk Hauler"
- * Effect: Increases fish quantity per cast (ACTIVE Play only - Manual Casting)
+ * Effect: Increases fish quantity per cast
+ * - Manual casting: 100% STR benefit
+ * - Auto-casting: 50% STR benefit
  * Returns a RANGE: random between 1 and Max
  *
  * @param {string} rarity - Fish rarity tier
  * @param {number} totalStrength - Total strength (base + equipment)
- * @param {boolean} isAutoCast - Whether this is an auto-cast (auto-cast always yields 1)
+ * @param {boolean} isAutoCast - Whether this is an auto-cast (auto-cast gets 50% STR benefit)
  * @returns {number} Number of fish caught (random between 1 and max)
  */
 function calculateFishCount(rarity, totalStrength, isAutoCast = false) {
-  // Auto-Cast always yields 1 fish (ignores STR)
-  if (isAutoCast) {
-    return 1;
-  }
-
   // Boss fish (Legendary, Mythic, Exotic, Arcane) and Treasure Chest always = 1
   const bossFish = ['Legendary', 'Mythic', 'Exotic', 'Arcane', 'Treasure Chest'];
   if (bossFish.includes(rarity)) {
@@ -275,6 +272,11 @@ function calculateFishCount(rarity, totalStrength, isAutoCast = false) {
     rawBonus = totalStrength * 0.005;
   } else {
     rawBonus = 5 + ((totalStrength - 1000) * 0.002);
+  }
+
+  // Auto-cast gets 50% STR benefit
+  if (isAutoCast) {
+    rawBonus *= 0.5;
   }
 
   // Efficiency by rarity
