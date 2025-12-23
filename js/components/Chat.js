@@ -10,7 +10,8 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
   const [messages, setMessages] = useState({
     global: [],
     guild: [],
-    notification: []
+    notification: [],
+    weather: []
   });
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +20,8 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
   const [connectionStatus, setConnectionStatus] = useState({
     global: 'connected',
     guild: 'connected',
-    notification: 'connected'
+    notification: 'connected',
+    weather: 'connected'
   });
   const messagesEndRef = useRef(null);
   const previousChannelRef = useRef(activeChannel);
@@ -202,11 +204,13 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     // Load history for all channels
     loadChatHistory('global');
     loadChatHistory('notification');
+    loadChatHistory('weather');
     // Note: Guild is hidden for now, but we can load it when implemented
 
     // Connect SSE for all channels
     connectSSE('global');
     connectSSE('notification');
+    connectSSE('weather');
 
     // Cleanup on unmount
     return () => {
@@ -319,6 +323,16 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
       >
         🔔 Notifications
       </button>
+      <button
+        onClick={() => setActiveChannel('weather')}
+        className={`flex-1 py-2 px-3 text-xs font-bold transition-colors ${
+          activeChannel === 'weather'
+            ? `bg-${theme.secondary} text-white`
+            : `bg-${theme.surface} text-${theme.textMuted} hover:bg-${theme.hover}`
+        }`}
+      >
+        🌤️ Weather
+      </button>
     </div>
   );
 
@@ -413,10 +427,10 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
     );
   };
 
-  // Render input (not shown for notification channel)
+  // Render input (not shown for notification or weather channels)
   const renderInput = () => {
-    if (activeChannel === 'notification') {
-      return null; // No input for notification channel
+    if (activeChannel === 'notification' || activeChannel === 'weather') {
+      return null; // No input for notification or weather channels
     }
 
     return (

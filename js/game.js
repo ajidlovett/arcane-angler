@@ -209,7 +209,14 @@ React.useEffect(() => {
       console.error('Failed to fetch weather:', err);
     }
   };
+
+  // Fetch weather immediately when biome changes
   fetchWeather();
+
+  // Set up periodic weather fetching (every 30 seconds)
+  const weatherInterval = setInterval(fetchWeather, 30000);
+
+  return () => clearInterval(weatherInterval);
 }, [player.currentBiome]);
 
 React.useEffect(() => {
@@ -1262,6 +1269,9 @@ useEffect(() => {
             theme={theme}
             getTotalStats={getTotalStats}
             upgradeStat={upgradeStat}
+            showAlert={showAlert}
+            showConfirm={showConfirm}
+            setPlayer={setPlayer}
           />}
           {currentPage === 'boosters' && <BoostersPage
             player={player}

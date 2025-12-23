@@ -150,7 +150,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
     };
     const weatherModifiedWeights = applyWeatherToWeights(baseWeights, currentBiome);
 
-    // Get weather XP bonus
+    // Get current weather and XP bonus
+    const currentWeather = getBiomeWeather(currentBiome);
     const weatherXpBonus = getWeatherXpBonus(currentBiome) / 100; // Convert percentage to multiplier
 
     // Calculate rarity based on luck, equipped bait, rod weights, and weather
@@ -318,13 +319,19 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const totalXpMultiplier = xpBonus + weatherXpBonus;
       const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
 
+      // Calculate Gold Breeze bonus (100-250 gold per cast)
+      let goldBreezeBonus = 0;
+      if (currentWeather.weather === 'gold_breeze') {
+        goldBreezeBonus = Math.floor(Math.random() * 151) + 100; // 100-250 gold
+      }
+
       result.fish = {
         name: fish.name,
         desc: fish.desc || fish.description || ''
       };
       result.count = count;
       result.xpGained = xpGained;
-      result.goldGained = 0; // No gold from catching fish
+      result.goldGained = goldBreezeBonus;
       result.titanBonus = titanBonus;
       result.xpBonus = xpBonus;
       result.weatherXpBonus = weatherXpBonus;
@@ -370,15 +377,28 @@ router.post('/cast', authenticateToken, async (req, res) => {
         warningCount: fishpediaResult.warningCount
       });
 
-      // Update player data (NO GOLD - only XP and fish count!)
-      await connection.query(
-        `UPDATE player_data
-         SET xp = xp + ?,
-             total_fish_caught = total_fish_caught + ?,
-             total_casts = total_casts + 1
-         WHERE user_id = ?`,
-        [xpGained, count, userId]
-      );
+      // Update player data (XP, fish count, and gold if Gold Breeze)
+      if (goldBreezeBonus > 0) {
+        await connection.query(
+          `UPDATE player_data
+           SET xp = xp + ?,
+               gold = gold + ?,
+               total_fish_caught = total_fish_caught + ?,
+               total_gold_earned = total_gold_earned + ?,
+               total_casts = total_casts + 1
+           WHERE user_id = ?`,
+          [xpGained, goldBreezeBonus, count, goldBreezeBonus, userId]
+        );
+      } else {
+        await connection.query(
+          `UPDATE player_data
+           SET xp = xp + ?,
+               total_fish_caught = total_fish_caught + ?,
+               total_casts = total_casts + 1
+           WHERE user_id = ?`,
+          [xpGained, count, userId]
+        );
+      }
 
       // Update rarity-specific counters
       if (rarity === 'Common') {
@@ -734,7 +754,8 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     };
     const weatherModifiedWeights = applyWeatherToWeights(baseWeights, currentBiome);
 
-    // Get weather XP bonus
+    // Get current weather and XP bonus
+    const currentWeather = getBiomeWeather(currentBiome);
     const weatherXpBonus = getWeatherXpBonus(currentBiome) / 100; // Convert percentage to multiplier
 
     // Calculate rarity with auto-cast flag (caps at Epic) and weather effects
@@ -1502,6 +1523,90 @@ router.post('/upgrade-stat', authenticateToken, async (req, res) => {
 });
 
 /**
+ * POST /api/game/reset-stats
+ * Reset all stats to 1 and refund all spent stat points
+ * Cost: 100 relics
+ */
+router.post('/reset-stats', authenticateToken, async (req, res) => {
+  const connection = await db.getConnection();
+
+  try {
+    const userId = req.user.userId;
+    const RESET_COST = 100;
+
+    await connection.beginTransaction();
+
+    // Get current stats and player data
+    const [playerData] = await connection.query(
+      'SELECT stat_points, relics FROM player_data WHERE user_id = ?',
+      [userId]
+    );
+
+    if (!playerData || playerData.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Player data not found' });
+    }
+
+    const player = playerData[0];
+
+    // Check if player has enough relics
+    if (player.relics < RESET_COST) {
+      await connection.rollback();
+      return res.status(400).json({ error: `You need ${RESET_COST} relics to reset stats` });
+    }
+
+    // Get current stats
+    const [currentStats] = await connection.query(
+      'SELECT strength, intelligence, luck, stamina FROM player_stats WHERE user_id = ?',
+      [userId]
+    );
+
+    if (!currentStats || currentStats.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Player stats not found' });
+    }
+
+    const stats = currentStats[0];
+
+    // Calculate total spent stat points (each stat starts at 1)
+    const spentPoints = (stats.strength - 1) + (stats.intelligence - 1) + (stats.luck - 1) + (stats.stamina - 1);
+
+    // Reset all stats to 1
+    await connection.query(
+      'UPDATE player_stats SET strength = 1, intelligence = 1, luck = 1, stamina = 1 WHERE user_id = ?',
+      [userId]
+    );
+
+    // Refund stat points and deduct relics
+    await connection.query(
+      'UPDATE player_data SET stat_points = stat_points + ?, relics = relics - ? WHERE user_id = ?',
+      [spentPoints, RESET_COST, userId]
+    );
+
+    // Get updated values
+    const [updated] = await connection.query(
+      'SELECT stat_points, relics FROM player_data WHERE user_id = ?',
+      [userId]
+    );
+
+    await connection.commit();
+    res.json({
+      success: true,
+      stats: { strength: 1, intelligence: 1, luck: 1, stamina: 1 },
+      statPoints: updated[0].stat_points,
+      relics: updated[0].relics,
+      refundedPoints: spentPoints
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Reset stats error:', error);
+    res.status(500).json({ error: 'Failed to reset stats' });
+  } finally {
+    connection.release();
+  }
+});
+
+/**
  * POST /api/game/buy-booster
  * Purchase a temporary booster with relics
  *
@@ -1719,6 +1824,15 @@ router.post('/unlock-biome', authenticateToken, async (req, res) => {
     if (unlockedBiomes.includes(biomeId)) {
       await connection.rollback();
       return res.status(400).json({ error: 'Biome already unlocked' });
+    }
+
+    // Check if previous biome is unlocked (enforce sequential unlocking)
+    // Biome 1 is always unlocked by default, so we only check for biomeId > 1
+    if (biomeId > 1 && !unlockedBiomes.includes(biomeId - 1)) {
+      await connection.rollback();
+      return res.status(400).json({
+        error: `You must unlock Biome ${biomeId - 1} first`
+      });
     }
 
     // Check level requirement

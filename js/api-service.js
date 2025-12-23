@@ -441,6 +441,16 @@ class ApiService {
     }
 
     /**
+     * Reset all stats
+     * @returns {Promise<Object>} Reset result with refunded stat points
+     */
+    async resetStats() {
+        return await this.request('/game/reset-stats', {
+            method: 'POST'
+        });
+    }
+
+    /**
      * Unlock a new biome
      * @param {number} biomeId - ID of biome to unlock
      * @returns {Promise<Object>} Unlock result
@@ -650,6 +660,17 @@ class ApiService {
      */
     async getBiomeWeather(biomeId) {
         return await this.request(`/game/weather/${biomeId}`, {
+            method: 'GET',
+            requiresAuth: false
+        });
+    }
+
+    /**
+     * Get current weather for all biomes
+     * @returns {Promise<Object>} Weather data for all biomes
+     */
+    async getAllBiomeWeather() {
+        return await this.request('/game/weather', {
             method: 'GET',
             requiresAuth: false
         });
