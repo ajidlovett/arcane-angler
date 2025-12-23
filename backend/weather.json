@@ -23,8 +23,16 @@
     "modifiers": {"common":-10,"uncommon":-5,"fine":-2,"rare":10,"relic":35,"epic":25,"legendary":30,"mythic":18,"exotic":8,"arcane":5},
     "xpBonus": 25
   },
-  "arcane_surge": {
-    "modifiers": {"common":-15,"uncommon":-8,"fine":-5,"rare":15,"relic":50,"epic":40,"legendary":60,"mythic":35,"exotic":20,"arcane":200},
+    "blight": {
+    "modifiers": {"common":50,"uncommon":-25,"fine":-25,"rare":-25,"relic":-25,"epic":-25,"legendary":-25,"mythic":-25,"exotic":-25,"arcane":-25},
+    "xpBonus": -50
+  },
+    "gold_breeze": {
+    "modifiers": {"common":25,"uncommon":0,"fine":0,"rare":0,"relic":-25,"epic":0,"legendary":0,"mythic":0,"exotic":0,"arcane":0},
+    "xpBonus": -25
+  },  
+    "arcane_surge": {
+    "modifiers": {"common":-10,"uncommon":-8,"fine":-5,"rare":15,"relic":50,"epic":40,"legendary":60,"mythic":35,"exotic":20,"arcane":200},
     "xpBonus": 50
   },
   "_rules": {
