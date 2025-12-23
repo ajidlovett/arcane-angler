@@ -17,7 +17,8 @@ router.get('/me', authenticateToken, async (req, res) => {
         const [users] = await db.query(
             `SELECT id, username, profile_username, email, bio, equipped_title, nationality,
              profile_name_changes, achievement_showcase_limit, favorite_fish_limit,
-             profile_privacy, allow_comments, profile_views, badges, registration_date
+             profile_privacy, allow_comments, profile_views, badges, registration_date,
+             owned_avatars, profile_avatar, fish_showcase, achievement_showcase
              FROM users WHERE id = ?`,
             [userId]
         );
@@ -30,6 +31,9 @@ router.get('/me', authenticateToken, async (req, res) => {
 
         // Parse JSON fields
         user.badges = user.badges ? JSON.parse(user.badges) : [];
+        user.owned_avatars = user.owned_avatars ? JSON.parse(user.owned_avatars) : ['avatar_001'];
+        user.fish_showcase = user.fish_showcase ? JSON.parse(user.fish_showcase) : [];
+        user.achievement_showcase = user.achievement_showcase ? JSON.parse(user.achievement_showcase) : [];
 
         res.json({ profile: user });
     } catch (error) {
@@ -46,8 +50,9 @@ router.get('/:userId', authenticateToken, async (req, res) => {
 
         // Get profile user
         const [users] = await db.query(
-            `SELECT id, username, profile_username, bio, equipped_title,
-             profile_privacy, allow_comments, profile_views, badges, registration_date
+            `SELECT id, username, profile_username, bio, equipped_title, nationality,
+             profile_privacy, allow_comments, profile_views, badges, registration_date,
+             profile_avatar, fish_showcase, achievement_showcase
              FROM users WHERE id = ?`,
             [profileUserId]
         );
@@ -84,16 +89,20 @@ router.get('/:userId', authenticateToken, async (req, res) => {
                 [profileUserId]
             );
 
-            // Log the view
-            await db.query(
-                'INSERT INTO profile_views_log (profile_user_id, viewer_id) VALUES (?, ?)',
-                [profileUserId, viewerId]
-            );
+            // Log the view (only if table exists)
+            try {
+                await db.query(
+                    'INSERT INTO profile_views_log (profile_user_id, viewer_id) VALUES (?, ?)',
+                    [profileUserId, viewerId]
+                );
+            } catch (logError) {
+                console.warn('Profile views log table may not exist:', logError.message);
+            }
         }
 
         // Get player data for stats
         const [playerData] = await db.query(
-            'SELECT * FROM player_data WHERE user_id = ?',
+            'SELECT level, xp, gold, relics, current_biome FROM player_data WHERE user_id = ?',
             [profileUserId]
         );
 
@@ -105,6 +114,8 @@ router.get('/:userId', authenticateToken, async (req, res) => {
 
         // Parse JSON fields
         profileUser.badges = profileUser.badges ? JSON.parse(profileUser.badges) : [];
+        profileUser.fish_showcase = profileUser.fish_showcase ? JSON.parse(profileUser.fish_showcase) : [];
+        profileUser.achievement_showcase = profileUser.achievement_showcase ? JSON.parse(profileUser.achievement_showcase) : [];
 
         res.json({
             profile: profileUser,
@@ -378,28 +389,167 @@ router.post('/privacy', authenticateToken, async (req, res) => {
 });
 
 // ==========================================
+// AVATAR MANAGEMENT
+// ==========================================
+
+// Get owned avatars
+router.get('/avatars/owned', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const [users] = await db.query(
+            'SELECT owned_avatars, profile_avatar FROM users WHERE id = ?',
+            [userId]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const ownedAvatars = users[0].owned_avatars ? JSON.parse(users[0].owned_avatars) : ['avatar_001'];
+        const currentAvatar = users[0].profile_avatar || 'avatar_001';
+
+        res.json({
+            ownedAvatars,
+            currentAvatar
+        });
+    } catch (error) {
+        console.error('Error fetching avatars:', error);
+        res.status(500).json({ error: 'Failed to fetch avatars' });
+    }
+});
+
+// Select avatar (must be owned)
+router.post('/avatars/select', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const { avatarId } = req.body;
+
+        if (!avatarId || typeof avatarId !== 'string') {
+            return res.status(400).json({ error: 'Invalid avatar ID' });
+        }
+
+        // Get owned avatars
+        const [users] = await db.query(
+            'SELECT owned_avatars FROM users WHERE id = ?',
+            [userId]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const ownedAvatars = users[0].owned_avatars ? JSON.parse(users[0].owned_avatars) : ['avatar_001'];
+
+        // Verify user owns this avatar
+        if (!ownedAvatars.includes(avatarId)) {
+            return res.status(400).json({ error: 'Avatar not owned' });
+        }
+
+        // Update selected avatar
+        await db.query(
+            'UPDATE users SET profile_avatar = ? WHERE id = ?',
+            [avatarId, userId]
+        );
+
+        res.json({ success: true, selectedAvatar: avatarId });
+    } catch (error) {
+        console.error('Error selecting avatar:', error);
+        res.status(500).json({ error: 'Failed to select avatar' });
+    }
+});
+
+// Unlock avatar (e.g., through achievements or purchases)
+router.post('/avatars/unlock', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const { avatarId, cost } = req.body;
+
+        if (!avatarId || typeof avatarId !== 'string') {
+            return res.status(400).json({ error: 'Invalid avatar ID' });
+        }
+
+        // Get owned avatars
+        const [users] = await db.query(
+            'SELECT owned_avatars FROM users WHERE id = ?',
+            [userId]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        let ownedAvatars = users[0].owned_avatars ? JSON.parse(users[0].owned_avatars) : ['avatar_001'];
+
+        // Check if already owned
+        if (ownedAvatars.includes(avatarId)) {
+            return res.status(400).json({ error: 'Avatar already owned' });
+        }
+
+        // If there's a cost, deduct relics
+        if (cost && cost > 0) {
+            const [playerData] = await db.query(
+                'SELECT relics FROM player_data WHERE user_id = ?',
+                [userId]
+            );
+
+            if (playerData.length === 0 || playerData[0].relics < cost) {
+                return res.status(400).json({ error: 'Not enough relics' });
+            }
+
+            await db.query(
+                'UPDATE player_data SET relics = relics - ? WHERE user_id = ?',
+                [cost, userId]
+            );
+        }
+
+        // Add avatar to owned list
+        ownedAvatars.push(avatarId);
+        await db.query(
+            'UPDATE users SET owned_avatars = ? WHERE id = ?',
+            [JSON.stringify(ownedAvatars), userId]
+        );
+
+        res.json({
+            success: true,
+            unlockedAvatar: avatarId,
+            ownedAvatars
+        });
+    } catch (error) {
+        console.error('Error unlocking avatar:', error);
+        res.status(500).json({ error: 'Failed to unlock avatar' });
+    }
+});
+
+// ==========================================
 // ACHIEVEMENT SHOWCASE
 // ==========================================
 
 // Get showcased achievements
-router.get('/:userId/showcase', authenticateToken, async (req, res) => {
+router.get('/:userId/showcase/achievements', authenticateToken, async (req, res) => {
     try {
         const userId = parseInt(req.params.userId);
 
-        const [showcase] = await db.query(
-            'SELECT achievement_id, display_order FROM achievement_showcase WHERE user_id = ? ORDER BY display_order',
+        const [users] = await db.query(
+            'SELECT achievement_showcase FROM users WHERE id = ?',
             [userId]
         );
 
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const showcase = users[0].achievement_showcase ? JSON.parse(users[0].achievement_showcase) : [];
+
         res.json({ showcase });
     } catch (error) {
-        console.error('Error fetching showcase:', error);
-        res.status(500).json({ error: 'Failed to fetch showcase' });
+        console.error('Error fetching achievement showcase:', error);
+        res.status(500).json({ error: 'Failed to fetch achievement showcase' });
     }
 });
 
 // Update achievement showcase
-router.post('/showcase', authenticateToken, async (req, res) => {
+router.post('/showcase/achievements', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.userId;
         const { achievementIds } = req.body; // Array of achievement IDs in order
@@ -430,6 +580,10 @@ router.post('/showcase', authenticateToken, async (req, res) => {
             [userId]
         );
 
+        if (playerData.length === 0) {
+            return res.status(404).json({ error: 'Player data not found' });
+        }
+
         const unlockedAchievements = playerData[0].achievements ? JSON.parse(playerData[0].achievements) : [];
 
         for (const achId of achievementIds) {
@@ -438,57 +592,57 @@ router.post('/showcase', authenticateToken, async (req, res) => {
             }
         }
 
-        // Delete old showcase
-        await db.query('DELETE FROM achievement_showcase WHERE user_id = ?', [userId]);
+        // Update achievement showcase
+        await db.query(
+            'UPDATE users SET achievement_showcase = ? WHERE id = ?',
+            [JSON.stringify(achievementIds), userId]
+        );
 
-        // Insert new showcase
-        if (achievementIds.length > 0) {
-            const values = achievementIds.map((achId, index) => [userId, achId, index + 1]);
-            await db.query(
-                'INSERT INTO achievement_showcase (user_id, achievement_id, display_order) VALUES ?',
-                [values]
-            );
-        }
-
-        res.json({ success: true });
+        res.json({ success: true, showcase: achievementIds });
     } catch (error) {
-        console.error('Error updating showcase:', error);
-        res.status(500).json({ error: 'Failed to update showcase' });
+        console.error('Error updating achievement showcase:', error);
+        res.status(500).json({ error: 'Failed to update achievement showcase' });
     }
 });
 
 // ==========================================
-// FAVORITE FISH
+// FISH SHOWCASE
 // ==========================================
 
-// Get favorite fish
-router.get('/:userId/favorite-fish', authenticateToken, async (req, res) => {
+// Get showcased fish
+router.get('/:userId/showcase/fish', authenticateToken, async (req, res) => {
     try {
         const userId = parseInt(req.params.userId);
 
-        const [favoriteFish] = await db.query(
-            'SELECT fish_name, fish_rarity, display_order FROM favorite_fish WHERE user_id = ? ORDER BY display_order',
+        const [users] = await db.query(
+            'SELECT fish_showcase FROM users WHERE id = ?',
             [userId]
         );
 
-        res.json({ favoriteFish });
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const showcase = users[0].fish_showcase ? JSON.parse(users[0].fish_showcase) : [];
+
+        res.json({ showcase });
     } catch (error) {
-        console.error('Error fetching favorite fish:', error);
-        res.status(500).json({ error: 'Failed to fetch favorite fish' });
+        console.error('Error fetching fish showcase:', error);
+        res.status(500).json({ error: 'Failed to fetch fish showcase' });
     }
 });
 
-// Update favorite fish
-router.post('/favorite-fish', authenticateToken, async (req, res) => {
+// Update fish showcase
+router.post('/showcase/fish', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.userId;
-        const { fishList } = req.body; // Array of { name, rarity } in order
+        const { fishList } = req.body; // Array of { name, rarity } objects
 
         if (!Array.isArray(fishList)) {
             return res.status(400).json({ error: 'Fish list must be an array' });
         }
 
-        // Get user's favorite fish limit
+        // Get user's fish showcase limit
         const [users] = await db.query(
             'SELECT favorite_fish_limit FROM users WHERE id = ?',
             [userId]
@@ -501,25 +655,35 @@ router.post('/favorite-fish', authenticateToken, async (req, res) => {
         const limit = users[0].favorite_fish_limit;
 
         if (fishList.length > limit) {
-            return res.status(400).json({ error: `Cannot favorite more than ${limit} fish` });
+            return res.status(400).json({ error: `Cannot showcase more than ${limit} fish` });
         }
 
-        // Delete old favorites
-        await db.query('DELETE FROM favorite_fish WHERE user_id = ?', [userId]);
+        // Verify user has caught/locked all these fish
+        for (const fish of fishList) {
+            if (!fish.name || !fish.rarity) {
+                return res.status(400).json({ error: 'Each fish must have name and rarity' });
+            }
 
-        // Insert new favorites
-        if (fishList.length > 0) {
-            const values = fishList.map((fish, index) => [userId, fish.name, fish.rarity, index + 1]);
-            await db.query(
-                'INSERT INTO favorite_fish (user_id, fish_name, fish_rarity, display_order) VALUES ?',
-                [values]
+            const [lockedFish] = await db.query(
+                'SELECT * FROM locked_fish WHERE user_id = ? AND fish_name = ?',
+                [userId, fish.name]
             );
+
+            if (lockedFish.length === 0) {
+                return res.status(400).json({ error: `Fish "${fish.name}" has not been caught yet` });
+            }
         }
 
-        res.json({ success: true });
+        // Update fish showcase
+        await db.query(
+            'UPDATE users SET fish_showcase = ? WHERE id = ?',
+            [JSON.stringify(fishList), userId]
+        );
+
+        res.json({ success: true, showcase: fishList });
     } catch (error) {
-        console.error('Error updating favorite fish:', error);
-        res.status(500).json({ error: 'Failed to update favorite fish' });
+        console.error('Error updating fish showcase:', error);
+        res.status(500).json({ error: 'Failed to update fish showcase' });
     }
 });
 
