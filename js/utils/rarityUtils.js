@@ -105,12 +105,8 @@ window.getGradientBorderStyle = (rarity) => {
  * @returns {object} Style object with gradient background and solid border
  */
 window.getGradientBackgroundStyle = (rarity, surfaceColor) => {
-  // Debug logging
-  console.log('[getGradientBackgroundStyle] rarity:', rarity, 'surfaceColor:', surfaceColor);
-
   // Provide fallback values
   if (!rarity || !window.RARITY_COLORS) {
-    console.warn('[getGradientBackgroundStyle] Missing rarity or RARITY_COLORS');
     return {
       backgroundColor: surfaceColor || '#111827',
       borderColor: '#9ca3af'
@@ -119,12 +115,10 @@ window.getGradientBackgroundStyle = (rarity, surfaceColor) => {
 
   if (!window.isGradientRarity(rarity)) {
     const borderColor = window.getRarityColor(rarity);
-    const result = {
+    return {
       backgroundColor: surfaceColor || '#111827',
       borderColor: borderColor || '#9ca3af'
     };
-    console.log('[getGradientBackgroundStyle] Non-gradient result:', result);
-    return result;
   }
 
   // Extract first color from gradient for solid border
@@ -133,12 +127,10 @@ window.getGradientBackgroundStyle = (rarity, surfaceColor) => {
   const borderColor = firstColorMatch ? firstColorMatch[0] : '#9ca3af';
 
   // Create a dimmed gradient background overlay
-  const result = {
+  return {
     backgroundColor: surfaceColor || '#111827',
     borderColor: borderColor,
     backgroundImage: gradient ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), ${gradient}` : 'none',
     backgroundBlendMode: 'overlay'
   };
-  console.log('[getGradientBackgroundStyle] Gradient result:', result);
-  return result;
 };

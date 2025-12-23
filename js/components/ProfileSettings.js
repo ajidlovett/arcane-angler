@@ -385,7 +385,7 @@ function FishShowcaseTab({ lockedFish, selectedFish, onToggleFish, onSave, limit
                                     : 'bg-gray-800 border-gray-600 opacity-50 cursor-not-allowed'
                             }`}
                         >
-                            <div className={`text-sm font-bold ${getRarityColor(fish.rarity)}`}>
+                            <div className={`text-sm font-bold ${getRarityClassName(fish.rarity)}`}>
                                 {fish.rarity}
                             </div>
                             <div className="text-white font-semibold text-sm mt-1">{fish.name}</div>
@@ -406,8 +406,8 @@ function FishShowcaseTab({ lockedFish, selectedFish, onToggleFish, onSave, limit
     );
 }
 
-// Helper function
-function getRarityColor(rarity) {
+// Helper function - Returns Tailwind class name for text color
+function getRarityClassName(rarity) {
     const colors = {
         'Common': 'text-gray-400',
         'Uncommon': 'text-green-400',
