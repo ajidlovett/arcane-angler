@@ -14,22 +14,22 @@ window.StatsPage = ({ player, theme, getTotalStats, upgradeStat }) => {
     strength: {
       title: "Strength",
       subtitle: "The Bulk Hauler",
-      description: "Increases the quantity of fish caught per cast."
+      description: "Increases the quantity of fish caught per cast. Strength is the steady pull of a well-worn rod and a confident grip. With it, each cast brings in a fuller catch, as if the waters themselves are feeling generous. The river smiles upon those who fish with quiet resolve."
     },
     intelligence: {
       title: "Intelligence",
       subtitle: "The Time Mage",
-      description: "Extends the duration of all active boosters."
+      description: "Extends the duration of all active boosters. Intelligence reflects your understanding of gentle enchantments and patient magic. With greater insight, your boosters linger longer, stretching their warmth like a late afternoon sun. Time seems less hurried when you know how to listen to it."
     },
     luck: {
       title: "Luck",
       subtitle: "The Fate Weaver",
-      description: "Increases the chances of encountering Legendary, Mythic, and Arcane fish."
+      description: "Increases the chances of encountering Legendary, Mythic, Exotic and Arcane fish. Luck is the soft nudge of fortune and happy coincidence. A little more of it draws rare and wondrous fish toward your line, curious rather than cautious. Some days, the world simply wants to surprise you."
     },
     stamina: {
       title: "Stamina",
       subtitle: "The Sleep Battery",
-      description: "Determines the capacity of your Auto-Cast functionality."
+      description: "Determines the capacity of your Auto-Cast functionality. Stamina is your quiet reserve of comfort and calm. With a larger pool, Auto-Cast can keep fishing gently on your behalf while you rest, explore, or dream. Even magic works best when it knows when to slow down."
     }
   };
 
