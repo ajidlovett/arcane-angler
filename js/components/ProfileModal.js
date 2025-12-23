@@ -1,9 +1,8 @@
 // ProfileModal.js - Player Profile Viewing Component
-import apiService from '../api-service.js';
-
 const { useState, useEffect } = React;
+const apiService = window.apiService;
 
-export function ProfileModal({ userId, onClose, currentUserId, achievements }) {
+function ProfileModal({ userId, onClose, currentUserId, achievements }) {
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -462,3 +461,7 @@ function getAchievementTitle(achievementId, achievements) {
     const achievement = achievements?.find(a => a.id === achievementId);
     return achievement ? achievement.name : achievementId;
 }
+
+
+// Export to window
+window.ProfileModal = ProfileModal;
