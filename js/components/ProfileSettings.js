@@ -23,7 +23,7 @@ export function ProfileSettings({ onClose, currentProfile, achievements, lockedF
     const loadAvatars = async () => {
         try {
             const data = await apiService.getOwnedAvatars();
-            setOwnedAvatars(data.ownedAvatars || ['avatar_001']);
+            setOwnedAvatars(data.ownedAvatars || ['avatar_001', 'avatar_002']);
             setCurrentAvatar(data.currentAvatar || 'avatar_001');
         } catch (err) {
             console.error('Failed to load avatars:', err);
