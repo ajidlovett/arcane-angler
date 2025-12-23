@@ -553,7 +553,7 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     user_id INT DEFAULT NULL COMMENT 'NULL for system messages',
     profile_username VARCHAR(50) NOT NULL,
     equipped_title VARCHAR(255) DEFAULT NULL,
-    channel ENUM('global', 'guild', 'notification') NOT NULL DEFAULT 'global',
+    channel ENUM('global', 'guild', 'notification', 'weather') NOT NULL DEFAULT 'global',
     message_text VARCHAR(200) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
