@@ -143,7 +143,7 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
 
                             {profile.equipped_title && (
                                 <div className="text-yellow-400 font-semibold mt-1">
-                                    {getAchievementTitle(profile.equipped_title, achievements)}
+                                    {getAchievementTitle(profile.equipped_title, window.ACHIEVEMENTS)}
                                 </div>
                             )}
 
@@ -250,7 +250,7 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
                     {activeTab === 'achievements' && (
                         <AchievementsTab
                             achievementShowcase={profile.achievement_showcase || []}
-                            achievements={achievements}
+                            achievements={window.ACHIEVEMENTS}
                         />
                     )}
 
@@ -279,9 +279,8 @@ function OverviewTab({ playerData, playerStats, profile }) {
                 <h3 className="text-xl font-bold text-white mb-4">Player Stats</h3>
                 <div className="space-y-2">
                     <StatRow label="Level" value={playerData?.level || 1} />
-                    <StatRow label="XP" value={(playerData?.xp || 0).toLocaleString()} />
                     <StatRow label="Gold" value={(playerData?.gold || 0).toLocaleString()} icon="💰" />
-                    <StatRow label="Relics" value={(playerData?.relics || 0).toLocaleString()} icon="💎" />
+                    <StatRow label="Relics" value={(playerData?.relics || 0).toLocaleString()} icon="🔮" />
                     <StatRow label="Current Biome" value={`Biome ${playerData?.current_biome || 1}`} />
                 </div>
             </div>

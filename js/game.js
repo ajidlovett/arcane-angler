@@ -1458,7 +1458,7 @@ useEffect(() => {
           onClose={handleCloseProfileSettings}
           currentProfile={currentProfile}
           achievements={player.achievements}
-          lockedFish={player.lockedFish}
+          lockedFish={player.discoveredFish}
           onUpdate={loadCurrentProfile}
         />
       )}
