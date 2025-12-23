@@ -328,7 +328,7 @@ function FishShowcaseTab({ fishShowcase }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {fishShowcase.map((fish, index) => (
                 <div key={index} className="bg-gray-800 p-4 rounded-lg border-2 border-gray-700 hover:border-blue-500 transition">
-                    <div className={`text-lg font-bold ${getRarityColor(fish.rarity)}`}>
+                    <div className={`text-lg font-bold ${getRarityClassName(fish.rarity)}`}>
                         {fish.rarity}
                     </div>
                     <div className="text-white font-semibold mt-1">{fish.name}</div>
@@ -433,7 +433,8 @@ function StatRow({ label, value, icon }) {
 }
 
 // Helper Functions
-function getRarityColor(rarity) {
+// Returns Tailwind class name for text color
+function getRarityClassName(rarity) {
     const colors = {
         'Common': 'text-gray-400',
         'Uncommon': 'text-green-400',
