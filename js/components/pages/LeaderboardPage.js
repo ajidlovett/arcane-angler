@@ -1,5 +1,5 @@
 // LeaderboardPage - Defined as window.LeaderboardPage
-window.LeaderboardPage = React.memo(({ user, theme }) => {
+window.LeaderboardPage = React.memo(({ user, theme, onProfileClick }) => {
   const { useState, useEffect } = React;
   const [selectedCategory, setSelectedCategory] = useState('level');
   const [selectedRegion, setSelectedRegion] = useState('global');
@@ -267,7 +267,12 @@ window.LeaderboardPage = React.memo(({ user, theme }) => {
                             <span className="text-base sm:text-lg sm:hidden">{getCountryFlag(player.nationality)}</span>
                           )}
                           <div>
-                            <span className="font-semibold">{player.profile_username}</span>
+                            <button
+                              onClick={() => onProfileClick && onProfileClick(player.user_id)}
+                              className="font-semibold text-blue-400 hover:text-blue-300 hover:underline cursor-pointer"
+                            >
+                              {player.profile_username}
+                            </button>
                             {player.equipped_title && getTitleName(player.equipped_title) && (
                               <span className="text-yellow-400 ml-1 sm:ml-2 text-xs">- {getTitleName(player.equipped_title)}</span>
                             )}
@@ -293,7 +298,12 @@ window.LeaderboardPage = React.memo(({ user, theme }) => {
             <div>
               <div className={`text-sm text-${theme.textMuted} mb-1`}>Your Rank</div>
               <div className="text-[1.05rem] font-bold text-white">
-                #{userRank.rank} - {userRank.stats.profile_username}
+                #{userRank.rank} - <button
+                  onClick={() => onProfileClick && onProfileClick(userRank.stats.user_id)}
+                  className="text-blue-400 hover:text-blue-300 hover:underline cursor-pointer"
+                >
+                  {userRank.stats.profile_username}
+                </button>
               </div>
             </div>
             <div className="text-right">

@@ -1,6 +1,6 @@
 // ProfilePage - Defined as window.ProfilePage
 
-window.ProfilePage = ({ user, player, setPlayer, theme, showAlert, getTotalStats, onTitleChange }) => {
+window.ProfilePage = ({ user, player, setPlayer, theme, showAlert, getTotalStats, onTitleChange, onOpenProfileSettings }) => {
   const { useState, useEffect } = React;
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -202,6 +202,18 @@ window.ProfilePage = ({ user, player, setPlayer, theme, showAlert, getTotalStats
                   )}
                 </div>
               </div>
+
+              {/* Profile Settings Button */}
+              {onOpenProfileSettings && (
+                <div className="mt-3">
+                  <button
+                    onClick={onOpenProfileSettings}
+                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold shadow-lg flex items-center gap-2 text-sm"
+                  >
+                    ⚙️ Profile Settings (Avatar & Showcases)
+                  </button>
+                </div>
+              )}
 
               {/* Bio */}
               <div className="mt-4">
