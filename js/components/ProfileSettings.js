@@ -11,6 +11,7 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
     const [loading, setLoading] = useState(false);
     const [saveMessage, setSaveMessage] = useState('');
     const [unlockedAchievements, setUnlockedAchievements] = useState([]);
+    const [caughtFishWithRarity, setCaughtFishWithRarity] = useState([]);
 
     const showcaseLimit = currentProfile?.achievement_showcase_limit || 6;
     const fishShowcaseLimit = currentProfile?.favorite_fish_limit || 3;
@@ -27,6 +28,34 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
             setUnlockedAchievements(fullAchievements);
         }
     }, [achievements]);
+
+    // Convert fish names to full fish objects with rarity
+    useEffect(() => {
+        if (lockedFish && window.biomes) {
+            // lockedFish is an array of fish names like ['Guppy', 'Salmon']
+            // We need to find each fish in the biomes data to get its rarity
+            const fishNames = Array.isArray(lockedFish) ? lockedFish : [];
+            const fishWithRarity = [];
+
+            fishNames.forEach(fishName => {
+                // Search through all biomes and rarities to find this fish
+                for (const biome of window.biomes) {
+                    const rarities = ['Common', 'Uncommon', 'Fine', 'Rare', 'Epic', 'Treasure Chest', 'Legendary', 'Mythic', 'Exotic', 'Arcane'];
+                    for (const rarity of rarities) {
+                        if (biome[rarity]) {
+                            const fish = biome[rarity].find(f => f.name === fishName);
+                            if (fish) {
+                                fishWithRarity.push({ name: fishName, rarity: rarity });
+                                return; // Found it, move to next fish
+                            }
+                        }
+                    }
+                }
+            });
+
+            setCaughtFishWithRarity(fishWithRarity);
+        }
+    }, [lockedFish]);
 
     useEffect(() => {
         loadAvatars();
@@ -188,7 +217,7 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
 
                     {activeTab === 'fish' && (
                         <FishShowcaseTab
-                            lockedFish={lockedFish}
+                            lockedFish={caughtFishWithRarity}
                             selectedFish={selectedShowcaseFish}
                             onToggleFish={toggleFish}
                             onSave={handleSaveFishShowcase}
