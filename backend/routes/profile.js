@@ -12,7 +12,7 @@ const router = express.Router();
 // Get user's own profile data
 router.get('/me', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.userId;
 
         const [users] = await db.query(
             `SELECT id, username, profile_username, email, bio, equipped_title, nationality,
@@ -45,7 +45,7 @@ router.get('/me', authenticateToken, async (req, res) => {
 // Get another user's profile (with privacy checks)
 router.get('/:userId', authenticateToken, async (req, res) => {
     try {
-        const viewerId = req.user.userId;
+        const viewerId = req.userId;
         const profileUserId = parseInt(req.params.userId);
 
         // Get profile user
@@ -131,7 +131,7 @@ router.get('/:userId', authenticateToken, async (req, res) => {
 // Change profile name
 router.post('/change-name', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.userId;
         const { newProfileName } = req.body;
 
         if (!newProfileName || newProfileName.trim().length === 0) {
@@ -217,7 +217,7 @@ router.post('/change-name', authenticateToken, async (req, res) => {
 // Update bio
 router.post('/update-bio', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.userId;
         const { bio } = req.body;
 
         if (!bio) {
@@ -245,7 +245,7 @@ router.post('/update-bio', authenticateToken, async (req, res) => {
 // Update nationality
 router.post('/update-nationality', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.userId;
         const { nationality } = req.body;
 
         // Validate nationality code (should be 2-letter ISO code or null)
@@ -268,7 +268,7 @@ router.post('/update-nationality', authenticateToken, async (req, res) => {
 // Equip achievement title
 router.post('/equip-title', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.userId;
         const { achievementId } = req.body;
 
         // Verify user has this achievement
@@ -349,7 +349,7 @@ router.post('/equip-title', authenticateToken, async (req, res) => {
 // Update privacy settings
 router.post('/privacy', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.userId;
         const { privacy, allowComments } = req.body;
 
         const validPrivacy = ['public', 'friends', 'private'];
@@ -395,7 +395,7 @@ router.post('/privacy', authenticateToken, async (req, res) => {
 // Get owned avatars
 router.get('/avatars/owned', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.userId;
 
         const [users] = await db.query(
             'SELECT owned_avatars, profile_avatar FROM users WHERE id = ?',
@@ -435,7 +435,7 @@ router.get('/avatars/owned', authenticateToken, async (req, res) => {
 // Select avatar (must be owned)
 router.post('/avatars/select', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.userId;
         const { avatarId } = req.body;
 
         if (!avatarId || typeof avatarId !== 'string') {
@@ -487,7 +487,7 @@ router.post('/avatars/select', authenticateToken, async (req, res) => {
 // Unlock avatar (e.g., through achievements or purchases)
 router.post('/avatars/unlock', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.userId;
         const { avatarId, cost } = req.body;
 
         if (!avatarId || typeof avatarId !== 'string') {
@@ -589,7 +589,7 @@ router.get('/:userId/showcase/achievements', authenticateToken, async (req, res)
 // Update achievement showcase
 router.post('/showcase/achievements', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.userId;
         const { achievementIds } = req.body; // Array of achievement IDs in order
 
         if (!Array.isArray(achievementIds)) {
@@ -673,7 +673,7 @@ router.get('/:userId/showcase/fish', authenticateToken, async (req, res) => {
 // Update fish showcase
 router.post('/showcase/fish', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.userId;
         const { fishList } = req.body; // Array of { name, rarity } objects
 
         if (!Array.isArray(fishList)) {
