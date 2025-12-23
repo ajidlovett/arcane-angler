@@ -294,9 +294,9 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
           <div
             className={`p-3 sm:p-4 rounded-lg border-4 shadow-xl h-full ${(lastCatch.xpBonus > 1 || activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir')) ? '' : ''}`}
             style={{
-              ...getGradientBackgroundStyle(lastCatch.rarity, theme.surface),
+              ...getGradientBackgroundStyle(lastCatch.rarity, theme.surfaceHex),
               ...(lastCatch.xpBonus > 1 || activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir') ? {
-                backgroundImage: `linear-gradient(to bottom right, rgba(113, 63, 18, 0.2), transparent, rgba(88, 28, 135, 0.2)), ${isGradientRarity(lastCatch.rarity) ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), ${rarityColors[lastCatch.rarity]}` : theme.surface}`
+                backgroundImage: `linear-gradient(to bottom right, rgba(113, 63, 18, 0.2), transparent, rgba(88, 28, 135, 0.2)), ${isGradientRarity(lastCatch.rarity) ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), ${rarityColors[lastCatch.rarity]}` : theme.surfaceHex}`
               } : {})
             }}
           >
@@ -393,9 +393,9 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
         <div
           className={`p-3 sm:p-4 rounded-lg border-4 shadow-xl ${(lastCatch.xpBonus > 1 || activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir')) ? '' : ''}`}
           style={{
-            ...getGradientBackgroundStyle(lastCatch.rarity, theme.surface),
+            ...getGradientBackgroundStyle(lastCatch.rarity, theme.surfaceHex),
             ...(lastCatch.xpBonus > 1 || activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir') ? {
-              backgroundImage: `linear-gradient(to bottom right, rgba(113, 63, 18, 0.2), transparent, rgba(88, 28, 135, 0.2)), ${isGradientRarity(lastCatch.rarity) ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), ${rarityColors[lastCatch.rarity]}` : theme.surface}`
+              backgroundImage: `linear-gradient(to bottom right, rgba(113, 63, 18, 0.2), transparent, rgba(88, 28, 135, 0.2)), ${isGradientRarity(lastCatch.rarity) ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), ${rarityColors[lastCatch.rarity]}` : theme.surfaceHex}`
             } : {})
           }}
         >
