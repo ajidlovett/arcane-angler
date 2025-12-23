@@ -6,6 +6,7 @@ window.themes = {
     primarySolid: 'gray-900',
     secondary: 'gray-800',
     surface: 'gray-950',
+    surfaceHex: '#030712', // Hex value for inline styles
     border: 'gray-700',
     borderLight: 'gray-600',
     text: 'white',
@@ -21,6 +22,7 @@ window.themes = {
     primarySolid: 'blue-900',
     secondary: 'blue-800',
     surface: 'blue-950',
+    surfaceHex: '#172554', // Hex value for inline styles
     border: 'blue-700',
     borderLight: 'blue-600',
     text: 'white',
@@ -36,6 +38,7 @@ window.themes = {
     primarySolid: 'green-900',
     secondary: 'green-800',
     surface: 'green-950',
+    surfaceHex: '#052e16', // Hex value for inline styles
     border: 'green-700',
     borderLight: 'green-600',
     text: 'white',
@@ -51,6 +54,7 @@ window.themes = {
     primarySolid: 'purple-900',
     secondary: 'purple-800',
     surface: 'purple-950',
+    surfaceHex: '#3b0764', // Hex value for inline styles
     border: 'purple-700',
     borderLight: 'purple-600',
     text: 'white',
@@ -66,6 +70,7 @@ window.themes = {
     primarySolid: 'orange-900',
     secondary: 'orange-800',
     surface: 'orange-950',
+    surfaceHex: '#431407', // Hex value for inline styles
     border: 'orange-700',
     borderLight: 'orange-600',
     text: 'white',
@@ -81,6 +86,7 @@ window.themes = {
     primarySolid: 'slate-900',
     secondary: 'slate-800',
     surface: 'slate-950',
+    surfaceHex: '#020617', // Hex value for inline styles
     border: 'slate-700',
     borderLight: 'slate-600',
     text: 'white',

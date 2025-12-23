@@ -108,7 +108,7 @@ window.FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRar
               <div
                 key={idx}
                 className={`p-4 rounded-lg border-2`}
-                style={getGradientBackgroundStyle(fish.rarity, theme.surface)}
+                style={getGradientBackgroundStyle(fish.rarity, theme.surfaceHex)}
               >
                 {fish.isDiscovered ? (
                   <>

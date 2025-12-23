@@ -91,7 +91,7 @@ window.InventoryPage = ({ player, theme, selectedRarity, setSelectedRarity, inve
                 <div
                   key={idx}
                   className={`p-3 sm:p-4 rounded-lg relative border-2`}
-                  style={getGradientBackgroundStyle(fish.rarity, theme.surface)}
+                  style={getGradientBackgroundStyle(fish.rarity, theme.surfaceHex)}
                 >
                   <button
                     onClick={() => toggleLock(fish.name)}
