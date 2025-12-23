@@ -1,9 +1,8 @@
 // ProfileSettings.js - Player's Own Profile Management Component
-import apiService from '../api-service.js';
-
 const { useState, useEffect } = React;
+const apiService = window.apiService;
 
-export function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, onUpdate }) {
+function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, onUpdate }) {
     const [activeTab, setActiveTab] = useState('avatar');
     const [ownedAvatars, setOwnedAvatars] = useState([]);
     const [currentAvatar, setCurrentAvatar] = useState('avatar_001');
@@ -379,3 +378,7 @@ function getRarityColor(rarity) {
     };
     return colors[rarity] || 'text-gray-400';
 }
+
+
+// Export to window
+window.ProfileSettings = ProfileSettings;

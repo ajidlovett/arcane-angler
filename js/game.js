@@ -40,11 +40,20 @@ const AchievementsPage = window.AchievementsPage;
 const FishpediaPage = window.FishpediaPage;
 const QuestPage = window.QuestPage;
 const Chat = window.Chat;
+const ProfileModal = window.ProfileModal;
+const ProfileSettings = window.ProfileSettings;
 
 const FishingGame = ({ user, onLogout }) => {
   const [currentPage, setCurrentPage] = useState('fishing');
   const [savingProgress, setSavingProgress] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+
+  // Profile modal states
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileUserId, setProfileUserId] = useState(null);
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
+  const [currentProfile, setCurrentProfile] = useState(null);
+
   const [player, setPlayer] = useState(() => {
     const defaultPlayerState = {
       level: 1,
@@ -174,6 +183,11 @@ const FishingGame = ({ user, onLogout }) => {
       fetchActiveBoosters();
     }
   }, [currentPage, fetchActiveBoosters]);
+
+  // Load current profile for profile settings
+  React.useEffect(() => {
+    loadCurrentProfile();
+  }, []);
 
   const getBoosterTimeRemaining = (expiresAt) => {
     const now = new Date();
@@ -1109,6 +1123,34 @@ useEffect(() => {
     }
   };
 
+  // Profile handlers
+  const handleProfileClick = (userId) => {
+    setProfileUserId(userId);
+    setShowProfileModal(true);
+  };
+
+  const handleOpenProfileSettings = () => {
+    setShowProfileSettings(true);
+  };
+
+  const handleCloseProfileModal = () => {
+    setShowProfileModal(false);
+    setProfileUserId(null);
+  };
+
+  const handleCloseProfileSettings = () => {
+    setShowProfileSettings(false);
+  };
+
+  const loadCurrentProfile = async () => {
+    try {
+      const profileData = await apiService.getMyProfile();
+      setCurrentProfile(profileData.profile);
+    } catch (error) {
+      console.error('Failed to load current profile:', error);
+    }
+  };
+
   const handleSaveAndLogout = async () => {
     onLogout();
   };
@@ -1349,6 +1391,7 @@ useEffect(() => {
           {currentPage === 'leaderboard' && <LeaderboardPage
             user={user}
             theme={theme}
+            onProfileClick={handleProfileClick}
           />}
 
           {currentPage === 'quests' && <QuestPage
@@ -1363,6 +1406,7 @@ useEffect(() => {
             showAlert={showAlert}
             getTotalStats={getTotalStats}
             onTitleChange={loadEquippedTitle}
+            onOpenProfileSettings={handleOpenProfileSettings}
           />}
           {currentPage === 'achievements' && <AchievementsPage
             player={player}
@@ -1395,7 +1439,29 @@ useEffect(() => {
         user={user}
         chatOpen={chatOpen}
         setChatOpen={setChatOpen}
+        onProfileClick={handleProfileClick}
       />
+
+      {/* Profile Modal */}
+      {showProfileModal && profileUserId && (
+        <ProfileModal
+          userId={profileUserId}
+          onClose={handleCloseProfileModal}
+          currentUserId={user?.id}
+          achievements={player.achievements}
+        />
+      )}
+
+      {/* Profile Settings Modal */}
+      {showProfileSettings && (
+        <ProfileSettings
+          onClose={handleCloseProfileSettings}
+          currentProfile={currentProfile}
+          achievements={player.achievements}
+          lockedFish={player.lockedFish}
+          onUpdate={loadCurrentProfile}
+        />
+      )}
       </div>
     </>
   );
