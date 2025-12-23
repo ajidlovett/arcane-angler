@@ -268,6 +268,11 @@ BEGIN
     -- Initialize leaderboard stats with profile_username and nationality
     INSERT INTO leaderboard_stats (user_id, profile_username, nationality)
     VALUES (NEW.id, NEW.profile_username, NEW.nationality);
+
+    -- Initialize default avatars (give new users avatar_001 and avatar_002)
+    UPDATE users
+    SET owned_avatars = JSON_ARRAY('avatar_001', 'avatar_002')
+    WHERE id = NEW.id AND owned_avatars IS NULL;
 END$$
 DELIMITER ;
 

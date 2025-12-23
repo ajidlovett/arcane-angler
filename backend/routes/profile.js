@@ -31,7 +31,7 @@ router.get('/me', authenticateToken, async (req, res) => {
 
         // Parse JSON fields
         user.badges = user.badges ? JSON.parse(user.badges) : [];
-        user.owned_avatars = user.owned_avatars ? JSON.parse(user.owned_avatars) : ['avatar_001'];
+        user.owned_avatars = user.owned_avatars ? JSON.parse(user.owned_avatars) : ['avatar_001', 'avatar_002'];
         user.fish_showcase = user.fish_showcase ? JSON.parse(user.fish_showcase) : [];
         user.achievement_showcase = user.achievement_showcase ? JSON.parse(user.achievement_showcase) : [];
 
@@ -406,7 +406,7 @@ router.get('/avatars/owned', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        const ownedAvatars = users[0].owned_avatars ? JSON.parse(users[0].owned_avatars) : ['avatar_001'];
+        const ownedAvatars = users[0].owned_avatars ? JSON.parse(users[0].owned_avatars) : ['avatar_001', 'avatar_002'];
         const currentAvatar = users[0].profile_avatar || 'avatar_001';
 
         res.json({
@@ -439,7 +439,7 @@ router.post('/avatars/select', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        const ownedAvatars = users[0].owned_avatars ? JSON.parse(users[0].owned_avatars) : ['avatar_001'];
+        const ownedAvatars = users[0].owned_avatars ? JSON.parse(users[0].owned_avatars) : ['avatar_001', 'avatar_002'];
 
         // Verify user owns this avatar
         if (!ownedAvatars.includes(avatarId)) {
@@ -479,7 +479,7 @@ router.post('/avatars/unlock', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        let ownedAvatars = users[0].owned_avatars ? JSON.parse(users[0].owned_avatars) : ['avatar_001'];
+        let ownedAvatars = users[0].owned_avatars ? JSON.parse(users[0].owned_avatars) : ['avatar_001', 'avatar_002'];
 
         // Check if already owned
         if (ownedAvatars.includes(avatarId)) {
