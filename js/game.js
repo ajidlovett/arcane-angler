@@ -521,7 +521,7 @@ useEffect(() => {
               rarity: result.rarity,
               count: result.count,
               xp: result.xpGained,
-              gold: result.fish.gold || result.goldGained / result.count,
+              gold: result.goldGained > 0 ? Math.floor(result.goldGained) : (result.fish.gold || 0),
               relics: 0,
               titanBonus: result.titanBonus > 1 ? result.titanBonus : null,
               xpBonus: result.xpBonus
