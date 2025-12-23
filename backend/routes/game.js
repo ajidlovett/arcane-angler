@@ -323,10 +323,10 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const totalXpMultiplier = xpBonus + weatherXpBonus;
       const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
 
-      // Calculate Gold Breeze bonus (100-250 gold per cast)
+      // Calculate Gold Breeze bonus (50-150 gold per cast)
       let goldBreezeBonus = 0;
       if (currentWeather.weather === 'gold_breeze') {
-        goldBreezeBonus = Math.floor(Math.random() * 151) + 100; // 100-250 gold
+        goldBreezeBonus = Math.floor(Math.random() * 101) + 50; // 50-150 gold
       }
 
       result.fish = {
