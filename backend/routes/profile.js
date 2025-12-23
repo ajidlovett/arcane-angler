@@ -29,11 +29,70 @@ router.get('/me', authenticateToken, async (req, res) => {
 
         const user = users[0];
 
-        // Parse JSON fields
-        user.badges = user.badges ? JSON.parse(user.badges) : [];
-        user.owned_avatars = user.owned_avatars ? JSON.parse(user.owned_avatars) : ['avatar_001', 'avatar_002'];
-        user.fish_showcase = user.fish_showcase ? JSON.parse(user.fish_showcase) : [];
-        user.achievement_showcase = user.achievement_showcase ? JSON.parse(user.achievement_showcase) : [];
+        // Parse JSON fields - handle both MySQL auto-parsed and string formats
+        if (user.badges) {
+            if (Array.isArray(user.badges)) {
+                // Already parsed by MySQL
+                user.badges = user.badges;
+            } else if (typeof user.badges === 'string') {
+                try {
+                    user.badges = JSON.parse(user.badges);
+                } catch (e) {
+                    console.error('Failed to parse badges:', e);
+                    user.badges = [];
+                }
+            }
+        } else {
+            user.badges = [];
+        }
+
+        if (user.owned_avatars) {
+            if (Array.isArray(user.owned_avatars)) {
+                // Already parsed by MySQL
+                user.owned_avatars = user.owned_avatars;
+            } else if (typeof user.owned_avatars === 'string') {
+                try {
+                    user.owned_avatars = JSON.parse(user.owned_avatars);
+                } catch (e) {
+                    console.error('Failed to parse owned_avatars:', e);
+                    user.owned_avatars = ['avatar_001', 'avatar_002'];
+                }
+            }
+        } else {
+            user.owned_avatars = ['avatar_001', 'avatar_002'];
+        }
+
+        if (user.fish_showcase) {
+            if (Array.isArray(user.fish_showcase)) {
+                // Already parsed by MySQL
+                user.fish_showcase = user.fish_showcase;
+            } else if (typeof user.fish_showcase === 'string') {
+                try {
+                    user.fish_showcase = JSON.parse(user.fish_showcase);
+                } catch (e) {
+                    console.error('Failed to parse fish_showcase:', e);
+                    user.fish_showcase = [];
+                }
+            }
+        } else {
+            user.fish_showcase = [];
+        }
+
+        if (user.achievement_showcase) {
+            if (Array.isArray(user.achievement_showcase)) {
+                // Already parsed by MySQL
+                user.achievement_showcase = user.achievement_showcase;
+            } else if (typeof user.achievement_showcase === 'string') {
+                try {
+                    user.achievement_showcase = JSON.parse(user.achievement_showcase);
+                } catch (e) {
+                    console.error('Failed to parse achievement_showcase:', e);
+                    user.achievement_showcase = [];
+                }
+            }
+        } else {
+            user.achievement_showcase = [];
+        }
 
         res.json({ profile: user });
     } catch (error) {
@@ -112,10 +171,54 @@ router.get('/:userId', authenticateToken, async (req, res) => {
             [profileUserId]
         );
 
-        // Parse JSON fields
-        profileUser.badges = profileUser.badges ? JSON.parse(profileUser.badges) : [];
-        profileUser.fish_showcase = profileUser.fish_showcase ? JSON.parse(profileUser.fish_showcase) : [];
-        profileUser.achievement_showcase = profileUser.achievement_showcase ? JSON.parse(profileUser.achievement_showcase) : [];
+        // Parse JSON fields - handle both MySQL auto-parsed and string formats
+        if (profileUser.badges) {
+            if (Array.isArray(profileUser.badges)) {
+                // Already parsed by MySQL
+                profileUser.badges = profileUser.badges;
+            } else if (typeof profileUser.badges === 'string') {
+                try {
+                    profileUser.badges = JSON.parse(profileUser.badges);
+                } catch (e) {
+                    console.error('Failed to parse badges:', e);
+                    profileUser.badges = [];
+                }
+            }
+        } else {
+            profileUser.badges = [];
+        }
+
+        if (profileUser.fish_showcase) {
+            if (Array.isArray(profileUser.fish_showcase)) {
+                // Already parsed by MySQL
+                profileUser.fish_showcase = profileUser.fish_showcase;
+            } else if (typeof profileUser.fish_showcase === 'string') {
+                try {
+                    profileUser.fish_showcase = JSON.parse(profileUser.fish_showcase);
+                } catch (e) {
+                    console.error('Failed to parse fish_showcase:', e);
+                    profileUser.fish_showcase = [];
+                }
+            }
+        } else {
+            profileUser.fish_showcase = [];
+        }
+
+        if (profileUser.achievement_showcase) {
+            if (Array.isArray(profileUser.achievement_showcase)) {
+                // Already parsed by MySQL
+                profileUser.achievement_showcase = profileUser.achievement_showcase;
+            } else if (typeof profileUser.achievement_showcase === 'string') {
+                try {
+                    profileUser.achievement_showcase = JSON.parse(profileUser.achievement_showcase);
+                } catch (e) {
+                    console.error('Failed to parse achievement_showcase:', e);
+                    profileUser.achievement_showcase = [];
+                }
+            }
+        } else {
+            profileUser.achievement_showcase = [];
+        }
 
         res.json({
             profile: profileUser,
@@ -577,7 +680,20 @@ router.get('/:userId/showcase/achievements', authenticateToken, async (req, res)
             return res.status(404).json({ error: 'User not found' });
         }
 
-        const showcase = users[0].achievement_showcase ? JSON.parse(users[0].achievement_showcase) : [];
+        // Parse JSON field - handle both MySQL auto-parsed and string formats
+        let showcase = [];
+        if (users[0].achievement_showcase) {
+            if (Array.isArray(users[0].achievement_showcase)) {
+                showcase = users[0].achievement_showcase;
+            } else if (typeof users[0].achievement_showcase === 'string') {
+                try {
+                    showcase = JSON.parse(users[0].achievement_showcase);
+                } catch (e) {
+                    console.error('Failed to parse achievement_showcase:', e);
+                    showcase = [];
+                }
+            }
+        }
 
         res.json({ showcase });
     } catch (error) {
@@ -622,7 +738,20 @@ router.post('/showcase/achievements', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'Player data not found' });
         }
 
-        const unlockedAchievements = playerData[0].achievements ? JSON.parse(playerData[0].achievements) : [];
+        // Parse JSON field - handle both MySQL auto-parsed and string formats
+        let unlockedAchievements = [];
+        if (playerData[0].achievements) {
+            if (Array.isArray(playerData[0].achievements)) {
+                unlockedAchievements = playerData[0].achievements;
+            } else if (typeof playerData[0].achievements === 'string') {
+                try {
+                    unlockedAchievements = JSON.parse(playerData[0].achievements);
+                } catch (e) {
+                    console.error('Failed to parse achievements:', e);
+                    unlockedAchievements = [];
+                }
+            }
+        }
 
         for (const achId of achievementIds) {
             if (!unlockedAchievements.includes(achId)) {
@@ -661,7 +790,20 @@ router.get('/:userId/showcase/fish', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        const showcase = users[0].fish_showcase ? JSON.parse(users[0].fish_showcase) : [];
+        // Parse JSON field - handle both MySQL auto-parsed and string formats
+        let showcase = [];
+        if (users[0].fish_showcase) {
+            if (Array.isArray(users[0].fish_showcase)) {
+                showcase = users[0].fish_showcase;
+            } else if (typeof users[0].fish_showcase === 'string') {
+                try {
+                    showcase = JSON.parse(users[0].fish_showcase);
+                } catch (e) {
+                    console.error('Failed to parse fish_showcase:', e);
+                    showcase = [];
+                }
+            }
+        }
 
         res.json({ showcase });
     } catch (error) {
