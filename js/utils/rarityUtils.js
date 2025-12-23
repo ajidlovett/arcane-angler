@@ -9,8 +9,17 @@
  * @returns {string} Color or gradient string
  */
 window.getRarityColor = (rarity, forBackground = false) => {
+  // Validate inputs
+  if (!rarity || !window.RARITY_COLORS) {
+    console.warn('getRarityColor: Invalid rarity or RARITY_COLORS not defined', rarity);
+    return '#9ca3af'; // Default gray
+  }
+
   const color = window.RARITY_COLORS[rarity];
-  if (!color) return '#9ca3af';
+  if (!color) {
+    console.warn('getRarityColor: No color found for rarity:', rarity);
+    return '#9ca3af';
+  }
 
   if (forBackground && color.startsWith('linear-gradient')) {
     return color; // Return gradient for backgrounds
@@ -41,15 +50,28 @@ window.isGradientRarity = (rarity) => {
  * @returns {object} Style object with gradient or solid color
  */
 window.getGradientTextStyle = (rarity) => {
-  if (!window.isGradientRarity(rarity)) {
-    return { color: window.getRarityColor(rarity) };
+  // Ensure we have a valid rarity
+  if (!rarity || !window.RARITY_COLORS) {
+    return { color: '#9ca3af' }; // Default gray
   }
 
+  if (!window.isGradientRarity(rarity)) {
+    const color = window.getRarityColor(rarity);
+    return {
+      color: color,
+      display: 'inline-block'  // Ensure inline-block for better rendering
+    };
+  }
+
+  // For gradient rarities (Exotic, Arcane)
+  const gradient = window.RARITY_COLORS[rarity];
   return {
-    background: window.RARITY_COLORS[rarity],
+    background: gradient,
+    backgroundImage: gradient,
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
+    color: 'transparent',  // Fallback for browsers that don't support background-clip
     fontWeight: 'bold',
     display: 'inline-block',
     boxDecorationBreak: 'clone',
@@ -83,23 +105,32 @@ window.getGradientBorderStyle = (rarity) => {
  * @returns {object} Style object with gradient background and solid border
  */
 window.getGradientBackgroundStyle = (rarity, surfaceColor) => {
-  if (!window.isGradientRarity(rarity)) {
+  // Provide fallback values
+  if (!rarity || !window.RARITY_COLORS) {
     return {
-      backgroundColor: surfaceColor,
-      borderColor: window.getRarityColor(rarity)
+      backgroundColor: surfaceColor || '#111827',
+      borderColor: '#9ca3af'
+    };
+  }
+
+  if (!window.isGradientRarity(rarity)) {
+    const borderColor = window.getRarityColor(rarity);
+    return {
+      backgroundColor: surfaceColor || '#111827',
+      borderColor: borderColor || '#9ca3af'
     };
   }
 
   // Extract first color from gradient for solid border
   const gradient = window.RARITY_COLORS[rarity];
-  const firstColorMatch = gradient.match(/#[0-9a-fA-F]{6}/);
+  const firstColorMatch = gradient ? gradient.match(/#[0-9a-fA-F]{6}/) : null;
   const borderColor = firstColorMatch ? firstColorMatch[0] : '#9ca3af';
 
   // Create a dimmed gradient background overlay
   return {
-    backgroundColor: surfaceColor,
+    backgroundColor: surfaceColor || '#111827',
     borderColor: borderColor,
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), ${gradient}`,
+    backgroundImage: gradient ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), ${gradient}` : 'none',
     backgroundBlendMode: 'overlay'
   };
 };
