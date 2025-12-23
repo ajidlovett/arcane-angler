@@ -10,9 +10,52 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
     const [selectedShowcaseFish, setSelectedShowcaseFish] = useState([]);
     const [loading, setLoading] = useState(false);
     const [saveMessage, setSaveMessage] = useState('');
+    const [unlockedAchievements, setUnlockedAchievements] = useState([]);
+    const [caughtFishWithRarity, setCaughtFishWithRarity] = useState([]);
 
     const showcaseLimit = currentProfile?.achievement_showcase_limit || 6;
     const fishShowcaseLimit = currentProfile?.favorite_fish_limit || 3;
+
+    // Convert achievement IDs to full achievement objects
+    useEffect(() => {
+        if (achievements && window.ACHIEVEMENTS) {
+            // achievements is an array of IDs like ['fish_1', 'mythic_1']
+            // We need to look up the full achievement objects
+            const achievementIds = Array.isArray(achievements) ? achievements : [];
+            const fullAchievements = achievementIds
+                .map(id => window.ACHIEVEMENTS.find(ach => ach.id === id))
+                .filter(Boolean); // Remove any undefined values
+            setUnlockedAchievements(fullAchievements);
+        }
+    }, [achievements]);
+
+    // Convert fish names to full fish objects with rarity
+    useEffect(() => {
+        if (lockedFish && window.biomes) {
+            // lockedFish is an array of fish names like ['Guppy', 'Salmon']
+            // We need to find each fish in the biomes data to get its rarity
+            const fishNames = Array.isArray(lockedFish) ? lockedFish : [];
+            const fishWithRarity = [];
+
+            fishNames.forEach(fishName => {
+                // Search through all biomes and rarities to find this fish
+                for (const biome of window.biomes) {
+                    const rarities = ['Common', 'Uncommon', 'Fine', 'Rare', 'Epic', 'Treasure Chest', 'Legendary', 'Mythic', 'Exotic', 'Arcane'];
+                    for (const rarity of rarities) {
+                        if (biome[rarity]) {
+                            const fish = biome[rarity].find(f => f.name === fishName);
+                            if (fish) {
+                                fishWithRarity.push({ name: fishName, rarity: rarity });
+                                return; // Found it, move to next fish
+                            }
+                        }
+                    }
+                }
+            });
+
+            setCaughtFishWithRarity(fishWithRarity);
+        }
+    }, [lockedFish]);
 
     useEffect(() => {
         loadAvatars();
@@ -163,7 +206,7 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
 
                     {activeTab === 'achievements' && (
                         <AchievementShowcaseTab
-                            achievements={achievements}
+                            achievements={unlockedAchievements}
                             selectedAchievements={selectedShowcaseAchievements}
                             onToggleAchievement={toggleAchievement}
                             onSave={handleSaveAchievementShowcase}
@@ -174,7 +217,7 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
 
                     {activeTab === 'fish' && (
                         <FishShowcaseTab
-                            lockedFish={lockedFish}
+                            lockedFish={caughtFishWithRarity}
                             selectedFish={selectedShowcaseFish}
                             onToggleFish={toggleFish}
                             onSave={handleSaveFishShowcase}
@@ -285,9 +328,9 @@ function AchievementShowcaseTab({ achievements, selectedAchievements, onToggleAc
                                 <div className="text-3xl">{achievement.icon || '🏆'}</div>
                                 <div className="flex-1">
                                     <div className={`font-bold ${isSelected ? 'text-yellow-400' : 'text-white'}`}>
-                                        {achievement.name}
+                                        {achievement.name || achievement.title || 'Unknown Achievement'}
                                     </div>
-                                    <div className="text-gray-400 text-sm">{achievement.description}</div>
+                                    <div className="text-gray-400 text-sm">{achievement.desc || achievement.description || ''}</div>
                                 </div>
                                 {isSelected && (
                                     <div className="text-yellow-400 text-2xl">✓</div>

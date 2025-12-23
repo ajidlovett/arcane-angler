@@ -406,7 +406,20 @@ router.get('/avatars/owned', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        const ownedAvatars = users[0].owned_avatars ? JSON.parse(users[0].owned_avatars) : ['avatar_001', 'avatar_002'];
+        // MySQL JSON columns are auto-parsed by mysql2, so handle both parsed and string formats
+        let ownedAvatars = ['avatar_001', 'avatar_002'];
+        if (users[0].owned_avatars) {
+            if (Array.isArray(users[0].owned_avatars)) {
+                ownedAvatars = users[0].owned_avatars;
+            } else if (typeof users[0].owned_avatars === 'string') {
+                try {
+                    ownedAvatars = JSON.parse(users[0].owned_avatars);
+                } catch (e) {
+                    console.error('Failed to parse owned_avatars:', e);
+                }
+            }
+        }
+
         const currentAvatar = users[0].profile_avatar || 'avatar_001';
 
         res.json({
@@ -439,7 +452,19 @@ router.post('/avatars/select', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        const ownedAvatars = users[0].owned_avatars ? JSON.parse(users[0].owned_avatars) : ['avatar_001', 'avatar_002'];
+        // MySQL JSON columns are auto-parsed by mysql2
+        let ownedAvatars = ['avatar_001', 'avatar_002'];
+        if (users[0].owned_avatars) {
+            if (Array.isArray(users[0].owned_avatars)) {
+                ownedAvatars = users[0].owned_avatars;
+            } else if (typeof users[0].owned_avatars === 'string') {
+                try {
+                    ownedAvatars = JSON.parse(users[0].owned_avatars);
+                } catch (e) {
+                    console.error('Failed to parse owned_avatars:', e);
+                }
+            }
+        }
 
         // Verify user owns this avatar
         if (!ownedAvatars.includes(avatarId)) {
@@ -479,7 +504,20 @@ router.post('/avatars/unlock', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        let ownedAvatars = users[0].owned_avatars ? JSON.parse(users[0].owned_avatars) : ['avatar_001', 'avatar_002'];
+        // MySQL JSON columns are auto-parsed by mysql2
+        let ownedAvatars = ['avatar_001', 'avatar_002'];
+        if (users[0].owned_avatars) {
+            if (Array.isArray(users[0].owned_avatars)) {
+                ownedAvatars = users[0].owned_avatars;
+            } else if (typeof users[0].owned_avatars === 'string') {
+                try {
+                    ownedAvatars = JSON.parse(users[0].owned_avatars);
+                } catch (e) {
+                    console.error('Failed to parse owned_avatars:', e);
+                    ownedAvatars = ['avatar_001', 'avatar_002'];
+                }
+            }
+        }
 
         // Check if already owned
         if (ownedAvatars.includes(avatarId)) {
