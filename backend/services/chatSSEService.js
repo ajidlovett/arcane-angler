@@ -2,7 +2,7 @@
  * Chat Server-Sent Events (SSE) Service
  *
  * Manages SSE connections for real-time chat updates across different channels.
- * Supports global, guild, and notification channels.
+ * Supports global, guild, notification, and weather channels.
  */
 
 class ChatSSEService {
@@ -11,7 +11,8 @@ class ChatSSEService {
     this.channels = {
       global: new Set(),
       guild: new Set(),
-      notification: new Set()
+      notification: new Set(),
+      weather: new Set()
     };
 
     // Start heartbeat interval (send ping every 30 seconds to keep connections alive)

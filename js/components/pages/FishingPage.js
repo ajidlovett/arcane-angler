@@ -305,32 +305,32 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
             </div>
 
             <div className="text-center">
-              <div className="text-xs uppercase tracking-wide mb-1" style={getGradientTextStyle(lastCatch.rarity)}>
-                {lastCatch.rarity}
-              </div>
-              <div className="text-xl sm:text-2xl font-bold mb-2">{lastCatch.fish}</div>
-
               {lastCatch.isTreasure ? (
-                <div className="space-y-1">
-                  <div className="text-base sm:text-[1.05rem] text-yellow-400">🎁 Treasure Found!</div>
-                  <div className="flex justify-center gap-4 text-sm sm:text-base">
-                    <span className="text-yellow-400">+{lastCatch.gold.toLocaleString()} Gold</span>
-                    <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
+                <>
+                  <div className="text-xs uppercase tracking-wide mb-1" style={getGradientTextStyle(lastCatch.rarity)}>
+                    {lastCatch.rarity}
                   </div>
-                  <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
-                  {lastCatch.xpBonus > 0 && (
-                    <div className="text-xs text-yellow-300 font-bold">
-                      ✨ +{Math.round(lastCatch.xpBonus * 100)}% XP Boost Active!
+                  <div className="text-xl sm:text-2xl font-bold mb-2">{lastCatch.fish}</div>
+                  <div className="space-y-1">
+                    <div className="text-base sm:text-[1.05rem] text-yellow-400">🎁 Treasure Found!</div>
+                    <div className="flex justify-center gap-4 text-sm sm:text-base">
+                      <span className="text-yellow-400">+{lastCatch.gold.toLocaleString()} Gold</span>
+                      <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
                     </div>
-                  )}
-                </div>
-              ) : lastCatch.rarity === 'Relic' ? (
-                <div className="space-y-1">
-                  <div className="text-base sm:text-[1.05rem] text-purple-400">🔮 Relic Found!</div>
-                  <div className="flex justify-center gap-4 text-sm sm:text-base">
-                    <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
+                    <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
+                    {lastCatch.xpBonus > 0 && (
+                      <div className="text-xs text-yellow-300 font-bold">
+                        ✨ +{Math.round(lastCatch.xpBonus * 100)}% XP Boost Active!
+                      </div>
+                    )}
                   </div>
-                  <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
+                </>
+              ) : lastCatch.rarity === 'Relic' ? (
+                <div className="space-y-2">
+                  <div className="text-2xl sm:text-3xl font-bold text-purple-400">
+                    🔮 +{lastCatch.relics.toLocaleString()} Relic{lastCatch.relics !== 1 ? 's' : ''} Found!
+                  </div>
+                  <div className="text-sm sm:text-base text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
                   {lastCatch.xpBonus > 0 && (
                     <div className="text-xs text-yellow-300 font-bold">
                       ✨ +{Math.round(lastCatch.xpBonus * 100)}% XP Boost Active!
@@ -338,7 +338,12 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   )}
                 </div>
               ) : (
-                <div>
+                <>
+                  <div className="text-xs uppercase tracking-wide mb-1" style={getGradientTextStyle(lastCatch.rarity)}>
+                    {lastCatch.rarity}
+                  </div>
+                  <div className="text-xl sm:text-2xl font-bold mb-2">{lastCatch.fish}</div>
+                  <div>
                   <div className="flex justify-center items-center gap-3 text-sm sm:text-base mb-1">
                     <span className={`text-${theme.text}`}>Caught {lastCatch.count}x</span>
                     <span className={`text-${theme.textDim}`}>|</span>
@@ -369,7 +374,8 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                       🍀 +10% LUCK Boost Active!
                     </div>
                   )}
-                </div>
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -398,32 +404,32 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
           </div>
 
           <div className="text-center">
-            <div className="text-xs uppercase tracking-wide mb-1" style={getGradientTextStyle(lastCatch.rarity)}>
-              {lastCatch.rarity}
-            </div>
-            <div className="text-xl sm:text-2xl font-bold mb-2">{lastCatch.fish}</div>
-
             {lastCatch.isTreasure ? (
-              <div className="space-y-1">
-                <div className="text-base sm:text-[1.05rem] text-yellow-400">🎁 Treasure Found!</div>
-                <div className="flex justify-center gap-4 text-sm sm:text-base">
-                  <span className="text-yellow-400">+{lastCatch.gold.toLocaleString()} Gold</span>
-                  <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
+              <>
+                <div className="text-xs uppercase tracking-wide mb-1" style={getGradientTextStyle(lastCatch.rarity)}>
+                  {lastCatch.rarity}
                 </div>
-                <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
-                {lastCatch.xpBonus > 1 && (
-                  <div className="text-xs text-yellow-300 font-bold">
-                    ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
+                <div className="text-xl sm:text-2xl font-bold mb-2">{lastCatch.fish}</div>
+                <div className="space-y-1">
+                  <div className="text-base sm:text-[1.05rem] text-yellow-400">🎁 Treasure Found!</div>
+                  <div className="flex justify-center gap-4 text-sm sm:text-base">
+                    <span className="text-yellow-400">+{lastCatch.gold.toLocaleString()} Gold</span>
+                    <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
                   </div>
-                )}
-              </div>
-            ) : lastCatch.rarity === 'Relic' ? (
-              <div className="space-y-1">
-                <div className="text-base sm:text-[1.05rem] text-purple-400">🔮 Relic Found!</div>
-                <div className="flex justify-center gap-4 text-sm sm:text-base">
-                  <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
+                  <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
+                  {lastCatch.xpBonus > 1 && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
+                    </div>
+                  )}
                 </div>
-                <div className="text-xs text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
+              </>
+            ) : lastCatch.rarity === 'Relic' ? (
+              <div className="space-y-2">
+                <div className="text-2xl sm:text-3xl font-bold text-purple-400">
+                  🔮 +{lastCatch.relics.toLocaleString()} Relic{lastCatch.relics !== 1 ? 's' : ''} Found!
+                </div>
+                <div className="text-sm sm:text-base text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
                 {lastCatch.xpBonus > 1 && (
                   <div className="text-xs text-yellow-300 font-bold">
                     ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
@@ -431,7 +437,12 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                 )}
               </div>
             ) : (
-              <div>
+              <>
+                <div className="text-xs uppercase tracking-wide mb-1" style={getGradientTextStyle(lastCatch.rarity)}>
+                  {lastCatch.rarity}
+                </div>
+                <div className="text-xl sm:text-2xl font-bold mb-2">{lastCatch.fish}</div>
+                <div>
                 <div className="flex justify-center items-center gap-3 text-sm sm:text-base mb-1">
                   <span className={`text-${theme.text}`}>Caught {lastCatch.count}x</span>
                   <span className={`text-${theme.textDim}`}>|</span>
@@ -462,7 +473,8 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                     🍀 +10% LUCK Boost Active!
                   </div>
                 )}
-              </div>
+                </div>
+              </>
             )}
           </div>
         </div>
