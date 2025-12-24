@@ -553,7 +553,7 @@ window.BIOMES = {
         { name: "Emerald Scale Arowana", xp: 65, gold: 39, desc: "A surface hunter with large, upward facing scales. It leaps feet into the air to snag birds and frogs." },
         { name: "Tiger Stripe Bass", xp: 68, gold: 41, desc: "Marked with bold orange and black stripes. It is an ambush predator that hides in the tall reeds." },
         { name: "Poison Dart Tetra", xp: 71, gold: 43, desc: "Bright blue and dangerously toxic. Predators learn quickly to avoid its vibrant warning colors." },
-        { name: "Razor Leaf Ray", xp: 74, gold: 45, desc: "A freshwater ray shaped like a giant lily pad. Its tail spine is serrated like a saw blade." },
+        { name: "Jungle Razor Ray", xp: 74, gold: 45, desc: "A camouflaged ray with serrated fins sharp as prehistoric ferns. It lies flat beneath floating leaves, slashing at passing prey with sudden lateral strikes." },
         { name: "Jungle Drum Catfish", xp: 77, gold: 47, desc: "It produces a loud thumping sound by vibrating its swim bladder. The sound carries for miles through the water." },
         { name: "Viper Head Snakehead", xp: 80, gold: 49, desc: "An invasive, aggressive predator that can crawl on land for short distances. It eats anything that fits in its mouth." },
         { name: "Electric Vine Eel", xp: 83, gold: 51, desc: "A thin, green eel that looks like a vine. It delivers a stunning shock to anything that brushes against it." },
@@ -1111,7 +1111,7 @@ window.BIOMES = {
       ],
       Epic: [
         { name: "Titan Golem Grouper", xp: 640, gold: 320, desc: "A grouper made of animated clay and stone. It guards the city gates." },
-        { name: "Archmage Arapaima", xp: 665, gold: 335, desc: "An arapaima with glowing tattoos. It can cast simple spells like 'push' and 'pull'." },
+        { name: "Runemaster Arapaima", xp: 665, gold: 335, desc: "An enormous arapaima covered in glowing blue runes that pulse with arcane power. Each scale is inscribed with ancient spells, and it commands water currents through pure magical will." },
         { name: "Dragon Bone Sturgeon", xp: 690, gold: 350, desc: "A skeleton sturgeon animated by dark magic. It feels no pain." },
         { name: "Spire Top Ray", xp: 715, gold: 365, desc: "A ray that impales prey on its sharp, spire like tail. It glides high above the city." },
         { name: "Rune Bound Leviathan", xp: 740, gold: 380, desc: "Covered in binding chains and glowing runes. It is a prisoner of the city." },
@@ -1260,7 +1260,7 @@ window.BIOMES = {
         { name: "Madness Mantle Squid", xp: 94, gold: 57, desc: "Its patterns induce insanity. Keep eye contact to a minimum." },
         { name: "Void Walker Trout", xp: 97, gold: 59, desc: "It walks on the surface of the water with spider legs. Unnatural." },
         { name: "Black Hole Sunfish", xp: 100, gold: 61, desc: "A flat disk of pure gravity. It pulls small fish into its mouth effortlessly." },
-        { name: "Entropy Eel", xp: 103, gold: 63, desc: "Where it swims, things decay. Metal rusts, wood rots, line frays." },
+        { name: "Void Decay Eel", xp: 103, gold: 63, desc: "A slithering eel whose flesh constantly dissolves and reforms. It exists partially in another dimension, leaving trails of black particles that corrupt nearby water into oily void matter." },
         { name: "Doomsday Drum", xp: 106, gold: 65, desc: "Its beat matches your heart, then stops it. A terrifying catch." },
         { name: "Nightmare Snapper", xp: 109, gold: 67, desc: "It looks like your worst fear. It changes appearance for every angler." },
         { name: "Vampire Fang Gar", xp: 112, gold: 69, desc: "It feeds on the essence of living things. Pale and deadly." }
@@ -1968,14 +1968,14 @@ window.BIOMES = {
         { name: "Magic Manta", xp: 205, gold: 135, desc: "A ray that glows with shifting neon patterns. It glides through the air as easily as water, seemingly defying physics." },
         { name: "Vision Viperfish", xp: 210, gold: 140, desc: "A deep sea fish with large, dilated eyes. It sees into the spirit realm and reacts to things that aren't there." },
         { name: "Trip Tetra", xp: 215, gold: 145, desc: "A small fish that swims in geometric patterns. Following its movement with your eyes induces a trance state." },
-        { name: "Lucid Lungfish", xp: 220, gold: 150, desc: "A fish that controls its own dreams. It sleeps for years at a time, creating a bubble of reality around it." },
-        { name: "Shaman Shark", xp: 225, gold: 155, desc: "A shark with tribal markings naturally occurring on its skin. It consumes psychoactive mushrooms to enter a battle frenzy." },
+        { name: "Dream Spore Lungfish", xp: 220, gold: 150, desc: "A bloated lungfish whose skin exudes hallucinogenic spores. Anglers who catch it report vivid dreams and visions of bioluminescent forests beneath the waves." },
+        { name: "Spore Mystic Shark", xp: 225, gold: 155, desc: "A small shark whose gills constantly exhale glowing spore clouds. It appears to commune with the fungal colonies, swimming in trance like patterns through mushroom groves." },
         { name: "Mystic Mycelium", xp: 230, gold: 160, desc: "A network of fish that share a single consciousness. What one sees, they all see." },
         { name: "Galaxy Gill", xp: 235, gold: 165, desc: "A fish with spores that look like stars. A school of them looks like a moving universe." }
       ],
       Rare: [
         { name: "Cordyceps Carp", xp: 420, gold: 240, desc: "A fish infected by a fungus that controls its brain. It swims relentlessly towards the surface to spread spores." },
-        { name: "Zombie Zebrafish", xp: 430, gold: 245, desc: "A fish that is technically dead but keeps swimming due to fungal animation. It feels no pain and stops for nothing." },
+        { name: "Fungal Husk Zebrafish", xp: 430, gold: 245, desc: "A zebrafish taken over by parasitic fungi, its stripes now glowing blue bioluminescent mycelia. It moves in jerky, unnatural patterns, controlled by the colony within." },
         { name: "Parasite Perch", xp: 440, gold: 250, desc: "A fish that burrows into larger hosts. It replaces the host's tongue and eats its food." },
         { name: "Host Halibut", xp: 450, gold: 255, desc: "A large flatfish covered in smaller parasitic mushrooms. It lives in a symbiotic relationship, trading nutrients for defense." },
         { name: "Necro Needlefish", xp: 460, gold: 260, desc: "A fish that feeds exclusively on dead tissue. It cleans the river of corpses, preventing disease." },
@@ -2029,7 +2029,7 @@ window.BIOMES = {
         { name: "Capsicum Cod", xp: 40, gold: 21, desc: "A bright red fish shaped like a chili pepper. It is hot to the touch and releases a burning oil when threatened." },
         { name: "Piper Pike", xp: 42, gold: 22, desc: "A speckled black fish that looks like a peppercorn. It shoots small, hard pellets from its mouth to stun prey." },
         { name: "Spina Shark", xp: 44, gold: 23, desc: "A small shark covered in rose thorns. It thrashes wildly when caught, entangling nets and cutting lines." },
-        { name: "Rosa Ray", xp: 46, gold: 24, desc: "A beautiful red ray with petal like wings. Hidden underneath are sharp barbs that deliver a painful sting." },
+        { name: "Rose Thorn Ray", xp: 46, gold: 24, desc: "A pink ray resembling a floating rose bloom, but beautiful thorns line its edges. It drifts gracefully through bramble patches, immune to the stinging corals." },
         { name: "Jalapeno Jack", xp: 48, gold: 25, desc: "A smooth, green fish with a rounded nose. It has a mild heat but can still cause a tingling sensation." },
         { name: "Habanero Halibut", xp: 50, gold: 26, desc: "A wrinkled, orange flatfish. It is incredibly spicy, and predators who eat it often die of internal burns." },
         { name: "Cayenne Catfish", xp: 52, gold: 27, desc: "A long, thin red fish with whisker like roots. It hides in the sand, waiting to deliver a fiery sting." },
@@ -2062,7 +2062,7 @@ window.BIOMES = {
       Rare: [
         { name: "Vampire Vine Viper", xp: 450, gold: 250, desc: "A snake like fish that mimics a thorny vine. It wraps around prey and drinks their blood through hollow thorns." },
         { name: "Iron Maiden Ide", xp: 460, gold: 255, desc: "A fish that encases itself in a spiked metal like shell. It opens only to feed." },
-        { name: "Razor Leaf Ray", xp: 470, gold: 260, desc: "A ray with wings as sharp as scalpels. It slices through kelp and flesh with ease." },
+        { name: "Thornblade Ray", xp: 470, gold: 260, desc: "A brilliant red ray covered in defensive spines that secrete capsaicin oils. Contact with its barbed tail causes intense burning pain, deterring all but the most determined predators." },
         { name: "Saw Grass Shark", xp: 480, gold: 265, desc: "A shark with serrated skin that cuts like a saw. Brushing against it causes deep lacerations." },
         { name: "Nettle Newt", xp: 490, gold: 270, desc: "A lizard fish covered in stinging hairs. It causes an itching rash that can last for weeks." },
         { name: "Briar Patch Bass", xp: 500, gold: 275, desc: "A fish that lives in the densest thickets. It lures predators in, where they get stuck and die." },
@@ -2070,9 +2070,9 @@ window.BIOMES = {
         { name: "Spike Ball Salmon", xp: 520, gold: 285, desc: "A fish that curls into a perfect sphere of spikes. It rolls along the riverbed, impenetrable." }
       ],
       Epic: [
-        { name: "Inferno Ide", xp: 850, gold: 480, desc: "A fish that is literally on fire underwater. It is the embodiment of pure spice heat." },
+        { name: "Pepper Blaze Ide", xp: 850, gold: 480, desc: "An ide that glows orange and red like burning chilies. Its scales are hot to the touch, and it feeds exclusively on the spiciest underwater pepper plants, storing the heat in specialized organs." },
         { name: "Magma Marlin", xp: 875, gold: 495, desc: "A fish with blood like lava. It melts through ice and rock." },
-        { name: "Volcano Viperfish", xp: 900, gold: 510, desc: "A deep sea fish that erupts with boiling water. Its bioluminescence is red hot." },
+        { name: "Magma Thorn Viperfish", xp: 900, gold: 510, desc: "A viperfish with needle like fangs dripping with scalding venom extracted from volcanic peppers. Its body temperature is dangerously high, and water steams around its gills." },
         { name: "Pepper Spray Piranha", xp: 925, gold: 525, desc: "A school of these fish releases a cloud of capsaicin. It blinds and chokes anything in the water." },
         { name: "Blaze Barracuda", xp: 950, gold: 540, desc: "A fast fish that leaves a trail of boiling bubbles. It strikes like a heat seeking missile." },
         { name: "Scorch Shark", xp: 975, gold: 555, desc: "A shark with charred black skin and glowing red eyes. It hunts in thermal vents." },
@@ -2132,7 +2132,7 @@ window.BIOMES = {
         { name: "Sepal Shark", xp: 130, gold: 78, desc: "A green shark that acts as the protective outer layer of the flower reef. It is tough and fibrous." },
         { name: "Bloom Bass", xp: 133, gold: 80, desc: "A fish that opens up when the sun shines. At night, it closes its fins tight to sleep." },
         { name: "Bud Betta", xp: 136, gold: 82, desc: "A small, tightly wrapped fish. It is waiting for the right moment to unfurl its magnificent fins." },
-        { name: "Rosa Ray", xp: 139, gold: 84, desc: "A red ray with spiraled patterns. It smells like perfume and has sharp thorns on its tail." },
+        { name: "Lotus Petal Ray", xp: 139, gold: 84, desc: "A delicate ray with translucent fins resembling pink lotus petals. It glides through blooming flowers, feeding on nectar and spreading pollen as it swims." },
         { name: "Lilium Loach", xp: 142, gold: 86, desc: "A white, trumpet shaped fish. It rests on lily pads, blending in perfectly." }
       ],
       Fine: [
@@ -2204,7 +2204,7 @@ window.BIOMES = {
         { name: "Mural Minnow", xp: 50, gold: 26, desc: "A silver fish with a distinct marking on its side that looks like a human handprint. They school in tight formations that resemble a wall of painted hands." },
         { name: "Spear Tetra", xp: 52, gold: 27, desc: "A tiny, arrow shaped fish with a sharp, pointed nose. It darts through the water in straight lines, hunting microscopic organisms like a fired projectile." },
         { name: "Hide Halibut", xp: 54, gold: 28, desc: "A large flatfish with a texture resembling cured animal leather. It is tough and chewy, often ignored by predators due to its thick skin." },
-        { name: "Bone Bass", xp: 56, gold: 29, desc: "A skeletal looking fish with white markings that outline its ribcage and spine. It swims slowly near the bottom, blending in with fossil remains." },
+        { name: "Flint Bass", xp: 56, gold: 29, desc: "A rough scaled bass with stone gray coloring and sharp, flint like dorsal spines. Early humans knapped its scales into cutting tools, finding them sharper than obsidian." },
         { name: "Soot Salmon", xp: 58, gold: 30, desc: "A fish that appears to be covered in ash from an ancient campfire. It thrives in warmer volcanic vents found within the caves." },
         { name: "Pebble Perch", xp: 60, gold: 31, desc: "A round, smooth fish that looks exactly like a river stone. It holds perfectly still in the current, moving only to snatch food." },
         { name: "Club Cod", xp: 62, gold: 32, desc: "A heavy headed fish with a bulbous tail. It uses its thick tail to bash open shellfish on the rocks." }
@@ -2216,15 +2216,15 @@ window.BIOMES = {
         { name: "Ivory Tuna", xp: 121, gold: 73, desc: "A large predatory fish with curved, white bones extending from its jaw. It charges at prey, stunning them with a blow from its tusks." },
         { name: "Fossil Gar", xp: 124, gold: 75, desc: "A fish that looks like a living skeleton encased in stone. Its scales are as hard as rock, providing immense defense." },
         { name: "Amber Angelfish", xp: 127, gold: 77, desc: "A translucent orange fish that looks like fossilized tree resin. Ancient insects can sometimes be seen trapped within its thick scales." },
-        { name: "Torch Trout", xp: 130, gold: 79, desc: "A fish with a bioluminescent tail that flickers like a primitive fire. It guides schools of fish through the darkest cave tunnels." },
+        { name: "Ember Trout", xp: 130, gold: 79, desc: "A trout with scales that glow like smoldering coals in cave darkness. Ancient hunters used its bioluminescence to light their way through limestone tunnels." },
         { name: "Nomad Needlefish", xp: 133, gold: 81, desc: "A wandering fish that never stays in one place. It travels vast distances, following the migration of larger herds." },
         { name: "Forager Guppy", xp: 136, gold: 83, desc: "A fish with cheek pouches used to store food. It endlessly collects seeds and scraps, hoarding them in small rock crevices." },
         { name: "Hunter Haddock", xp: 139, gold: 85, desc: "A lean, aggressive fish with camouflage stripes. It stalks its prey for hours before launching a coordinated attack." }
       ],
       Fine: [
-        { name: "Shaman Shark", xp: 230, gold: 135, desc: "A shark painted with white tribal markings and feathers. It swims in a trance like state, detecting electromagnetic fields with heightened sensitivity." },
+        { name: "Stone Age Mystic Shark", xp: 230, gold: 135, desc: "A primitive shark etched with ceremonial charcoal marks. It circles sacred pools during tribal rituals, and shamans read omens in the patterns of its swimming." },
         { name: "Totem Tilapia", xp: 235, gold: 140, desc: "A fish with vertically stacked faces pattern on its scales. It stacks itself on top of other fish while sleeping." },
-        { name: "Ritual Ray", xp: 240, gold: 145, desc: "A ray that performs a rhythmic dance during the full moon. Its movements are precise and hypnotic." },
+        { name: "Cave Art Ray", xp: 240, gold: 145, desc: "A ray whose skin bears markings identical to prehistoric cave paintings. Scholars believe it may have inspired ancient artists, or perhaps carries the memories of those who first witnessed it." },
         { name: "Elder Eel", xp: 245, gold: 150, desc: "An incredibly old eel with grey, wrinkled skin and cloudy eyes. Younger eels protect it, treating it with reverence." },
         { name: "Ancestor Arapaima", xp: 250, gold: 155, desc: "A massive, ancient fish that breathes air. It is believed to carry the spirits of the tribe's forefathers." },
         { name: "Pictograph Mackerel", xp: 255, gold: 160, desc: "A long fish whose side depicts a hunting scene in natural pigments. The scene seems to move as the fish swims." },
@@ -2236,7 +2236,7 @@ window.BIOMES = {
         { name: "Atlatl Archerfish", xp: 470, gold: 280, desc: "A fish that spits water with the force of a flint tipped spear thrower. It knocks prey off low hanging branches with lethal accuracy." },
         { name: "Bison Bullhead", xp: 480, gold: 285, desc: "A horned fish with a humped back and shaggy brown scales. It stampedes along the river bottom in large groups." },
         { name: "Glacier Grouper", xp: 490, gold: 290, desc: "A remnant of the Ice Age, this fish radiates cold. Ice crystals form on its gills as it breathes." },
-        { name: "Bronze Barracuda", xp: 500, gold: 295, desc: "A sleek fish with metallic, bronze colored scales. It represents the coming of a new, harder era." },
+        { name: "Bronze Age Pike", xp: 500, gold: 295, desc: "A barracuda whose scales have oxidized into a beautiful bronze green patina. Ancient tribes once forged spearheads from its bones, and cave paintings depict its fearsome hunts." },
         { name: "Iron Ide", xp: 510, gold: 300, desc: "A dark, rusty fish that is incredibly heavy and tough. Its scales are magnetic." },
         { name: "Megalith Marlin", xp: 520, gold: 305, desc: "A colossal fish that looks like a swimming standing stone. It is covered in moss and ancient carvings." },
         { name: "Cave Bear Catfish", xp: 530, gold: 310, desc: "A massive, furry catfish with claws on its fins. It hibernates in deep underwater caves during winter." }
@@ -2300,11 +2300,11 @@ window.BIOMES = {
         { name: "Mask Mackerel", xp: 118, gold: 71, desc: "A fish with a bright, terrifying face pattern meant to scare predators. The rest of its body is plain and dull." },
         { name: "Tattoo Tilapia", xp: 121, gold: 73, desc: "A fish covered in intricate black ink patterns. The patterns tell the story of its lineage and battles." },
         { name: "Tribal Triggerfish", xp: 124, gold: 75, desc: "A fish painted with bold geometric shapes in primary colors. It is aggressive and defends its territory fiercely." },
-        { name: "Volcano Viperfish", xp: 127, gold: 77, desc: "A black fish with veins of glowing orange lava. It lives near thermal vents and is hot to the touch." },
+        { name: "Tiki Flame Viperfish", xp: 127, gold: 77, desc: "A viperfish decorated with natural tribal patterns in red and black. It swims rhythmically to the underwater drumbeats, and locals believe it carries the spirit of fire dancers." },
         { name: "Obsidian Oscar", xp: 130, gold: 79, desc: "A jet black fish with sharp, glassy scales. It was used by ancient islanders to make arrowheads." },
         { name: "Jade Jack", xp: 133, gold: 81, desc: "A green, semi precious fish that glows faintly. It is considered a sign of wealth and good fortune." },
         { name: "Pearl Pike", xp: 136, gold: 83, desc: "A shimmering white fish with an iridescent sheen. Inside its mouth lies a giant, perfectly round pearl." },
-        { name: "Torch Trout", xp: 139, gold: 85, desc: "A fish with a flaming tail fin that never goes out, even underwater. It is used to light night fishing ceremonies." },
+        { name: "Tiki Torch Trout", xp: 139, gold: 85, desc: "A vibrant trout adorned with natural patterns resembling carved tiki masks. Its fins burn with bioluminescent fire that pulses to the rhythm of distant ceremonial drums." },
         { name: "Islander Ide", xp: 142, gold: 87, desc: "A friendly fish that guides lost sailors to land. It swims alongside boats, chirping happily." }
       ],
       Fine: [
@@ -2372,7 +2372,7 @@ window.BIOMES = {
       Common: [
         { name: "Jade Jawfish", xp: 48, gold: 25, desc: "A small fish carved from green jade. It is prized by jewelers but is actually a living creature that burrows in the mud." },
         { name: "Gold Guppy", xp: 50, gold: 26, desc: "A tiny fish made of pure, soft gold. It glitters in the sunbeams that penetrate the cenote." },
-        { name: "Sun Snapper", xp: 52, gold: 27, desc: "A round, yellow fish with rays extending from its body. It looks like a child's drawing of the sun." },
+        { name: "Gold Sun Snapper", xp: 52, gold: 27, desc: "A snapper plated with golden scales that shine brilliantly in shaft light. Ancient priests threw gold coins to feed it, and its belly still holds treasures from centuries past." },
         { name: "Stone Salmon", xp: 54, gold: 28, desc: "A grey, heavy fish that looks like a swimming brick. It is used to build underwater walls." },
         { name: "Maize Carp", xp: 56, gold: 29, desc: "A yellow fish with kernel like scales. It is the staple food of the underwater civilization." },
         { name: "Clay Catfish", xp: 58, gold: 30, desc: "A reddish brown fish that looks like wet pottery. It is moldable when asleep." },
@@ -2396,7 +2396,7 @@ window.BIOMES = {
       Fine: [
         { name: "Obsidian Swordfish", xp: 240, gold: 140, desc: "A fish with a bill made of sharp obsidian. It is used in ritual bloodletting ceremonies." },
         { name: "Blood Barracuda", xp: 245, gold: 145, desc: "A crimson red fish that smells of iron. It goes into a frenzy at the first drop of blood." },
-        { name: "Eclipse Eel", xp: 250, gold: 150, desc: "A black eel with a ring of light around its head. It eats the sun during solar eclipses." },
+        { name: "Solar Corona Eel", xp: 250, gold: 150, desc: "A golden eel ringed with brilliant yellow rays that flare like solar prominences. During its rare feeding frenzies, the entire cenote glows as if lit by a captive sun." },
         { name: "Solstice Salmon", xp: 255, gold: 155, desc: "A fish that only appears on the longest day of the year. It shines with blinding light." },
         { name: "Equinox Eel", xp: 260, gold: 160, desc: "A black and white striped eel. It represents the perfect balance between day and night." },
         { name: "Calendar Carp", xp: 265, gold: 165, desc: "A round fish with a complex calendar wheel on its side. It predicts the end of the world." },
@@ -2472,7 +2472,7 @@ window.BIOMES = {
         { name: "Lantern Lungfish", xp: 123, gold: 77, desc: "A round, glowing red fish that floats on the surface. It lights up the lake during festivals." },
         { name: "Celadon Catfish", xp: 126, gold: 79, desc: "A fish with a pale, grey green glaze. It is prized by collectors for its unique crackled skin texture." },
         { name: "Brush Barracuda", xp: 129, gold: 81, desc: "A thin fish with a tail like a calligraphy brush. It paints beautiful strokes in the mud." },
-        { name: "Scroll Snapper", xp: 132, gold: 83, desc: "A long fish that rolls itself up tightly. Unrolling it reveals ancient wisdom written on its belly." },
+        { name: "Ink Scroll Snapper", xp: 132, gold: 83, desc: "An elegant snapper whose scales resemble unfurled calligraphy scrolls. Scholars say the patterns shift slightly over time, as if recording the lake's history in flowing script." },
         { name: "Dynasty Dory", xp: 135, gold: 85, desc: "A regal fish that wears a small crown. It traces its lineage back thousands of years." },
         { name: "Ming Mackerel", xp: 138, gold: 87, desc: "A valuable antique fish. It is white with blue dragons painted on its side." },
         { name: "Qing Quillback", xp: 141, gold: 89, desc: "A fish with a long, braided pigtail fin. It adheres to strict traditions." },
@@ -2542,7 +2542,7 @@ window.BIOMES = {
     description: "Icy, mist shrouded waters hemmed in by steep cliffs. Viking longships lie sunken in the depths, their shields still intact. The fish here are hardened warriors, etched with glowing blue runes and frost.",
     fish: {
       Common: [
-        { name: "Rune Roach", xp: 52, gold: 28, desc: "A small fish marked with a glowing blue rune. It grants minor strength to those who eat it." },
+        { name: "Frost Rune Roach", xp: 52, gold: 28, desc: "A small roach etched with glowing blue Norse runes that radiate freezing cold. Vikings believed each rune granted a different blessing to those brave enough to touch it." },
         { name: "Axe Anchovy", xp: 54, gold: 29, desc: "A silver fish shaped like a battle axe head. It chops at the water to swim." },
         { name: "Scutum Sprat", xp: 56, gold: 30, desc: "A round fish patterned like a Viking shield. It schools in a 'shield wall' formation." },
         { name: "Glacier Goby", xp: 58, gold: 31, desc: "A fish made of solid ice. It doesn't melt, even in warm currents." },
@@ -2652,7 +2652,7 @@ window.BIOMES = {
         { name: "Oil Can Oscar", xp: 157, gold: 98, desc: "A slick fish that drips lubricant. It keeps the other mechanical fish moving smoothly." }
       ],
       Fine: [
-        { name: "Bronze Barracuda", xp: 270, gold: 160, desc: "A statue brought to life, covered in a green patina. It is heavy, durable, and strikes with metallic clanks." },
+        { name: "Brass Gear Barracuda", xp: 270, gold: 160, desc: "A mechanical looking barracuda with scales that resemble interlocking brass gears. Steam vents from its gills with each breath, and its teeth are sharp as machined drill bits." },
         { name: "Ironclad Ide", xp: 275, gold: 165, desc: "A fish plated in heavy rivets and sheet metal. It was built for war in the deep channels." },
         { name: "Zeppelin Zebrafish", xp: 280, gold: 170, desc: "A bloated fish filled with hydrogen gas. It floats near the surface, bombing snails with pebbles." },
         { name: "Victorian Viperfish", xp: 285, gold: 175, desc: "A fish wearing a tiny monocle and top hat pattern. It is surprisingly polite before it bites you." },
@@ -3060,11 +3060,11 @@ window.BIOMES = {
       Common: [
         { name: "Mana Minnow", xp: 66, gold: 40, desc: "A small, glowing blue fish that buzzes with raw energy. It dissolves into pure light if removed from the water for too long." },
         { name: "Spell Sprat", xp: 68, gold: 41, desc: "A tiny fish that trails sparkling dust. It inadvertently casts minor cantrips like changing the water color." },
-        { name: "Rune Roach", xp: 70, gold: 42, desc: "A fish with a glowing symbol etched into its forehead. The symbol changes depending on the fish's mood." },
+        { name: "Mana Sigil Roach", xp: 70, gold: 42, desc: "A tiny roach that feeds on raw magical energy. Violet glyphs float around it like tiny satellites, and touching it can temporarily grant minor spellcasting abilities." },
         { name: "Hex Herring", xp: 72, gold: 43, desc: "A dark purple fish that brings bad luck. Fishermen often find knots in their lines after spotting one." },
         { name: "Charm Carp", xp: 74, gold: 44, desc: "A pink, lovely fish that is impossibly cute. Predators often refuse to eat it due to its magical allure." },
         { name: "Wand Wrasse", xp: 76, gold: 45, desc: "A long, stick like fish with a star shaped tail. It focuses magical currents to stun prey." },
-        { name: "Scroll Snapper", xp: 78, gold: 46, desc: "A fish with skin like parchment. As it ages, ancient spells appear written on its scales." },
+        { name: "Mana Script Snapper", xp: 78, gold: 46, desc: "A snapper covered in glowing violet magical runes that constantly rearrange themselves. It swims equally well through air and water, manipulating raw mana to defy gravity." },
         { name: "Potion Puffer", xp: 80, gold: 47, desc: "A round fish filled with bubbling, volatile fluids. It explodes into a random magical effect when threatened." },
         { name: "Mystic Mullet", xp: 82, gold: 48, desc: "A fish with a third eye that glows. It can see through illusions and muddy water." },
         { name: "Wizard Whitefish", xp: 84, gold: 49, desc: "A fish with a long, flowing beard of fins. It strokes its beard while contemplating the currents." }
@@ -3088,7 +3088,7 @@ window.BIOMES = {
         { name: "Voodoo Viperfish", xp: 345, gold: 225, desc: "A fish that looks like a pin cushion doll. Harming it harms the attacker." },
         { name: "Oracle Oscar", xp: 350, gold: 230, desc: "A blind fish that speaks in riddles. It knows the secrets of the deep." },
         { name: "Prophecy Pike", xp: 355, gold: 235, desc: "A fish that always arrives before a disaster. It is a harbinger of doom." },
-        { name: "Ritual Ray", xp: 360, gold: 240, desc: "A ray with geometric circles on its back. It swims in perfect patterns to channel energy." },
+        { name: "Spell Circle Ray", xp: 360, gold: 240, desc: "A ray whose wings are inscribed with perfect geometric spell circles. As it swims, magical energy traces along the lines, casting minor enchantments on nearby objects." },
         { name: "Sigil Shark", xp: 365, gold: 245, desc: "A shark branded with glowing runes. Its bite drains magic." }
       ],
       Rare: [
@@ -3106,7 +3106,7 @@ window.BIOMES = {
         { name: "Gandalf Grey Mullet", xp: 1375, gold: 715, desc: "A wandering wizard fish. It blocks the path of fiery demons." },
         { name: "Necromancer Needlefish", xp: 1400, gold: 730, desc: "A fish that raises dead minnows to fight for it. It is surrounded by a green aura." },
         { name: "Witch King Wahoo", xp: 1425, gold: 745, desc: "A fish that no living man can catch. It screams when it surfaces." },
-        { name: "Archmage Arapaima", xp: 1450, gold: 760, desc: "The supreme ruler of the magical waters. It knows every spell in existence." },
+        { name: "Aethermancer Arapaima", xp: 1450, gold: 760, desc: "A colossal arapaima that swims through pure liquid mana instead of water. Its entire body is a conduit for magical energy, and it can phase between dimensions at will." },
         { name: "Druid Dorade", xp: 1475, gold: 775, desc: "A fish covered in living moss and vines. It can shape shift into a seal." },
         { name: "Shaman Sheepshead", xp: 1500, gold: 790, desc: "A fish that communes with the spirits. It cures diseases in the reef." },
         { name: "Cleric Carp", xp: 1525, gold: 805, desc: "A holy fish that heals wounds with a touch. It glows with golden light." }
@@ -3147,10 +3147,10 @@ window.BIOMES = {
         { name: "Lead Loach", xp: 68, gold: 42, desc: "A small grey fish that weighs as much as an anchor. It drags itself along the bottom." },
         { name: "Dense Dace", xp: 70, gold: 43, desc: "A compact fish with molecularly compressed scales. It is impossible to squash." },
         { name: "Heavy Herring", xp: 72, gold: 44, desc: "A fish that increases the gravity around it. Small rocks orbit its body." },
-        { name: "Orbit Oscar", xp: 74, gold: 45, desc: "A round fish that spins constantly. It generates a localized gravitational field." },
+        { name: "Elliptical Oscar", xp: 74, gold: 45, desc: "An oscar trapped in a permanent orbital trajectory around the gravity well's center. It cannot escape, swimming endlessly in a perfect ellipse like a captured moon." },
         { name: "G Force Guppy", xp: 76, gold: 46, desc: "A tiny fish that can withstand immense pressure. It survives in the deepest crush depths." },
         { name: "Magnet Minnow", xp: 78, gold: 47, desc: "A fish with a strong magnetic pull. It attracts metal debris to its scales for armor." },
-        { name: "Vacuum Vomer", xp: 80, gold: 48, desc: "A fish that sucks in water with the force of a void. It leaves a trail of emptiness." },
+        { name: "Gravity Well Vomer", xp: 80, gold: 48, desc: "A small vomer that has learned to hide inside micro gravity wells. When threatened, it creates a localized vacuum that pulls predators off course." },
         { name: "Tidal Tetra", xp: 82, gold: 49, desc: "A blue fish that controls the micro tides. It pushes water away with a thought." },
         { name: "Pressure Pike", xp: 84, gold: 50, desc: "A fish built like a submarine hull. It explodes if brought to the surface." },
         { name: "Anchor Angelfish", xp: 86, gold: 51, desc: "A fish shaped like a heavy iron hook. It holds its position against any current." }
@@ -3159,33 +3159,33 @@ window.BIOMES = {
         { name: "Osmium Oscar", xp: 160, gold: 110, desc: "Made of the densest natural element. It sinks through soft mud until it hits bedrock." },
         { name: "Neutron Newt", xp: 163, gold: 112, desc: "A lizard composed of collapsed star matter. A teaspoon of it weighs a billion tons." },
         { name: "Pulsar Perch", xp: 166, gold: 114, desc: "A spinning fish that emits beams of radiation. It acts as a lighthouse in the dark." },
-        { name: "Quasar Quillback", xp: 169, gold: 116, desc: "A violently energetic fish. It outshines everything else in the grotto." },
+        { name: "Pulsar Quillback", xp: 169, gold: 116, desc: "A quillback that emits rhythmic pulses of gravitational energy. Each beat sends ripples through the water, creating pressure waves that can be felt throughout the grotto." },
         { name: "Graviton Grouper", xp: 172, gold: 118, desc: "A fish that manipulates the fundamental particle of gravity. It can float or sink at will." },
-        { name: "Relativity Ray", xp: 175, gold: 120, desc: "A ray that bends light around it. It appears to be in a different place than it actually is." },
+        { name: "Spacetime Warp Ray", xp: 175, gold: 120, desc: "A ray that exists slightly ahead in time due to gravitational time dilation. It appears to react to threats before they occur, making it nearly impossible to catch." },
         { name: "Horizon Halibut", xp: 178, gold: 122, desc: "A flatfish that lives on the edge of the void. Half of it is always in shadow." },
         { name: "Collapse Carp", xp: 181, gold: 124, desc: "A fish that implodes when threatened, pulling enemies in, then reforms." },
         { name: "Mass Marlin", xp: 184, gold: 126, desc: "A fish with infinite mass but small size. It curves the water surface around it." },
-        { name: "Void Viperfish", xp: 187, gold: 128, desc: "A black eel that absorbs all light. It is a swimming silhouette." }
+        { name: "Mass Compression Viperfish", xp: 187, gold: 128, desc: "A viperfish whose entire body has been compacted by gravity into a form smaller than its original head. Despite its size, it weighs as much as a boulder." }
       ],
       Fine: [
-        { name: "Singularity Shark", xp: 340, gold: 220, desc: "A shark with a black hole in its stomach. It eats endlessly but never gets full." },
-        { name: "Wormhole Wrasse", xp: 345, gold: 225, desc: "A fish that tunnels through space time. It enters a rock and exits a mile away." },
+        { name: "Event Horizon Shark", xp: 340, gold: 220, desc: "A compact shark that swims along the edge of the grotto's central gravity well. Everything it bites is crushed into ultra dense matter before being consumed." },
+        { name: "Gravity Tunnel Wrasse", xp: 345, gold: 225, desc: "A wrasse that tunnels through folded space created by the gravity well. It seems to teleport short distances, actually swimming through temporarily connected regions of spacetime." },
         { name: "Time Dilation Tuna", xp: 350, gold: 230, desc: "A fish that moves so fast time slows down around it. It ages slower than other fish." },
         { name: "Spacetime Sturgeon", xp: 355, gold: 235, desc: "A fish with scales that map the curvature of the universe. It navigates the cosmos." },
-        { name: "Dark Matter Dorado", xp: 360, gold: 240, desc: "A fish that cannot be seen or touched, only detected by its gravity. It passes through nets." },
-        { name: "Anti Matter Anchovy", xp: 365, gold: 245, desc: "A fish that annihilates normal matter on contact. It explodes with blinding energy." },
-        { name: "Nebula Needlefish", xp: 370, gold: 250, desc: "A fish filled with colorful gas and dust. Stars are born inside it." },
-        { name: "Eclipse Eel", xp: 375, gold: 255, desc: "A black eel that blocks out the bioluminescence of the cave. It brings total darkness." }
+        { name: "Graviton Dorado", xp: 360, gold: 240, desc: "A dorado that feeds on gravitational particles. It's nearly invisible, detectable only by the distortion field it generates as it displaces space itself." },
+        { name: "Compressed Matter Anchovy", xp: 365, gold: 245, desc: "An anchovy crushed to incredible density by gravitational pressure. A single specimen weighs more than a school of normal fish, and sinks like a stone when released." },
+        { name: "Gravity Spike Needlefish", xp: 370, gold: 250, desc: "A needlefish compressed into a needle straight dart so dense it sinks through solid stone. Its body generates localized gravity spikes that pull smaller fish directly into its path." },
+        { name: "Gravitational Lens Eel", xp: 375, gold: 255, desc: "A sleek eel that bends light as it moves, creating multiple distorted reflections. Observers report seeing it in several places at once, though only one is real." }
       ],
       Rare: [
-        { name: "Black Hole Bass", xp: 680, gold: 440, desc: "A fish that sucks everything into its gaping maw. Light itself cannot escape its bite." },
+        { name: "Singularity Bass", xp: 680, gold: 440, desc: "A bass so dense it visibly warps light around its body. Objects drift toward it against the current, and the water around it moves in impossible spiral patterns." },
         { name: "Supernova Salmon", xp: 690, gold: 445, desc: "A fish on the brink of exploding. When it dies, it creates a shockwave." },
         { name: "Gamma Ray Gar", xp: 700, gold: 450, desc: "A fish that emits deadly bursts of energy. It sterilizes the water around it." },
         { name: "Cosmic Ray Catfish", xp: 710, gold: 455, desc: "A fish bombarded by space radiation. It glows with a sickening light." },
         { name: "Parallax Pike", xp: 720, gold: 460, desc: "A fish that changes position depending on how you look at it. It is hard to aim at." },
         { name: "Red Shift Roach", xp: 730, gold: 465, desc: "A fish moving away from you at incredible speeds. It appears redder than it is." },
         { name: "Blue Shift Bream", xp: 740, gold: 470, desc: "A fish moving towards you instantly. It strikes before you see it." },
-        { name: "Entropy Eel", xp: 750, gold: 475, desc: "An eel that accelerates decay. Everything around it falls apart into dust." }
+        { name: "Tidal Force Eel", xp: 750, gold: 475, desc: "An eel caught in a perpetual state of spaghettification, stretched and compressed by tidal gravity. It pulses rhythmically between thick and thin as gravitational waves pass through it." }
       ],
       Epic: [
         { name: "Planet Eater Piranha", xp: 1400, gold: 720, desc: "A school of these can strip a planet to the core. They have diamond hard teeth." },
@@ -3193,7 +3193,7 @@ window.BIOMES = {
         { name: "Galactic Grouper", xp: 1450, gold: 750, desc: "A fish containing a spiral galaxy in its scales. It is vast and ancient." },
         { name: "Void Walker Walleye", xp: 1475, gold: 765, desc: "A fish that walks on the fabric of nothingness. It exists between dimensions." },
         { name: "Meteor Mola", xp: 1500, gold: 780, desc: "A heavy, cratered fish that falls from the sky. It impacts with cratering force." },
-        { name: "Comet Carp", xp: 1525, gold: 795, desc: "A fish with a long tail of ice and dust. It returns every 76 years." },
+        { name: "Meteor Impact Carp", xp: 1525, gold: 795, desc: "A carp compressed into an aerodynamic bullet shape by immense gravitational forces. When it swims, it leaves a trail of crushed water that takes minutes to re expand." },
         { name: "Asteroid Arapaima", xp: 1550, gold: 810, desc: "A rocky fish that tumbles through the void. It is a potential extinction event." },
         { name: "Vacuum Viper", xp: 1575, gold: 825, desc: "A snake that survives in the vacuum of space. It needs no air." }
       ],
@@ -3233,9 +3233,9 @@ window.BIOMES = {
         { name: "Ghost Guppy", xp: 70, gold: 44, desc: "A transparent fish that is barely visible. It swims through rocks as if they weren't there." },
         { name: "Spirit Sprat", xp: 72, gold: 45, desc: "A tiny white wisp of a fish. It gathers in clouds that look like underwater fog." },
         { name: "Phantom Perch", xp: 74, gold: 46, desc: "A fish that fades in and out of sight. It chills the water around it." },
-        { name: "Bone Bass", xp: 76, gold: 47, desc: "A skeletal fish held together by green magic. It rattles when it swims." },
+        { name: "Skeleton Bass", xp: 76, gold: 47, desc: "A bass reduced to animated bones held together by ectoplasmic energy. Through its exposed ribcage, one can see the glowing green slime that serves as its organs." },
         { name: "Skull Sculpin", xp: 78, gold: 48, desc: "A fish with a head shaped like a human skull. It stares with empty sockets." },
-        { name: "Zombie Zebrafish", xp: 80, gold: 49, desc: "A rotting fish that keeps swimming. It is driven by an unholy hunger." },
+        { name: "Undead Zebrafish", xp: 80, gold: 49, desc: "A reanimated zebrafish with rotting flesh hanging from exposed bones. It swims in jerky, unnatural movements, guided by necromantic energy rather than living instinct." },
         { name: "Ghoul Goby", xp: 82, gold: 50, desc: "A scavenger that eats the souls of other fish. It has long, sharp claws." },
         { name: "Wraith Wrasse", xp: 84, gold: 51, desc: "A shadowy fish that looks like torn fabric. It drifts on the ethereal currents." },
         { name: "Haunted Herring", xp: 86, gold: 52, desc: "A fish possessed by a restless spirit. It swims in erratic, panicked circles." },
@@ -3261,7 +3261,7 @@ window.BIOMES = {
         { name: "Crypt Catfish", xp: 370, gold: 250, desc: "A fish that lives in underwater mausoleums. It is blind and pale." },
         { name: "Underworld Urchin", xp: 375, gold: 255, desc: "A black spike ball that acts as a portal. Touching it sends you to the nether." },
         { name: "Purgatory Puffer", xp: 380, gold: 260, desc: "A grey fish caught between worlds. It can never rest." },
-        { name: "Inferno Ide", xp: 385, gold: 265, desc: "A fish burning with hellfire. It boils the water around it." }
+        { name: "Phantom Flame Ide", xp: 385, gold: 265, desc: "A ghostly ide that burns with cold green spectral fire. The flames don't produce heat but drain life force instead, leaving victims shivering and weak." }
       ],
       Rare: [
         { name: "Grim Reaper Gar", xp: 700, gold: 460, desc: "A fish with a scythe like tail. It comes to collect the souls of dying fish." },
@@ -3317,37 +3317,37 @@ window.BIOMES = {
     fish: {
       Common: [
         { name: "Star Smelt", xp: 72, gold: 46, desc: "A tiny fish that twinkles like a star. Millions of them form constellations." },
-        { name: "Comet Carp", xp: 74, gold: 47, desc: "A fish with a long, icy tail. It leaves a streak of light as it swims." },
+        { name: "Stardust Carp", xp: 74, gold: 47, desc: "A small carp whose scales constantly shed glittering cosmic dust. It leaves a trail of twinkling particles as it swims through the vacuum, like a living shooting star." },
         { name: "Meteor Minnow", xp: 76, gold: 48, desc: "A rocky fish that burns up upon entering the atmosphere. It is hot to the touch." },
         { name: "Planet Perch", xp: 78, gold: 49, desc: "A round, blue and green fish. It has its own tiny atmosphere." },
         { name: "Moon Mullet", xp: 80, gold: 50, desc: "A pale, cratered fish. It controls the tides of smaller ponds." },
-        { name: "Sun Snapper", xp: 82, gold: 51, desc: "A bright yellow fish that radiates heat. It is a ball of fusion energy." },
-        { name: "Orbit Oscar", xp: 84, gold: 52, desc: "A fish that circles larger objects. It is caught in a gravitational loop." },
-        { name: "Vacuum Vomer", xp: 86, gold: 53, desc: "A fish that survives in zero pressure. It looks deflated." },
+        { name: "Star Core Snapper", xp: 82, gold: 51, desc: "A tiny snapper that feeds on stellar plasma ejected from nearby stars. Its scales glow with fusion heat, and it must constantly vent excess energy to avoid burning up." },
+        { name: "Planetary Oscar", xp: 84, gold: 52, desc: "An oscar trapped in perpetual orbit around a massive stellar object. It has circled so many times its path has carved a visible ring of disturbed stardust." },
+        { name: "Void Current Vomer", xp: 86, gold: 53, desc: "A vomer that swims through gravitational currents in empty space. It navigates by sensing minute variations in the fabric of spacetime itself." },
         { name: "Rocket Roach", xp: 88, gold: 54, desc: "A streamlined fish with a fire jet tail. It propels itself with chemical reactions." },
         { name: "Satellite Salmon", xp: 90, gold: 55, desc: "A metallic fish with solar panels. It beams signals back to Earth." }
       ],
       Uncommon: [
-        { name: "Nebula Needlefish", xp: 170, gold: 120, desc: "A long, colorful fish made of gas clouds. Stars are born inside its belly." },
+        { name: "Cosmic Cloud Needlefish", xp: 170, gold: 120, desc: "A needlefish formed from condensed nebula gases. Its body shifts through brilliant colors as different elements ionize and cool along its length." },
         { name: "Galaxy Grouper", xp: 173, gold: 122, desc: "A massive fish containing a spiral galaxy. It rotates slowly." },
         { name: "Pulsar Pike", xp: 176, gold: 124, desc: "A spinning fish that shoots beams of light. It acts as a cosmic lighthouse." },
         { name: "Quasar Quillback", xp: 179, gold: 126, desc: "A fish that outshines everything else. It releases massive amounts of energy." },
-        { name: "Black Hole Bass", xp: 182, gold: 128, desc: "A fish that eats light. It is invisible against the blackness of space." },
+        { name: "Void Rift Bass", xp: 182, gold: 128, desc: "A bass that exists at the boundary between dimensions. Its scales shimmer with absolute blackness, absorbing all light that touches them like miniature event horizons." },
         { name: "Supernova Shark", xp: 185, gold: 130, desc: "A shark that explodes when it attacks. It reforms from the debris." },
         { name: "Asteroid Angler", xp: 188, gold: 132, desc: "A rocky fish that lures prey into an asteroid belt. It mimics a harmless rock." },
         { name: "Constellation Catfish", xp: 191, gold: 134, desc: "A fish made of connecting lines and stars. It forms shapes like the Big Dipper." },
         { name: "Zodiac Zebrafish", xp: 194, gold: 136, desc: "A striped fish representing the twelve signs. It changes behavior monthly." },
-        { name: "Eclipse Eel", xp: 197, gold: 138, desc: "A black eel that blocks the sun. It brings temporary darkness." }
+        { name: "Stellar Shadow Eel", xp: 197, gold: 138, desc: "An eel that dwells in the shadows cast by dying stars. It can only be seen during cosmic eclipses, appearing as a dark silhouette against the corona of distant suns." }
       ],
       Fine: [
-        { name: "Void Viperfish", xp: 360, gold: 240, desc: "A deep space predator. It hunts in the spaces between galaxies." },
-        { name: "Dark Matter Dorado", xp: 365, gold: 245, desc: "A fish that holds the universe together. It is invisible and heavy." },
+        { name: "Deep Space Viperfish", xp: 360, gold: 240, desc: "A viperfish adapted to absolute zero temperatures and perfect vacuum. Its bioluminescent lure mimics distant stars, attracting curious prey across the void." },
+        { name: "Shadow Matter Dorado", xp: 365, gold: 245, desc: "A dorado composed of exotic matter that only interacts gravitationally. It can be felt pulling on lines but is completely invisible except for the stars it blocks." },
         { name: "Anti Matter Anchovy", xp: 370, gold: 250, desc: "A fish that explodes on contact with matter. Handle with magnetic fields." },
-        { name: "Wormhole Wrasse", xp: 375, gold: 255, desc: "A fish that tunnels through space time. It enters one hole and exits another." },
-        { name: "Tachyon Trout", xp: 380, gold: 260, desc: "A fish that moves faster than light. It arrives before it leaves." },
+        { name: "Portal Wrasse", xp: 375, gold: 255, desc: "A wrasse that creates temporary portals through spacetime. It disappears into one location and emerges light years away, using cosmic shortcuts invisible to the eye." },
+        { name: "Superluminal Trout", xp: 380, gold: 260, desc: "A trout that vibrates at faster than light frequencies. To observers, it appears as a blur of probability, existing in multiple locations until the moment it's caught." },
         { name: "Photon Plaice", xp: 385, gold: 265, desc: "A flatfish made of pure light particles. It has no mass." },
         { name: "Gravity Gar", xp: 390, gold: 270, desc: "A heavy fish that bends space. It pulls prey towards it." },
-        { name: "Relativity Ray", xp: 395, gold: 275, desc: "A ray that slows down time. The faster it swims, the slower it ages." }
+        { name: "Faster Than Light Ray", xp: 395, gold: 275, desc: "A ray that can briefly exceed the speed of light through tachyonic propulsion. When it accelerates, it leaves behind afterimages that slowly fade from existence." }
       ],
       Rare: [
         { name: "Alien Arowana", xp: 720, gold: 480, desc: "A grey fish with large black eyes. It comes in peace (maybe)." },
@@ -3416,7 +3416,7 @@ window.BIOMES = {
       Uncommon: [
         { name: "Paradox Puffer", xp: 175, gold: 125, desc: "A fish that is both inflated and deflated at the same time. It creates a logical contradiction." },
         { name: "Schrodinger Shark", xp: 178, gold: 127, desc: "A cat like fish in a box. It is both alive and dead until you catch it." },
-        { name: "Quantum Quillback", xp: 181, gold: 129, desc: "A fish that exists in all possible states. Observing it forces it to choose one." },
+        { name: "Probability Quillback", xp: 181, gold: 129, desc: "A quillback in quantum superposition, simultaneously alive and dead, here and there, caught and uncaught. Observing it forces reality to choose one state, often unpredictably." },
         { name: "Abstract Angler", xp: 184, gold: 131, desc: "A fish made of geometric shapes. It looks like a cubist painting." },
         { name: "Surreal Salmon", xp: 187, gold: 133, desc: "A melting clock fish. It drips slowly into the abyss." },
         { name: "Escher Eel", xp: 190, gold: 135, desc: "An endless loop fish. It swims up a waterfall that goes down." },
@@ -3437,13 +3437,13 @@ window.BIOMES = {
       ],
       Rare: [
         { name: "Chaos Carp", xp: 750, gold: 500, desc: "A fish representing pure disorder. It increases the entropy of the reef." },
-        { name: "Entropy Eel", xp: 760, gold: 505, desc: "The arrow of time. It only swims forward towards decay." },
+        { name: "Causality Break Eel", xp: 760, gold: 505, desc: "An eel that moves backward through cause and effect. It arrives before it departs, bites before opening its mouth, and digests meals it hasn't yet consumed." },
         { name: "Nihilist Needlefish", xp: 770, gold: 510, desc: "A fish that believes in nothing. It stares into the void." },
         { name: "Existential Epinephelus", xp: 780, gold: 515, desc: "A grouper having a crisis. It questions why it swims." },
         { name: "Absurd Angelfish", xp: 790, gold: 520, desc: "A fish that defies reason. It smokes a pipe." },
         { name: "Dream Dorado", xp: 800, gold: 525, desc: "A fish from the realm of sleep. It vanishes when you wake up." },
         { name: "Nightmare Narwhal", xp: 810, gold: 530, desc: "A terrifying thought given form. It chases you down dark corridors." },
-        { name: "Lucid Lungfish", xp: 820, gold: 535, desc: "A fish aware it is in a game. It looks at the camera." }
+        { name: "Paradox Lungfish", xp: 820, gold: 535, desc: "A lungfish that breathes water that doesn't exist and swims through impossible geometries. Observers report seeing it from angles that shouldn't be possible in three dimensional space." }
       ],
       Epic: [
         { name: "Meta Marlin", xp: 1550, gold: 800, desc: "A fish that knows it is a fish. It reads its own description." },
