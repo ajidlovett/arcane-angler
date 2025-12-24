@@ -1078,7 +1078,7 @@ router.post('/sell', authenticateToken, async (req, res) => {
 
     const ownedCount = inventory[0].count;
     const baseGold = inventory[0].base_gold;
-    const titanBonus = inventory[0].titan_bonus || 1;
+    const dbTitanBonus = inventory[0].titan_bonus || 1;
 
     if (ownedCount < quantity) {
       await connection.rollback();
@@ -1087,7 +1087,7 @@ router.post('/sell', authenticateToken, async (req, res) => {
 
     // Calculate gold value (base gold × titan bonus × quantity)
     // Note: INT no longer provides gold multiplier
-    const goldEarned = Math.floor(baseGold * titanBonus * quantity);
+    const goldEarned = Math.floor(baseGold * dbTitanBonus * quantity);
 
     // Update inventory (remove sold fish)
     const newCount = ownedCount - quantity;
