@@ -180,7 +180,7 @@ router.get('/:userId', authenticateToken, async (req, res) => {
         // Get leaderboard stats
         const [leaderboardStats] = await db.query(
             `SELECT gold_earned, relics_earned, total_fish_caught, fish_sold,
-             common_caught, uncommon_caught, fine_caught, rare_caught, epic_caught,
+             total_casts, common_caught, uncommon_caught, fine_caught, rare_caught, epic_caught,
              legendary_fish_count, mythic_fish_count, exotic_caught, arcane_caught,
              treasure_caught
              FROM leaderboard_stats WHERE user_id = ?`,
