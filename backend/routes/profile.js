@@ -64,11 +64,17 @@ router.get('/me', authenticateToken, async (req, res) => {
 
         if (user.fish_showcase) {
             if (Array.isArray(user.fish_showcase)) {
-                // Already parsed by MySQL
-                user.fish_showcase = user.fish_showcase;
+                // Already parsed by MySQL - filter out invalid entries
+                user.fish_showcase = user.fish_showcase.filter(f =>
+                    f && typeof f === 'object' && f.name && f.rarity
+                );
             } else if (typeof user.fish_showcase === 'string') {
                 try {
-                    user.fish_showcase = JSON.parse(user.fish_showcase);
+                    const parsed = JSON.parse(user.fish_showcase);
+                    // Filter out invalid entries
+                    user.fish_showcase = Array.isArray(parsed)
+                        ? parsed.filter(f => f && typeof f === 'object' && f.name && f.rarity)
+                        : [];
                 } catch (e) {
                     console.error('Failed to parse fish_showcase:', e);
                     user.fish_showcase = [];
@@ -190,11 +196,17 @@ router.get('/:userId', authenticateToken, async (req, res) => {
 
         if (profileUser.fish_showcase) {
             if (Array.isArray(profileUser.fish_showcase)) {
-                // Already parsed by MySQL
-                profileUser.fish_showcase = profileUser.fish_showcase;
+                // Already parsed by MySQL - filter out invalid entries
+                profileUser.fish_showcase = profileUser.fish_showcase.filter(f =>
+                    f && typeof f === 'object' && f.name && f.rarity
+                );
             } else if (typeof profileUser.fish_showcase === 'string') {
                 try {
-                    profileUser.fish_showcase = JSON.parse(profileUser.fish_showcase);
+                    const parsed = JSON.parse(profileUser.fish_showcase);
+                    // Filter out invalid entries
+                    profileUser.fish_showcase = Array.isArray(parsed)
+                        ? parsed.filter(f => f && typeof f === 'object' && f.name && f.rarity)
+                        : [];
                 } catch (e) {
                     console.error('Failed to parse fish_showcase:', e);
                     profileUser.fish_showcase = [];
@@ -794,10 +806,17 @@ router.get('/:userId/showcase/fish', authenticateToken, async (req, res) => {
         let showcase = [];
         if (users[0].fish_showcase) {
             if (Array.isArray(users[0].fish_showcase)) {
-                showcase = users[0].fish_showcase;
+                // Filter out invalid entries
+                showcase = users[0].fish_showcase.filter(f =>
+                    f && typeof f === 'object' && f.name && f.rarity
+                );
             } else if (typeof users[0].fish_showcase === 'string') {
                 try {
-                    showcase = JSON.parse(users[0].fish_showcase);
+                    const parsed = JSON.parse(users[0].fish_showcase);
+                    // Filter out invalid entries
+                    showcase = Array.isArray(parsed)
+                        ? parsed.filter(f => f && typeof f === 'object' && f.name && f.rarity)
+                        : [];
                 } catch (e) {
                     console.error('Failed to parse fish_showcase:', e);
                     showcase = [];
