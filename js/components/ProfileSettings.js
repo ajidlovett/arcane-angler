@@ -343,6 +343,11 @@ function FishShowcaseTab({ lockedFish, selectedFish, onToggleFish, onSave, limit
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {lockedFish.map((fish, index) => {
+                    // Skip invalid fish entries
+                    if (!fish || typeof fish !== 'object' || !fish.name || !fish.rarity) {
+                        return null;
+                    }
+
                     const isSelected = selectedFish.some(f => f.name === fish.name);
                     const canSelect = isSelected || selectedFish.length < limit;
                     const titanBonus = Number(fish.titanBonus) || 1;
