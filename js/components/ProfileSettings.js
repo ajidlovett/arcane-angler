@@ -326,11 +326,15 @@ function FishShowcaseTab({ lockedFish, selectedFish, onToggleFish, onSave, limit
     // Use the global getGradientTextStyle function from rarityUtils.js
     const getGradientTextStyle = window.getGradientTextStyle || ((rarity) => ({ color: '#9ca3af' }));
 
+    // Ensure arrays are valid - handle null/undefined
+    const validLockedFish = Array.isArray(lockedFish) ? lockedFish : [];
+    const validSelectedFish = Array.isArray(selectedFish) ? selectedFish : [];
+
     return (
         <div>
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold text-white">
-                    Select Fish to Showcase ({selectedFish.length}/{limit})
+                    Select Fish to Showcase ({validSelectedFish.length}/{limit})
                 </h3>
                 <button
                     onClick={onSave}
@@ -342,14 +346,14 @@ function FishShowcaseTab({ lockedFish, selectedFish, onToggleFish, onSave, limit
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {lockedFish.map((fish, index) => {
+                {validLockedFish.map((fish, index) => {
                     // Skip invalid fish entries
                     if (!fish || typeof fish !== 'object' || !fish.name || !fish.rarity) {
                         return null;
                     }
 
-                    const isSelected = selectedFish.some(f => f.name === fish.name);
-                    const canSelect = isSelected || selectedFish.length < limit;
+                    const isSelected = validSelectedFish.some(f => f && f.name === fish.name);
+                    const canSelect = isSelected || validSelectedFish.length < limit;
                     const titanBonus = Number(fish.titanBonus) || 1;
 
                     return (
@@ -384,7 +388,7 @@ function FishShowcaseTab({ lockedFish, selectedFish, onToggleFish, onSave, limit
                 })}
             </div>
 
-            {lockedFish.length === 0 && (
+            {validLockedFish.length === 0 && (
                 <div className="text-center text-gray-400 py-8">
                     No locked fish in inventory. Lock some fish from your inventory to showcase them!
                 </div>
