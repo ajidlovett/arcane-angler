@@ -1,21 +1,23 @@
 /**
  * Weather Service - Server-Authoritative Weather System
  *
- * Manages per-biome weather states that update every 2 hours
+ * Manages per-biome weather states that update every hour
  * Weather affects rarity weights (percentage-based) and fishing XP bonus
  *
  * Weather States:
- * - Clear (40%)
+ * - Clear (35%)
  * - Rain (20%)
- * - Windy (15%)
+ * - Windy (13%)
  * - Foggy (10%)
  * - Heatwave (8%)
- * - Storm (6%)
+ * - Storm (7%)
+ * - Blight (5%)
+ * - Gold Breeze (1%)
  * - Arcane Surge (1%)
  *
  * Features:
  * - Per-biome weather state (not global)
- * - Updates every 2 hours automatically
+ * - Updates every hour automatically
  * - O(1) weather lookup per fishing request
  * - Treasure Chest rarity unaffected by weather
  */
@@ -23,8 +25,6 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import chatSSEService from '../services/chatSSEService.js';
-import db from '../db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,18 +56,18 @@ try {
 // Weather roll probabilities (sum to 100)
 const WEATHER_PROBABILITIES = {
   clear: 35,
-  rain: 18,
+  rain: 20,
   windy: 13,
   foggy: 10,
   heatwave: 8,
-  storm: 6,
+  storm: 7,
   blight: 5,
-  gold_breeze: 4,
+  gold_breeze: 1,
   arcane_surge: 1
 };
 
-// Weather update interval (2 hours in milliseconds)
-const WEATHER_UPDATE_INTERVAL = 2 * 60 * 60 * 1000; // 2 hours
+// Weather update interval (1 hour in milliseconds)
+const WEATHER_UPDATE_INTERVAL = 1 * 60 * 60 * 1000; // 1 hour
 
 // In-memory weather state map: biomeId -> { weather: string, lastUpdate: timestamp }
 const biomeWeatherState = new Map();
@@ -108,77 +108,19 @@ function initializeBiomeWeather(biomeId) {
 }
 
 /**
- * Broadcast weather change to weather chat channel
+ * Log weather change (weather chat channel removed)
  * @param {number} biomeId - Biome ID
  * @param {string} newWeather - New weather type
  */
-async function broadcastWeatherChange(biomeId, newWeather) {
-  // Don't broadcast Clear weather
-  if (newWeather === 'clear') {
-    return;
-  }
-
-  try {
-    // Weather display names
-    const weatherNames = {
-      rain: 'Rain',
-      windy: 'Windy',
-      foggy: 'Foggy',
-      heatwave: 'Heatwave',
-      storm: 'Storm',
-      blight: 'Blight',
-      gold_breeze: 'Gold Breeze',
-      arcane_surge: 'Arcane Surge'
-    };
-
-    // Weather icons
-    const weatherIcons = {
-      rain: '🌧️',
-      windy: '💨',
-      foggy: '🌫️',
-      heatwave: '🔥',
-      storm: '⛈️',
-      blight: '☠️',
-      gold_breeze: '💰',
-      arcane_surge: '✨'
-    };
-
-    const weatherName = weatherNames[newWeather] || newWeather;
-    const weatherIcon = weatherIcons[newWeather] || '🌤️';
-    const message = `${weatherIcon} Biome ${biomeId} weather changed to ${weatherName}!`;
-
-    // Insert as system message
-    const [result] = await db.execute(
-      `INSERT INTO chat_messages (user_id, profile_username, equipped_title, channel, message_text)
-       VALUES (NULL, 'Weather System', NULL, 'weather', ?)`,
-      [message]
-    );
-
-    // Get the inserted message
-    const [insertedMessage] = await db.execute(
-      'SELECT * FROM chat_messages WHERE id = ?',
-      [result.insertId]
-    );
-
-    const messageData = {
-      id: insertedMessage[0].id,
-      user_id: insertedMessage[0].user_id,
-      profile_username: insertedMessage[0].profile_username,
-      equipped_title: insertedMessage[0].equipped_title,
-      channel: insertedMessage[0].channel,
-      message_text: insertedMessage[0].message_text,
-      created_at: insertedMessage[0].created_at
-    };
-
-    // Broadcast to weather channel
-    chatSSEService.broadcastMessage('weather', messageData);
-  } catch (error) {
-    console.error('[WeatherService] Failed to broadcast weather change:', error);
+async function logWeatherChange(biomeId, newWeather) {
+  // Just log to console - no chat broadcast
+  if (newWeather !== 'clear') {
+    console.log(`[WeatherService] Biome ${biomeId} weather changed to ${newWeather}`);
   }
 }
 
 /**
- * Update weather for a specific biome if 2 hours have passed
+ * Update weather for a specific biome if 1 hour has passed
  * @param {number} biomeId - Biome ID
  */
 function updateBiomeWeatherIfNeeded(biomeId) {
@@ -201,8 +143,8 @@ function updateBiomeWeatherIfNeeded(biomeId) {
     });
     console.log(`[WeatherService] Updated biome ${biomeId} weather: ${state.weather} -> ${newWeather}`);
 
-    // Broadcast weather change to chat (excluding Clear weather)
-    broadcastWeatherChange(biomeId, newWeather);
+    // Log weather change (chat broadcast removed)
+    logWeatherChange(biomeId, newWeather);
   }
 }
 
