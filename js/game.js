@@ -1464,7 +1464,13 @@ useEffect(() => {
           onClose={handleCloseProfileSettings}
           currentProfile={currentProfile}
           achievements={player.achievements}
-          lockedFish={player.inventory.filter(fish => player.lockedFish.includes(fish.name))}
+          lockedFish={(player.inventory || []).filter(fish =>
+            fish &&
+            typeof fish === 'object' &&
+            fish.name &&
+            Array.isArray(player.lockedFish) &&
+            player.lockedFish.includes(fish.name)
+          )}
           onUpdate={loadCurrentProfile}
         />
       )}
