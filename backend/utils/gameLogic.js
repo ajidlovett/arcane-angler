@@ -437,7 +437,7 @@ function generateTreasureChest(currentBiome, totalLuck, biomeData) {
   // Gold: Base on highest legendary with 100%-175% variation + luck modifier
   const baseGold = highestLegendaryGold;
   const goldVariation = Math.random() * 0.75 + 1.0; // 100% to 175%
-  const luckModifier = 1 + (totalLuck / 100); // 1 Luck = +1% gold
+  const luckModifier = 1 + (totalLuck * 0.0015); // 1 Luck = +0.15% gold
   const goldReward = Math.floor(baseGold * goldVariation * luckModifier);
 
   // Relics: Fixed range based on biome (NOT affected by luck)
