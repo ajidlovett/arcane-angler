@@ -14,6 +14,7 @@ window.ProfilePage = ({ user, player, setPlayer, theme, showAlert, getTotalStats
     const [nationality, setNationality] = useState(null);
     const [nationalitySearch, setNationalitySearch] = useState('');
     const [nationalityDropdownOpen, setNationalityDropdownOpen] = useState(false);
+    const [titleSearch, setTitleSearch] = useState('');
 
     // Popular countries list with flags (using Unicode flag emojis)
     // Countries list imported from countries.js
@@ -350,7 +351,7 @@ window.ProfilePage = ({ user, player, setPlayer, theme, showAlert, getTotalStats
             </div>
             <div className={`bg-${theme.surface} p-3 rounded`}>
               <div className={`text-${theme.textDim}`}>Treasure Chests</div>
-              <div className="font-bold">🔮 {player.treasureChestsFound}</div>
+              <div className="font-bold">🎁 {player.treasureChestsFound}</div>
             </div>
             <div className={`bg-${theme.surface} p-3 rounded`}>
               <div className={`text-${theme.textDim}`}>Current Biome</div>
@@ -388,28 +389,54 @@ window.ProfilePage = ({ user, player, setPlayer, theme, showAlert, getTotalStats
           </div>
 
           <div className="text-sm font-bold mb-2">Available Titles (from unlocked achievements):</div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-            {player.achievements.map(achId => {
-              const ach = window.ACHIEVEMENTS.find(a => a.id === achId);
-              if (!ach) return null;
-              const isEquipped = equippedTitle === achId;
 
-              return (
-                <button
-                  key={achId}
-                  onClick={() => !isEquipped && handleEquipTitle(achId)}
-                  disabled={isEquipped}
-                  className={`p-3 rounded text-left ${
-                    isEquipped
-                      ? 'bg-yellow-600 cursor-not-allowed'
-                      : `bg-${theme.surface} hover:bg-${theme.secondary}`
-                  }`}
-                >
-                  <div className="font-bold">{ach.title}</div>
-                  <div className={`text-xs text-${theme.textMuted}`}>{ach.name}</div>
-                </button>
-              );
-            })}
+          {/* Title Search */}
+          <div className="mb-3">
+            <input
+              type="text"
+              placeholder="Search titles..."
+              value={titleSearch}
+              onChange={(e) => setTitleSearch(e.target.value)}
+              className={`w-full px-3 py-2 bg-${theme.surface} border border-${theme.border} rounded text-white placeholder-${theme.textDim} focus:outline-none focus:border-${theme.accent} text-sm`}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+            {player.achievements
+              .map(achId => {
+                const ach = window.ACHIEVEMENTS.find(a => a.id === achId);
+                return ach ? { id: achId, ...ach } : null;
+              })
+              .filter(ach => ach !== null)
+              .filter(ach => {
+                // Filter by search query
+                if (!titleSearch) return true;
+                const searchLower = titleSearch.toLowerCase();
+                return (
+                  ach.title.toLowerCase().includes(searchLower) ||
+                  ach.name.toLowerCase().includes(searchLower)
+                );
+              })
+              .sort((a, b) => a.title.localeCompare(b.title)) // Sort alphabetically by title
+              .map(ach => {
+                const isEquipped = equippedTitle === ach.id;
+
+                return (
+                  <button
+                    key={ach.id}
+                    onClick={() => !isEquipped && handleEquipTitle(ach.id)}
+                    disabled={isEquipped}
+                    className={`p-3 rounded text-left ${
+                      isEquipped
+                        ? 'bg-yellow-600 cursor-not-allowed'
+                        : `bg-${theme.surface} hover:bg-${theme.secondary}`
+                    }`}
+                  >
+                    <div className="font-bold">{ach.title}</div>
+                    <div className={`text-xs text-${theme.textMuted}`}>{ach.name}</div>
+                  </button>
+                );
+              })}
           </div>
         </div>
 

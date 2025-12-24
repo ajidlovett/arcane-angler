@@ -238,7 +238,7 @@ React.useEffect(() => {
   if (globalNotification) {
     const timer = setTimeout(() => {
       setGlobalNotification(null);
-    }, 60000);
+    }, 180000);
 
     return () => clearTimeout(timer);
   }
@@ -286,6 +286,7 @@ React.useEffect(() => {
 
           if (!globalNotification) {
             setGlobalNotification({
+              userId: catchData.user_id,
               username: catchData.profile_username,
               fishName: catchData.fish_name,
               rarity: catchData.rarity,
@@ -1259,7 +1260,7 @@ useEffect(() => {
             </div>
 
             <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-2 h-7 flex items-center justify-center`}>
-              <GlobalNotification theme={theme} globalNotification={globalNotification} idleNotificationIndex={idleNotificationIndex} />
+              <GlobalNotification theme={theme} globalNotification={globalNotification} idleNotificationIndex={idleNotificationIndex} onProfileClick={handleProfileClick} />
             </div>
           </div>
         </div>
@@ -1306,7 +1307,7 @@ useEffect(() => {
             </div>
 
             <div className={`bg-${theme.secondary} bg-opacity-50 rounded px-3 h-7 flex items-center justify-center`}>
-              <GlobalNotification theme={theme} globalNotification={globalNotification} idleNotificationIndex={idleNotificationIndex} />
+              <GlobalNotification theme={theme} globalNotification={globalNotification} idleNotificationIndex={idleNotificationIndex} onProfileClick={handleProfileClick} />
             </div>
           </div>
         </div>
@@ -1456,6 +1457,7 @@ useEffect(() => {
           onClose={handleCloseProfileModal}
           currentUserId={user?.id}
           achievements={player.achievements}
+          onProfileClick={handleProfileClick}
         />
       )}
 

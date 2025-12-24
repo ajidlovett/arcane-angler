@@ -466,6 +466,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
 
           // Broadcast via SSE to all connected clients
           sseService.broadcastGlobalCatch({
+            user_id: userId,
             profile_username: userData[0].profile_username,
             fish_name: fish.name,
             rarity: rarity,
@@ -2452,7 +2453,7 @@ router.get('/global-catches', async (req, res) => {
     // Get the most recent 10 global catches (Mythic, Exotic, Arcane)
     // Only return catches from the last 5 minutes to keep it fresh
     const [catches] = await db.query(
-      `SELECT profile_username, fish_name, rarity, caught_at
+      `SELECT user_id, profile_username, fish_name, rarity, caught_at
        FROM global_catches
        WHERE caught_at >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
        ORDER BY caught_at DESC

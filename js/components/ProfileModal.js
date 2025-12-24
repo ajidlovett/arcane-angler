@@ -2,7 +2,7 @@
 const { useState, useEffect } = React;
 const apiService = window.ApiService;
 
-function ProfileModal({ userId, onClose, currentUserId, achievements }) {
+function ProfileModal({ userId, onClose, currentUserId, achievements, onProfileClick }) {
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -285,6 +285,7 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
                             onPostComment={handlePostComment}
                             isOwnProfile={isOwnProfile}
                             allowComments={profile.allow_comments}
+                            onProfileClick={onProfileClick}
                         />
                     )}
                 </div>
@@ -325,7 +326,8 @@ function OverviewTab({ playerData, playerStats, profile, leaderboardStats }) {
             <div className="bg-gray-800 p-4 rounded-lg">
                 <h3 className="text-xl font-bold text-white mb-4">Fishing Stats</h3>
                 <div className="space-y-2">
-                    <StatRow label="Total Fish Caught" value={(leaderboardStats?.total_fish_caught || 0).toLocaleString()} icon="🎣" />
+                    <StatRow label="Total Cast" value={(leaderboardStats?.total_casts || 0).toLocaleString()} icon="🎣" />
+                    <StatRow label="Total Fish Caught" value={(leaderboardStats?.total_fish_caught || 0).toLocaleString()} icon="🐟" />
                     <StatRow label="Total Fish Sold" value={(leaderboardStats?.fish_sold || 0).toLocaleString()} icon="💵" />
                     <StatRow label="Treasure Chests" value={(leaderboardStats?.treasure_caught || 0).toLocaleString()} icon="🎁" />
                 </div>
@@ -451,7 +453,7 @@ function AchievementsTab({ achievementShowcase, achievements }) {
 }
 
 // Comments Tab Component
-function CommentsTab({ comments, newComment, setNewComment, onPostComment, isOwnProfile, allowComments }) {
+function CommentsTab({ comments, newComment, setNewComment, onPostComment, isOwnProfile, allowComments, onProfileClick }) {
     return (
         <div className="space-y-4">
             {/* Post Comment */}
@@ -487,13 +489,37 @@ function CommentsTab({ comments, newComment, setNewComment, onPostComment, isOwn
                 <div className="space-y-3">
                     {comments.map((comment) => (
                         <div key={comment.id} className="bg-gray-800 p-4 rounded-lg">
-                            <div className="flex justify-between items-start">
-                                <div className="font-semibold text-blue-400">{comment.commenter_username}</div>
-                                <div className="text-gray-500 text-sm">
-                                    {new Date(comment.created_at).toLocaleDateString()}
+                            <div className="flex items-start gap-3">
+                                {/* Avatar */}
+                                {comment.commenter_id && (
+                                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-700 flex-shrink-0">
+                                        <img
+                                            src={`/assets/avatar/default/${comment.profile_avatar || 'avatar_001'}.png`}
+                                            alt="Avatar"
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                e.target.src = '/assets/avatar/default/avatar_001.png';
+                                            }}
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                        <button
+                                            onClick={() => onProfileClick && comment.commenter_id && onProfileClick(comment.commenter_id)}
+                                            className="font-semibold text-blue-400 hover:text-blue-300 cursor-pointer underline"
+                                            style={{ background: 'none', border: 'none', padding: 0, font: 'inherit' }}
+                                        >
+                                            {comment.commenter_username}
+                                        </button>
+                                        <div className="text-gray-500 text-sm">
+                                            {new Date(comment.created_at).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                    <div className="text-gray-300 mt-2">{comment.comment_text}</div>
                                 </div>
                             </div>
-                            <div className="text-gray-300 mt-2">{comment.comment_text}</div>
                         </div>
                     ))}
                 </div>
