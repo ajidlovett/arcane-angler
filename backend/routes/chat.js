@@ -32,11 +32,11 @@ router.post('/send', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: validation.error });
     }
 
-    // Get user's profile_username and equipped_title
+    // Get user's profile_username, equipped_title, and profile_avatar
     let userData;
     try {
       [userData] = await db.execute(
-        'SELECT profile_username, equipped_title FROM users WHERE id = ?',
+        'SELECT u.profile_username, u.equipped_title, up.profile_avatar FROM users u LEFT JOIN user_profile up ON u.id = up.user_id WHERE u.id = ?',
         [userId]
       );
     } catch (dbError) {
@@ -55,7 +55,7 @@ router.post('/send', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const { profile_username, equipped_title } = userData[0];
+    const { profile_username, equipped_title, profile_avatar } = userData[0];
 
     // Insert message into database
     // Convert undefined to null for SQL compatibility
@@ -76,6 +76,7 @@ router.post('/send', authenticateToken, async (req, res) => {
       user_id: insertedMessage[0].user_id,
       profile_username: insertedMessage[0].profile_username,
       equipped_title: insertedMessage[0].equipped_title,
+      profile_avatar: profile_avatar || 'avatar_001',
       channel: insertedMessage[0].channel,
       message_text: insertedMessage[0].message_text,
       created_at: insertedMessage[0].created_at
@@ -107,10 +108,11 @@ router.get('/history/:channel', authenticateToken, async (req, res) => {
 
     // Get last 50 messages from this channel (most recent first, then reverse for chronological order)
     const [messages] = await db.execute(
-      `SELECT id, user_id, profile_username, equipped_title, channel, message_text, created_at
-       FROM chat_messages
-       WHERE channel = ?
-       ORDER BY created_at DESC
+      `SELECT cm.id, cm.user_id, cm.profile_username, cm.equipped_title, cm.channel, cm.message_text, cm.created_at, up.profile_avatar
+       FROM chat_messages cm
+       LEFT JOIN user_profile up ON cm.user_id = up.user_id
+       WHERE cm.channel = ?
+       ORDER BY cm.created_at DESC
        LIMIT 50`,
       [channel]
     );

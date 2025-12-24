@@ -20,8 +20,10 @@ router.get('/:userId', authenticateToken, async (req, res) => {
                 c.commenter_title,
                 c.comment_text,
                 c.created_at,
-                c.updated_at
+                c.updated_at,
+                up.profile_avatar
              FROM profile_comments c
+             LEFT JOIN user_profile up ON c.commenter_id = up.user_id
              WHERE c.profile_user_id = ?
              ORDER BY c.created_at DESC
              LIMIT ? OFFSET ?`,
@@ -78,7 +80,7 @@ router.post('/:userId', authenticateToken, async (req, res) => {
 
         // Get commenter info
         const [commenter] = await db.query(
-            'SELECT profile_username, equipped_title FROM users WHERE id = ?',
+            'SELECT u.profile_username, u.equipped_title, up.profile_avatar FROM users u LEFT JOIN user_profile up ON u.id = up.user_id WHERE u.id = ?',
             [commenterId]
         );
 
@@ -97,6 +99,7 @@ router.post('/:userId', authenticateToken, async (req, res) => {
                 commenter_id: commenterId,
                 commenter_username: commenter[0].profile_username,
                 commenter_title: commenter[0].equipped_title,
+                profile_avatar: commenter[0].profile_avatar || 'avatar_001',
                 comment_text: validation.cleaned,
                 created_at: new Date()
             }

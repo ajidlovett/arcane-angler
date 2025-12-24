@@ -218,7 +218,7 @@ function AvatarTab({ ownedAvatars, currentAvatar, onSelectAvatar, loading }) {
     return (
         <div>
             <h3 className="text-xl font-bold text-white mb-4">Select Your Avatar</h3>
-            <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {allAvatars.map((avatarId) => {
                     const isOwned = ownedAvatars.includes(avatarId);
                     const isCurrent = currentAvatar === avatarId;

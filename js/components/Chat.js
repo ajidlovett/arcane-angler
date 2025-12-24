@@ -5,7 +5,7 @@
 
 const { useState, useEffect, useRef } = React;
 
-function Chat({ theme, user, chatOpen, setChatOpen }) {
+function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
   const [activeChannel, setActiveChannel] = useState('global');
   const [messages, setMessages] = useState({
     global: [],
@@ -395,15 +395,43 @@ function Chat({ theme, user, chatOpen, setChatOpen }) {
               : `bg-${theme.surface} bg-opacity-50 rounded p-2`
           }`}>
             <div className="flex items-start gap-2">
+              {/* Avatar */}
+              {msg.user_id && (
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-700 flex-shrink-0">
+                  <img
+                    src={`/assets/avatar/default/${msg.profile_avatar || 'avatar_001'}.png`}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = '/assets/avatar/default/avatar_001.png';
+                    }}
+                  />
+                </div>
+              )}
+
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2 mb-1">
-                  <span className={`text-xs font-bold ${
-                    msg.profile_username === 'Global Catch' || msg.profile_username === 'System'
-                      ? 'text-yellow-400'
-                      : 'text-blue-400'
-                  }`}>
-                    {getDisplayName(msg)}
-                  </span>
+                  {msg.user_id && onProfileClick ? (
+                    <button
+                      onClick={() => onProfileClick(msg.user_id)}
+                      className={`text-xs font-bold ${
+                        msg.profile_username === 'Global Catch' || msg.profile_username === 'System'
+                          ? 'text-yellow-400'
+                          : 'text-blue-400 hover:text-blue-300 cursor-pointer underline'
+                      }`}
+                      style={{ background: 'none', border: 'none', padding: 0, font: 'inherit' }}
+                    >
+                      {getDisplayName(msg)}
+                    </button>
+                  ) : (
+                    <span className={`text-xs font-bold ${
+                      msg.profile_username === 'Global Catch' || msg.profile_username === 'System'
+                        ? 'text-yellow-400'
+                        : 'text-blue-400'
+                    }`}>
+                      {getDisplayName(msg)}
+                    </span>
+                  )}
                   <span className={`text-[10px] text-${theme.textMuted}`}>
                     {formatTime(msg.created_at)}
                   </span>
