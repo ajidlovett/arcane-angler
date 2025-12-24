@@ -419,10 +419,10 @@ class ApiService {
      * @param {number} quantity - Number to sell
      * @returns {Promise<Object>} Sale result with gold earned
      */
-    async sellFish(fishName, rarity, quantity) {
+    async sellFish(fishName, rarity, quantity, titanBonus) {
         return await this.request('/game/sell', {
             method: 'POST',
-            body: JSON.stringify({ fishName, rarity, quantity })
+            body: JSON.stringify({ fishName, rarity, quantity, titanBonus })
         });
     }
 

@@ -789,7 +789,8 @@ useEffect(() => {
       const response = await window.ApiService.sellFish(
         fishItem.name,
         fishItem.rarity,
-        fishItem.count
+        fishItem.count,
+        fishItem.titanBonus || 1
       );
 
       if (response.success) {
