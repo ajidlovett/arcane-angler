@@ -105,7 +105,7 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
         );
     }
 
-    const { profile, playerData, playerStats } = profileData;
+    const { profile, playerData, playerStats, leaderboardStats } = profileData;
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -114,12 +114,63 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
                 <div className="bg-gradient-to-r from-blue-900 to-purple-900 p-6 rounded-t-lg relative">
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 text-white hover:text-gray-300 text-2xl"
+                        className="absolute top-4 right-4 text-white hover:text-gray-300 text-2xl z-10"
                     >
                         ×
                     </button>
 
-                    <div className="flex items-center gap-6">
+                    {/* Mobile Layout: Stacked */}
+                    <div className="md:hidden flex flex-col items-center text-center gap-3">
+                        {/* Avatar */}
+                        <div className="w-24 h-24 rounded-full border-4 border-yellow-400 overflow-hidden bg-gray-700">
+                            <img
+                                src={`/assets/avatar/default/${profile.profile_avatar || 'avatar_001'}.png`}
+                                alt="Avatar"
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    e.target.src = '/assets/avatar/default/avatar_001.png';
+                                }}
+                            />
+                        </div>
+
+                        {/* Profile Username and Flag */}
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-2xl font-bold text-white">{profile.profile_username}</h2>
+                            {profile.nationality && (
+                                <span className="text-xl">{getFlagEmoji(profile.nationality)}</span>
+                            )}
+                        </div>
+
+                        {/* Equipped Title */}
+                        {profile.equipped_title && (
+                            <div className="text-yellow-400 font-semibold text-sm">
+                                {getAchievementTitle(profile.equipped_title, window.ACHIEVEMENTS)}
+                            </div>
+                        )}
+
+                        {/* Bio */}
+                        {profile.bio && (
+                            <p className="text-gray-300 text-xs px-2">{profile.bio}</p>
+                        )}
+
+                        {/* Level */}
+                        <div className="text-white text-sm">
+                            <span className="font-semibold">Level {(playerData?.level || 1).toLocaleString()}</span>
+                        </div>
+
+                        {/* Profile Views */}
+                        <div className="text-gray-400 text-xs">
+                            <span className="font-semibold text-white">{(profile.profile_views || 0).toLocaleString()}</span> views
+                        </div>
+
+                        {/* Joined Date */}
+                        <div className="text-gray-400 text-xs">
+                            Joined {new Date(profile.registration_date).toLocaleDateString()}
+                        </div>
+                    </div>
+
+                    {/* Desktop Layout: Side by Side */}
+                    <div className="hidden md:flex items-center gap-6">
                         {/* Avatar */}
                         <div className="w-32 h-32 rounded-full border-4 border-yellow-400 overflow-hidden bg-gray-700 flex-shrink-0">
                             <img
@@ -136,9 +187,6 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
                         <div className="flex-1">
                             <div className="flex items-center gap-3">
                                 <h2 className="text-3xl font-bold text-white">{profile.profile_username}</h2>
-                                {profile.nationality && (
-                                    <span className="text-2xl">{getFlagEmoji(profile.nationality)}</span>
-                                )}
                             </div>
 
                             {profile.equipped_title && (
@@ -153,49 +201,24 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
 
                             <div className="flex gap-4 mt-3 text-sm">
                                 <div className="text-gray-400">
-                                    <span className="font-semibold text-white">Level {playerData?.level || 1}</span>
+                                    <span className="font-semibold text-white">Level {(playerData?.level || 1).toLocaleString()}</span>
                                 </div>
                                 <div className="text-gray-400">
-                                    <span className="font-semibold text-white">{profile.profile_views || 0}</span> views
+                                    <span className="font-semibold text-white">{(profile.profile_views || 0).toLocaleString()}</span> views
                                 </div>
                                 <div className="text-gray-400">
                                     Joined {new Date(profile.registration_date).toLocaleDateString()}
                                 </div>
                             </div>
-
-                            {/* Friend Actions */}
-                            {!isOwnProfile && friendshipStatus && (
-                                <div className="mt-4">
-                                    {!friendshipStatus.isFriend && !friendshipStatus.requestPending && (
-                                        <button
-                                            onClick={handleSendFriendRequest}
-                                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm font-semibold"
-                                        >
-                                            Add Friend
-                                        </button>
-                                    )}
-                                    {friendshipStatus.requestPending && (
-                                        <div className="text-yellow-400 text-sm">Friend request pending</div>
-                                    )}
-                                    {friendshipStatus.isFriend && (
-                                        <button
-                                            onClick={handleRemoveFriend}
-                                            className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm font-semibold"
-                                        >
-                                            Remove Friend
-                                        </button>
-                                    )}
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-gray-700">
+                <div className="flex border-b border-gray-700 overflow-x-auto">
                     <button
                         onClick={() => setActiveTab('overview')}
-                        className={`px-6 py-3 font-semibold ${
+                        className={`px-4 md:px-6 py-3 font-semibold whitespace-nowrap flex-shrink-0 ${
                             activeTab === 'overview'
                                 ? 'bg-gray-800 text-blue-400 border-b-2 border-blue-400'
                                 : 'text-gray-400 hover:text-white'
@@ -205,7 +228,7 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
                     </button>
                     <button
                         onClick={() => setActiveTab('fish')}
-                        className={`px-6 py-3 font-semibold ${
+                        className={`px-4 md:px-6 py-3 font-semibold whitespace-nowrap flex-shrink-0 ${
                             activeTab === 'fish'
                                 ? 'bg-gray-800 text-blue-400 border-b-2 border-blue-400'
                                 : 'text-gray-400 hover:text-white'
@@ -215,7 +238,7 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
                     </button>
                     <button
                         onClick={() => setActiveTab('achievements')}
-                        className={`px-6 py-3 font-semibold ${
+                        className={`px-4 md:px-6 py-3 font-semibold whitespace-nowrap flex-shrink-0 ${
                             activeTab === 'achievements'
                                 ? 'bg-gray-800 text-blue-400 border-b-2 border-blue-400'
                                 : 'text-gray-400 hover:text-white'
@@ -226,7 +249,7 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
                     {(profile.allow_comments || isOwnProfile) && (
                         <button
                             onClick={() => setActiveTab('comments')}
-                            className={`px-6 py-3 font-semibold ${
+                            className={`px-4 md:px-6 py-3 font-semibold whitespace-nowrap flex-shrink-0 ${
                                 activeTab === 'comments'
                                     ? 'bg-gray-800 text-blue-400 border-b-2 border-blue-400'
                                     : 'text-gray-400 hover:text-white'
@@ -240,7 +263,7 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
                 {/* Tab Content */}
                 <div className="p-6">
                     {activeTab === 'overview' && (
-                        <OverviewTab playerData={playerData} playerStats={playerStats} profile={profile} />
+                        <OverviewTab playerData={playerData} playerStats={playerStats} profile={profile} leaderboardStats={leaderboardStats} />
                     )}
 
                     {activeTab === 'fish' && (
@@ -271,16 +294,18 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
 }
 
 // Overview Tab Component
-function OverviewTab({ playerData, playerStats, profile }) {
+function OverviewTab({ playerData, playerStats, profile, leaderboardStats }) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Player Stats */}
             <div className="bg-gray-800 p-4 rounded-lg">
                 <h3 className="text-xl font-bold text-white mb-4">Player Stats</h3>
                 <div className="space-y-2">
-                    <StatRow label="Level" value={playerData?.level || 1} />
+                    <StatRow label="Level" value={(playerData?.level || 1).toLocaleString()} />
                     <StatRow label="Gold" value={(playerData?.gold || 0).toLocaleString()} icon="💰" />
+                    <StatRow label="Gold Earned" value={(leaderboardStats?.gold_earned || 0).toLocaleString()} icon="💰" />
                     <StatRow label="Relics" value={(playerData?.relics || 0).toLocaleString()} icon="🔮" />
+                    <StatRow label="Relics Earned" value={(leaderboardStats?.relics_earned || 0).toLocaleString()} icon="🔮" />
                     <StatRow label="Current Biome" value={`Biome ${playerData?.current_biome || 1}`} />
                 </div>
             </div>
@@ -289,10 +314,36 @@ function OverviewTab({ playerData, playerStats, profile }) {
             <div className="bg-gray-800 p-4 rounded-lg">
                 <h3 className="text-xl font-bold text-white mb-4">Character Stats</h3>
                 <div className="space-y-2">
-                    <StatRow label="💪 Strength" value={playerStats?.strength || 1} />
-                    <StatRow label="🧠 Intelligence" value={playerStats?.intelligence || 1} />
-                    <StatRow label="🍀 Luck" value={playerStats?.luck || 1} />
-                    <StatRow label="⚡ Stamina" value={playerStats?.stamina || 100} />
+                    <StatRow label="💪 Strength" value={(playerStats?.strength || 1).toLocaleString()} />
+                    <StatRow label="🧠 Intelligence" value={(playerStats?.intelligence || 1).toLocaleString()} />
+                    <StatRow label="🍀 Luck" value={(playerStats?.luck || 1).toLocaleString()} />
+                    <StatRow label="⚡ Stamina" value={(playerStats?.stamina || 100).toLocaleString()} />
+                </div>
+            </div>
+
+            {/* Fishing Stats */}
+            <div className="bg-gray-800 p-4 rounded-lg">
+                <h3 className="text-xl font-bold text-white mb-4">Fishing Stats</h3>
+                <div className="space-y-2">
+                    <StatRow label="Total Fish Caught" value={(leaderboardStats?.total_fish_caught || 0).toLocaleString()} icon="🎣" />
+                    <StatRow label="Total Fish Sold" value={(leaderboardStats?.fish_sold || 0).toLocaleString()} icon="💵" />
+                    <StatRow label="Treasure Chests" value={(leaderboardStats?.treasure_caught || 0).toLocaleString()} icon="🎁" />
+                </div>
+            </div>
+
+            {/* Rarity Catches */}
+            <div className="bg-gray-800 p-4 rounded-lg">
+                <h3 className="text-xl font-bold text-white mb-4">Fish by Rarity</h3>
+                <div className="space-y-2">
+                    <StatRow label="Common" value={(leaderboardStats?.common_caught || 0).toLocaleString()} />
+                    <StatRow label="Uncommon" value={(leaderboardStats?.uncommon_caught || 0).toLocaleString()} />
+                    <StatRow label="Fine" value={(leaderboardStats?.fine_caught || 0).toLocaleString()} />
+                    <StatRow label="Rare" value={(leaderboardStats?.rare_caught || 0).toLocaleString()} />
+                    <StatRow label="Epic" value={(leaderboardStats?.epic_caught || 0).toLocaleString()} />
+                    <StatRow label="Legendary" value={(leaderboardStats?.legendary_fish_count || 0).toLocaleString()} />
+                    <StatRow label="Mythic" value={(leaderboardStats?.mythic_fish_count || 0).toLocaleString()} />
+                    <StatRow label="Exotic" value={(leaderboardStats?.exotic_caught || 0).toLocaleString()} />
+                    <StatRow label="Arcane" value={(leaderboardStats?.arcane_caught || 0).toLocaleString()} />
                 </div>
             </div>
 

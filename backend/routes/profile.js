@@ -177,6 +177,16 @@ router.get('/:userId', authenticateToken, async (req, res) => {
             [profileUserId]
         );
 
+        // Get leaderboard stats
+        const [leaderboardStats] = await db.query(
+            `SELECT gold_earned, relics_earned, total_fish_caught, fish_sold,
+             common_caught, uncommon_caught, fine_caught, rare_caught, epic_caught,
+             legendary_fish_count, mythic_fish_count, exotic_caught, arcane_caught,
+             treasure_caught
+             FROM leaderboard_stats WHERE user_id = ?`,
+            [profileUserId]
+        );
+
         // Parse JSON fields - handle both MySQL auto-parsed and string formats
         if (profileUser.badges) {
             if (Array.isArray(profileUser.badges)) {
@@ -235,7 +245,8 @@ router.get('/:userId', authenticateToken, async (req, res) => {
         res.json({
             profile: profileUser,
             playerData: playerData[0] || null,
-            playerStats: playerStats[0] || null
+            playerStats: playerStats[0] || null,
+            leaderboardStats: leaderboardStats[0] || null
         });
     } catch (error) {
         console.error('Error fetching profile:', error);
