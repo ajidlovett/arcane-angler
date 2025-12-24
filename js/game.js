@@ -551,7 +551,13 @@ useEffect(() => {
         }
       } catch (error) {
         console.error('Fishing failed:', error);
-        showAlert('Failed to cast line. Please try again.');
+
+        // Check if the error is about an active autocast session
+        if (error.message && error.message.includes('autocast session is already active')) {
+          showAlert('An autocast session is already active. Please stop the other session first to start manual casting.');
+        } else {
+          showAlert('Failed to cast line. Please try again.');
+        }
       } finally {
         setFishing(false);
       }
