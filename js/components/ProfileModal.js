@@ -342,6 +342,11 @@ function FishShowcaseTab({ fishShowcase }) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {parsedShowcase.map((fish, index) => {
+                // Skip invalid fish entries
+                if (!fish || typeof fish !== 'object' || !fish.name || !fish.rarity) {
+                    return null;
+                }
+
                 const rarityStyle = window.getGradientTextStyle ? window.getGradientTextStyle(fish.rarity) : {};
                 const borderColor = window.getRarityColor ? window.getRarityColor(fish.rarity) : '#9ca3af';
 
