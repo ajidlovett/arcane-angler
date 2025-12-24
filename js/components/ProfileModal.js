@@ -244,7 +244,7 @@ function ProfileModal({ userId, onClose, currentUserId, achievements }) {
                     )}
 
                     {activeTab === 'fish' && (
-                        <FishShowcaseTab fishShowcase={profile.fish_showcase || []} />
+                        <ProfileFishShowcase fishShowcase={profile.fish_showcase || []} />
                     )}
 
                     {activeTab === 'achievements' && (
@@ -313,8 +313,8 @@ function OverviewTab({ playerData, playerStats, profile }) {
     );
 }
 
-// Fish Showcase Tab Component
-function FishShowcaseTab({ fishShowcase }) {
+// Fish Showcase Display Component (Read-only view for profiles)
+function ProfileFishShowcase({ fishShowcase }) {
     // Parse fishShowcase if it's a JSON string
     let parsedShowcase = fishShowcase;
     if (typeof fishShowcase === 'string') {
