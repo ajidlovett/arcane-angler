@@ -453,20 +453,29 @@ class QuestService {
 
   /**
    * Get current rotation date for a quest type
+   * Uses local server time to avoid timezone issues
    */
   getRotationDate(questType) {
     const now = new Date();
 
     if (questType === 'daily') {
-      // Today's date in YYYY-MM-DD format
-      return now.toISOString().split('T')[0];
+      // Today's date in YYYY-MM-DD format (local time)
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     } else if (questType === 'weekly') {
-      // Monday of this week
+      // Monday of this week (local time)
       const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
       const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Days to subtract to get to Monday
       const monday = new Date(now); // Create new Date to avoid mutation
       monday.setDate(now.getDate() + daysToMonday);
-      return monday.toISOString().split('T')[0];
+
+      // Format in local time instead of UTC
+      const year = monday.getFullYear();
+      const month = String(monday.getMonth() + 1).padStart(2, '0');
+      const day = String(monday.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     } else {
       // First day of this month (monthly)
       return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;

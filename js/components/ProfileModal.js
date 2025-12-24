@@ -326,8 +326,12 @@ function FishShowcaseTab({ fishShowcase }) {
         }
     }
 
-    // Ensure it's an array
-    if (!Array.isArray(parsedShowcase) || parsedShowcase.length === 0) {
+    // Ensure it's an array - handle null/undefined
+    if (!parsedShowcase || !Array.isArray(parsedShowcase)) {
+        parsedShowcase = [];
+    }
+
+    if (parsedShowcase.length === 0) {
         return (
             <div className="text-center text-gray-400 py-8">
                 No fish showcased yet

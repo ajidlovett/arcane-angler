@@ -323,24 +323,8 @@ function AchievementShowcaseTab({ achievements, selectedAchievements, onToggleAc
 
 // Fish Showcase Tab
 function FishShowcaseTab({ lockedFish, selectedFish, onToggleFish, onSave, limit, loading }) {
-    // Helper function to get gradient text style (similar to inventory)
-    const getGradientTextStyle = (rarity) => {
-        const gradientRarities = {
-            'Treasure Chest': 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-            'Exotic': 'linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FDD835 100%)',
-            'Arcane': 'linear-gradient(135deg, #00F5FF 0%, #9D00FF 50%, #FF00FF 100%)'
-        };
-
-        if (gradientRarities[rarity]) {
-            return {
-                background: gradientRarities[rarity],
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-            };
-        }
-        return {};
-    };
+    // Use the global getGradientTextStyle function from rarityUtils.js
+    const getGradientTextStyle = window.getGradientTextStyle || ((rarity) => ({ color: '#9ca3af' }));
 
     return (
         <div>
@@ -378,7 +362,7 @@ function FishShowcaseTab({ lockedFish, selectedFish, onToggleFish, onSave, limit
                         >
                             <div className="flex justify-between items-start">
                                 <div className="flex-1">
-                                    <div className={`text-sm font-bold ${getRarityClassName(fish.rarity)}`} style={getGradientTextStyle(fish.rarity)}>
+                                    <div className="text-sm font-bold" style={getGradientTextStyle(fish.rarity)}>
                                         {fish.rarity}
                                     </div>
                                     <div className="text-white font-semibold mt-1">{fish.name}</div>
