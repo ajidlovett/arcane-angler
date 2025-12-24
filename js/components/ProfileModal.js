@@ -315,7 +315,19 @@ function OverviewTab({ playerData, playerStats, profile }) {
 
 // Fish Showcase Tab Component
 function FishShowcaseTab({ fishShowcase }) {
-    if (!fishShowcase || fishShowcase.length === 0) {
+    // Parse fishShowcase if it's a JSON string
+    let parsedShowcase = fishShowcase;
+    if (typeof fishShowcase === 'string') {
+        try {
+            parsedShowcase = JSON.parse(fishShowcase);
+        } catch (error) {
+            console.error('Failed to parse fish showcase:', error);
+            parsedShowcase = [];
+        }
+    }
+
+    // Ensure it's an array
+    if (!Array.isArray(parsedShowcase) || parsedShowcase.length === 0) {
         return (
             <div className="text-center text-gray-400 py-8">
                 No fish showcased yet
@@ -325,14 +337,23 @@ function FishShowcaseTab({ fishShowcase }) {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {fishShowcase.map((fish, index) => (
-                <div key={index} className="bg-gray-800 p-4 rounded-lg border-2 border-gray-700 hover:border-blue-500 transition">
-                    <div className={`text-lg font-bold ${getRarityClassName(fish.rarity)}`}>
-                        {fish.rarity}
+            {parsedShowcase.map((fish, index) => {
+                const rarityStyle = window.getGradientTextStyle ? window.getGradientTextStyle(fish.rarity) : {};
+                const borderColor = window.getRarityColor ? window.getRarityColor(fish.rarity) : '#9ca3af';
+
+                return (
+                    <div
+                        key={index}
+                        className="bg-gray-800 p-4 rounded-lg border-2 hover:border-blue-500 transition"
+                        style={{ borderColor: borderColor }}
+                    >
+                        <div className="text-lg font-bold" style={rarityStyle}>
+                            {fish.rarity}
+                        </div>
+                        <div className="text-white font-semibold mt-1">{fish.name}</div>
                     </div>
-                    <div className="text-white font-semibold mt-1">{fish.name}</div>
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 }
@@ -432,22 +453,6 @@ function StatRow({ label, value, icon }) {
 }
 
 // Helper Functions
-// Returns Tailwind class name for text color
-function getRarityClassName(rarity) {
-    const colors = {
-        'Common': 'text-gray-400',
-        'Uncommon': 'text-green-400',
-        'Fine': 'text-blue-400',
-        'Rare': 'text-purple-400',
-        'Epic': 'text-pink-400',
-        'Legendary': 'text-yellow-400',
-        'Mythic': 'text-red-400',
-        'Exotic': 'text-orange-400',
-        'Arcane': 'text-cyan-400'
-    };
-    return colors[rarity] || 'text-gray-400';
-}
-
 function getFlagEmoji(countryCode) {
     if (!countryCode || countryCode.length !== 2) return '';
     const codePoints = countryCode

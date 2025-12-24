@@ -847,7 +847,8 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
     // Apply weather XP bonus (additive with other bonuses)
     const totalXpMultiplier = xpBonus + weatherXpBonus;
-    const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
+    // Auto-cast gets 50% XP (reduced by 50%)
+    const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier) * 0.5);
 
     const result = {
       rarity,
