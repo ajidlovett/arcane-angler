@@ -11,7 +11,6 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
     const [loading, setLoading] = useState(false);
     const [saveMessage, setSaveMessage] = useState('');
     const [unlockedAchievements, setUnlockedAchievements] = useState([]);
-    const [caughtFishWithRarity, setCaughtFishWithRarity] = useState([]);
 
     const showcaseLimit = currentProfile?.achievement_showcase_limit || 6;
     const fishShowcaseLimit = currentProfile?.favorite_fish_limit || 3;
@@ -28,34 +27,6 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
             setUnlockedAchievements(fullAchievements);
         }
     }, [achievements]);
-
-    // Convert fish names to full fish objects with rarity
-    useEffect(() => {
-        if (lockedFish && window.biomes) {
-            // lockedFish is an array of fish names like ['Guppy', 'Salmon']
-            // We need to find each fish in the biomes data to get its rarity
-            const fishNames = Array.isArray(lockedFish) ? lockedFish : [];
-            const fishWithRarity = [];
-
-            fishNames.forEach(fishName => {
-                // Search through all biomes and rarities to find this fish
-                for (const biome of window.biomes) {
-                    const rarities = ['Common', 'Uncommon', 'Fine', 'Rare', 'Epic', 'Treasure Chest', 'Legendary', 'Mythic', 'Exotic', 'Arcane'];
-                    for (const rarity of rarities) {
-                        if (biome[rarity]) {
-                            const fish = biome[rarity].find(f => f.name === fishName);
-                            if (fish) {
-                                fishWithRarity.push({ name: fishName, rarity: rarity });
-                                return; // Found it, move to next fish
-                            }
-                        }
-                    }
-                }
-            });
-
-            setCaughtFishWithRarity(fishWithRarity);
-        }
-    }, [lockedFish]);
 
     useEffect(() => {
         loadAvatars();
@@ -217,7 +188,7 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
 
                     {activeTab === 'fish' && (
                         <FishShowcaseTab
-                            lockedFish={caughtFishWithRarity}
+                            lockedFish={lockedFish || []}
                             selectedFish={selectedShowcaseFish}
                             onToggleFish={toggleFish}
                             onSave={handleSaveFishShowcase}
@@ -352,6 +323,25 @@ function AchievementShowcaseTab({ achievements, selectedAchievements, onToggleAc
 
 // Fish Showcase Tab
 function FishShowcaseTab({ lockedFish, selectedFish, onToggleFish, onSave, limit, loading }) {
+    // Helper function to get gradient text style (similar to inventory)
+    const getGradientTextStyle = (rarity) => {
+        const gradientRarities = {
+            'Treasure Chest': 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+            'Exotic': 'linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FDD835 100%)',
+            'Arcane': 'linear-gradient(135deg, #00F5FF 0%, #9D00FF 50%, #FF00FF 100%)'
+        };
+
+        if (gradientRarities[rarity]) {
+            return {
+                background: gradientRarities[rarity],
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+            };
+        }
+        return {};
+    };
+
     return (
         <div>
             <div className="flex justify-between items-center mb-4">
@@ -367,17 +357,18 @@ function FishShowcaseTab({ lockedFish, selectedFish, onToggleFish, onSave, limit
                 </button>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {lockedFish.map((fish, index) => {
                     const isSelected = selectedFish.some(f => f.name === fish.name);
                     const canSelect = isSelected || selectedFish.length < limit;
+                    const titanBonus = Number(fish.titanBonus) || 1;
 
                     return (
                         <button
                             key={index}
                             onClick={() => canSelect && onToggleFish(fish)}
                             disabled={!canSelect}
-                            className={`p-3 rounded-lg border-2 text-left transition ${
+                            className={`p-4 rounded-lg border-2 text-left transition ${
                                 isSelected
                                     ? 'bg-blue-900 border-blue-400'
                                     : canSelect
@@ -385,13 +376,20 @@ function FishShowcaseTab({ lockedFish, selectedFish, onToggleFish, onSave, limit
                                     : 'bg-gray-800 border-gray-600 opacity-50 cursor-not-allowed'
                             }`}
                         >
-                            <div className={`text-sm font-bold ${getRarityClassName(fish.rarity)}`}>
-                                {fish.rarity}
+                            <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                    <div className={`text-sm font-bold ${getRarityClassName(fish.rarity)}`} style={getGradientTextStyle(fish.rarity)}>
+                                        {fish.rarity}
+                                    </div>
+                                    <div className="text-white font-semibold mt-1">{fish.name}</div>
+                                    {titanBonus > 1 && (
+                                        <div className="text-xs text-orange-400 mt-1">⚡ {titanBonus.toFixed(2)}x Titan</div>
+                                    )}
+                                </div>
+                                {isSelected && (
+                                    <div className="text-blue-400 text-xl ml-2">✓</div>
+                                )}
                             </div>
-                            <div className="text-white font-semibold text-sm mt-1">{fish.name}</div>
-                            {isSelected && (
-                                <div className="text-blue-400 text-xl mt-1">✓</div>
-                            )}
                         </button>
                     );
                 })}
@@ -399,7 +397,7 @@ function FishShowcaseTab({ lockedFish, selectedFish, onToggleFish, onSave, limit
 
             {lockedFish.length === 0 && (
                 <div className="text-center text-gray-400 py-8">
-                    No fish caught yet. Catch some fish to showcase them!
+                    No locked fish in inventory. Lock some fish from your inventory to showcase them!
                 </div>
             )}
         </div>
