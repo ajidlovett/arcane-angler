@@ -45,8 +45,16 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
 
     const loadShowcases = async () => {
         if (currentProfile) {
-            setSelectedShowcaseAchievements(currentProfile.achievement_showcase || []);
-            setSelectedShowcaseFish(currentProfile.fish_showcase || []);
+            // Ensure we always set valid arrays
+            const achievements = Array.isArray(currentProfile.achievement_showcase)
+                ? currentProfile.achievement_showcase
+                : [];
+            const fish = Array.isArray(currentProfile.fish_showcase)
+                ? currentProfile.fish_showcase.filter(f => f && typeof f === 'object' && f.name && f.rarity)
+                : [];
+
+            setSelectedShowcaseAchievements(achievements);
+            setSelectedShowcaseFish(fish);
         }
     };
 
