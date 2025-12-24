@@ -36,7 +36,7 @@ router.post('/send', authenticateToken, async (req, res) => {
     let userData;
     try {
       [userData] = await db.execute(
-        'SELECT u.profile_username, u.equipped_title, up.profile_avatar FROM users u LEFT JOIN user_profile up ON u.id = up.user_id WHERE u.id = ?',
+        'SELECT profile_username, equipped_title, profile_avatar FROM users WHERE id = ?',
         [userId]
       );
     } catch (dbError) {
@@ -108,9 +108,9 @@ router.get('/history/:channel', authenticateToken, async (req, res) => {
 
     // Get last 50 messages from this channel (most recent first, then reverse for chronological order)
     const [messages] = await db.execute(
-      `SELECT cm.id, cm.user_id, cm.profile_username, cm.equipped_title, cm.channel, cm.message_text, cm.created_at, up.profile_avatar
+      `SELECT cm.id, cm.user_id, cm.profile_username, cm.equipped_title, cm.channel, cm.message_text, cm.created_at, u.profile_avatar
        FROM chat_messages cm
-       LEFT JOIN user_profile up ON cm.user_id = up.user_id
+       LEFT JOIN users u ON cm.user_id = u.id
        WHERE cm.channel = ?
        ORDER BY cm.created_at DESC
        LIMIT 50`,

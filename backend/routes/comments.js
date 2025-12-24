@@ -21,9 +21,9 @@ router.get('/:userId', authenticateToken, async (req, res) => {
                 c.comment_text,
                 c.created_at,
                 c.updated_at,
-                up.profile_avatar
+                u.profile_avatar
              FROM profile_comments c
-             LEFT JOIN user_profile up ON c.commenter_id = up.user_id
+             LEFT JOIN users u ON c.commenter_id = u.id
              WHERE c.profile_user_id = ?
              ORDER BY c.created_at DESC
              LIMIT ? OFFSET ?`,
@@ -80,7 +80,7 @@ router.post('/:userId', authenticateToken, async (req, res) => {
 
         // Get commenter info
         const [commenter] = await db.query(
-            'SELECT u.profile_username, u.equipped_title, up.profile_avatar FROM users u LEFT JOIN user_profile up ON u.id = up.user_id WHERE u.id = ?',
+            'SELECT profile_username, equipped_title, profile_avatar FROM users WHERE id = ?',
             [commenterId]
         );
 
