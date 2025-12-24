@@ -410,7 +410,7 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
               )}
 
               <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2 mb-0.5">
+                <div className="flex items-start gap-2 mb-0.5 flex-wrap">
                   {msg.user_id && onProfileClick ? (
                     <button
                       onClick={() => onProfileClick(msg.user_id)}
@@ -419,7 +419,7 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
                           ? 'text-yellow-400'
                           : 'text-blue-400 hover:text-blue-300 cursor-pointer'
                       }`}
-                      style={{ background: 'none', border: 'none', padding: 0, font: 'inherit' }}
+                      style={{ background: 'none', border: 'none', padding: 0 }}
                     >
                       {getDisplayName(msg)}
                     </button>
