@@ -395,9 +395,9 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
               : `bg-${theme.surface} bg-opacity-50 rounded p-2`
           }`}>
             <div className="flex items-start gap-2">
-              {/* Avatar */}
+              {/* Avatar - Spans 2 lines (username + first line of message) */}
               {msg.user_id && (
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-700 flex-shrink-0">
+                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700 flex-shrink-0">
                   <img
                     src={`/assets/avatar/default/${msg.profile_avatar || 'avatar_001'}.png`}
                     alt="Avatar"
@@ -410,7 +410,7 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
               )}
 
               <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2 mb-1">
+                <div className="flex items-baseline gap-2 mb-0.5">
                   {msg.user_id && onProfileClick ? (
                     <button
                       onClick={() => onProfileClick(msg.user_id)}
