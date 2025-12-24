@@ -78,7 +78,7 @@ router.post('/:userId', authenticateToken, async (req, res) => {
 
         // Get commenter info
         const [commenter] = await db.query(
-            'SELECT profileUsername, equipped_title FROM users WHERE id = ?',
+            'SELECT profile_username, equipped_title FROM users WHERE id = ?',
             [commenterId]
         );
 
@@ -87,7 +87,7 @@ router.post('/:userId', authenticateToken, async (req, res) => {
             `INSERT INTO profile_comments
              (profile_user_id, commenter_id, commenter_username, commenter_title, comment_text)
              VALUES (?, ?, ?, ?, ?)`,
-            [profileUserId, commenterId, commenter[0].profileUsername, commenter[0].equipped_title, validation.cleaned]
+            [profileUserId, commenterId, commenter[0].profile_username, commenter[0].equipped_title, validation.cleaned]
         );
 
         res.json({
@@ -95,7 +95,7 @@ router.post('/:userId', authenticateToken, async (req, res) => {
             comment: {
                 id: result.insertId,
                 commenter_id: commenterId,
-                commenter_username: commenter[0].profileUsername,
+                commenter_username: commenter[0].profile_username,
                 commenter_title: commenter[0].equipped_title,
                 comment_text: validation.cleaned,
                 created_at: new Date()

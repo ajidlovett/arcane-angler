@@ -1045,7 +1045,7 @@ router.post('/sell', authenticateToken, async (req, res) => {
 
   try {
     const userId = req.user.userId;
-    const { fishName, rarity, quantity } = req.body;
+    const { fishName, rarity, quantity, titanBonus } = req.body;
 
     // Validate input
     if (!fishName || !rarity || !quantity) {
@@ -1058,15 +1058,22 @@ router.post('/sell', authenticateToken, async (req, res) => {
 
     await connection.beginTransaction();
 
-    // Check if player owns the fish
+    // Check if player owns the fish (include titan_bonus to target specific entry)
+    const titanBonusValue = titanBonus || 1;
     const [inventory] = await connection.query(
-      'SELECT count, base_gold, titan_bonus FROM player_inventory WHERE user_id = ? AND fish_name = ? AND rarity = ?',
-      [userId, fishName, rarity]
+      'SELECT count, base_gold, titan_bonus, COALESCE(is_locked, FALSE) as is_locked FROM player_inventory WHERE user_id = ? AND fish_name = ? AND rarity = ? AND titan_bonus = ?',
+      [userId, fishName, rarity, titanBonusValue]
     );
 
     if (!inventory || inventory.length === 0) {
       await connection.rollback();
       return res.status(404).json({ error: 'Fish not found in inventory' });
+    }
+
+    // Check if fish is locked
+    if (inventory[0].is_locked) {
+      await connection.rollback();
+      return res.status(400).json({ error: 'Cannot sell locked fish' });
     }
 
     const ownedCount = inventory[0].count;
@@ -1087,14 +1094,14 @@ router.post('/sell', authenticateToken, async (req, res) => {
     if (newCount === 0) {
       // Remove from inventory if sold all
       await connection.query(
-        'DELETE FROM player_inventory WHERE user_id = ? AND fish_name = ? AND rarity = ?',
-        [userId, fishName, rarity]
+        'DELETE FROM player_inventory WHERE user_id = ? AND fish_name = ? AND rarity = ? AND titan_bonus = ?',
+        [userId, fishName, rarity, titanBonusValue]
       );
     } else {
       // Decrease count
       await connection.query(
-        'UPDATE player_inventory SET count = ? WHERE user_id = ? AND fish_name = ? AND rarity = ?',
-        [newCount, userId, fishName, rarity]
+        'UPDATE player_inventory SET count = ? WHERE user_id = ? AND fish_name = ? AND rarity = ? AND titan_bonus = ?',
+        [newCount, userId, fishName, rarity, titanBonusValue]
       );
     }
 
