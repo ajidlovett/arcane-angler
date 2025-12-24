@@ -417,7 +417,7 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
                       className={`text-xs font-bold ${
                         msg.profile_username === 'Global Catch' || msg.profile_username === 'System'
                           ? 'text-yellow-400'
-                          : 'text-blue-400 hover:text-blue-300 cursor-pointer underline'
+                          : 'text-blue-400 hover:text-blue-300 cursor-pointer'
                       }`}
                       style={{ background: 'none', border: 'none', padding: 0, font: 'inherit' }}
                     >
