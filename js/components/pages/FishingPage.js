@@ -307,7 +307,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
             <div className="text-center">
               {lastCatch.isTreasure ? (
                 <div className="space-y-2">
-                  <div className="text-2xl sm:text-3xl font-bold text-yellow-400">
+                  <div className="text-xs uppercase tracking-wide font-bold text-yellow-400">
                     🎁 Treasure Chest Found!
                   </div>
                   <div className="flex justify-center gap-4 text-sm sm:text-base">
@@ -323,7 +323,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                 </div>
               ) : lastCatch.rarity === 'Relic' ? (
                 <div className="space-y-2">
-                  <div className="text-2xl sm:text-3xl font-bold text-purple-400">
+                  <div className="text-xs uppercase tracking-wide font-bold text-purple-400">
                     🔮 +{lastCatch.relics.toLocaleString()} Relic{lastCatch.relics !== 1 ? 's' : ''} Found!
                   </div>
                   <div className="text-sm sm:text-base text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
@@ -402,7 +402,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
           <div className="text-center">
             {lastCatch.isTreasure ? (
               <div className="space-y-2">
-                <div className="text-2xl sm:text-3xl font-bold text-yellow-400">
+                <div className="text-xs uppercase tracking-wide font-bold text-yellow-400">
                   🎁 Treasure Chest Found!
                 </div>
                 <div className="flex justify-center gap-4 text-sm sm:text-base">
@@ -418,7 +418,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
               </div>
             ) : lastCatch.rarity === 'Relic' ? (
               <div className="space-y-2">
-                <div className="text-2xl sm:text-3xl font-bold text-purple-400">
+                <div className="text-xs uppercase tracking-wide font-bold text-purple-400">
                   🔮 +{lastCatch.relics.toLocaleString()} Relic{lastCatch.relics !== 1 ? 's' : ''} Found!
                 </div>
                 <div className="text-sm sm:text-base text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
