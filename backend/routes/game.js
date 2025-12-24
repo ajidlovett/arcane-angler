@@ -52,6 +52,19 @@ router.post('/cast', authenticateToken, async (req, res) => {
 
   try {
     const userId = req.user.userId;
+
+    // Check if there's an active autocast session
+    const existingSession = autoCastSessionService.activeSessions.get(userId);
+    if (existingSession) {
+      const timeSinceLastActivity = Date.now() - existingSession.lastActivityTime;
+      if (timeSinceLastActivity < 30000) { // 30 seconds threshold
+        connection.release();
+        return res.status(400).json({
+          error: 'An autocast session is already active. Please stop the other session first.'
+        });
+      }
+    }
+
     await connection.beginTransaction();
 
     // Load player data (including anti-cheat tracking fields)
