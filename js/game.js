@@ -1464,7 +1464,7 @@ useEffect(() => {
           onClose={handleCloseProfileSettings}
           currentProfile={currentProfile}
           achievements={player.achievements}
-          lockedFish={player.discoveredFish}
+          lockedFish={player.inventory.filter(fish => player.lockedFish.includes(fish.name))}
           onUpdate={loadCurrentProfile}
         />
       )}
