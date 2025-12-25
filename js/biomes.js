@@ -12155,7 +12155,7 @@ window.BIOMES = {
       ],
       "Arcane": [
         {
-          "name": "Shenlong Dragon",
+          "name": "Azure Rain Hydra",
           "xp": 86000,
           "gold": 51000,
           "desc": "The Azure Dragon of the East. A massive celestial being that controls the weather, the rain, and the destiny of the world."
@@ -12547,7 +12547,7 @@ window.BIOMES = {
           "desc": "A warrior woman with wings. She sings a song of glory and death."
         },
         {
-          "name": "Frost Giant Scylla",
+          "name": "Glacial Scylla",
           "xp": 19000,
           "gold": 9500,
           "desc": "A blue giantess with many heads. She throws icebergs at ships."
@@ -12567,7 +12567,7 @@ window.BIOMES = {
       ],
       "Arcane": [
         {
-          "name": "Ymir Jörmungandr",
+          "name": "Primordial Jörmungandr",
           "xp": 90000,
           "gold": 55000,
           "desc": "The primeval giant from whose body the world was made. His blood became the ocean, and his bones became the mountains."
