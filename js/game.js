@@ -39,7 +39,9 @@ const ProfilePage = window.ProfilePage;
 const AchievementsPage = window.AchievementsPage;
 const FishpediaPage = window.FishpediaPage;
 const QuestPage = window.QuestPage;
+const AnomaliesPage = window.AnomaliesPage;
 const Chat = window.Chat;
+const GlobalBoosterIndicator = window.GlobalBoosterIndicator;
 const ProfileModal = window.ProfileModal;
 const ProfileSettings = window.ProfileSettings;
 
@@ -88,7 +90,8 @@ const FishingGame = ({ user, onLogout }) => {
       totalRelicsEarned: 0,
       discoveredFish: [],
       fishpediaStats: [],
-      unlockedBiomes: [1]
+      unlockedBiomes: [1],
+      anomalyFragments: 0
     };
 
     return defaultPlayerState;
@@ -1405,6 +1408,12 @@ useEffect(() => {
           {currentPage === 'quests' && <QuestPage
             theme={theme}
           />}
+          {currentPage === 'anomalies' && <AnomaliesPage
+            player={player}
+            setPlayer={setPlayer}
+            theme={theme}
+            showAlert={showAlert}
+          />}
           {currentPage === 'guilds' && <PlaceholderPage title="Guilds" icon={Icons.Users} theme={theme} />}
           {currentPage === 'profile' && <ProfilePage
             user={user}
@@ -1449,6 +1458,9 @@ useEffect(() => {
         setChatOpen={setChatOpen}
         onProfileClick={handleProfileClick}
       />
+
+      {/* Global XP Booster Indicator */}
+      <GlobalBoosterIndicator theme={theme} />
 
       {/* Profile Modal */}
       {showProfileModal && profileUserId && (
