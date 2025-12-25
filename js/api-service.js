@@ -774,6 +774,102 @@ class ApiService {
 
         return eventSource;
     }
+
+    // ==========================================
+    // ANOMALY SYSTEM (WORLD BOSSES)
+    // ==========================================
+
+    /**
+     * Get current active anomaly event
+     * @returns {Promise<Object>} Current anomaly data with player participation
+     */
+    async getCurrentAnomaly() {
+        return await this.request('/anomalies/current', {
+            method: 'GET'
+        });
+    }
+
+    /**
+     * Attack the current anomaly with selected stat
+     * @param {string} statUsed - Stat to use (strength, intelligence, luck, stamina)
+     * @returns {Promise<Object>} Attack result with damage dealt and boss HP
+     */
+    async attackAnomaly(statUsed) {
+        return await this.request('/anomalies/attack', {
+            method: 'POST',
+            body: JSON.stringify({ statUsed })
+        });
+    }
+
+    /**
+     * Get player's anomaly participation history (last 5 events)
+     * @returns {Promise<Object>} Anomaly history with rewards
+     */
+    async getAnomalyHistory() {
+        return await this.request('/anomalies/history', {
+            method: 'GET'
+        });
+    }
+
+    /**
+     * Claim rewards from defeated anomaly
+     * @param {number} eventId - Event ID to claim rewards from
+     * @returns {Promise<Object>} Claimed rewards { gold, fragments }
+     */
+    async claimAnomalyRewards(eventId) {
+        return await this.request('/anomalies/claim-rewards', {
+            method: 'POST',
+            body: JSON.stringify({ eventId })
+        });
+    }
+
+    // ==========================================
+    // FRAGMENT SHOP
+    // ==========================================
+
+    /**
+     * Get all available items in fragment shop
+     * @returns {Promise<Object>} Shop items { currentFragments, items: { avatars, boosters } }
+     */
+    async getFragmentShopItems() {
+        return await this.request('/fragment-shop/items', {
+            method: 'GET'
+        });
+    }
+
+    /**
+     * Purchase an item from fragment shop
+     * @param {string} itemType - Item type (avatar, xp_booster_personal, xp_booster_global)
+     * @param {string} itemId - Item ID (e.g., avatar filename)
+     * @param {number} cost - Fragment cost
+     * @returns {Promise<Object>} Purchase result
+     */
+    async purchaseFragmentItem(itemType, itemId, cost) {
+        return await this.request('/fragment-shop/purchase', {
+            method: 'POST',
+            body: JSON.stringify({ itemType, itemId, cost })
+        });
+    }
+
+    /**
+     * Get global XP booster queue status
+     * @returns {Promise<Object>} { active: {...}, queue: [...] }
+     */
+    async getGlobalBoosterQueue() {
+        return await this.request('/fragment-shop/global-booster/queue', {
+            method: 'GET'
+        });
+    }
+
+    /**
+     * Get global booster activation leaderboard
+     * @returns {Promise<Object>} Leaderboard of players who activated global boosters
+     */
+    async getGlobalBoosterLeaderboard() {
+        return await this.request('/fragment-shop/global-booster/leaderboard', {
+            method: 'GET'
+        });
+    }
 }
 
 // Export singleton instance
