@@ -10,7 +10,10 @@ import friendsRoutes from './routes/friends.js';
 import commentsRoutes from './routes/comments.js';
 import questRoutes from './routes/quests.js';
 import chatRoutes from './routes/chat.js';
+import anomalyRoutes from './routes/anomalies.js';
+import fragmentShopRoutes from './routes/fragmentShop.js';
 import { authLimiter, passwordResetLimiter, apiLimiter } from './middleware/rateLimiter.js';
+import anomalyScheduler from './services/anomalyScheduler.js';
 
 dotenv.config();
 
@@ -50,6 +53,8 @@ app.use('/api/friends', friendsRoutes);
 app.use('/api/comments', commentsRoutes);
 app.use('/api/quests', questRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/anomalies', anomalyRoutes);
+app.use('/api/fragment-shop', fragmentShopRoutes);
 
 // Export rate limiters for use in route files
 app.locals.authLimiter = authLimiter;
@@ -75,4 +80,20 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(`🎣 Arcane Angler API running on port ${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV}`);
+
+    // Start anomaly scheduler
+    anomalyScheduler.start();
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully...');
+    anomalyScheduler.stop();
+    process.exit(0);
+});
+
+process.on('SIGINT', () => {
+    console.log('SIGINT received, shutting down gracefully...');
+    anomalyScheduler.stop();
+    process.exit(0);
 });

@@ -30,6 +30,7 @@ import { checkForCheating, applyPunishment } from '../utils/antiCheat.js';
 import sseService from '../services/sseService.js';
 import chatSSEService from '../services/chatSSEService.js';
 import autoCastSessionService from '../services/autoCastSessionService.js';
+import { getXpMultiplier } from '../utils/xpBoosterUtil.js';
 
 const router = express.Router();
 
@@ -171,6 +172,10 @@ router.post('/cast', authenticateToken, async (req, res) => {
     const currentWeather = getBiomeWeather(currentBiome);
     const weatherXpBonus = getWeatherXpBonus(currentBiome) / 100; // Convert percentage to multiplier
 
+    // Get XP booster multipliers (personal + global stack additively)
+    const xpBoosterData = await getXpMultiplier(userId);
+    const { totalMultiplier: xpBoosterMultiplier, personal: personalBoost, global: globalBoost } = xpBoosterData;
+
     // Calculate rarity based on luck, equipped bait, rod weights, and weather
     const rarity = calculateRarity(
       totalStats.luck,
@@ -250,7 +255,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
       // Apply weather XP bonus (additive with other bonuses)
       const totalXpMultiplier = xpBonus + weatherXpBonus;
-      const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
+      // Apply XP booster multiplier (from fragment shop personal/global boosters)
+      const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier) * xpBoosterMultiplier);
 
       result.relicsGained = relicsDropped;
       result.xpGained = xpGained;
@@ -281,7 +287,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
       // Apply weather XP bonus (additive with other bonuses)
       const totalXpMultiplier = xpBonus + weatherXpBonus;
-      const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
+      // Apply XP booster multiplier (from fragment shop personal/global boosters)
+      const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier) * xpBoosterMultiplier);
 
       result.treasureChest = rewards;
       result.goldGained = rewards.gold;
@@ -334,7 +341,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
       // Apply weather XP bonus (additive with other bonuses)
       const totalXpMultiplier = xpBonus + weatherXpBonus;
-      const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier));
+      // Apply XP booster multiplier (from fragment shop personal/global boosters)
+      const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier) * xpBoosterMultiplier);
 
       // Calculate Gold Breeze bonus (50-150 gold per cast)
       let goldBreezeBonus = 0;
@@ -819,6 +827,10 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     const currentWeather = getBiomeWeather(currentBiome);
     const weatherXpBonus = getWeatherXpBonus(currentBiome) / 100; // Convert percentage to multiplier
 
+    // Get XP booster multipliers (personal + global stack additively)
+    const xpBoosterData = await getXpMultiplier(userId);
+    const { totalMultiplier: xpBoosterMultiplier, personal: personalBoost, global: globalBoost } = xpBoosterData;
+
     // Calculate rarity with auto-cast flag (caps at Epic) and weather effects
     const rarity = calculateRarity(
       totalStats.luck,
@@ -848,8 +860,8 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
     // Apply weather XP bonus (additive with other bonuses)
     const totalXpMultiplier = xpBonus + weatherXpBonus;
-    // Auto-cast gets 50% XP (reduced by 50%)
-    const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier) * 0.5);
+    // Auto-cast gets 50% XP (reduced by 50%), then apply XP booster multiplier
+    const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier) * 0.5 * xpBoosterMultiplier);
 
     const result = {
       rarity,
