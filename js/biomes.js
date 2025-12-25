@@ -9245,7 +9245,7 @@ window.BIOMES = {
           "desc": "A mystical whale shaped like a human root. It grants vitality and energy to the waters, causing plants to bloom instantly."
         },
         {
-          "name": "Ginger Construct Scylla",
+          "name": "Ginger Forged Scylla",
           "xp": 15000,
           "gold": 8050,
           "desc": "A six headed monster made of knotted, spicy ginger root. It burns anything it touches with intense chemical heat."
@@ -9263,7 +9263,7 @@ window.BIOMES = {
           "desc": "A legendary creature infused with technology energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Automaton Cetus",
+          "name": "Clockwork Cetus",
           "xp": 14600,
           "gold": 7300,
           "desc": "A legendary creature infused with technology energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
@@ -9283,7 +9283,7 @@ window.BIOMES = {
           "desc": "An incomprehensible charybdis whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Infinite Construct Cetus",
+          "name": "Infinite Forged Cetus",
           "xp": 73000,
           "gold": 39000,
           "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales that shimmer in impossible colors."
@@ -12947,7 +12947,7 @@ window.BIOMES = {
       ],
       "Exotic": [
         {
-          "name": "Talos Cetus",
+          "name": "Bronze Cetus",
           "xp": 19000,
           "gold": 9500,
           "desc": "A giant bronze man fish guardian. It bleeds molten ichor if wounded."
@@ -12959,7 +12959,7 @@ window.BIOMES = {
           "desc": "A complex, ancient computer fish. It calculates the movements of the stars."
         },
         {
-          "name": "Da Vinci Automaton",
+          "name": "Da Vinci Invention",
           "xp": 20000,
           "gold": 10000,
           "desc": "A wooden, winged fish sketched by a genius. It flies perfectly."
@@ -15843,7 +15843,7 @@ window.BIOMES = {
           "desc": "A woman transformed into a dragon by rage. She burns with the fire of obsession."
         },
         {
-          "name": "Dullahan Dorado",
+          "name": "Headless Dorado",
           "xp": 27000,
           "gold": 13000,
           "desc": "A headless rider fish carrying a spine whip. It calls out the name of the one who will die next."
@@ -15863,7 +15863,7 @@ window.BIOMES = {
       ],
       "Arcane": [
         {
-          "name": "The Pale Rider Death",
+          "name": "The Pale Death",
           "xp": 130000,
           "gold": 95000,
           "desc": "The fourth horseman. A skeletal entity riding a pale shark, bringing the end of all life."
