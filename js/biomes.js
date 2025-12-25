@@ -403,13 +403,13 @@ window.BIOMES = {
           "desc": "An incomprehensible sea monster whose form shifts between states of matter and energy, wreathed in mechanical essence. Its presence distorts water and time itself, with scales shimmering in colors that hurt mortal eyes to perceive."
         },
         {
-          "name": "Eternal Gear Juggernaut",
+          "name": "Eternal Gear Behemoth",
           "xp": 36250,
           "gold": 20625,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Tinker River, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Cosmic Temporal Sentinel",
+          "name": "Cosmic Temporal Leviathan",
           "xp": 37500,
           "gold": 21250,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Tinker River, with scales that shimmer in impossible colors."
@@ -801,13 +801,13 @@ window.BIOMES = {
           "desc": "A shifting amalgamation of fish, eel, and serpent parts held together by shadow and song. It changes shape to terrify whoever looks at it."
         },
         {
-          "name": "Mist Juggernaut",
+          "name": "Mist Behemoth",
           "xp": 7350,
           "gold": 3675,
           "desc": "A legendary creature infused with fog energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Phantom Guardian",
+          "name": "Phantom Hippocampus",
           "xp": 7600,
           "gold": 3800,
           "desc": "A legendary creature infused with fog energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
@@ -1681,13 +1681,13 @@ window.BIOMES = {
           "desc": "An incomprehensible sea monster that transcends reality, its form constantly shifting between states of matter and energy. Wreathed in electricity essence, it phases between dimensions, distorting water and time with its mere presence."
         },
         {
-          "name": "Transcendent Plasma Juggernaut",
+          "name": "Transcendent Plasma Behemoth",
           "xp": 42750,
           "gold": 23875,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Thundercliff Bay, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Omnipotent Thunder Sentinel",
+          "name": "Omnipotent Thunder Leviathan",
           "xp": 44000,
           "gold": 24500,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Thundercliff Bay, with scales that shimmer in impossible colors."
@@ -2073,7 +2073,7 @@ window.BIOMES = {
           "desc": "A geometric ray of shifting glass that refracts darkness into color. It defies the laws of physics, teleporting short distances when threatened."
         },
         {
-          "name": "Stone Sentinel",
+          "name": "Stone Leviathan",
           "xp": 8400,
           "gold": 4200,
           "desc": "A legendary creature infused with earth energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
@@ -2927,7 +2927,7 @@ window.BIOMES = {
           "desc": "A legendary creature infused with fire energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Magma Juggernaut",
+          "name": "Magma Behemoth",
           "xp": 9350,
           "gold": 4675,
           "desc": "A legendary creature infused with fire energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
@@ -2959,7 +2959,7 @@ window.BIOMES = {
           "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Verdant Canopy River, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Absolute Volcanic Juggernaut",
+          "name": "Absolute Volcanic Behemoth",
           "xp": 49250,
           "gold": 27125,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Verdant Canopy River, with scales that shimmer in impossible colors."
@@ -4199,7 +4199,7 @@ window.BIOMES = {
           "desc": "A legendary creature infused with light energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Holy Sentinel",
+          "name": "Holy Kraken",
           "xp": 10400,
           "gold": 5200,
           "desc": "A legendary creature infused with light energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
@@ -5479,13 +5479,13 @@ window.BIOMES = {
       ],
       "Arcane": [
         {
-          "name": "The First Wizard",
+          "name": "The First Sorcerer",
           "xp": 56000,
           "gold": 32000,
           "desc": "The transfigured form of the wizard who sank the city. A massive, bearded fish thing that whispers spells in the dark."
         },
         {
-          "name": "Ancient Ancient Sentinel",
+          "name": "Ancient Ancient Leviathan",
           "xp": 56000,
           "gold": 30500,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Sunken City of Aethelgard, with scales that shimmer in impossible colors."
@@ -5757,7 +5757,7 @@ window.BIOMES = {
       ],
       "Epic": [
         {
-          "name": "Cetus Crystal Golem",
+          "name": "Cetus Crystal Construct",
           "xp": 660,
           "gold": 330,
           "desc": "A construct of crystal that resembles a giant crab. It organizes the shelves."
@@ -6757,13 +6757,13 @@ window.BIOMES = {
           "desc": "The original culture that started all fermentation. A swirling galaxy of microscopic life form into a whale."
         },
         {
-          "name": "Divine Desert Juggernaut",
+          "name": "Divine Desert Behemoth",
           "xp": 61250,
           "gold": 33125,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cheddar Gorge, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Celestial Dune Sentinel",
+          "name": "Celestial Dune Leviathan",
           "xp": 62500,
           "gold": 33750,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cheddar Gorge, with scales that shimmer in impossible colors."
@@ -8035,13 +8035,13 @@ window.BIOMES = {
           "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Baker's Bay, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Supreme Scarlet Juggernaut",
+          "name": "Supreme Scarlet Behemoth",
           "xp": 67750,
           "gold": 36375,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Baker's Bay, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Ultimate Carmine Sentinel",
+          "name": "Ultimate Carmine Leviathan",
           "xp": 69000,
           "gold": 37000,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Baker's Bay, with scales that shimmer in impossible colors."
@@ -8433,7 +8433,7 @@ window.BIOMES = {
           "desc": "Wine aged for negative time. Drinking it makes you younger."
         },
         {
-          "name": "Gold Juggernaut",
+          "name": "Gold Behemoth",
           "xp": 13650,
           "gold": 6825,
           "desc": "A legendary creature infused with metal energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
@@ -9239,13 +9239,13 @@ window.BIOMES = {
       ],
       "Exotic": [
         {
-          "name": "Ginseng Genie Cetus",
+          "name": "Ginseng Spirit Cetus",
           "xp": 14500,
           "gold": 7800,
           "desc": "A mystical whale shaped like a human root. It grants vitality and energy to the waters, causing plants to bloom instantly."
         },
         {
-          "name": "Ginger Golem Scylla",
+          "name": "Ginger Construct Scylla",
           "xp": 15000,
           "gold": 8050,
           "desc": "A six headed monster made of knotted, spicy ginger root. It burns anything it touches with intense chemical heat."
@@ -9289,13 +9289,13 @@ window.BIOMES = {
           "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Primordial Tech Juggernaut",
+          "name": "Primordial Tech Behemoth",
           "xp": 74250,
           "gold": 39625,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Ancient Mechanical Sentinel",
+          "name": "Ancient Mechanical Leviathan",
           "xp": 75500,
           "gold": 40250,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales that shimmer in impossible colors."
@@ -9669,7 +9669,7 @@ window.BIOMES = {
           "desc": "A wolf fish made of tough, woody mushroom. Its bite infects the world with spores."
         },
         {
-          "name": "Chaos Sentinel",
+          "name": "Chaos Kraken",
           "xp": 14700,
           "gold": 7350,
           "desc": "A legendary creature infused with chaos energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
@@ -10499,7 +10499,7 @@ window.BIOMES = {
           "desc": "A legendary creature infused with death energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Undead Juggernaut",
+          "name": "Undead Behemoth",
           "xp": 15650,
           "gold": 7825,
           "desc": "A legendary creature infused with death energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
@@ -10531,7 +10531,7 @@ window.BIOMES = {
           "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Blossom Basin, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Divine Death Juggernaut",
+          "name": "Divine Death Behemoth",
           "xp": 80750,
           "gold": 42875,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Blossom Basin, with scales that shimmer in impossible colors."
@@ -11735,7 +11735,7 @@ window.BIOMES = {
           "desc": "A legendary creature infused with silence energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Mute Sentinel",
+          "name": "Mute Leviathan",
           "xp": 16700,
           "gold": 8350,
           "desc": "A legendary creature infused with silence energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
@@ -12959,7 +12959,7 @@ window.BIOMES = {
           "desc": "A complex, ancient computer fish. It calculates the movements of the stars."
         },
         {
-          "name": "Da Vinci Demon",
+          "name": "Da Vinci Automaton",
           "xp": 20000,
           "gold": 10000,
           "desc": "A wooden, winged fish sketched by a genius. It flies perfectly."
@@ -12985,7 +12985,7 @@ window.BIOMES = {
           "desc": "A spirit possessing the industrial waste. It is the soul of the artificial era, a tangled mass of wires and steam."
         },
         {
-          "name": "Omnipotent Time Sentinel",
+          "name": "Omnipotent Time Leviathan",
           "xp": 87500,
           "gold": 46250,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Steam Forge Delta, with scales that shimmer in impossible colors."
@@ -14221,13 +14221,13 @@ window.BIOMES = {
           "desc": "A humanoid giant made of corium and concrete. Where it steps, the ocean boils and life ceases to exist for ten thousand years."
         },
         {
-          "name": "Absolute Soul Juggernaut",
+          "name": "Absolute Soul Behemoth",
           "xp": 92750,
           "gold": 48875,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Nuclear Abyssal Reactor, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Infinite Essence Sentinel",
+          "name": "Infinite Essence Leviathan",
           "xp": 94000,
           "gold": 49500,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Nuclear Abyssal Reactor, with scales that shimmer in impossible colors."
@@ -15463,13 +15463,13 @@ window.BIOMES = {
           "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Gravity Well Grotto, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Eternal Birth Juggernaut",
+          "name": "Eternal Birth Behemoth",
           "xp": 99250,
           "gold": 52125,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Gravity Well Grotto, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Cosmic Prime Sentinel",
+          "name": "Cosmic Prime Leviathan",
           "xp": 100500,
           "gold": 52750,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Gravity Well Grotto, with scales that shimmer in impossible colors."
@@ -15849,7 +15849,7 @@ window.BIOMES = {
           "desc": "A headless rider fish carrying a spine whip. It calls out the name of the one who will die next."
         },
         {
-          "name": "Destruction Juggernaut",
+          "name": "Destruction Behemoth",
           "xp": 19950,
           "gold": 9975,
           "desc": "A legendary creature infused with destruction energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
@@ -16705,13 +16705,13 @@ window.BIOMES = {
           "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Reality Rift Reef, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Transcendent Boundless Juggernaut",
+          "name": "Transcendent Boundless Behemoth",
           "xp": 105750,
           "gold": 55375,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Reality Rift Reef, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Omnipotent Infinite Sentinel",
+          "name": "Omnipotent Infinite Leviathan",
           "xp": 107000,
           "gold": 56000,
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Reality Rift Reef, with scales that shimmer in impossible colors."
