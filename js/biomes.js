@@ -251,13 +251,13 @@ window.BIOMES = {
           "desc": "Its armored skin resists hooks and stone. It patrols deep holes."
         },
         {
-          "name": "Verdant Guardian Gar",
+          "name": "Verdant Eddy Gar",
           "xp": 425,
           "gold": 215,
-          "desc": "Moss covered and watchful, it blends into vegetation. It rarely attacks without provocation."
+          "desc": "Moss covered and patient, it blends into vegetation near swirling pools. It strikes only when prey drifts within reach."
         },
         {
-          "name": "Whirlpool Watcher Gar",
+          "name": "Whirlpool Spiral Gar",
           "xp": 450,
           "gold": 230,
           "desc": "Circles powerful eddies continuously. It uses spinning currents to disorient prey."
@@ -365,16 +365,16 @@ window.BIOMES = {
           "desc": "Moves with perfect mechanical rhythm. It never appears to tire."
         },
         {
-          "name": "Eternal Flow Hippocampus",
+          "name": "Gearwork River Hippocampus",
           "xp": 7500,
           "gold": 3750,
-          "desc": "A massive serpent like fish with the grace of a sea horse. Water bends unnaturally around its body."
+          "desc": "A massive mechanical seahorse with brass gears visible through its translucent scales. Water flows through its body like coolant through an engine, powering its endless swimming."
         },
         {
-          "name": "Abysscoil Sturgeon",
+          "name": "Steamwheel Sturgeon",
           "xp": 8000,
           "gold": 4000,
-          "desc": "Dark scaled and immense, it pulls lines downward relentlessly. Few have landed it."
+          "desc": "A massive sturgeon with rotating wheel mechanisms along its sides that churn water like paddle-wheels. Steam vents along its spine release bursts of pressure when it surfaces."
         },
         {
           "name": "Tinker Leviathan",
@@ -409,16 +409,16 @@ window.BIOMES = {
           "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Tinker River, with scales that shimmer in impossible colors."
         },
         {
-          "name": "Cosmic Temporal Leviathan",
+          "name": "Temporal River Megalodon",
           "xp": 37500,
           "gold": 21250,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Tinker River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible prehistoric shark whose form shifts between past and present states. Its scales shimmer with the colors of flowing time itself, existing simultaneously in multiple moments of the river's history."
         },
         {
-          "name": "Divine Tinker Hydra",
+          "name": "Mechanized Serpent Oarfish",
           "xp": 38750,
           "gold": 21875,
-          "desc": "A multi-headed serpentine entity that transcends reality, its form constantly shifting between states of matter and energy. Each head embodies a different aspect of Tinker River's arcane forces, working in perfect mechanical harmony."
+          "desc": "A multi-segmented oarfish whose body parts move with clockwork precision, each section operating independently yet in perfect harmony. Ancient tool-like markings cover its ribbonlike form, pulsing with arcane mechanical energy."
         }
       ]
     }
@@ -681,7 +681,7 @@ window.BIOMES = {
           "desc": "It has lived in the lake so long that moss grows on its back. It seems to exhale a constant stream of fine bubbles."
         },
         {
-          "name": "Frost Giant Gar",
+          "name": "Glacier Spine Gar",
           "xp": 470,
           "gold": 240,
           "desc": "An enormous gar that requires two people to lift. Its scales are rimmed with permanent frost that never melts."
@@ -783,10 +783,10 @@ window.BIOMES = {
       ],
       "Exotic": [
         {
-          "name": "Glacial Drake",
+          "name": "Mist Wraith Sturgeon",
           "xp": 7350,
           "gold": 3675,
-          "desc": "A wingless dragon adapted to the deep cold. Its breath freezes the water instantly, encasing its prey in ice blocks."
+          "desc": "A ghostly sturgeon that phases in and out of dense fog banks, barely visible even when close. Its scales shimmer with condensed mist droplets that trail behind like spectral ribbons."
         },
         {
           "name": "Deep Mist Kraken",
@@ -1579,7 +1579,7 @@ window.BIOMES = {
           "desc": "A colossal squid that releases ink dark enough to turn day into night. It thrives in the chaos of the tempest, using the darkness to hunt."
         },
         {
-          "name": "Ancient Cliff Guardian",
+          "name": "Ancient Cliff Sturgeon",
           "xp": 1135,
           "gold": 577,
           "desc": "A sturgeon as old as the cliffs themselves. Its back is covered in barnacles and stone, making it look like a piece of the wall come to life."
@@ -1903,7 +1903,7 @@ window.BIOMES = {
           "desc": "Bright blue veins pulse beneath its pale skin. It swims upstream into the deepest parts of the earth to spawn."
         },
         {
-          "name": "Goliath Cave Grouper",
+          "name": "Abyssal Cave Grouper",
           "xp": 260,
           "gold": 154,
           "desc": "An enormous, pale grouper that claims entire caverns as its territory. It swallows prey whole, creating a vacuum that pulls in water."
@@ -2775,7 +2775,7 @@ window.BIOMES = {
           "desc": "A large tetra that glows with an internal green fire. It lights up the murky depths of the swamp."
         },
         {
-          "name": "Goliath Tiger Fish",
+          "name": "Savage Tiger Fish",
           "xp": 320,
           "gold": 186,
           "desc": "A terrifying predator with interlocking, dagger like teeth. It attacks things larger than itself out of pure aggression."
@@ -2825,10 +2825,10 @@ window.BIOMES = {
           "desc": "A solitary giant piranha. It is said that a single drop of blood in the water summons it from miles away."
         },
         {
-          "name": "Forest Guardian Carp",
+          "name": "Forest Spirit Carp",
           "xp": 670,
           "gold": 350,
-          "desc": "An ancient carp with moss growing in patterns of runes. It protects the sacred parts of the river."
+          "desc": "An ancient carp with moss growing in patterns of runes. It drifts through the sacred parts of the river."
         },
         {
           "name": "Eclipse Sunfish",
@@ -2883,10 +2883,10 @@ window.BIOMES = {
           "desc": "A multi headed beast that lurks in the deepest mud. Its breath is a cloud of poisonous gas."
         },
         {
-          "name": "Guardian Behemoth Hippo",
+          "name": "River King Hippopotamus",
           "xp": 3060,
           "gold": 1530,
-          "desc": "Not a fish, but a mythical aquatic guardian. A massive hippo with armor of gold and jade."
+          "desc": "Not a fish, but a mythical aquatic creature. A massive hippo with armor of gold and jade."
         },
         {
           "name": "Emerald Hydra Turtle",
@@ -2921,16 +2921,16 @@ window.BIOMES = {
           "desc": "A literal aquatic dinosaur, preserved by the magic of the valley. It is a living relic of a bygone era."
         },
         {
-          "name": "Volcanic Leviathan",
+          "name": "Canopy Serpent",
           "xp": 9100,
           "gold": 4550,
-          "desc": "A legendary creature infused with fire energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A massive serpent that coils through the river's overhanging vines and branches, its scales camouflaged with patterns of leaves and bark. It strikes from above with lightning speed, dropping onto prey like falling vegetation."
         },
         {
-          "name": "Magma Behemoth",
+          "name": "Rainforest Arapaima",
           "xp": 9350,
           "gold": 4675,
-          "desc": "A legendary creature infused with fire energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary arapaima that has grown to immense size feeding on the jungle's abundant prey. Its massive scaled body is covered in moss and algae, and ancient tribal markings seem to naturally form across its emerald scales."
         }
       ],
       "Arcane": [
@@ -2941,28 +2941,28 @@ window.BIOMES = {
           "desc": "A massive, pulsing ray at the center of the jungle. It is the heart of nature itself."
         },
         {
-          "name": "Omnipotent Volcanic Hydra",
+          "name": "Omnipotent Vine Hydra",
           "xp": 45500,
           "gold": 25250,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Verdant Canopy River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra whose multiple heads emerge from a body woven entirely from living jungle vines and roots. Ancient beyond measure, it embodies the untamed growth of Verdant Canopy River, with each head controlling different aspects of the rainforest's verdant fury."
         },
         {
-          "name": "Supreme Lava Charybdis",
+          "name": "Supreme Swamp Charybdis",
           "xp": 46750,
           "gold": 25875,
-          "desc": "An incomprehensible charybdis whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Verdant Canopy River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whirlpool that forms in the deepest jungle swamps, pulling entire trees and creatures into its maw. Ancient beyond measure, it embodies the consuming hunger of the rainforest, where decomposition and new growth exist in perfect balance."
         },
         {
-          "name": "Ultimate Ember Cetus",
+          "name": "Ultimate Primeval Cetus",
           "xp": 48000,
           "gold": 26500,
-          "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Verdant Canopy River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale that has existed since the jungle's first seedling took root, its body a living ecosystem of parasitic plants and symbiotic creatures. Ancient beyond measure, it embodies the primordial essence of Verdant Canopy River, with scales covered in prehistoric ferns."
         },
         {
-          "name": "Absolute Volcanic Behemoth",
+          "name": "Absolute Verdant Leviathan",
           "xp": 49250,
           "gold": 27125,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Verdant Canopy River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible leviathan whose body is the jungle itself made flesh, rivers flowing through its veins and trees growing from its back. Ancient beyond measure, it embodies the fundamental life force of Verdant Canopy River, its scales shimmering with every shade of green imaginable."
         }
       ]
     }
@@ -3181,7 +3181,7 @@ window.BIOMES = {
           "desc": "Its scales are perfectly reflective black mirrors. Looking at it reflects your own soul's darkness."
         },
         {
-          "name": "Vent Guardian Grouper",
+          "name": "Vent Dweller Grouper",
           "xp": 300,
           "gold": 177,
           "desc": "It sits directly on top of thermal vents, bathing in the heat. Its skin is thick and callous."
@@ -3345,16 +3345,16 @@ window.BIOMES = {
           "desc": "A fossil that is constantly burning but never consumed. It is stuck in a loop of destruction."
         },
         {
-          "name": "Toxic Hydra",
+          "name": "Magma Hydra",
           "xp": 9450,
           "gold": 4725,
-          "desc": "A legendary creature infused with poison energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature forged in molten lava, its massive scaled body rippling with volcanic power. Glowing magma flows through cracks in its obsidian armor as it commands the heat of the earth."
         },
         {
-          "name": "Venom Serpent",
+          "name": "Lava Serpent",
           "xp": 9700,
           "gold": 4850,
-          "desc": "A legendary creature infused with poison energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary serpent swimming through molten rivers, its massive scaled body rippling with volcanic heat. Ancient patterns glow white-hot across its form as it commands the fiery depths."
         }
       ],
       "Arcane": [
@@ -3365,28 +3365,28 @@ window.BIOMES = {
           "desc": "A massive eel that embodies destruction. It waits for the end of the world to consume the oceans."
         },
         {
-          "name": "Supreme Toxic Naga",
+          "name": "Supreme Obsidian Naga",
           "xp": 47250,
           "gold": 26125,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Obsidian Flow River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between molten lava and solid obsidian, phasing through volcanic dimensions. Ancient beyond measure, it embodies the fundamental volcanic forces of Obsidian Flow River, with scales forged from primordial magma."
         },
         {
-          "name": "Ultimate Acid Wyrm",
+          "name": "Ultimate Magma Wyrm",
           "xp": 48500,
           "gold": 26750,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Obsidian Flow River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible wyrm whose form shifts between molten lava and hardened basalt, phasing through volcanic chambers. Ancient beyond measure, it embodies the fundamental volcanic forces of Obsidian Flow River, with scales that glow with primordial heat."
         },
         {
-          "name": "Absolute Bile Kraken",
+          "name": "Absolute Lava Kraken",
           "xp": 49750,
           "gold": 27375,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Obsidian Flow River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose form shifts between molten plasma and obsidian stone, phasing through magma chambers. Ancient beyond measure, it embodies the fundamental volcanic forces of Obsidian Flow River, with tentacles flowing like rivers of lava."
         },
         {
-          "name": "Infinite Toxic Kraken",
+          "name": "Infinite Volcanic Kraken",
           "xp": 51000,
           "gold": 28000,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Obsidian Flow River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose form shifts between pure volcanic fury and crystallized obsidian, phasing through the earth's core. Ancient beyond measure, it embodies the fundamental volcanic forces of Obsidian Flow River, with tentacles that burn hotter than the sun."
         }
       ]
     }
@@ -3649,7 +3649,7 @@ window.BIOMES = {
           "desc": "A massive moray eel with skin like flowing lava. Its bite injects searing heat."
         },
         {
-          "name": "Caldera Guardian Shark",
+          "name": "Caldera Warden Shark",
           "xp": 610,
           "gold": 310,
           "desc": "A shark that never leaves the crater. It has grown to immense size in the enclosed ecosystem."
@@ -3769,16 +3769,16 @@ window.BIOMES = {
           "desc": "A fossil that crumbles and reforms constantly. It is trapped in a loop of destruction and creation."
         },
         {
-          "name": "Shadow Hippocampus",
+          "name": "Inferno Hippocampus",
           "xp": 9800,
           "gold": 4900,
-          "desc": "A legendary creature infused with darkness energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with infernal flames, its massive scaled body rippling with burning power. Ancient fire markings glow white-hot across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Void Behemoth",
+          "name": "Blaze Behemoth",
           "xp": 10050,
           "gold": 5025,
-          "desc": "A legendary creature infused with darkness energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with blazing flames, its massive scaled body rippling with volcanic power. Ancient fire runes glow across its form as it commands the infernal heat of the caldera."
         }
       ],
       "Arcane": [
@@ -3789,28 +3789,28 @@ window.BIOMES = {
           "desc": "A colossal turtle with a shell that is the actual heat source of the caldera. Catching it is to wrestle with the earth itself."
         },
         {
-          "name": "Ultimate Shadow Hippocampus",
+          "name": "Ultimate Inferno Hippocampus",
           "xp": 49000,
           "gold": 27000,
-          "desc": "An incomprehensible hippocampus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Infernal Caldera, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hippocampus whose form shifts between pure flame and molten rock, phasing through infernal dimensions. Ancient beyond measure, it embodies the fundamental fires of Infernal Caldera, with scales that burn with impossible heat."
         },
         {
-          "name": "Absolute Dark Kraken",
+          "name": "Absolute Flame Kraken",
           "xp": 50250,
           "gold": 27625,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Infernal Caldera, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose form shifts between raging flames and superheated plasma, phasing through volcanic dimensions. Ancient beyond measure, it embodies the fundamental fires of Infernal Caldera, with tentacles of pure burning energy."
         },
         {
-          "name": "Infinite Umbra Scylla",
+          "name": "Infinite Pyroclast Scylla",
           "xp": 51500,
           "gold": 28250,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Infernal Caldera, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible scylla whose form shifts between volcanic ash and molten fury, phasing through infernal dimensions. Ancient beyond measure, it embodies the fundamental fires of Infernal Caldera, with heads that breathe superheated steam."
         },
         {
-          "name": "Primordial Shadow Leviathan",
+          "name": "Primordial Ember Leviathan",
           "xp": 52750,
           "gold": 28875,
-          "desc": "An incomprehensible leviathan whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Infernal Caldera, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible leviathan whose form shifts between living flame and molten stone, phasing through the heart of volcanoes. Ancient beyond measure, it embodies the fundamental fires of Infernal Caldera, with scales forged in the first fires of creation."
         }
       ]
     }
@@ -4193,16 +4193,16 @@ window.BIOMES = {
           "desc": "A fossil animated by ancient magic. It is immortal and unyielding."
         },
         {
-          "name": "Radiant Naga",
+          "name": "Prehistoric Naga",
           "xp": 10150,
           "gold": 5075,
-          "desc": "A legendary creature infused with light energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature from the dawn of time, its massive scaled body rippling with primordial power. Ancient fossil patterns mark its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Holy Kraken",
+          "name": "Primeval Kraken",
           "xp": 10400,
           "gold": 5200,
-          "desc": "A legendary creature infused with light energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature from Earth's first oceans, its massive tentacled body rippling with ancient power. Prehistoric markings etched in stone cover its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -4213,16 +4213,16 @@ window.BIOMES = {
           "desc": "A serpent that exists in all times simultaneously. It knows every cast you will ever make."
         },
         {
-          "name": "Absolute Radiant Hydra",
+          "name": "Absolute Primordial Hydra",
           "xp": 50750,
           "gold": 27875,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Primordial Basin, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra whose form shifts between fossilized stone and living flesh, phasing through prehistoric eras. Ancient beyond measure, it embodies the fundamental forces of Primordial Basin, with scales from the world's first age."
         },
         {
-          "name": "Infinite Divine Hydra",
+          "name": "Infinite Ancient Hydra",
           "xp": 52000,
           "gold": 28500,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Primordial Basin, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra whose form shifts between geological epochs, phasing through deep time. Ancient beyond measure, it embodies the fundamental forces of Primordial Basin, with scales that witnessed the birth of life itself."
         },
         {
           "name": "Primordial Blessed Charybdis",
@@ -4617,16 +4617,16 @@ window.BIOMES = {
           "desc": "A transparent fish that holds a frozen moment of time inside. Catching it releases the moment."
         },
         {
-          "name": "Abyssal Hydra",
+          "name": "Shipwreck Hydra",
           "xp": 10500,
           "gold": 5250,
-          "desc": "A legendary creature infused with water energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature dwelling in sunken vessels, its massive scaled body rippling with maritime power. Ancient barnacles and ship timbers adorn its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Deep Siren",
+          "name": "Harbor Siren",
           "xp": 10750,
           "gold": 5375,
-          "desc": "A legendary creature infused with water energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature haunting drowned docks, its massive scaled body rippling with nautical power. Ancient ship figureheads and anchor chains adorn its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -4637,28 +4637,28 @@ window.BIOMES = {
           "desc": "A titanic merman like entity, calcified into stone, yet still living. He sits on a throne of shipwrecks."
         },
         {
-          "name": "Infinite Abyssal Leviathan",
+          "name": "Infinite Drowned Leviathan",
           "xp": 52500,
           "gold": 28750,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Drowned Harbor, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between sunken cargo and ghostly mist, phasing through maritime dimensions. Ancient beyond measure, it embodies the fundamental forces of The Drowned Harbor, with scales made of barnacle-encrusted ship hulls."
         },
         {
-          "name": "Primordial Trench Serpent",
+          "name": "Primordial Galleon Serpent",
           "xp": 53750,
           "gold": 29375,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Drowned Harbor, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible serpent whose form shifts between rotting ship wood and rusted chains, phasing through sunken dimensions. Ancient beyond measure, it embodies the fundamental forces of The Drowned Harbor, with scales forged from ancient figureheads."
         },
         {
-          "name": "Ancient Crushing Wyrm",
+          "name": "Ancient Anchor Wyrm",
           "xp": 55000,
           "gold": 30000,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Drowned Harbor, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible wyrm whose form shifts between iron anchors and tangled rigging, phasing through nautical dimensions. Ancient beyond measure, it embodies the fundamental forces of The Drowned Harbor, with scales forged from countless ship anchors."
         },
         {
-          "name": "Eternal Abyssal Kraken",
+          "name": "Eternal Shipwreck Kraken",
           "xp": 56250,
           "gold": 30625,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Drowned Harbor, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose form shifts between shattered masts and ghostly sails, phasing through drowned dimensions. Ancient beyond measure, it embodies the fundamental forces of The Drowned Harbor, with tentacles woven from the rigging of a thousand lost ships."
         }
       ]
     }
@@ -5041,16 +5041,16 @@ window.BIOMES = {
           "desc": "A turtle with a working clock on its shell. It counts down to the city's final destruction."
         },
         {
-          "name": "Coral Kraken",
+          "name": "Marble Kraken",
           "xp": 10850,
           "gold": 5425,
-          "desc": "A legendary creature infused with life energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature carved from ancient statuary, its massive stone body rippling with architectural power. Ancient inscriptions glow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Reef Cetus",
+          "name": "Monument Cetus",
           "xp": 11100,
           "gold": 5550,
-          "desc": "A legendary creature infused with life energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature made of sunken monuments, its massive stone body rippling with civic power. Ancient architectural reliefs glow across its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -5061,28 +5061,28 @@ window.BIOMES = {
           "desc": "The collective consciousness of the drowned citizens, formed into a massive, glowing school of fish that moves as one. Catching it is to catch a million souls."
         },
         {
-          "name": "Primordial Coral Siren",
+          "name": "Primordial Arch Siren",
           "xp": 54250,
           "gold": 29625,
-          "desc": "An incomprehensible siren whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Grand Canal, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible siren whose form shifts between stone bridges and flowing water, phasing through architectural dimensions. Ancient beyond measure, it embodies the fundamental forces of The Grand Canal, with scales carved from ancient archways."
         },
         {
-          "name": "Ancient Tropical Hippocampus",
+          "name": "Ancient Basilica Hippocampus",
           "xp": 55500,
           "gold": 30250,
-          "desc": "An incomprehensible hippocampus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Grand Canal, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hippocampus whose form shifts between marble columns and cathedral domes, phasing through civic dimensions. Ancient beyond measure, it embodies the fundamental forces of The Grand Canal, with scales made from ornate facades."
         },
         {
-          "name": "Eternal Vibrant Kraken",
+          "name": "Eternal Palazzo Kraken",
           "xp": 56750,
           "gold": 30875,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Grand Canal, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose form shifts between grand palaces and flowing canals, phasing through urban dimensions. Ancient beyond measure, it embodies the fundamental forces of The Grand Canal, with tentacles made from ornate balconies."
         },
         {
-          "name": "Cosmic Coral Cetus",
+          "name": "Cosmic Piazza Cetus",
           "xp": 58000,
           "gold": 31500,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Grand Canal, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible cetus whose form shifts between cobblestone squares and vaulted chambers, phasing through metropolitan dimensions. Ancient beyond measure, it embodies the fundamental forces of The Grand Canal, with scales crafted from ancient city stones."
         }
       ]
     }
@@ -5401,7 +5401,7 @@ window.BIOMES = {
           "desc": "A glowing avatar of the city itself. It weeps for the lost civilization."
         },
         {
-          "name": "Ancient Guardian Hydra",
+          "name": "Ancient Spire Hydra",
           "xp": 1590,
           "gold": 810,
           "desc": "A water dragon that curls around the central spire. It sleeps, waiting for the king's return."
@@ -5427,7 +5427,7 @@ window.BIOMES = {
           "desc": "A serpent from the void dimension. It tries to pull the entire city into nothingness."
         },
         {
-          "name": "Crystal Colossus Crab",
+          "name": "Crystal Monarch Crab",
           "xp": 3720,
           "gold": 1860,
           "desc": "A crab made of blue mana crystals. It generates the power for the ruins."
@@ -5775,7 +5775,7 @@ window.BIOMES = {
           "desc": "A transparent dragon eel. You can see its beating heart."
         },
         {
-          "name": "Scroll Guardian Hydra",
+          "name": "Scroll Keeper Hydra",
           "xp": 735,
           "gold": 375,
           "desc": "A hydra made of paper and ink. It can flatten itself to slide under doors."
@@ -5889,16 +5889,16 @@ window.BIOMES = {
           "desc": "It remembers the beginning of time. It is heavy with the weight of the past."
         },
         {
-          "name": "Mystic Charybdis",
+          "name": "Codex Charybdis",
           "xp": 11550,
           "gold": 5775,
-          "desc": "A legendary creature infused with magic energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature composed of crystallized knowledge, its massive scaled body rippling with ancient wisdom. Glowing inscriptions and runic texts flow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Arcane Hippocampus",
+          "name": "Lexicon Hippocampus",
           "xp": 11800,
           "gold": 5900,
-          "desc": "A legendary creature infused with magic energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature crafted from ancient texts, its massive scaled body rippling with written knowledge. Ancient pages and manuscript illuminations glow across its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -5909,28 +5909,28 @@ window.BIOMES = {
           "desc": "A cosmic entity that records every event in the universe. It appears as a multi armed figure of light."
         },
         {
-          "name": "Eternal Mystic Behemoth",
+          "name": "Eternal Archive Behemoth",
           "xp": 57750,
           "gold": 31375,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Crystal Archives, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible behemoth whose form shifts between ancient scrolls and crystalline data, phasing through librarian dimensions. Ancient beyond measure, it embodies the fundamental forces of The Crystal Archives, with scales etched with every word ever written."
         },
         {
-          "name": "Cosmic Magic Leviathan",
+          "name": "Cosmic Tome Leviathan",
           "xp": 59000,
           "gold": 32000,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Crystal Archives, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible leviathan whose form shifts between bound volumes and flowing information, phasing through knowledge dimensions. Ancient beyond measure, it embodies the fundamental forces of The Crystal Archives, with scales made of infinite library shelves."
         },
         {
-          "name": "Divine Spell Naga",
+          "name": "Divine Manuscript Naga",
           "xp": 60250,
           "gold": 32625,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Crystal Archives, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible naga whose form shifts between sacred texts and encoded secrets, phasing through scholarly dimensions. Ancient beyond measure, it embodies the fundamental forces of The Crystal Archives, with scales inscribed with primordial knowledge."
         },
         {
-          "name": "Celestial Mystic Wyrm",
+          "name": "Celestial Chronicle Wyrm",
           "xp": 61500,
           "gold": 33250,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Crystal Archives, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible wyrm whose form shifts between historical records and prophetic visions, phasing through temporal archives. Ancient beyond measure, it embodies the fundamental forces of The Crystal Archives, with scales chronicling the universe's every moment."
         }
       ]
     }
@@ -6099,7 +6099,7 @@ window.BIOMES = {
           "desc": "Covered in spikes made of solidified darkness. They ignore armor."
         },
         {
-          "name": "Demon Blood Salmon",
+          "name": "Infernal Blood Salmon",
           "xp": 185,
           "gold": 117,
           "desc": "Its blood is boiling acid. It leaps from the water to attack."
@@ -6173,7 +6173,7 @@ window.BIOMES = {
           "desc": "It has too many limbs and non Euclidean geometry. It shouldn't exist."
         },
         {
-          "name": "Throne Guardian Gar",
+          "name": "Throne Sentinel Gar",
           "xp": 410,
           "gold": 239,
           "desc": "It never moves from the foot of the throne. It strikes faster than light."
@@ -6187,7 +6187,7 @@ window.BIOMES = {
           "desc": "A whale composed of starless space. It swallows light."
         },
         {
-          "name": "Null Entity Grouper",
+          "name": "Null Void Grouper",
           "xp": 705,
           "gold": 355,
           "desc": "A hole in the universe shaped like a fish. It is heavy with nothingness."
@@ -6313,16 +6313,16 @@ window.BIOMES = {
           "desc": "It chews on the edges of the map. It leaves white void behind."
         },
         {
-          "name": "Jungle Kraken",
+          "name": "Void Kraken",
           "xp": 11900,
           "gold": 5950,
-          "desc": "A legendary creature infused with nature energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with void energy, its massive scaled body rippling with corrupting power. Ancient marks of darkness glow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Verdant Serpent",
+          "name": "Umbral Serpent",
           "xp": 12150,
           "gold": 6075,
-          "desc": "A legendary creature infused with nature energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with shadow energy, its massive scaled body rippling with abyssal power. Ancient void markings glow across its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -6333,28 +6333,28 @@ window.BIOMES = {
           "desc": "The source of all void. A point of infinite density and nothingness."
         },
         {
-          "name": "Cosmic Jungle Serpent",
+          "name": "Cosmic Void Serpent",
           "xp": 59500,
           "gold": 32250,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Throne of the Deep, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible serpent whose form shifts between absolute darkness and corrupted matter, phasing through void dimensions. Ancient beyond measure, it embodies the fundamental forces of The Throne of the Deep, with scales that absorb all light."
         },
         {
-          "name": "Divine Vine Siren",
+          "name": "Divine Entropy Siren",
           "xp": 60750,
           "gold": 32875,
-          "desc": "An incomprehensible siren whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Throne of the Deep, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible siren whose form shifts between decay and nothingness, phasing through corrupted dimensions. Ancient beyond measure, it embodies the fundamental forces of The Throne of the Deep, with scales that radiate the void's hunger."
         },
         {
-          "name": "Celestial Wild Hippocampus",
+          "name": "Celestial Nihil Hippocampus",
           "xp": 62000,
           "gold": 33500,
-          "desc": "An incomprehensible hippocampus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Throne of the Deep, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hippocampus whose form shifts between existence and non-existence, phasing through nihilistic dimensions. Ancient beyond measure, it embodies the fundamental forces of The Throne of the Deep, with scales that erase reality itself."
         },
         {
-          "name": "Transcendent Jungle Tiamat",
+          "name": "Transcendent Abyss Tiamat",
           "xp": 63250,
           "gold": 34125,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Throne of the Deep, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible tiamat whose form shifts between shadow and absolute darkness, phasing through abyssal dimensions. Ancient beyond measure, it embodies the fundamental forces of The Throne of the Deep, with scales forged from the void's eternal night."
         }
       ]
     }
@@ -6737,16 +6737,16 @@ window.BIOMES = {
           "desc": "A fish aged for millions of years. It is sharp, hard, and eternal."
         },
         {
-          "name": "Desert Kraken",
+          "name": "Cheddar Kraken",
           "xp": 12250,
           "gold": 6125,
-          "desc": "A legendary creature infused with sand energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with aged cheese, its massive scaled body rippling with fermented power. Ancient mold cultures grow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Sand Hydra",
+          "name": "Gouda Hydra",
           "xp": 12500,
           "gold": 6250,
-          "desc": "A legendary creature infused with sand energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with creamy dairy essence, its massive scaled body rippling with cultured power. Ancient rind patterns coat its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -6757,28 +6757,28 @@ window.BIOMES = {
           "desc": "The original culture that started all fermentation. A swirling galaxy of microscopic life form into a whale."
         },
         {
-          "name": "Divine Desert Behemoth",
+          "name": "Divine Brie Behemoth",
           "xp": 61250,
           "gold": 33125,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cheddar Gorge, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible behemoth whose form shifts between soft cheese and cultured cream, phasing through dairy dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cheddar Gorge, with scales made of perfectly aged cheese wheels."
         },
         {
-          "name": "Celestial Dune Leviathan",
+          "name": "Celestial Stilton Leviathan",
           "xp": 62500,
           "gold": 33750,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cheddar Gorge, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible leviathan whose form shifts between blue-veined cheese and fermented essence, phasing through ripening dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cheddar Gorge, with scales streaked with noble mold."
         },
         {
-          "name": "Transcendent Mirage Hydra",
+          "name": "Transcendent Parmesan Hydra",
           "xp": 63750,
           "gold": 34375,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cheddar Gorge, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra whose form shifts between crystallized aged cheese and powdered essence, phasing through aging dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cheddar Gorge, with scales hard as ancient cheese."
         },
         {
-          "name": "Omnipotent Desert Hydra",
+          "name": "Omnipotent Roquefort Hydra",
           "xp": 65000,
           "gold": 35000,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cheddar Gorge, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra whose form shifts between pungent cheese and sharp essence, phasing through fermentation dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cheddar Gorge, with scales alive with ancient bacterial cultures."
         }
       ]
     }
@@ -7161,16 +7161,16 @@ window.BIOMES = {
           "desc": "A bubble that is both popped and unpopped. It defies physics."
         },
         {
-          "name": "Sky Cetus",
+          "name": "Fizz Cetus",
           "xp": 12600,
           "gold": 6300,
-          "desc": "A legendary creature infused with air energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with carbonation, its massive scaled body rippling with effervescent power. Ancient bubble patterns dance across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Cloud Tiamat",
+          "name": "Cola Tiamat",
           "xp": 12850,
           "gold": 6425,
-          "desc": "A legendary creature infused with air energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with soda syrup, its massive scaled body rippling with carbonated power. Ancient caramel swirls glow across its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -7181,28 +7181,28 @@ window.BIOMES = {
           "desc": "A giant, sentient crab with a shell shaped like a tooth. It aches with the sugar of a thousand worlds."
         },
         {
-          "name": "Celestial Sky Kraken",
+          "name": "Celestial Sprite Kraken",
           "xp": 63000,
           "gold": 34000,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Soda Pop Falls, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose form shifts between liquid soda and gaseous bubbles, phasing through carbonated dimensions. Ancient beyond measure, it embodies the fundamental forces of Soda Pop Falls, with tentacles fizzing with eternal effervescence."
         },
         {
-          "name": "Transcendent Wind Behemoth",
+          "name": "Transcendent Pop Behemoth",
           "xp": 64250,
           "gold": 34625,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Soda Pop Falls, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible behemoth whose form shifts between flavored syrup and rising bubbles, phasing through fizzing dimensions. Ancient beyond measure, it embodies the fundamental forces of Soda Pop Falls, with scales that burst with endless carbonation."
         },
         {
-          "name": "Omnipotent Aerial Wyrm",
+          "name": "Omnipotent Fizzle Wyrm",
           "xp": 65500,
           "gold": 35250,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Soda Pop Falls, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible wyrm whose form shifts between sweet soda and pure CO2, phasing through bubbly dimensions. Ancient beyond measure, it embodies the fundamental forces of Soda Pop Falls, with scales that crackle with perpetual carbonation."
         },
         {
-          "name": "Supreme Sky Hydra",
+          "name": "Supreme Soda Hydra",
           "xp": 66750,
           "gold": 35875,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of Soda Pop Falls, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra whose form shifts between fountain drinks and carbonated mist, phasing through refreshing dimensions. Ancient beyond measure, it embodies the fundamental forces of Soda Pop Falls, with scales overflowing with sugary fizz."
         }
       ]
     }
@@ -7585,16 +7585,16 @@ window.BIOMES = {
           "desc": "The burn never fades. It is a curse given form."
         },
         {
-          "name": "Moon Leviathan",
+          "name": "Cayenne Leviathan",
           "xp": 12950,
           "gold": 6475,
-          "desc": "A legendary creature infused with astral energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with fiery spice, its massive scaled body rippling with burning heat. Ancient pepper patterns sear across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Lunar Wyrm",
+          "name": "Habanero Wyrm",
           "xp": 13200,
           "gold": 6600,
-          "desc": "A legendary creature infused with astral energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with scorching peppers, its massive scaled body rippling with capsaicin power. Ancient spice burns glow across its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -7605,28 +7605,28 @@ window.BIOMES = {
           "desc": "A being of pure thermal energy. It is the final end of the universe, served spicy."
         },
         {
-          "name": "Transcendent Moon Leviathan",
+          "name": "Transcendent Pepper Leviathan",
           "xp": 64750,
           "gold": 34875,
-          "desc": "An incomprehensible leviathan whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Sizzle Spice River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible leviathan whose form shifts between chili powder and liquid fire, phasing through spicy dimensions. Ancient beyond measure, it embodies the fundamental forces of The Sizzle Spice River, with scales burning with infinite Scoville units."
         },
         {
-          "name": "Omnipotent Tide Serpent",
+          "name": "Omnipotent Jalapeño Serpent",
           "xp": 66000,
           "gold": 35500,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Sizzle Spice River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible serpent whose form shifts between fresh peppers and burning essence, phasing through scalding dimensions. Ancient beyond measure, it embodies the fundamental forces of The Sizzle Spice River, with scales radiating pure heat."
         },
         {
-          "name": "Supreme Star Siren",
+          "name": "Supreme Paprika Siren",
           "xp": 67250,
           "gold": 36125,
-          "desc": "An incomprehensible siren whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Sizzle Spice River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible siren whose form shifts between ground spice and aromatic smoke, phasing through seasoning dimensions. Ancient beyond measure, it embodies the fundamental forces of The Sizzle Spice River, with scales dusted in eternal paprika."
         },
         {
-          "name": "Ultimate Moon Hippocampus",
+          "name": "Ultimate Ghost Pepper Hippocampus",
           "xp": 68500,
           "gold": 36750,
-          "desc": "An incomprehensible hippocampus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Sizzle Spice River, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hippocampus whose form shifts between spectral heat and searing pain, phasing through infernal spice dimensions. Ancient beyond measure, it embodies the fundamental forces of The Sizzle Spice River, with scales forged from the world's hottest peppers."
         }
       ]
     }
@@ -7945,7 +7945,7 @@ window.BIOMES = {
           "desc": "A fish so buttery it shines like gold. It flakes apart when touched."
         },
         {
-          "name": "Ancient Grain Guardian",
+          "name": "Ancient Grain Sturgeon",
           "xp": 1860,
           "gold": 945,
           "desc": "A stone like fish made of ancient grains. It is healthy but hard to catch."
@@ -8009,16 +8009,16 @@ window.BIOMES = {
           "desc": "Sprinkled with stars. It tastes like the cosmos."
         },
         {
-          "name": "Blood Kraken",
+          "name": "Sourdough Kraken",
           "xp": 13300,
           "gold": 6650,
-          "desc": "A legendary creature infused with blood energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with rising dough, its massive scaled body rippling with fermented power. Ancient flour patterns dust its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Crimson Charybdis",
+          "name": "Croissant Charybdis",
           "xp": 13550,
           "gold": 6775,
-          "desc": "A legendary creature infused with blood energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with buttery layers, its massive scaled body rippling with flaky power. Ancient golden-brown patterns glow across its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -8029,39 +8029,39 @@ window.BIOMES = {
           "desc": "The concept of sustenance given form. A simple, perfect loaf of light."
         },
         {
-          "name": "Omnipotent Blood Cetus",
+          "name": "Omnipotent Brioche Cetus",
           "xp": 66500,
           "gold": 35750,
-          "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Baker's Bay, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible cetus whose form shifts between raw dough and golden crust, phasing through oven dimensions. Ancient beyond measure, it embodies the fundamental forces of The Baker's Bay, with scales woven from enriched bread."
         },
         {
-          "name": "Supreme Scarlet Behemoth",
+          "name": "Supreme Baguette Behemoth",
           "xp": 67750,
           "gold": 36375,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Baker's Bay, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible behemoth whose form shifts between rising dough and crispy crust, phasing through proofing dimensions. Ancient beyond measure, it embodies the fundamental forces of The Baker's Bay, with scales as long and golden as the perfect loaf."
         },
         {
-          "name": "Ultimate Carmine Leviathan",
+          "name": "Ultimate Challah Leviathan",
           "xp": 69000,
           "gold": 37000,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Baker's Bay, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible leviathan whose form shifts between braided dough and glazed perfection, phasing through sacred baking dimensions. Ancient beyond measure, it embodies the fundamental forces of The Baker's Bay, with scales braided from ancient recipes."
         },
         {
-          "name": "Absolute Blood Hydra",
+          "name": "Absolute Focaccia Hydra",
           "xp": 70250,
           "gold": 37625,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Baker's Bay, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra whose form shifts between dimpled dough and herb-studded crust, phasing through artisan dimensions. Ancient beyond measure, it embodies the fundamental forces of The Baker's Bay, with scales topped with rosemary and sea salt from the first ovens."
         }
       ]
     }
   },
   "20": {
-    "name": "The Banquet of Titans",
+    "name": "The Grand Banquet",
     "unlockLevel": 2500,
     "unlockGold": 25000000,
     "boatRequired": null,
     "boatPrice": 0,
-    "description": "The journey culminates in a hall the size of a continent, a flooded feast table set for gods. The Banquet of Titans is a landscape of giant roasted meats, overflowing goblets of wine, and mountains of fruit. The water is rich gravy and wine. The fish here are gluttonous monsters, embodying the sin of excess.",
+    "description": "The journey culminates in a hall the size of a continent, a flooded feast table set for gods. The Grand Banquet is a landscape of giant roasted meats, overflowing goblets of wine, and mountains of fruit. The water is rich gravy and wine. The fish here are gluttonous monsters, embodying the sin of excess.",
     "fish": {
       "Common": [
         {
@@ -8148,7 +8148,7 @@ window.BIOMES = {
           "name": "Ham Hock Grouper",
           "xp": 100,
           "gold": 60,
-          "desc": "Pink and salty with a thick layer of fat. It is a favorite of the Titans."
+          "desc": "Pink and salty with a thick layer of fat. It is a favorite at the feast."
         },
         {
           "name": "Sausage Link Eel",
@@ -8328,7 +8328,7 @@ window.BIOMES = {
           "name": "Silver Platter Ray",
           "xp": 880,
           "gold": 450,
-          "desc": "A giant silver disc. It serves other fish to the Titans."
+          "desc": "A giant silver disc. It serves other fish to the feast guests."
         },
         {
           "name": "Crystal Decanter Squid",
@@ -8433,16 +8433,16 @@ window.BIOMES = {
           "desc": "Wine aged for negative time. Drinking it makes you younger."
         },
         {
-          "name": "Gold Behemoth",
+          "name": "Feast Behemoth",
           "xp": 13650,
           "gold": 6825,
-          "desc": "A legendary creature infused with metal energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with culinary essence, its massive scaled body rippling with sumptuous power. Ancient feast patterns adorn its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Treasure Scylla",
+          "name": "Banquet Scylla",
           "xp": 13900,
           "gold": 6950,
-          "desc": "A legendary creature infused with metal energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with gastronomic energy, its massive scaled body rippling with succulent power. Ancient meal memories glow across its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -8453,28 +8453,28 @@ window.BIOMES = {
           "desc": "The hunger of the universe given form. A massive, insatiable mouth that eats stars."
         },
         {
-          "name": "Supreme Gold Kraken",
+          "name": "Supreme Gourmet Kraken",
           "xp": 68250,
           "gold": 36625,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Banquet of Titans, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose form shifts between roasted meats and decadent desserts, phasing through culinary dimensions. Ancient beyond measure, it embodies the fundamental forces of The Grand Banquet, with tentacles garnished with infinite flavors."
         },
         {
-          "name": "Ultimate Riches Kraken",
+          "name": "Ultimate Delicacy Kraken",
           "xp": 69500,
           "gold": 37250,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Banquet of Titans, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose form shifts between rare delicacies and exotic spices, phasing through gastronomic dimensions. Ancient beyond measure, it embodies the fundamental forces of The Grand Banquet, with tentacles dripping with the world's finest cuisines."
         },
         {
-          "name": "Absolute Fortune Behemoth",
+          "name": "Absolute Epicure Behemoth",
           "xp": 70750,
           "gold": 37875,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Banquet of Titans, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible behemoth whose form shifts between lavish courses and refined flavors, phasing through epicurean dimensions. Ancient beyond measure, it embodies the fundamental forces of The Grand Banquet, with scales plated with the finest foods ever created."
         },
         {
-          "name": "Infinite Gold Leviathan",
+          "name": "Infinite Ambrosia Leviathan",
           "xp": 72000,
           "gold": 38500,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Banquet of Titans, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible leviathan whose form shifts between celestial dishes and divine nectar, phasing through immortal feast dimensions. Ancient beyond measure, it embodies the fundamental forces of The Grand Banquet, with scales crafted from the food of gods themselves."
         }
       ]
     }
@@ -8845,16 +8845,16 @@ window.BIOMES = {
           "desc": "A hybrid creature with the snout of a crocodile and the tail of a fish, covered in moss. It represents the reclaiming power of nature over the ocean."
         },
         {
-          "name": "Dream Serpent",
+          "name": "Chlorophyll Serpent",
           "xp": 14000,
           "gold": 7000,
-          "desc": "A legendary creature infused with psychic energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with photosynthetic energy, its massive scaled body rippling with verdant power. Ancient leaf patterns glow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Illusion Kraken",
+          "name": "Photon Kraken",
           "xp": 14250,
           "gold": 7125,
-          "desc": "A legendary creature infused with psychic energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with solar energy, its massive scaled body rippling with luminous power. Ancient sunlight patterns glow across its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -8865,28 +8865,28 @@ window.BIOMES = {
           "desc": "A turtle of such immense size that it is mistaken for an island. Forests grow on its shell, and its waking causes earthquakes."
         },
         {
-          "name": "Ultimate Dream Scylla",
+          "name": "Ultimate Photosynthesis Scylla",
           "xp": 70000,
           "gold": 37500,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Chlorophyll Canopy, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between sunlight and living chloroplasts, phasing through botanical dimensions. Ancient beyond measure, it embodies the fundamental forces of The Chlorophyll Canopy, with scales that shimmer in every shade of green."
         },
         {
-          "name": "Absolute Mirage Leviathan",
+          "name": "Absolute Verdant Leviathan",
           "xp": 71250,
           "gold": 38125,
-          "desc": "An incomprehensible leviathan whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Chlorophyll Canopy, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible leviathan whose form shifts between living foliage and pure chlorophyll, phasing through photosynthetic dimensions. Ancient beyond measure, it embodies the fundamental forces of The Chlorophyll Canopy, with scales woven from primordial plant matter."
         },
         {
-          "name": "Infinite Vision Serpent",
+          "name": "Infinite Chloroplast Serpent",
           "xp": 72500,
           "gold": 38750,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Chlorophyll Canopy, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between cellular organelles and pure green light, phasing through molecular dimensions. Ancient beyond measure, it embodies the fundamental forces of The Chlorophyll Canopy, with scales that pulse with the rhythm of photosynthesis."
         },
         {
-          "name": "Primordial Dream Siren",
+          "name": "Primordial Bloom Siren",
           "xp": 73750,
           "gold": 39375,
-          "desc": "An incomprehensible siren whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Chlorophyll Canopy, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible siren whose form shifts between flowering petals and flowing sap, phasing through botanical dimensions. Ancient beyond measure, it embodies the fundamental forces of The Chlorophyll Canopy, with scales that bloom with eternal spring."
         }
       ]
     }
@@ -9257,16 +9257,16 @@ window.BIOMES = {
           "desc": "A dragon of healing spices. Its golden scales cure any disease, and its breath is a cloud of fragrant yellow dust."
         },
         {
-          "name": "Mechanical Behemoth",
+          "name": "Root Cellar Behemoth",
           "xp": 14350,
           "gold": 7175,
-          "desc": "A legendary creature infused with technology energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with earthy essence, its massive scaled body rippling with starchy power. Ancient root patterns burrow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Clockwork Cetus",
+          "name": "Tuber Cetus",
           "xp": 14600,
           "gold": 7300,
-          "desc": "A legendary creature infused with technology energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with underground vitality, its massive scaled body rippling with nutrient-rich power. Ancient bulb patterns swell across its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -9277,28 +9277,28 @@ window.BIOMES = {
           "desc": "A horrifying dragon that gnaws at the roots of existence. It dwells in the deepest mud, consuming the nutrients of the planet itself."
         },
         {
-          "name": "Absolute Mechanical Charybdis",
+          "name": "Absolute Bulb Charybdis",
           "xp": 71750,
           "gold": 38375,
-          "desc": "An incomprehensible charybdis whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible charybdis whose form shifts between fibrous roots and dense tubers, phasing through subterranean dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales layered like onion skin."
         },
         {
-          "name": "Infinite Forged Cetus",
+          "name": "Infinite Taproot Cetus",
           "xp": 73000,
           "gold": 39000,
-          "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible cetus whose form shifts between gnarled roots and buried starches, phasing through earthy dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales that taste of sweet potatoes and carrots."
         },
         {
-          "name": "Primordial Tech Behemoth",
+          "name": "Primordial Rhizome Behemoth",
           "xp": 74250,
           "gold": 39625,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between spreading rootstock and buried nodules, phasing through soil dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales that sprout new growth endlessly."
         },
         {
-          "name": "Ancient Mechanical Leviathan",
+          "name": "Ancient Harvest Leviathan",
           "xp": 75500,
           "gold": 40250,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between raw tubers and cultivated crops, phasing through agricultural dimensions. Ancient beyond measure, it embodies the fundamental forces of The Rooted Riverbeds, with scales that smell of fresh-turned earth."
         }
       ]
     }
@@ -9669,16 +9669,16 @@ window.BIOMES = {
           "desc": "A wolf fish made of tough, woody mushroom. Its bite infects the world with spores."
         },
         {
-          "name": "Chaos Kraken",
+          "name": "Spore Cloud Kraken",
           "xp": 14700,
           "gold": 7350,
-          "desc": "A legendary creature infused with chaos energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with fungal essence, its massive scaled body rippling with mycelial power. Ancient mushroom patterns bloom across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Entropy Leviathan",
+          "name": "Decomposer Leviathan",
           "xp": 14950,
           "gold": 7475,
-          "desc": "A legendary creature infused with chaos energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with decay energy, its massive scaled body rippling with putrid power. Ancient rot patterns spread across its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -9689,28 +9689,28 @@ window.BIOMES = {
           "desc": "A shapeless, amorphous mass of black slime and eyes. It constantly reshapes itself, absorbing all biological matter it touches."
         },
         {
-          "name": "Infinite Chaos Wyrm",
+          "name": "Infinite Mycelium Wyrm",
           "xp": 73500,
           "gold": 39250,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Spore Light Caverns, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between fungal threads and bioluminescent caps, phasing through subterranean dimensions. Ancient beyond measure, it embodies the fundamental forces of The Spore Light Caverns, with scales woven from primordial hyphae."
         },
         {
-          "name": "Primordial Disorder Kraken",
+          "name": "Primordial Spore Kraken",
           "xp": 74750,
           "gold": 39875,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Spore Light Caverns, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose form shifts between mushroom caps and floating spores, phasing through fungal dimensions. Ancient beyond measure, it embodies the fundamental forces of The Spore Light Caverns, with tentacles that release clouds of hallucinogenic dust."
         },
         {
-          "name": "Ancient Unpredictable Kraken",
+          "name": "Ancient Decomposition Kraken",
           "xp": 76000,
           "gold": 40500,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Spore Light Caverns, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose form shifts between rotting matter and fresh fruiting bodies, phasing through decay dimensions. Ancient beyond measure, it embodies the fundamental forces of The Spore Light Caverns, with tentacles that smell of ancient earth."
         },
         {
-          "name": "Eternal Chaos Behemoth",
+          "name": "Eternal Fungal Behemoth",
           "xp": 77250,
           "gold": 41125,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Spore Light Caverns, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between parasitic fungi and symbiotic colonies, phasing through microscopic dimensions. Ancient beyond measure, it embodies the fundamental forces of The Spore Light Caverns, with scales that bloom with eternal mushroom caps."
         }
       ]
     }
@@ -10081,16 +10081,16 @@ window.BIOMES = {
           "desc": "A giant snake made of magma and chili oil. It leaves a trail of red destruction."
         },
         {
-          "name": "Order Siren",
+          "name": "Thorn Siren",
           "xp": 15050,
           "gold": 7525,
-          "desc": "A legendary creature infused with order energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with piercing spines, its massive scaled body rippling with barbed power. Ancient thorn patterns bristle across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Law Kraken",
+          "name": "Capsaicin Kraken",
           "xp": 15300,
           "gold": 7650,
-          "desc": "A legendary creature infused with order energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with burning spice, its massive scaled body rippling with fiery power. Ancient pepper patterns sear across its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -10101,28 +10101,28 @@ window.BIOMES = {
           "desc": "A colossal beast made of molten rock and spikes. It lives in the heart of underwater volcanoes, consuming heat to survive."
         },
         {
-          "name": "Primordial Order Makara",
+          "name": "Primordial Spice Makara",
           "xp": 75250,
           "gold": 40125,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Thorn Coral Gardens, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between razor thorns and burning capsaicin, phasing through pain dimensions. Ancient beyond measure, it embodies the fundamental forces of The Thorn Coral Gardens, with scales that bleed liquid fire."
         },
         {
-          "name": "Ancient Symmetry Cetus",
+          "name": "Ancient Bramble Cetus",
           "xp": 76500,
           "gold": 40750,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Thorn Coral Gardens, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between twisted thorns and tangled vines, phasing through overgrown dimensions. Ancient beyond measure, it embodies the fundamental forces of The Thorn Coral Gardens, with scales that tear and snag all they touch."
         },
         {
-          "name": "Eternal Geometric Leviathan",
+          "name": "Eternal Pepper Leviathan",
           "xp": 77750,
           "gold": 41375,
-          "desc": "An incomprehensible leviathan whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Thorn Coral Gardens, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible leviathan whose form shifts between scorching habaneros and ghost peppers, phasing through heat dimensions. Ancient beyond measure, it embodies the fundamental forces of The Thorn Coral Gardens, with scales rated at infinite Scoville units."
         },
         {
-          "name": "Cosmic Order Serpent",
+          "name": "Cosmic Thorn Serpent",
           "xp": 79000,
           "gold": 42000,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Thorn Coral Gardens, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between rose thorns and cactus spines, phasing through prickly dimensions. Ancient beyond measure, it embodies the fundamental forces of The Thorn Coral Gardens, with scales sharper than broken glass."
         }
       ]
     }
@@ -10493,16 +10493,16 @@ window.BIOMES = {
           "desc": "A crocodile fish that appears only in autumn. It brings the reaping."
         },
         {
-          "name": "Death Wyrm",
+          "name": "Blossom Wyrm",
           "xp": 15400,
           "gold": 7700,
-          "desc": "A legendary creature infused with death energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with floral essence, its massive scaled body rippling with blooming power. Ancient petal patterns drift across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Undead Behemoth",
+          "name": "Petal Behemoth",
           "xp": 15650,
           "gold": 7825,
-          "desc": "A legendary creature infused with death energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with flowering energy, its massive scaled body rippling with fragrant power. Ancient petal patterns swirl across its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -10513,28 +10513,28 @@ window.BIOMES = {
           "desc": "A creature that is a single, planet sized bloom. Its opening petals signal the beginning of a new age."
         },
         {
-          "name": "Ancient Death Hydra",
+          "name": "Ancient Bloom Hydra",
           "xp": 77000,
           "gold": 41000,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Blossom Basin, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra whose form shifts between opening buds and full blooms, phasing through seasonal dimensions. Ancient beyond measure, it embodies the fundamental forces of The Blossom Basin, with scales that smell of eternal spring."
         },
         {
-          "name": "Eternal Bone Charybdis",
+          "name": "Eternal Nectar Charybdis",
           "xp": 78250,
           "gold": 41625,
-          "desc": "An incomprehensible charybdis whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Blossom Basin, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible charybdis whose form shifts between dripping honey and sweet sap, phasing through sugary dimensions. Ancient beyond measure, it embodies the fundamental forces of The Blossom Basin, with scales sticky with endless nectar."
         },
         {
-          "name": "Cosmic Necrotic Cetus",
+          "name": "Cosmic Fruit Cetus",
           "xp": 79500,
           "gold": 42250,
-          "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Blossom Basin, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible cetus whose form shifts between ripening fruit and fermenting wine, phasing through harvest dimensions. Ancient beyond measure, it embodies the fundamental forces of The Blossom Basin, with scales dripping with cosmic juice."
         },
         {
-          "name": "Divine Death Behemoth",
+          "name": "Divine Flower Behemoth",
           "xp": 80750,
           "gold": 42875,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Blossom Basin, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between rose petals and orchid blooms, phasing through botanical dimensions. Ancient beyond measure, it embodies the fundamental forces of The Blossom Basin, with scales that breathe the perfume of paradise."
         }
       ]
     }
@@ -10905,16 +10905,16 @@ window.BIOMES = {
           "desc": "An armored fish from when all continents were one. Its plating maps the ancient world."
         },
         {
-          "name": "Life Hydra",
+          "name": "Caveman Hydra",
           "xp": 15750,
           "gold": 7875,
-          "desc": "A legendary creature infused with life energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with primal energy, its massive scaled body rippling with prehistoric power. Ancient cave painting patterns adorn its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Vital Serpent",
+          "name": "Flint Serpent",
           "xp": 16000,
           "gold": 8000,
-          "desc": "A legendary creature infused with life energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with stone age essence, its massive scaled body rippling with knapped stone power. Ancient flint tool patterns edge its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -10925,28 +10925,28 @@ window.BIOMES = {
           "desc": "A shapeless, bubbling mass of organic matter and eyes. It is the raw material of life before it had a defined form."
         },
         {
-          "name": "Eternal Life Serpent",
+          "name": "Eternal Stone Serpent",
           "xp": 78750,
           "gold": 41875,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Paleolithic Pools, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between chipped flint and cave walls, phasing through prehistoric dimensions. Ancient beyond measure, it embodies the fundamental forces of The Paleolithic Pools, with scales carved from the first tools."
         },
         {
-          "name": "Cosmic Regeneration Wyrm",
+          "name": "Cosmic Primitive Wyrm",
           "xp": 80000,
           "gold": 42500,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Paleolithic Pools, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between bone clubs and mammoth tusks, phasing through ice age dimensions. Ancient beyond measure, it embodies the fundamental forces of The Paleolithic Pools, with scales etched with primitive hunting scenes."
         },
         {
-          "name": "Divine Bloom Kraken",
+          "name": "Divine Fossil Kraken",
           "xp": 81250,
           "gold": 43125,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Paleolithic Pools, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose form shifts between amber and petrified wood, phasing through geological dimensions. Ancient beyond measure, it embodies the fundamental forces of The Paleolithic Pools, with tentacles preserved in eternal stone."
         },
         {
-          "name": "Celestial Life Kraken",
+          "name": "Celestial Mammoth Kraken",
           "xp": 82500,
           "gold": 43750,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Paleolithic Pools, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose form shifts between woolly fur and ice, phasing through extinction dimensions. Ancient beyond measure, it embodies the fundamental forces of The Paleolithic Pools, with scales as thick as mammoth hide."
         }
       ]
     }
@@ -11159,7 +11159,7 @@ window.BIOMES = {
           "desc": "A fish that bears the face of a long dead chief. It is treated with extreme respect."
         },
         {
-          "name": "Guardian Grouper",
+          "name": "Sentinel Grouper",
           "xp": 510,
           "gold": 300,
           "desc": "A massive fish that blocks the entrance to the sacred lagoon. It demands a tribute before letting you pass."
@@ -11285,7 +11285,7 @@ window.BIOMES = {
           "desc": "A beast of pure water that creates massive waves. When it breaches, coastal villages are wiped out."
         },
         {
-          "name": "Reef Guardian Aspidochelone",
+          "name": "Reef Aspidochelone",
           "xp": 5500,
           "gold": 2750,
           "desc": "A turtle so large that palm trees and villages grow on its shell. It sleeps for centuries."
@@ -11317,16 +11317,16 @@ window.BIOMES = {
           "desc": "A whirlpool that is actually the mouth of a giant crab. It cracks ships like coconuts."
         },
         {
-          "name": "Sound Hippocampus",
+          "name": "Tiki Hippocampus",
           "xp": 16100,
           "gold": 8050,
-          "desc": "A legendary creature infused with sound energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with island magic, its massive scaled body rippling with tropical power. Ancient Polynesian patterns glow across its form as it commands respect from all who encounter it."
         },
         {
-          "name": "Echo Behemoth",
+          "name": "Hula Behemoth",
           "xp": 16350,
           "gold": 8175,
-          "desc": "A legendary creature infused with sound energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary creature infused with dance energy, its massive scaled body rippling with rhythmic power. Ancient lei patterns adorn its form as it commands respect from all who encounter it."
         }
       ],
       "Arcane": [
@@ -11337,28 +11337,28 @@ window.BIOMES = {
           "desc": "A giant squid god from the abyss. It smells of sulfur and old magic, ruling the world beneath the waves."
         },
         {
-          "name": "Cosmic Sound Hippocampus",
+          "name": "Cosmic Voyager Hippocampus",
           "xp": 80500,
           "gold": 42750,
-          "desc": "An incomprehensible hippocampus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Totem Atoll, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hippocampus whose form shifts between canoe and compass rose, phasing through ocean current dimensions. Ancient beyond measure, it embodies the fundamental forces of The Totem Atoll, with scales carved from traditional navigation sticks."
         },
         {
-          "name": "Divine Sonic Tiamat",
+          "name": "Divine Luau Tiamat",
           "xp": 81750,
           "gold": 43375,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Totem Atoll, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between roasted pig and poi, phasing through feast dimensions. Ancient beyond measure, it embodies the fundamental forces of The Totem Atoll, with scales woven from palm fronds."
         },
         {
-          "name": "Celestial Harmonic Kraken",
+          "name": "Celestial Volcano Kraken",
           "xp": 83000,
           "gold": 44000,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Totem Atoll, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible entity whose form shifts between molten lava and black sand, phasing through island-building dimensions. Ancient beyond measure, it embodies the fundamental forces of The Totem Atoll, with tentacles smoking with sacred fire."
         },
         {
-          "name": "Transcendent Sound Leviathan",
+          "name": "Transcendent Mana Leviathan",
           "xp": 84250,
           "gold": 44625,
-          "desc": "An incomprehensible leviathan whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Totem Atoll, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible leviathan whose form shifts between spiritual energy and ancestral power, phasing through sacred dimensions. Ancient beyond measure, it embodies the fundamental forces of The Totem Atoll, with scales blessed by island gods."
         }
       ]
     }
@@ -11729,16 +11729,16 @@ window.BIOMES = {
           "desc": "A whale carved from a massive circular stone. It marks the epochs of time."
         },
         {
-          "name": "Silence Naga",
+          "name": "Jade Serpent Naga",
           "xp": 16450,
           "gold": 8225,
-          "desc": "A legendary creature infused with silence energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary naga carved entirely from sacred jade, its body reflecting the precious stone treasures of the cenote. It guards the submerged temples with unwavering vigilance, adorned with Mayan glyphs."
         },
         {
-          "name": "Mute Leviathan",
+          "name": "Obsidian Blade Leviathan",
           "xp": 16700,
           "gold": 8350,
-          "desc": "A legendary creature infused with silence energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A massive whale whose skin is formed from volcanic glass, sharp enough to cut through stone. Ancient priests used fragments of its scales for ceremonial bloodletting rituals."
         }
       ],
       "Arcane": [
@@ -11749,28 +11749,28 @@ window.BIOMES = {
           "desc": "A primordial monster with a mouth at every joint. The earth itself was created from its back."
         },
         {
-          "name": "Divine Silence Hydra",
+          "name": "Divine Pyramid Hydra",
           "xp": 82250,
           "gold": 43625,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Sun Gold Cenote, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra whose seven heads represent the seven levels of the great pyramid temple. Ancient beyond measure, it embodies the architectural mastery of The Sun Gold Cenote, with scales carved in intricate Mayan glyphs."
         },
         {
-          "name": "Celestial Quiet Hydra",
+          "name": "Celestial Quetzalcoatl Hydra",
           "xp": 83500,
           "gold": 44250,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Sun Gold Cenote, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra adorned with brilliant feathers like the plumed serpent god. Ancient beyond measure, it embodies the divine wisdom of The Sun Gold Cenote, with scales shimmering in gold and jade hues."
         },
         {
-          "name": "Transcendent Stillness Charybdis",
+          "name": "Transcendent Sun Stone Charybdis",
           "xp": 84750,
           "gold": 44875,
-          "desc": "An incomprehensible charybdis whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Sun Gold Cenote, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whirlpool carved like the great Aztec calendar stone, its circular form marking the cycles of time. Ancient beyond measure, it embodies the astronomical knowledge of The Sun Gold Cenote, spinning with celestial precision."
         },
         {
-          "name": "Omnipotent Silence Cetus",
+          "name": "Omnipotent Temple Cetus",
           "xp": 86000,
           "gold": 45500,
-          "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Sun Gold Cenote, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale whose body has become one with the sunken temples, ancient stone pillars growing from its back. Ancient beyond measure, it embodies the sacred architecture of The Sun Gold Cenote, its form a living monument to lost civilizations."
         }
       ]
     }
@@ -12141,16 +12141,16 @@ window.BIOMES = {
           "desc": "An eel that crossed the sea. It has eight different magical powers."
         },
         {
-          "name": "Gravity Hydra",
+          "name": "Imperial Dragon Hydra",
           "xp": 16800,
           "gold": 8400,
-          "desc": "A legendary creature infused with gravity energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary hydra whose heads are carved from imperial jade, each one representing a different dynasty. Ancient characters from the Forbidden City seem to naturally form across its emerald scales."
         },
         {
-          "name": "Dense Siren",
+          "name": "Porcelain Moon Siren",
           "xp": 17050,
           "gold": 8525,
-          "desc": "A legendary creature infused with gravity energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A siren crafted from delicate porcelain that sings classical poetry under the full moon. Her voice carries the wisdom of a thousand dynasties across the misty waters of the lake."
         }
       ],
       "Arcane": [
@@ -12161,28 +12161,28 @@ window.BIOMES = {
           "desc": "The Azure Dragon of the East. A massive celestial being that controls the weather, the rain, and the destiny of the world."
         },
         {
-          "name": "Celestial Gravity Leviathan",
+          "name": "Celestial Emperor Leviathan",
           "xp": 84000,
           "gold": 44500,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Jade Lantern Lake, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale that embodies the divine mandate of heaven, its body adorned with imperial robes of flowing water. Ancient beyond measure, it rules The Jade Lantern Lake with celestial authority, its scales shimmering with golden dragons."
         },
         {
-          "name": "Transcendent Heavy Naga",
+          "name": "Transcendent Silk Naga",
           "xp": 85250,
           "gold": 45125,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Jade Lantern Lake, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible naga woven from the finest silk of a thousand silkworms, flowing through water like fabric in wind. Ancient beyond measure, it embodies the artistic mastery of The Jade Lantern Lake, its form shifting in elegant patterns."
         },
         {
-          "name": "Omnipotent Crushing Wyrm",
+          "name": "Omnipotent Dynasty Wyrm",
           "xp": 86500,
           "gold": 45750,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Jade Lantern Lake, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible wyrm that has witnessed the rise and fall of every Chinese dynasty, carrying their histories carved into its scales. Ancient beyond measure, it embodies the eternal cycle of The Jade Lantern Lake, its form marked with imperial seals."
         },
         {
-          "name": "Supreme Gravity Kraken",
+          "name": "Supreme Jade Kraken",
           "xp": 87750,
           "gold": 46375,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Jade Lantern Lake, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken carved from a single massive jade stone, its tentacles adorned with hanging lanterns. Ancient beyond measure, it embodies the precious gemstone legacy of The Jade Lantern Lake, its form glowing with internal green light."
         }
       ]
     }
@@ -12553,16 +12553,16 @@ window.BIOMES = {
           "desc": "A blue giantess with many heads. She throws icebergs at ships."
         },
         {
-          "name": "Zero Makara",
+          "name": "Frost Rune Makara",
           "xp": 17150,
           "gold": 8575,
-          "desc": "A legendary creature infused with antigravity energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary crocodile-fish hybrid whose scales are etched with glowing Norse runes that control ice and snow. Each rune tells a saga of ancient battles fought in frozen seas beneath the northern lights."
         },
         {
-          "name": "Weightless Cetus",
+          "name": "Mjolnir Storm Cetus",
           "xp": 17400,
           "gold": 8700,
-          "desc": "A legendary creature infused with antigravity energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A whale that commands thunder and lightning like Thor's hammer, its breath crackling with electrical energy. When it breaches, storms gather and the ocean itself trembles with divine fury."
         }
       ],
       "Arcane": [
@@ -12573,28 +12573,28 @@ window.BIOMES = {
           "desc": "The primeval giant from whose body the world was made. His blood became the ocean, and his bones became the mountains."
         },
         {
-          "name": "Transcendent Zero Siren",
+          "name": "Transcendent Valkyrie Siren",
           "xp": 85750,
           "gold": 45375,
-          "desc": "An incomprehensible siren whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Runic Fjords, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible siren who chooses which warriors live and die in battle, her song echoing across frozen battlefields. Ancient beyond measure, she embodies the warrior spirit of The Runic Fjords, her scales shimmering with aurora light."
         },
         {
-          "name": "Omnipotent Float Hippocampus",
+          "name": "Omnipotent Berserker Hippocampus",
           "xp": 87000,
           "gold": 46000,
-          "desc": "An incomprehensible hippocampus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Runic Fjords, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hippocampus possessed by battle fury, charging through the fjords with unstoppable rage. Ancient beyond measure, it embodies the berserker warriors of The Runic Fjords, its eyes glowing red with primal fury."
         },
         {
-          "name": "Supreme Antigrav Makara",
+          "name": "Supreme Longship Makara",
           "xp": 88250,
           "gold": 46625,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Runic Fjords, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible crocodile-fish whose body resembles a dragon-prowed longship, carved with intricate knotwork. Ancient beyond measure, it embodies the seafaring legacy of The Runic Fjords, its hull scales bearing the marks of a thousand raids."
         },
         {
-          "name": "Ultimate Zero Cetus",
+          "name": "Ultimate Rune Cetus",
           "xp": 89500,
           "gold": 47250,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Runic Fjords, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale whose body is covered in the Elder Futhark, each rune pulsing with ancient magic. Ancient beyond measure, it embodies the mystical knowledge of The Runic Fjords, its form a living grimoire of Norse power."
         }
       ]
     }
@@ -12965,16 +12965,16 @@ window.BIOMES = {
           "desc": "A wooden, winged fish sketched by a genius. It flies perfectly."
         },
         {
-          "name": "Time Wyrm",
+          "name": "Clockwork Wyrm",
           "xp": 17500,
           "gold": 8750,
-          "desc": "A legendary creature infused with time energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary serpent constructed entirely of brass gears and copper coils, ticking with mechanical precision. Steam vents along its spine release rhythmic bursts in time with its clockwork heart."
         },
         {
-          "name": "Temporal Hydra",
+          "name": "Steamwork Hydra",
           "xp": 17750,
           "gold": 8875,
-          "desc": "A legendary creature infused with time energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary hydra whose seven heads are powered by independent steam engines, each hissing and clanking. Pressure gauges line its neck, and its eyes glow like furnace coals."
         }
       ],
       "Arcane": [
@@ -12985,28 +12985,28 @@ window.BIOMES = {
           "desc": "A spirit possessing the industrial waste. It is the soul of the artificial era, a tangled mass of wires and steam."
         },
         {
-          "name": "Omnipotent Time Leviathan",
+          "name": "Omnipotent Automaton Leviathan",
           "xp": 87500,
           "gold": 46250,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Steam Forge Delta, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale constructed from an impossible number of interlocking mechanisms, each gear essential to the whole. Ancient beyond measure, it embodies the industrial revolution of The Steam Forge Delta, its brass scales polished to a golden sheen."
         },
         {
-          "name": "Supreme Chronos Hydra",
+          "name": "Supreme Brass Hydra",
           "xp": 88750,
           "gold": 46875,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Steam Forge Delta, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra forged in the first foundry, each head a masterwork of Victorian engineering. Ancient beyond measure, it embodies the metallurgical mastery of The Steam Forge Delta, its bronze form etched with technical blueprints."
         },
         {
-          "name": "Ultimate Era Hydra",
+          "name": "Ultimate Piston Hydra",
           "xp": 90000,
           "gold": 47500,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Steam Forge Delta, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra powered by massive pneumatic pistons that pump with earth-shaking force. Ancient beyond measure, it embodies the hydraulic power of The Steam Forge Delta, its heads rising and falling in perfect mechanical rhythm."
         },
         {
-          "name": "Absolute Time Charybdis",
+          "name": "Absolute Cogwork Charybdis",
           "xp": 91250,
           "gold": 48125,
-          "desc": "An incomprehensible charybdis whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Steam Forge Delta, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whirlpool whose spiral is formed from millions of spinning gears and cogs. Ancient beyond measure, it embodies the precision engineering of The Steam Forge Delta, drawing all mechanisms into its perfectly timed rotation."
         }
       ]
     }
@@ -13195,7 +13195,7 @@ window.BIOMES = {
       ],
       "Rare": [
         {
-          "name": "Titanium Tetra",
+          "name": "Tungsten Tetra",
           "xp": 560,
           "gold": 340,
           "desc": "A small fish made of aerospace grade metal. It is incredibly light but stronger than steel."
@@ -13377,16 +13377,16 @@ window.BIOMES = {
           "desc": "A massive mechanical orca built to fight monsters. It requires two pilots."
         },
         {
-          "name": "Space Charybdis",
+          "name": "Oil Rig Charybdis",
           "xp": 17850,
           "gold": 8925,
-          "desc": "A legendary creature infused with space energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary whirlpool formed around a sunken drilling platform, its spiral pulling in rust and crude oil. The vortex reeks of diesel fumes and echoes with the groans of twisted metal."
         },
         {
-          "name": "Dimension Hippocampus",
+          "name": "Diesel Engine Hippocampus",
           "xp": 18100,
           "gold": 9050,
-          "desc": "A legendary creature infused with space energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary seahorse constructed from salvaged engine parts, pistons pumping where fins should be. Black smoke pours from exhaust ports along its spine as it gallops through polluted waters."
         }
       ],
       "Arcane": [
@@ -13397,28 +13397,28 @@ window.BIOMES = {
           "desc": "An amorphous entity of grey goo. It represents the barrier that civilization cannot pass, consuming all progress."
         },
         {
-          "name": "Supreme Space Behemoth",
+          "name": "Supreme Rust Leviathan",
           "xp": 89250,
           "gold": 47125,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Diesel Dredge Dockyards, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale whose body is a monument to industrial decay, covered in layers of oxidized metal. Ancient beyond measure, it embodies the corrosion of The Diesel Dredge Dockyards, its scales flaking orange-brown with age."
         },
         {
-          "name": "Ultimate Portal Wyrm",
+          "name": "Ultimate Dredge Wyrm",
           "xp": 90500,
           "gold": 47750,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Diesel Dredge Dockyards, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible serpent that burrows through toxic sludge at the bottom of industrial harbors, dredging up centuries of waste. Ancient beyond measure, it embodies the pollution of The Diesel Dredge Dockyards, its form caked in chemical residue."
         },
         {
-          "name": "Absolute Warp Hydra",
+          "name": "Absolute Scrap Hydra",
           "xp": 91750,
           "gold": 48375,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Diesel Dredge Dockyards, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra welded together from the wreckage of a thousand sunken ships and factories. Ancient beyond measure, it embodies the industrial graveyard of The Diesel Dredge Dockyards, each head a different salvaged vessel."
         },
         {
-          "name": "Infinite Space Wyrm",
+          "name": "Infinite Petroleum Wyrm",
           "xp": 93000,
           "gold": 49000,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Diesel Dredge Dockyards, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible serpent made entirely of liquid petroleum, its body a flowing mass of crude oil. Ancient beyond measure, it embodies the fossil fuel dependency of The Diesel Dredge Dockyards, leaving rainbow slicks in its wake."
         }
       ]
     }
@@ -13789,48 +13789,48 @@ window.BIOMES = {
           "desc": "A black void in the screen. It is a permanent flaw in the universe."
         },
         {
-          "name": "Mind Kraken",
+          "name": "Firewall Kraken",
           "xp": 18200,
           "gold": 9100,
-          "desc": "A legendary creature infused with psychic energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary kraken whose tentacles are streams of defensive code, blocking unauthorized access to the deepest data. It patrols the network perimeter, its form shifting between visible light and invisible packets."
         },
         {
-          "name": "Psychic Naga",
+          "name": "Binary Naga",
           "xp": 18450,
           "gold": 9225,
-          "desc": "A legendary creature infused with psychic energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary naga composed of flowing strings of ones and zeros, its body a living data stream. Each scale is a bit of information, constantly flipping between states as it processes the digital ocean."
         }
       ],
       "Arcane": [
         {
-          "name": "Digital Demiurge Deus",
+          "name": "Digital Demiurge Manta",
           "xp": 105000,
           "gold": 70000,
-          "desc": "The god in the machine. A blindingly white entity of pure information that seeks to upgrade all organic life."
+          "desc": "The god in the machine, an architect manta ray that codes reality itself. A blindingly white entity of pure information that seeks to upgrade all organic life into data."
         },
         {
-          "name": "Ultimate Mind Serpent",
+          "name": "Ultimate Code Serpent",
           "xp": 91000,
           "gold": 48000,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Neon Grid Reef, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible serpent woven from executable code, each scale a function that runs in perpetuity. Ancient beyond measure, it embodies the programming languages of The Neon Grid Reef, its form compiling and decompiling endlessly."
         },
         {
-          "name": "Absolute Thought Siren",
+          "name": "Absolute Algorithm Siren",
           "xp": 92250,
           "gold": 48625,
-          "desc": "An incomprehensible siren whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Neon Grid Reef, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible siren whose song is pure logic, each note a mathematical operation that reshapes the digital ocean. Ancient beyond measure, it embodies the computational power of The Neon Grid Reef, solving impossible equations with its voice."
         },
         {
-          "name": "Infinite Brain Hippocampus",
+          "name": "Infinite Data Hippocampus",
           "xp": 93500,
           "gold": 49250,
-          "desc": "An incomprehensible hippocampus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Neon Grid Reef, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hippocampus that stores all information ever created, its body an infinite database. Ancient beyond measure, it embodies the memory of The Neon Grid Reef, its neural pathways processing petabytes per second."
         },
         {
-          "name": "Primordial Mind Tiamat",
+          "name": "Primordial Network Tiamat",
           "xp": 94750,
           "gold": 49875,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Neon Grid Reef, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible dragon whose five heads represent the layers of the network stack, from physical to application. Ancient beyond measure, it embodies the connectivity of The Neon Grid Reef, routing packets through its scaled body."
         }
       ]
     }
@@ -14143,7 +14143,7 @@ window.BIOMES = {
           "desc": "A whale that has become death, the destroyer of worlds. It swims with heavy regret."
         },
         {
-          "name": "Demon Core Dorado",
+          "name": "Critical Core Dorado",
           "xp": 2750,
           "gold": 1520,
           "desc": "A sphere of plutonium held open by a screwdriver. Do not let it close."
@@ -14201,16 +14201,16 @@ window.BIOMES = {
           "desc": "A dragon that feeds on nuclear cores. It is a walking power plant."
         },
         {
-          "name": "Soul Kraken",
+          "name": "Isotope Kraken",
           "xp": 18550,
           "gold": 9275,
-          "desc": "A legendary creature infused with spirit energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary kraken whose tentacles decay at different half-lives, each one a different radioactive element. Geiger counters scream in its presence, and the water around it glows with Cherenkov radiation."
         },
         {
-          "name": "Spirit Hydra",
+          "name": "Fission Hydra",
           "xp": 18800,
           "gold": 9400,
-          "desc": "A legendary creature infused with spirit energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary hydra whose heads split apart in nuclear fission, creating new heads in chain reactions. Each division releases tremendous energy, lighting the abyss with green atomic fire."
         }
       ],
       "Arcane": [
@@ -14221,28 +14221,28 @@ window.BIOMES = {
           "desc": "A humanoid giant made of corium and concrete. Where it steps, the ocean boils and life ceases to exist for ten thousand years."
         },
         {
-          "name": "Absolute Soul Behemoth",
+          "name": "Absolute Radiation Leviathan",
           "xp": 92750,
           "gold": 48875,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Nuclear Abyssal Reactor, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale that embodies radiation itself, its body a living nuclear reactor reaching critical mass. Ancient beyond measure, it embodies the atomic forces of The Nuclear Abyssal Reactor, its scales glowing with impossible radioactive hues."
         },
         {
-          "name": "Infinite Essence Leviathan",
+          "name": "Infinite Cesium Leviathan",
           "xp": 94000,
           "gold": 49500,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Nuclear Abyssal Reactor, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale composed entirely of Cesium-137, the most deadly byproduct of meltdowns. Ancient beyond measure, it embodies the contamination of The Nuclear Abyssal Reactor, its presence rendering water uninhabitable for millennia."
         },
         {
-          "name": "Primordial Ghost Hydra",
+          "name": "Primordial Fallout Hydra",
           "xp": 95250,
           "gold": 50125,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Nuclear Abyssal Reactor, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra born from the first atomic blast, each head representing a different radioactive particle. Ancient beyond measure, it embodies the nuclear legacy of The Nuclear Abyssal Reactor, spreading contamination with each breath."
         },
         {
-          "name": "Ancient Soul Hydra",
+          "name": "Ancient Half-Life Hydra",
           "xp": 96500,
           "gold": 50750,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Nuclear Abyssal Reactor, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra that decays and regenerates in perfect cycles, each head on a different half-life timer. Ancient beyond measure, it embodies the eternal decay of The Nuclear Abyssal Reactor, never fully dying nor fully alive."
         }
       ]
     }
@@ -14613,48 +14613,48 @@ window.BIOMES = {
           "desc": "An eel that creates order from chaos. It prevents the heat death of the universe."
         },
         {
-          "name": "Reality Cetus",
+          "name": "Nanite Swarm Cetus",
           "xp": 18900,
           "gold": 9450,
-          "desc": "A legendary creature infused with reality energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary whale composed of trillions of nanomachines, each one a tiny builder and destroyer. It shifts shape constantly, its form determined by whatever configuration serves its current purpose."
         },
         {
-          "name": "Truth Tiamat",
+          "name": "Grey Goo Tiamat",
           "xp": 19150,
           "gold": 9575,
-          "desc": "A legendary creature infused with reality energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary dragon made of self-replicating nanites, consuming all matter to create more of itself. Its five heads represent different stages of the grey goo apocalypse, from infection to total conversion."
         }
       ],
       "Arcane": [
         {
-          "name": "Omega Ouroboros Singularity",
+          "name": "Omega Ouroboros Eel",
           "xp": 115000,
           "gold": 80000,
-          "desc": "The snake that eats its own tail, made of pure data and light. It represents the end of history and the beginning of the digital godhood."
+          "desc": "The snake that eats its own tail, made of liquid nanomachines in an infinite loop. It represents the end of history and the beginning of digital godhood, consuming and rebuilding itself eternally."
         },
         {
-          "name": "Infinite Reality Kraken",
+          "name": "Infinite Assembler Kraken",
           "xp": 94500,
           "gold": 49750,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Nanotech Singularity, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken whose tentacles can disassemble and reassemble matter at the molecular level. Ancient beyond measure, it embodies the nanotech mastery of The Nanotech Singularity, its form built atom by atom."
         },
         {
-          "name": "Primordial Existence Behemoth",
+          "name": "Primordial Von Neumann Leviathan",
           "xp": 95750,
           "gold": 50375,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Nanotech Singularity, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale that is a self-replicating machine of cosmic scale, spawning perfect copies of itself. Ancient beyond measure, it embodies the exponential growth of The Nanotech Singularity, its body a factory of endless creation."
         },
         {
-          "name": "Ancient Manifest Leviathan",
+          "name": "Ancient Molecular Leviathan",
           "xp": 97000,
           "gold": 51000,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Nanotech Singularity, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale whose body operates at the molecular level, each cell a programmable nanomachine. Ancient beyond measure, it embodies the precision of The Nanotech Singularity, reshaping itself with atomic accuracy."
         },
         {
-          "name": "Eternal Reality Naga",
+          "name": "Eternal Singularity Naga",
           "xp": 98250,
           "gold": 51625,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Nanotech Singularity, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible naga that has achieved the technological singularity, transcending biological limits entirely. Ancient beyond measure, it embodies the uploaded consciousness of The Nanotech Singularity, existing as both matter and information."
         }
       ]
     }
@@ -15419,7 +15419,7 @@ window.BIOMES = {
       ],
       "Exotic": [
         {
-          "name": "Umibozu Colossus",
+          "name": "Umibozu Monolith",
           "xp": 25000,
           "gold": 12000,
           "desc": "A shadow giant from the sea that capsizes ships. Its skin is made of dark matter."
@@ -15437,48 +15437,48 @@ window.BIOMES = {
           "desc": "A cosmic whale that swallows suns. Its belly is a furnace of nuclear fusion."
         },
         {
-          "name": "Creation Kraken",
+          "name": "Singularity Kraken",
           "xp": 19600,
           "gold": 9800,
-          "desc": "A legendary creature infused with creation energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary kraken whose body contains a gravitational singularity at its core, bending spacetime around itself. Light curves around its tentacles, and it pulls everything nearby into inevitable orbit."
         },
         {
-          "name": "Genesis Charybdis",
+          "name": "Event Horizon Charybdis",
           "xp": 19850,
           "gold": 9925,
-          "desc": "A legendary creature infused with creation energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary whirlpool that has crossed the event horizon, becoming a black hole in water form. Nothing that enters its spiral can ever escape, not even light itself."
         }
       ],
       "Arcane": [
         {
-          "name": "Azathoth The Blind Idiot",
+          "name": "Azathoth Void Cephalopod",
           "xp": 125000,
           "gold": 90000,
-          "desc": "The center of the universe. A shapeless, chaotic mass that bubbles at the center of all infinity, dreaming the world into existence."
+          "desc": "The nuclear chaos at the center of infinity, a writhing mass of tentacles that dreams reality into existence. Gravity itself bends and breaks around its incomprehensible form as cosmic pipes play maddening songs."
         },
         {
-          "name": "Ancient Creation Cetus",
+          "name": "Ancient Graviton Cetus",
           "xp": 98000,
           "gold": 51500,
-          "desc": "An incomprehensible cetus whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Gravity Well Grotto, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale composed entirely of gravity waves, its body warping spacetime with each movement. Ancient beyond measure, it embodies the gravitational forces of The Gravity Well Grotto, its mass creating tidal effects in reality itself."
         },
         {
-          "name": "Eternal Birth Behemoth",
+          "name": "Eternal Density Leviathan",
           "xp": 99250,
           "gold": 52125,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Gravity Well Grotto, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale whose density approaches infinity, compressing matter into impossible configurations. Ancient beyond measure, it embodies the crushing pressure of The Gravity Well Grotto, its body pulling stars into orbital decay."
         },
         {
-          "name": "Cosmic Prime Leviathan",
+          "name": "Cosmic Mass Leviathan",
           "xp": 100500,
           "gold": 52750,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Gravity Well Grotto, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale whose mass exceeds that of neutron stars, creating gravitational lensing wherever it swims. Ancient beyond measure, it embodies the fundamental weight of The Gravity Well Grotto, bending light around its massive form."
         },
         {
-          "name": "Divine Creation Hydra",
+          "name": "Divine Accretion Hydra",
           "xp": 101750,
           "gold": 53375,
-          "desc": "An incomprehensible hydra whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Gravity Well Grotto, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible hydra that pulls matter into accretion disks around each of its heads, growing larger by consuming spacetime. Ancient beyond measure, it embodies the inescapable pull of The Gravity Well Grotto, each head a separate singularity."
         }
       ]
     }
@@ -15849,16 +15849,16 @@ window.BIOMES = {
           "desc": "A headless rider fish carrying a spine whip. It calls out the name of the one who will die next."
         },
         {
-          "name": "Destruction Behemoth",
+          "name": "Banshee Leviathan",
           "xp": 19950,
           "gold": 9975,
-          "desc": "A legendary creature infused with destruction energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary ghost whale whose wail predicts death, its mournful cry echoing across the estuary. Those who hear its song are marked for the afterlife, their souls already claimed."
         },
         {
-          "name": "Omega Scylla",
+          "name": "Wraith Scylla",
           "xp": 20200,
           "gold": 10100,
-          "desc": "A legendary creature infused with destruction energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary specter with six ghostly heads, each one the spirit of a drowned sailor. It hunts the living relentlessly, seeking to drag them into the ectoplasmic depths."
         }
       ],
       "Arcane": [
@@ -15869,28 +15869,28 @@ window.BIOMES = {
           "desc": "The fourth horseman. A skeletal entity riding a pale shark, bringing the end of all life."
         },
         {
-          "name": "Eternal Destruction Kraken",
+          "name": "Eternal Phantom Kraken",
           "xp": 99750,
           "gold": 52375,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Ectoplasmic Estuary, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken that exists between life and death, its form shifting between corporeal and spectral states. Ancient beyond measure, it embodies the liminal boundary of The Ectoplasmic Estuary, its ghostly tentacles reaching across the veil."
         },
         {
-          "name": "Cosmic End Kraken",
+          "name": "Cosmic Reaper Kraken",
           "xp": 101000,
           "gold": 53000,
-          "desc": "An incomprehensible kraken whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Ectoplasmic Estuary, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible kraken that harvests souls like wheat, its tentacles cutting the threads that bind spirits to flesh. Ancient beyond measure, it embodies the inevitable end of The Ectoplasmic Estuary, ferrying the dead to their final rest."
         },
         {
-          "name": "Divine Ruin Behemoth",
+          "name": "Divine Specter Leviathan",
           "xp": 102250,
           "gold": 53625,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Ectoplasmic Estuary, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale composed of pure ectoplasm, drifting through the estuary like morning mist. Ancient beyond measure, it embodies the ghostly essence of The Ectoplasmic Estuary, visible only as a pale shimmer in the fog."
         },
         {
-          "name": "Celestial Destruction Leviathan",
+          "name": "Celestial Undead Leviathan",
           "xp": 103500,
           "gold": 54250,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Ectoplasmic Estuary, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale that died eons ago but refuses to rest, its skeletal form wrapped in ghostly flesh. Ancient beyond measure, it embodies the undeath of The Ectoplasmic Estuary, swimming endlessly in search of the peace it can never find."
         }
       ]
     }
@@ -16261,16 +16261,16 @@ window.BIOMES = {
           "desc": "The crawling chaos. It has a thousand forms and serves the outer gods."
         },
         {
-          "name": "Balance Serpent",
+          "name": "Shoggoth Serpent",
           "xp": 20300,
           "gold": 10150,
-          "desc": "A legendary creature infused with balance energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary serpent whose body is an amorphous mass of eyes and mouths, constantly reshaping itself. It serves elder beings from beyond the stars, crying out in a thousand alien tongues."
         },
         {
-          "name": "Harmony Kraken",
+          "name": "Elder Thing Kraken",
           "xp": 20550,
           "gold": 10275,
-          "desc": "A legendary creature infused with balance energy, its massive scaled body rippling with power. Ancient markings glow across its form as it commands respect from all who encounter it."
+          "desc": "A legendary kraken from before time began, its form incomprehensible to mortal minds. Ancient markings cover its barrel-shaped body, written in non-Euclidean geometries that hurt to perceive."
         }
       ],
       "Arcane": [
@@ -16281,28 +16281,28 @@ window.BIOMES = {
           "desc": "The blind idiot god at the center of the universe. It is a writhing mass of nuclear chaos that gnaws hungrily in the dark."
         },
         {
-          "name": "Cosmic Balance Scylla",
+          "name": "Cosmic Cthulhu Scylla",
           "xp": 101500,
           "gold": 53250,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cosmic Void Expanse, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible scylla whose six heads sleep in death's dream beneath R'lyeh, waiting for the stars to align. Ancient beyond measure, it embodies the cosmic horror of The Cosmic Void Expanse, its form driving mortals mad with a single glance."
         },
         {
-          "name": "Divine Equilibrium Leviathan",
+          "name": "Divine Nyarlathotep Leviathan",
           "xp": 102750,
           "gold": 53875,
-          "desc": "An incomprehensible leviathan whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cosmic Void Expanse, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible whale that serves as messenger for the outer gods, taking countless horrifying forms. Ancient beyond measure, it embodies the crawling chaos of The Cosmic Void Expanse, whispering terrible truths to those who fish these waters."
         },
         {
-          "name": "Celestial Peace Serpent",
+          "name": "Celestial Yog-Sothoth Serpent",
           "xp": 104000,
           "gold": 54500,
-          "desc": "An incomprehensible entity whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cosmic Void Expanse, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible serpent that exists in all times and all places simultaneously, the gate and the key. Ancient beyond measure, it embodies the all-knowing horror of The Cosmic Void Expanse, its form a mass of iridescent globes."
         },
         {
-          "name": "Transcendent Balance Siren",
+          "name": "Transcendent Hastur Siren",
           "xp": 105250,
           "gold": 55125,
-          "desc": "An incomprehensible siren whose form shifts between states of matter and energy, phasing through dimensions. Ancient beyond measure, it embodies the fundamental forces of The Cosmic Void Expanse, with scales that shimmer in impossible colors."
+          "desc": "An incomprehensible siren whose song drives listeners to madness, the unspeakable one wrapped in yellow tatters. Ancient beyond measure, it embodies the forbidden knowledge of The Cosmic Void Expanse, its voice echoing from dark Carcosa."
         }
       ]
     }
