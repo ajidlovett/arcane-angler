@@ -8,6 +8,7 @@ window.Sidebar = ({ player, theme, currentPage, setCurrentPage, sidebarOpen, set
     { id: 'fishpedia', icon: window.Icons.Fish, label: 'Fishpedia' },
     { id: 'stats', icon: window.Icons.TrendingUp, label: 'Stats' },
     { id: 'boosters', icon: () => '💫', label: 'Boosters' },
+    { id: 'anomalies', icon: () => '🌊', label: 'Anomalies' },
     { id: 'leaderboard', icon: window.Icons.Trophy, label: 'Leaderboard' },
     { id: 'quests', icon: window.Icons.Target, label: 'Quests' },
     { id: 'guilds', icon: window.Icons.Users, label: 'Guilds' },
