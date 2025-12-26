@@ -337,7 +337,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   )}
                   {lastCatch.hasKnowledgeScroll && (
                     <div className="text-xs text-yellow-300 font-bold">
-                      📜 +10% XP Boost (Knowledge Scroll)
+                      📜 +20% XP Boost (Knowledge Scroll)
                     </div>
                   )}
                   {lastCatch.hasAncientTome && (
@@ -384,7 +384,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   )}
                   {lastCatch.hasKnowledgeScroll && (
                     <div className="text-xs text-yellow-300 font-bold">
-                      📜 +10% XP Boost (Knowledge Scroll)
+                      📜 +20% XP Boost (Knowledge Scroll)
                     </div>
                   )}
                   {lastCatch.hasAncientTome && (
@@ -442,7 +442,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   )}
                   {lastCatch.hasKnowledgeScroll && (
                     <div className="text-xs text-yellow-300 font-bold">
-                      📜 +10% XP Boost (Knowledge Scroll)
+                      📜 +20% XP Boost (Knowledge Scroll)
                     </div>
                   )}
                   {lastCatch.hasAncientTome && (
