@@ -210,18 +210,21 @@ class AnomalyScheduler {
       const nextSpawnTime = new Date(Date.now() + spawnDurationHours * 60 * 60 * 1000);
       const endTime = new Date(nextSpawnTime.getTime() - 5 * 60 * 1000); // 5 min before next spawn
 
-      // Calculate base HP (will scale with active players)
+      // Calculate random HP between 100-300% of base max_hp
       const baseHp = selectedAnomaly.max_hp;
+      const hpMultiplier = 1 + Math.random() * 2; // Random between 1.0 and 3.0 (100%-300%)
+      const scaledHp = Math.floor(baseHp * hpMultiplier);
 
       // Create new event
       const [result] = await db.execute(`
         INSERT INTO anomaly_events
           (anomaly_id, spawn_time, end_time, next_spawn_time, current_hp, max_hp, status)
         VALUES (?, NOW(), ?, ?, ?, ?, 'active')
-      `, [selectedAnomaly.id, endTime, nextSpawnTime, baseHp, baseHp]);
+      `, [selectedAnomaly.id, endTime, nextSpawnTime, scaledHp, scaledHp]);
 
       console.log(`🌊 New anomaly spawned: ${selectedAnomaly.name}`);
-      console.log(`   HP: ${baseHp.toLocaleString()}`);
+      console.log(`   Base HP: ${baseHp.toLocaleString()}`);
+      console.log(`   Scaled HP (${Math.round(hpMultiplier * 100)}%): ${scaledHp.toLocaleString()}`);
       console.log(`   Next spawn: ${nextSpawnTime.toISOString()}`);
       console.log(`   End time: ${endTime.toISOString()}`);
 
@@ -261,67 +264,6 @@ class AnomalyScheduler {
     }
   }
 
-  /**
-   * Scale anomaly HP based on active player count
-   * Called periodically to adjust difficulty dynamically
-   */
-  async scaleAnomalyHP() {
-    try {
-      const [activeEvents] = await db.execute(`
-        SELECT id, anomaly_id
-        FROM anomaly_events
-        WHERE status = 'active'
-        LIMIT 1
-      `);
-
-      if (activeEvents.length === 0) return;
-
-      const event = activeEvents[0];
-
-      // Count active players (attacked in last 15 minutes)
-      const [activeCount] = await db.execute(`
-        SELECT COUNT(DISTINCT user_id) as active_players
-        FROM anomaly_participation
-        WHERE event_id = ? AND last_attack_time >= DATE_SUB(NOW(), INTERVAL 15 MINUTE)
-      `, [event.id]);
-
-      const activePlayers = activeCount[0].active_players || 1;
-
-      // Get base HP
-      const [anomalyData] = await db.execute(`
-        SELECT max_hp FROM anomalies WHERE id = ?
-      `, [event.anomaly_id]);
-
-      const baseHp = anomalyData[0].max_hp;
-
-      // Calculate scaled HP using logarithmic scaling
-      const scaledMaxHp = Math.floor(baseHp * (1 + Math.log10(activePlayers)));
-
-      // Update max_hp if significantly different (to avoid constant small changes)
-      const [currentEvent] = await db.execute(`
-        SELECT max_hp FROM anomaly_events WHERE id = ?
-      `, [event.id]);
-
-      const currentMaxHp = currentEvent[0].max_hp;
-      const hpDifference = Math.abs(currentMaxHp - scaledMaxHp);
-
-      if (hpDifference > baseHp * 0.1) { // Only update if 10%+ difference
-        const hpRatio = scaledMaxHp / currentMaxHp;
-
-        await db.execute(`
-          UPDATE anomaly_events
-          SET max_hp = ?,
-              current_hp = GREATEST(0, FLOOR(current_hp * ?))
-          WHERE id = ?
-        `, [scaledMaxHp, hpRatio, event.id]);
-
-        console.log(`⚖️ Scaled anomaly HP: ${currentMaxHp.toLocaleString()} → ${scaledMaxHp.toLocaleString()} (${activePlayers} active players)`);
-      }
-
-    } catch (error) {
-      console.error('Error scaling anomaly HP:', error);
-    }
-  }
 }
 
 // Singleton instance
