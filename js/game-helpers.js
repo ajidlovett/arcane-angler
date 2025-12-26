@@ -135,7 +135,8 @@ window.GameHelpers = {
     }
 
     // High-tier rarities affected by luck (Jackpot Mechanic)
-    const highTierRarities = ['Legendary', 'Treasure Chest', 'Mythic', 'Exotic', 'Arcane', 'Relic'];
+    // Note: Treasure Chest is NOT included - only affected by Gilded Rod (treasureWeight)
+    const highTierRarities = ['Legendary', 'Mythic', 'Exotic', 'Arcane', 'Relic'];
 
     const effectiveWeights = {};
     let poolSize = 0;

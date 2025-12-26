@@ -200,9 +200,9 @@ function calculateRarity(totalLuck, isAutoCast = false, equippedBaitId = null, r
   const luckPower = calculateLuckPower(totalLuck);
 
   // Damping factors for high-tier rarities
+  // Note: Treasure Chest is NOT included - only affected by Gilded Rod (treasureWeight)
   const dampingFactors = {
     'Legendary': 0.5,
-    'Treasure Chest': 0.5, // Same as Legendary
     'Mythic': 0.2,
     'Exotic': 0.05,
     'Arcane': 0.01
