@@ -122,6 +122,7 @@ const FishingGame = ({ user, onLogout }) => {
   const shownNotifications = React.useRef(new Set());
   const [activeBoosters, setActiveBoosters] = useState([]);
   const [currentWeather, setCurrentWeather] = useState({ weather: 'clear', xpBonus: 0 });
+  const [activeAnomaly, setActiveAnomaly] = useState(null);
 
   const [modalState, setModalState] = useState({
     isOpen: false,
@@ -177,15 +178,33 @@ const FishingGame = ({ user, onLogout }) => {
     }
   }, []);
 
+  const fetchActiveAnomaly = React.useCallback(async () => {
+    try {
+      const response = await window.ApiService.getCurrentAnomaly();
+      if (response && response.active) {
+        setActiveAnomaly(response);
+      } else {
+        setActiveAnomaly(null);
+      }
+    } catch (error) {
+      console.error('Failed to fetch active anomaly:', error);
+      setActiveAnomaly(null);
+    }
+  }, []);
+
   React.useEffect(() => {
     fetchActiveBoosters();
+    fetchActiveAnomaly();
   }, []);
 
   React.useEffect(() => {
     if (currentPage === 'fishing' || currentPage === 'boosters') {
       fetchActiveBoosters();
     }
-  }, [currentPage, fetchActiveBoosters]);
+    if (currentPage === 'fishing') {
+      fetchActiveAnomaly();
+    }
+  }, [currentPage, fetchActiveBoosters, fetchActiveAnomaly]);
 
   // Load current profile for profile settings
   React.useEffect(() => {
@@ -1343,6 +1362,7 @@ useEffect(() => {
             currentWeather={currentWeather}
             equipRod={equipRod}
             equipBait={equipBait}
+            activeAnomaly={activeAnomaly}
           />}
           {currentPage === 'equipment' && <EquipmentPage
             player={player}
