@@ -1850,7 +1850,7 @@ router.get('/active-boosters', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    // Get active boosters (not expired)
+    // Get active relic-based boosters (not expired)
     const [boosters] = await db.query(
       `SELECT * FROM player_boosters
        WHERE user_id = ?
@@ -1858,6 +1858,55 @@ router.get('/active-boosters', authenticateToken, async (req, res) => {
        ORDER BY expires_at ASC`,
       [userId]
     );
+
+    // Get Fragment Shop XP boosters (personal and global)
+    const xpMultipliers = await getXpMultiplier(userId);
+
+    // Add personal XP booster if active
+    if (xpMultipliers.personal > 0) {
+      // Get the actual expiration time from player_data
+      const [playerData] = await db.query(
+        `SELECT active_xp_booster_personal FROM player_data WHERE user_id = ?`,
+        [userId]
+      );
+
+      if (playerData.length > 0 && playerData[0].active_xp_booster_personal) {
+        try {
+          const personalBooster = JSON.parse(playerData[0].active_xp_booster_personal);
+          boosters.push({
+            booster_type: 'xp_booster_personal',
+            effect_type: 'xp_bonus',
+            bonus_percentage: xpMultipliers.personal * 100,
+            expires_at: personalBooster.expires_at,
+            source: 'fragment_shop'
+          });
+        } catch (error) {
+          console.error('Error parsing personal booster:', error);
+        }
+      }
+    }
+
+    // Add global XP booster if active
+    if (xpMultipliers.global > 0) {
+      // Get the actual expiration time from global_xp_booster_queue
+      const [globalBooster] = await db.query(
+        `SELECT expires_at, activated_by_user_id FROM global_xp_booster_queue
+         WHERE status = 'active' AND expires_at > NOW()
+         LIMIT 1`
+      );
+
+      if (globalBooster.length > 0) {
+        boosters.push({
+          booster_type: 'xp_booster_global',
+          effect_type: 'xp_bonus',
+          bonus_percentage: xpMultipliers.global * 100,
+          expires_at: globalBooster[0].expires_at,
+          source: 'fragment_shop',
+          activator_name: xpMultipliers.globalActivatorName,
+          activator_id: xpMultipliers.globalActivatorId
+        });
+      }
+    }
 
     res.json({ boosters });
   } catch (error) {
