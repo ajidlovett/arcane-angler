@@ -22,10 +22,22 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
     notification: 'connected'
   });
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const inputRef = useRef(null);
   const previousChannelRef = useRef(activeChannel);
   const reconnectTimeoutsRef = useRef({});
   const retryCountsRef = useRef({});
   const apiService = window.ApiService;
+
+  // Check if user is near bottom of chat (within 150px)
+  const isNearBottom = () => {
+    const container = messagesContainerRef.current;
+    if (!container) return true;
+
+    const scrollPosition = container.scrollTop + container.clientHeight;
+    const scrollHeight = container.scrollHeight;
+    return scrollHeight - scrollPosition < 150;
+  };
 
   // Scroll to bottom when new messages arrive
   const scrollToBottom = (instant = false) => {
@@ -41,8 +53,14 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
     const isChannelSwitch = previousChannelRef.current !== activeChannel;
     const isFirstLoadForChannel = !loadedChannels.has(activeChannel);
 
-    // Scroll instantly on initial load or channel switch, smoothly for new messages
-    scrollToBottom(isFirstLoadForChannel || isChannelSwitch);
+    // Always scroll on channel switch or first load
+    if (isFirstLoadForChannel || isChannelSwitch) {
+      scrollToBottom(true);
+    }
+    // For new messages, only scroll if user is already near bottom
+    else if (isNearBottom()) {
+      scrollToBottom(false);
+    }
 
     // Mark channel as loaded
     if (isFirstLoadForChannel && messages[activeChannel]?.length > 0) {
@@ -386,7 +404,7 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
     }
 
     return (
-      <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-2 p-3 relative" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto overflow-x-hidden space-y-2 p-3 relative" style={{ WebkitOverflowScrolling: 'touch' }}>
         {renderReconnectOverlay()}
         {channelMessages.map((msg, index) => (
           <div key={msg.id || index} className={`${
@@ -395,9 +413,9 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
               : `bg-${theme.surface} bg-opacity-50 rounded p-2`
           }`}>
             <div className="flex items-start gap-2">
-              {/* Avatar - Spans 2 lines (username + first line of message) */}
+              {/* Avatar - Rounded square */}
               {msg.user_id && (
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700 flex-shrink-0">
+                <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-700 flex-shrink-0">
                   <img
                     src={msg.profile_avatar?.startsWith('avatarboss_') ? `/assets/avatar/fragment/${msg.profile_avatar}.png` : `/assets/avatar/default/${msg.profile_avatar || 'avatar_001'}.png`}
                     alt="Avatar"
@@ -432,11 +450,13 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
                       {getDisplayName(msg)}
                     </span>
                   )}
-                  <span className={`text-[10px] text-${theme.textMuted}`}>
+                </div>
+                <div className="relative">
+                  <p className="text-xs text-white break-words pr-16">{msg.message_text}</p>
+                  <span className={`absolute right-0 bottom-0 text-[10px] text-${theme.textMuted}`}>
                     {formatTime(msg.created_at)}
                   </span>
                 </div>
-                <p className="text-xs text-white break-words">{msg.message_text}</p>
               </div>
             </div>
           </div>
@@ -444,6 +464,20 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
         <div ref={messagesEndRef} />
       </div>
     );
+  };
+
+  // Handle input focus (especially for mobile keyboard)
+  const handleInputFocus = () => {
+    // On mobile, scroll input into view when keyboard appears
+    if (inputRef.current) {
+      setTimeout(() => {
+        inputRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'nearest'
+        });
+      }, 300); // Delay to allow keyboard to appear
+    }
   };
 
   // Render input (not shown for notification channel)
@@ -456,9 +490,11 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
       <form onSubmit={sendMessage} className={`border-t-2 border-${theme.border} p-3`}>
         <div className="flex gap-2">
           <input
+            ref={inputRef}
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
+            onFocus={handleInputFocus}
             placeholder="Type a message..."
             maxLength={200}
             disabled={isLoading}
