@@ -352,7 +352,7 @@ async function calculateAndDistributeRewards(eventId) {
       // Gold calculation - NEW FORMULA
       const baseGold = participant.level * (Math.floor(Math.random() * 76) + 50); // level × (50-125)
       const contributionBonus = Math.floor(damagePercentage * 50);
-      const attackCountBonus = Math.min(participant.attacks_made * 10, participant.level * 50); // 10 gold per attack, capped at level × 50
+      const attackCountBonus = Math.min(participant.attacks_made * 100, participant.level * 200); // 100 gold per attack, capped at level × 200
       const totalGold = baseGold + contributionBonus + attackCountBonus;
 
       // Fragment calculation - NEW FORMULA
