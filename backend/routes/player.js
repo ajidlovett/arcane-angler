@@ -169,6 +169,8 @@ router.get('/data', authenticateToken, async (req, res) => {
             luckUpgraded: playerData[0].luck_upgraded || 0,
             staminaUpgraded: playerData[0].stamina_upgraded || 0,
             totalRelicsEarned: playerData[0].total_relics_earned || 0,
+            // Anomaly system
+            anomalyFragments: playerData[0].anomaly_fragments || 0,
             // Fishpedia tracking (from locked_fish table)
             discoveredFish: formattedDiscoveredFish,
             // Fishpedia statistics (persistent catch tracking)

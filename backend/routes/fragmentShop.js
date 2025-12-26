@@ -52,7 +52,7 @@ router.get('/items', authenticateToken, async (req, res) => {
           id: file.replace('.png', ''),
           name: formatAvatarName(file),
           imageUrl: `/assets/avatar/fragment/${file}`,
-          cost: 50,
+          cost: 100,
           owned: ownedAvatarIds.includes(file.replace('.png', ''))
         }))
         .sort((a, b) => a.id.localeCompare(b.id));
@@ -65,23 +65,23 @@ router.get('/items', authenticateToken, async (req, res) => {
     // Define booster items
     const boosters = [
       {
-        id: 'xp_booster_personal_15',
+        id: 'xp_booster_personal_25',
         type: 'xp_booster_personal',
         name: 'Personal XP Booster',
-        description: '+15% XP for 2 hours (personal)',
-        multiplier: 1.15,
-        duration: 2,
+        description: '+25% XP for 4 hours (personal)',
+        multiplier: 1.25,
+        duration: 4,
         cost: 30,
         icon: '⚡'
       },
       {
-        id: 'xp_booster_global_25',
+        id: 'xp_booster_global_15',
         type: 'xp_booster_global',
         name: 'Global XP Booster',
-        description: '+25% XP for 2 hours (all players)',
-        multiplier: 1.25,
-        duration: 2,
-        cost: 100,
+        description: '+15% XP for 4 hours (all players)',
+        multiplier: 1.15,
+        duration: 4,
+        cost: 50,
         icon: '🌟'
       }
     ];
@@ -107,7 +107,7 @@ router.get('/items', authenticateToken, async (req, res) => {
 router.post('/purchase', authenticateToken, async (req, res) => {
   try {
     const userId = req.userId;
-    const { itemType, itemId, cost } = req.body;
+    const { itemType, itemId, cost, multiplier, duration } = req.body;
 
     if (!itemType || !cost) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -163,25 +163,59 @@ router.post('/purchase', authenticateToken, async (req, res) => {
     // Handle different item types
     let result = { success: true, itemType, itemId };
 
-    if (itemType === 'xp_booster_personal') {
+    if (itemType === 'avatar') {
+      // Add avatar to user's owned_avatars field
+      const [userData] = await db.execute(`
+        SELECT owned_avatars FROM users WHERE id = ?
+      `, [userId]);
+
+      let ownedAvatars = [];
+      if (userData[0].owned_avatars) {
+        if (Array.isArray(userData[0].owned_avatars)) {
+          ownedAvatars = userData[0].owned_avatars;
+        } else if (typeof userData[0].owned_avatars === 'string') {
+          try {
+            ownedAvatars = JSON.parse(userData[0].owned_avatars);
+          } catch (e) {
+            console.error('Failed to parse owned_avatars:', e);
+            ownedAvatars = [];
+          }
+        }
+      }
+
+      // Add the new avatar if not already in the list
+      if (!ownedAvatars.includes(itemId)) {
+        ownedAvatars.push(itemId);
+
+        await db.execute(`
+          UPDATE users SET owned_avatars = ? WHERE id = ?
+        `, [JSON.stringify(ownedAvatars), userId]);
+      }
+
+      result.message = 'Avatar unlocked! You can now equip it from your profile.';
+    } else if (itemType === 'xp_booster_personal') {
       // Activate personal booster immediately
-      const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 hours
+      const boosterMultiplier = multiplier || 1.25;
+      const boosterDuration = duration || 4;
+      const expiresAt = new Date(Date.now() + boosterDuration * 60 * 60 * 1000);
       await db.execute(`
         UPDATE player_data
         SET active_xp_booster_personal = ?
         WHERE user_id = ?
-      `, [JSON.stringify({ multiplier: 1.15, expires_at: expiresAt }), userId]);
+      `, [JSON.stringify({ multiplier: boosterMultiplier, expires_at: expiresAt }), userId]);
 
       result.booster = {
-        multiplier: 1.15,
+        multiplier: boosterMultiplier,
         expiresAt
       };
     } else if (itemType === 'xp_booster_global') {
       // Queue global booster
+      const boosterMultiplier = multiplier || 1.15;
+      const boosterDuration = duration || 4;
       await db.execute(`
         INSERT INTO global_xp_booster_queue (activated_by_user_id, multiplier, duration_hours)
         VALUES (?, ?, ?)
-      `, [userId, 1.25, 2]);
+      `, [userId, boosterMultiplier, boosterDuration]);
 
       // Check if this is the first in queue (auto-activate)
       await processGlobalBoosterQueue();

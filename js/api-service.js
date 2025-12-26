@@ -842,12 +842,14 @@ class ApiService {
      * @param {string} itemType - Item type (avatar, xp_booster_personal, xp_booster_global)
      * @param {string} itemId - Item ID (e.g., avatar filename)
      * @param {number} cost - Fragment cost
+     * @param {number} multiplier - Booster multiplier (optional, for boosters only)
+     * @param {number} duration - Booster duration in hours (optional, for boosters only)
      * @returns {Promise<Object>} Purchase result
      */
-    async purchaseFragmentItem(itemType, itemId, cost) {
+    async purchaseFragmentItem(itemType, itemId, cost, multiplier = null, duration = null) {
         return await this.request('/fragment-shop/purchase', {
             method: 'POST',
-            body: JSON.stringify({ itemType, itemId, cost })
+            body: JSON.stringify({ itemType, itemId, cost, multiplier, duration })
         });
     }
 
