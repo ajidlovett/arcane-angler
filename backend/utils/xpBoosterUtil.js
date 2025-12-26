@@ -23,7 +23,13 @@ export async function getXpMultiplier(userId) {
 
     if (playerData.length > 0 && playerData[0].active_xp_booster_personal) {
       try {
-        const personalBooster = JSON.parse(playerData[0].active_xp_booster_personal);
+        // Handle both string and object (MySQL2 might auto-parse JSON columns)
+        let personalBooster;
+        if (typeof playerData[0].active_xp_booster_personal === 'string') {
+          personalBooster = JSON.parse(playerData[0].active_xp_booster_personal);
+        } else {
+          personalBooster = playerData[0].active_xp_booster_personal;
+        }
 
         // Check if booster is still active
         if (personalBooster.expires_at && new Date(personalBooster.expires_at) > new Date()) {

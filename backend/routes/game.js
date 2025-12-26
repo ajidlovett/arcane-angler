@@ -909,6 +909,12 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
       titanBonus: 1,
       xpBonus,
       weatherXpBonus,
+      personalBoost,
+      globalBoost,
+      globalActivatorName,
+      globalActivatorId,
+      hasKnowledgeScroll,
+      hasAncientTome,
       isAutoCast: true
     };
 
