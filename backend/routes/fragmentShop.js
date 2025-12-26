@@ -157,7 +157,14 @@ router.post('/purchase', authenticateToken, async (req, res) => {
 
       if (existingBooster.length > 0 && existingBooster[0].active_xp_booster_personal) {
         try {
-          const currentBooster = JSON.parse(existingBooster[0].active_xp_booster_personal);
+          // Handle both string and object (MySQL2 might auto-parse JSON columns)
+          let currentBooster;
+          if (typeof existingBooster[0].active_xp_booster_personal === 'string') {
+            currentBooster = JSON.parse(existingBooster[0].active_xp_booster_personal);
+          } else {
+            currentBooster = existingBooster[0].active_xp_booster_personal;
+          }
+
           // Check if it's still active (not expired)
           if (currentBooster.expires_at && new Date(currentBooster.expires_at) > new Date()) {
             const timeRemaining = Math.ceil((new Date(currentBooster.expires_at) - new Date()) / 1000 / 60); // minutes
