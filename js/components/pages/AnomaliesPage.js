@@ -281,13 +281,40 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
               {/* Boss Info Card */}
               <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border-2 border-blue-500">
                 <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h2 className="text-3xl font-bold text-blue-400 mb-2">
-                      🌊 {currentAnomaly.event.anomaly.name}
-                    </h2>
-                    <p className="text-gray-300 italic">{currentAnomaly.event.anomaly.description}</p>
+                  <div className="flex gap-4 flex-1">
+                    {/* Boss Image */}
+                    {currentAnomaly.event.anomaly.imageUrl ? (
+                      <div className="flex-shrink-0">
+                        <img
+                          src={currentAnomaly.event.anomaly.imageUrl}
+                          alt={currentAnomaly.event.anomaly.name}
+                          className="w-24 h-24 rounded-lg object-cover border-2 border-blue-400"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                        <div className="w-24 h-24 rounded-lg bg-gray-700 border-2 border-blue-400 items-center justify-center text-4xl hidden">
+                          🌊
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-24 h-24 rounded-lg bg-gray-700 border-2 border-blue-400 flex items-center justify-center text-4xl flex-shrink-0">
+                        🌊
+                      </div>
+                    )}
+
+                    {/* Boss Info */}
+                    <div className="flex-1">
+                      <h2 className="text-3xl font-bold text-blue-400 mb-2">
+                        {currentAnomaly.event.anomaly.name}
+                      </h2>
+                      <p className="text-gray-300 italic">{currentAnomaly.event.anomaly.description}</p>
+                    </div>
                   </div>
-                  <div className="text-right">
+
+                  {/* Countdown Timers */}
+                  <div className="text-right flex-shrink-0 ml-4">
                     <div className="text-sm text-gray-400">Next Spawn:</div>
                     <div className="text-lg font-bold text-yellow-400">{countdown.nextSpawn}</div>
                     {countdown.endTime && (
