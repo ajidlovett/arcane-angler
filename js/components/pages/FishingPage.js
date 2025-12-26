@@ -320,6 +320,21 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                       ✨ +{Math.round(lastCatch.xpBonus * 100)}% XP Boost Active!
                     </div>
                   )}
+                  {lastCatch.globalBoost > 0 && (
+                    <div className="text-xs text-green-300 font-bold">
+                      🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
+                        onClick={() => window.location.href = `#profile-${lastCatch.globalActivatorId}`}
+                        className="underline hover:text-green-200"
+                      >
+                        {lastCatch.globalActivatorName}
+                      </button>
+                    </div>
+                  )}
+                  {lastCatch.personalBoost > 0 && (
+                    <div className="text-xs text-purple-300 font-bold">
+                      ⚡ +{Math.round(lastCatch.personalBoost * 100)}% Personal Exp Boost (Fragment)
+                    </div>
+                  )}
                   {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
                     <div className="text-sm text-red-400 font-bold mt-2">
                       🔥 <button
@@ -340,6 +355,21 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.xpBonus > 0 && (
                     <div className="text-xs text-yellow-300 font-bold">
                       ✨ +{Math.round(lastCatch.xpBonus * 100)}% XP Boost Active!
+                    </div>
+                  )}
+                  {lastCatch.globalBoost > 0 && (
+                    <div className="text-xs text-green-300 font-bold">
+                      🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
+                        onClick={() => window.location.href = `#profile-${lastCatch.globalActivatorId}`}
+                        className="underline hover:text-green-200"
+                      >
+                        {lastCatch.globalActivatorName}
+                      </button>
+                    </div>
+                  )}
+                  {lastCatch.personalBoost > 0 && (
+                    <div className="text-xs text-purple-300 font-bold">
+                      ⚡ +{Math.round(lastCatch.personalBoost * 100)}% Personal Exp Boost (Fragment)
                     </div>
                   )}
                   {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
@@ -373,6 +403,21 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.xpBonus > 0 && (
                     <div className="text-xs text-yellow-300 font-bold">
                       ✨ +{Math.round(lastCatch.xpBonus * 100)}% XP Boost Active!
+                    </div>
+                  )}
+                  {lastCatch.globalBoost > 0 && (
+                    <div className="text-xs text-green-300 font-bold">
+                      🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
+                        onClick={() => window.location.href = `#profile-${lastCatch.globalActivatorId}`}
+                        className="underline hover:text-green-200"
+                      >
+                        {lastCatch.globalActivatorName}
+                      </button>
+                    </div>
+                  )}
+                  {lastCatch.personalBoost > 0 && (
+                    <div className="text-xs text-purple-300 font-bold">
+                      ⚡ +{Math.round(lastCatch.personalBoost * 100)}% Personal Exp Boost (Fragment)
                     </div>
                   )}
                   {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
@@ -570,6 +615,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* Personal Fragment Booster */}
+        {lastCatch && lastCatch.personalBoost > 0 && (
+          <div className={`mt-2 pt-2 ${activeBoosters.length === 0 ? 'border-t border-yellow-600' : ''}`}>
+            {activeBoosters.length === 0 && <div className="text-yellow-400 font-bold mb-1">Active Boosters:</div>}
+            <div className="text-purple-300">
+              ⚡ Personal XP Booster (Fragment): <span className="font-bold text-green-400">+{Math.round(lastCatch.personalBoost * 100)}%</span>
+            </div>
           </div>
         )}
 

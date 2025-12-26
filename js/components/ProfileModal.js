@@ -124,7 +124,7 @@ function ProfileModal({ userId, onClose, currentUserId, achievements, onProfileC
                         {/* Avatar */}
                         <div className="w-24 h-24 rounded-full border-4 border-yellow-400 overflow-hidden bg-gray-700">
                             <img
-                                src={`/assets/avatar/default/${profile.profile_avatar || 'avatar_001'}.png`}
+                                src={profile.profile_avatar?.startsWith('avatarboss_') ? `/assets/avatar/fragment/${profile.profile_avatar}.png` : `/assets/avatar/default/${profile.profile_avatar || 'avatar_001'}.png`}
                                 alt="Avatar"
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
@@ -174,7 +174,7 @@ function ProfileModal({ userId, onClose, currentUserId, achievements, onProfileC
                         {/* Avatar */}
                         <div className="w-32 h-32 rounded-full border-4 border-yellow-400 overflow-hidden bg-gray-700 flex-shrink-0">
                             <img
-                                src={`/assets/avatar/default/${profile.profile_avatar || 'avatar_001'}.png`}
+                                src={profile.profile_avatar?.startsWith('avatarboss_') ? `/assets/avatar/fragment/${profile.profile_avatar}.png` : `/assets/avatar/default/${profile.profile_avatar || 'avatar_001'}.png`}
                                 alt="Avatar"
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
@@ -494,7 +494,7 @@ function CommentsTab({ comments, newComment, setNewComment, onPostComment, isOwn
                                 {comment.commenter_id && (
                                     <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-700 flex-shrink-0">
                                         <img
-                                            src={`/assets/avatar/default/${comment.profile_avatar || 'avatar_001'}.png`}
+                                            src={comment.profile_avatar?.startsWith('avatarboss_') ? `/assets/avatar/fragment/${comment.profile_avatar}.png` : `/assets/avatar/default/${comment.profile_avatar || 'avatar_001'}.png`}
                                             alt="Avatar"
                                             className="w-full h-full object-cover"
                                             onError={(e) => {

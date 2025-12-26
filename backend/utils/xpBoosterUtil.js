@@ -40,16 +40,21 @@ export async function getXpMultiplier(userId) {
       }
     }
 
-    // Get active global XP booster
+    // Get active global XP booster with activator name
     const [globalBooster] = await db.execute(
-      `SELECT multiplier, expires_at
-       FROM global_xp_booster_queue
-       WHERE status = 'active' AND expires_at > NOW()
+      `SELECT gq.multiplier, gq.expires_at, u.profile_username, u.id as activator_id
+       FROM global_xp_booster_queue gq
+       JOIN users u ON gq.activated_by_user_id = u.id
+       WHERE gq.status = 'active' AND gq.expires_at > NOW()
        LIMIT 1`
     );
 
+    let globalActivatorName = null;
+    let globalActivatorId = null;
     if (globalBooster.length > 0) {
       globalMultiplier = globalBooster[0].multiplier - 1; // Convert 1.25 to 0.25
+      globalActivatorName = globalBooster[0].profile_username;
+      globalActivatorId = globalBooster[0].activator_id;
     }
 
     // Stack boosters additively
@@ -58,7 +63,9 @@ export async function getXpMultiplier(userId) {
     return {
       totalMultiplier, // e.g., 1.40 (for 15% + 25% = 40% total bonus)
       personal: personalMultiplier, // e.g., 0.15 (15% bonus)
-      global: globalMultiplier // e.g., 0.25 (25% bonus)
+      global: globalMultiplier, // e.g., 0.25 (25% bonus)
+      globalActivatorName, // e.g., "PlayerName" or null
+      globalActivatorId // e.g., 123 or null
     };
 
   } catch (error) {

@@ -31,12 +31,12 @@ router.get('/current', authenticateToken, async (req, res) => {
     `);
 
     if (events.length === 0) {
-      // No active anomaly, check for next spawn time from ended events
+      // No active anomaly, check for next spawn time from most recent ended/defeated event
       const [endedEvents] = await db.execute(`
         SELECT next_spawn_time
         FROM anomaly_events
-        WHERE status = 'ended' AND next_spawn_time IS NOT NULL
-        ORDER BY next_spawn_time DESC
+        WHERE status IN ('defeated', 'ended') AND next_spawn_time IS NOT NULL
+        ORDER BY id DESC
         LIMIT 1
       `);
 
@@ -205,14 +205,16 @@ router.post('/attack', authenticateToken, async (req, res) => {
       }
     }
 
-    // Calculate damage based on stat weakness/resistance - UPDATED MULTIPLIERS
+    // Calculate damage based on stat weakness/resistance - RANGE MULTIPLIERS
     let multiplier = 1.0;
     if (statUsed === event.primary_weakness) {
-      multiplier = 4.0; // Primary weakness: 4x damage
+      multiplier = 3.5 + Math.random() * 0.5; // Primary weakness: 3.5-4x damage
     } else if (statUsed === event.secondary_weakness) {
-      multiplier = 2.0; // Secondary weakness: 2x damage
+      multiplier = 1.75 + Math.random() * 0.5; // Secondary weakness: 1.75-2.25x damage
     } else if (statUsed === event.resistant_stat) {
-      multiplier = 0.25; // Resistant stat: 0.25x damage
+      multiplier = 0.25 + Math.random() * 0.25; // Resistant stat: 0.25-0.5x damage
+    } else {
+      multiplier = 1.0 + Math.random() * 0.25; // Normal: 1-1.25x damage
     }
 
     // TODO: Add equipment bonus from rod (future enhancement)
@@ -415,6 +417,19 @@ router.post('/claim-rewards', authenticateToken, async (req, res) => {
 
     if (!eventId) {
       return res.status(400).json({ error: 'Event ID required' });
+    }
+
+    // Check if event is defeated/ended (not still active)
+    const [event] = await db.execute(`
+      SELECT status FROM anomaly_events WHERE id = ?
+    `, [eventId]);
+
+    if (event.length === 0) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    if (event[0].status === 'active') {
+      return res.status(400).json({ error: 'Cannot claim rewards while boss is still active. Wait for it to be defeated!' });
     }
 
     // Get participation record

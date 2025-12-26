@@ -1479,8 +1479,8 @@ useEffect(() => {
         onProfileClick={handleProfileClick}
       />
 
-      {/* Global XP Booster Indicator */}
-      <GlobalBoosterIndicator theme={theme} />
+      {/* Global XP Booster Indicator - Moved to FishingPage fishing result */}
+      {/* <GlobalBoosterIndicator theme={theme} /> */}
 
       {/* Profile Modal */}
       {showProfileModal && profileUserId && (

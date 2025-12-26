@@ -212,8 +212,14 @@ function ProfileSettings({ onClose, currentProfile, achievements, lockedFish, on
 
 // Avatar Selection Tab
 function AvatarTab({ ownedAvatars, currentAvatar, onSelectAvatar, loading }) {
-    // Generate avatar list (assuming avatars are numbered)
-    const allAvatars = Array.from({ length: 20 }, (_, i) => `avatar_${String(i + 1).padStart(3, '0')}`);
+    // Generate default avatar list
+    const defaultAvatars = Array.from({ length: 20 }, (_, i) => `avatar_${String(i + 1).padStart(3, '0')}`);
+
+    // Get fragment avatars from owned avatars (avatars starting with 'avatarboss_')
+    const fragmentAvatars = ownedAvatars.filter(id => id.startsWith('avatarboss_'));
+
+    // Combine all avatars to display (default avatars + owned fragment avatars)
+    const allAvatars = [...defaultAvatars, ...fragmentAvatars];
 
     return (
         <div>
@@ -222,6 +228,7 @@ function AvatarTab({ ownedAvatars, currentAvatar, onSelectAvatar, loading }) {
                 {allAvatars.map((avatarId) => {
                     const isOwned = ownedAvatars.includes(avatarId);
                     const isCurrent = currentAvatar === avatarId;
+                    const isFragmentAvatar = avatarId.startsWith('avatarboss_');
 
                     return (
                         <button
@@ -237,7 +244,7 @@ function AvatarTab({ ownedAvatars, currentAvatar, onSelectAvatar, loading }) {
                             }`}
                         >
                             <img
-                                src={`/assets/avatar/default/${avatarId}.png`}
+                                src={isFragmentAvatar ? `/assets/avatar/fragment/${avatarId}.png` : `/assets/avatar/default/${avatarId}.png`}
                                 alt={avatarId}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
