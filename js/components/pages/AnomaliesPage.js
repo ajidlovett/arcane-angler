@@ -81,7 +81,7 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
         },
         playerParticipation: {
           ...prev.playerParticipation,
-          damagDealt: (prev.playerParticipation?.damagDealt || 0) + result.attack.finalDamage,
+          damageDealt: (prev.playerParticipation?.damageDealt || 0) + result.attack.finalDamage,
           attacksMade: (prev.playerParticipation?.attacksMade || 0) + 1
         }
       }));
@@ -110,14 +110,14 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
   };
 
   // Purchase item from fragment shop
-  const handlePurchase = async (itemType, itemId, cost) => {
+  const handlePurchase = async (itemType, itemId, cost, multiplier = null, duration = null) => {
     if ((player.anomalyFragments || 0) < cost) {
       showAlert(`Not enough fragments! Need ${cost}, have ${player.anomalyFragments || 0}`, 'error');
       return;
     }
 
     try {
-      const result = await window.ApiService.purchaseFragmentItem(itemType, itemId, cost);
+      const result = await window.ApiService.purchaseFragmentItem(itemType, itemId, cost, multiplier, duration);
 
       // Update player fragments
       setPlayer(prev => ({
@@ -146,13 +146,12 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
 
   // Countdown timers
   React.useEffect(() => {
-    if (!currentAnomaly?.active || !currentAnomaly?.event) return;
-
     const updateCountdowns = () => {
       const now = new Date().getTime();
 
-      if (currentAnomaly.event.nextSpawnTime) {
-        const nextSpawn = new Date(currentAnomaly.event.nextSpawnTime).getTime();
+      // Handle countdown when there's no active anomaly
+      if (!currentAnomaly?.active && currentAnomaly?.nextSpawnTime) {
+        const nextSpawn = new Date(currentAnomaly.nextSpawnTime).getTime();
         const diff = nextSpawn - now;
 
         if (diff > 0) {
@@ -160,21 +159,39 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
           const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
           const seconds = Math.floor((diff % (1000 * 60)) / 1000);
           setCountdown(prev => ({ ...prev, nextSpawn: `${hours}h ${minutes}m ${seconds}s` }));
+        } else {
+          setCountdown(prev => ({ ...prev, nextSpawn: '' }));
         }
+        return;
       }
 
-      if (currentAnomaly.event.endTime) {
-        const endTime = new Date(currentAnomaly.event.endTime).getTime();
-        const diff = endTime - now;
+      // Handle countdown for active anomaly
+      if (currentAnomaly?.active && currentAnomaly?.event) {
+        if (currentAnomaly.event.nextSpawnTime) {
+          const nextSpawn = new Date(currentAnomaly.event.nextSpawnTime).getTime();
+          const diff = nextSpawn - now;
 
-        if (diff > 0) {
-          const minutes = Math.floor(diff / (1000 * 60));
-          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-          setCountdown(prev => ({ ...prev, endTime: `${minutes}m ${seconds}s` }));
+          if (diff > 0) {
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            setCountdown(prev => ({ ...prev, nextSpawn: `${hours}h ${minutes}m ${seconds}s` }));
+          }
+        }
 
-          // Show warning at 5 minutes
-          if (diff <= 5 * 60 * 1000 && diff > (5 * 60 * 1000) - 1000) {
-            showAlert('⚠️ Current anomaly ending soon! New anomaly spawns in 5:00', 'warning');
+        if (currentAnomaly.event.endTime) {
+          const endTime = new Date(currentAnomaly.event.endTime).getTime();
+          const diff = endTime - now;
+
+          if (diff > 0) {
+            const minutes = Math.floor(diff / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            setCountdown(prev => ({ ...prev, endTime: `${minutes}m ${seconds}s` }));
+
+            // Show warning at 5 minutes
+            if (diff <= 5 * 60 * 1000 && diff > (5 * 60 * 1000) - 1000) {
+              showAlert('⚠️ Current anomaly ending soon! New anomaly spawns in 5:00', 'warning');
+            }
           }
         }
       }
@@ -432,7 +449,7 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-gray-700 p-3 rounded">
                       <div className="text-gray-400 text-sm">Damage Dealt</div>
-                      <div className="text-2xl font-bold text-white">{parseInt(currentAnomaly.playerParticipation.damagDealt || 0).toLocaleString()}</div>
+                      <div className="text-2xl font-bold text-white">{parseInt(currentAnomaly.playerParticipation.damageDealt || 0).toLocaleString()}</div>
                       <div className="text-sm text-green-400">{currentAnomaly.playerParticipation.damagePercentage}%</div>
                     </div>
                     <div className="bg-gray-700 p-3 rounded">
@@ -549,7 +566,7 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
                     </div>
                   </div>
                   <button
-                    onClick={() => handlePurchase(booster.type, booster.id, booster.cost)}
+                    onClick={() => handlePurchase(booster.type, booster.id, booster.cost, booster.multiplier, booster.duration)}
                     disabled={(player.anomalyFragments || 0) < booster.cost}
                     className="w-full py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded font-bold transition-colors"
                   >

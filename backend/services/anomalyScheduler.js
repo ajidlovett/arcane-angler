@@ -62,7 +62,7 @@ class AnomalyScheduler {
   }
 
   /**
-   * Initialize first anomaly if database is empty
+   * Initialize first anomaly if database is empty or spawn immediately after restart
    */
   async initializeFirstAnomaly() {
     try {
@@ -71,7 +71,7 @@ class AnomalyScheduler {
       `);
 
       if (existingEvents.length === 0) {
-        console.log('No active anomaly found. Spawning initial anomaly...');
+        console.log('No active anomaly found. Spawning anomaly immediately...');
         await this.spawnNewAnomaly();
       } else {
         console.log('Active anomaly found. No initialization needed.');
@@ -173,7 +173,7 @@ class AnomalyScheduler {
     try {
       // Get random anomaly that wasn't spawned in the last 5 events
       const [recentAnomalies] = await db.execute(`
-        SELECT DISTINCT anomaly_id
+        SELECT anomaly_id, spawn_time
         FROM anomaly_events
         ORDER BY spawn_time DESC
         LIMIT 5

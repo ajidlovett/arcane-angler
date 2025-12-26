@@ -31,10 +31,21 @@ router.get('/current', authenticateToken, async (req, res) => {
     `);
 
     if (events.length === 0) {
+      // No active anomaly, check for next spawn time from ended events
+      const [endedEvents] = await db.execute(`
+        SELECT next_spawn_time
+        FROM anomaly_events
+        WHERE status = 'ended' AND next_spawn_time IS NOT NULL
+        ORDER BY next_spawn_time DESC
+        LIMIT 1
+      `);
+
+      const nextSpawnTime = endedEvents.length > 0 ? endedEvents[0].next_spawn_time : null;
+
       return res.json({
         active: false,
         message: 'No active anomaly',
-        nextSpawnTime: null
+        nextSpawnTime: nextSpawnTime
       });
     }
 
@@ -105,7 +116,7 @@ router.get('/current', authenticateToken, async (req, res) => {
         totalDamage: event.total_damage_dealt
       },
       playerParticipation: playerParticipation ? {
-        damagDealt: playerParticipation.damage_dealt,
+        damageDealt: playerParticipation.damage_dealt,
         attacksMade: playerParticipation.attacks_made,
         lastAttackTime: playerParticipation.last_attack_time,
         damagePercentage: damagePercentage,
