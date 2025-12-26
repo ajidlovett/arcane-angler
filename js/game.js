@@ -526,7 +526,14 @@ useEffect(() => {
               relics: result.relicsGained,
               gold: result.goldGained,
               isTreasure: true,
-              xpBonus: result.xpBonus
+              xpBonus: result.xpBonus,
+              weatherXpBonus: result.weatherXpBonus,
+              personalBoost: result.personalBoost,
+              globalBoost: result.globalBoost,
+              globalActivatorName: result.globalActivatorName,
+              globalActivatorId: result.globalActivatorId,
+              hasKnowledgeScroll: result.hasKnowledgeScroll,
+              hasAncientTome: result.hasAncientTome
             });
           } else if (result.rarity === 'Relic') {
             setLastCatch({
@@ -536,7 +543,14 @@ useEffect(() => {
               xp: result.xpGained,
               relics: result.relicsGained,
               gold: 0,
-              xpBonus: result.xpBonus
+              xpBonus: result.xpBonus,
+              weatherXpBonus: result.weatherXpBonus,
+              personalBoost: result.personalBoost,
+              globalBoost: result.globalBoost,
+              globalActivatorName: result.globalActivatorName,
+              globalActivatorId: result.globalActivatorId,
+              hasKnowledgeScroll: result.hasKnowledgeScroll,
+              hasAncientTome: result.hasAncientTome
             });
           } else {
             setLastCatch({
@@ -547,7 +561,14 @@ useEffect(() => {
               gold: result.goldGained > 0 ? Math.floor(result.goldGained) : (result.fish.gold || 0),
               relics: 0,
               titanBonus: result.titanBonus > 1 ? result.titanBonus : null,
-              xpBonus: result.xpBonus
+              xpBonus: result.xpBonus,
+              weatherXpBonus: result.weatherXpBonus,
+              personalBoost: result.personalBoost,
+              globalBoost: result.globalBoost,
+              globalActivatorName: result.globalActivatorName,
+              globalActivatorId: result.globalActivatorId,
+              hasKnowledgeScroll: result.hasKnowledgeScroll,
+              hasAncientTome: result.hasAncientTome
             });
           }
 
@@ -617,6 +638,13 @@ useEffect(() => {
           relics: 0,
           titanBonus: 1,
           xpBonus: result.xpBonus,
+          weatherXpBonus: result.weatherXpBonus,
+          personalBoost: result.personalBoost,
+          globalBoost: result.globalBoost,
+          globalActivatorName: result.globalActivatorName,
+          globalActivatorId: result.globalActivatorId,
+          hasKnowledgeScroll: result.hasKnowledgeScroll,
+          hasAncientTome: result.hasAncientTome,
           isAutoCast: true
         });
 
