@@ -136,30 +136,18 @@ class AnomalyScheduler {
 
   /**
    * End current anomaly event
+   * Note: Auto-claim has been removed - players must manually claim rewards from History tab
    */
   async endCurrentAnomaly(eventId) {
     try {
-      // Auto-claim pending rewards for all participants
-      const [participants] = await db.execute(`
-        SELECT DISTINCT user_id
-        FROM anomaly_participation
-        WHERE event_id = ?
-      `, [eventId]);
-
-      console.log(`Auto-claiming rewards for ${participants.length} participants...`);
-
-      for (const participant of participants) {
-        await autoClaimPendingRewards(participant.user_id);
-      }
-
-      // Mark event as ended
+      // Mark event as ended (no auto-claim)
       await db.execute(`
         UPDATE anomaly_events
         SET status = 'ended'
         WHERE id = ?
       `, [eventId]);
 
-      console.log(`✅ Anomaly event ${eventId} ended and rewards auto-claimed`);
+      console.log(`✅ Anomaly event ${eventId} ended - players can claim rewards from History tab`);
 
     } catch (error) {
       console.error('Error ending anomaly:', error);

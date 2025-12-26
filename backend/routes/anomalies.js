@@ -65,7 +65,7 @@ router.get('/current', authenticateToken, async (req, res) => {
       ? ((playerParticipation?.damage_dealt || 0) / event.total_damage_dealt * 100).toFixed(2)
       : 0;
 
-    // Get top 10 participants
+    // Get all participants (ordered by damage dealt)
     const [topParticipants] = await db.execute(`
       SELECT
         u.profile_username,
@@ -77,7 +77,6 @@ router.get('/current', authenticateToken, async (req, res) => {
       JOIN anomaly_events ae ON ap.event_id = ae.id
       WHERE ap.event_id = ?
       ORDER BY ap.damage_dealt DESC
-      LIMIT 10
     `, [event.id]);
 
     // Count active players (attacked in last 15 minutes)
@@ -206,14 +205,14 @@ router.post('/attack', authenticateToken, async (req, res) => {
       }
     }
 
-    // Calculate damage based on stat weakness/resistance
+    // Calculate damage based on stat weakness/resistance - UPDATED MULTIPLIERS
     let multiplier = 1.0;
     if (statUsed === event.primary_weakness) {
-      multiplier = event.primary_multiplier;
+      multiplier = 4.0; // Primary weakness: 4x damage
     } else if (statUsed === event.secondary_weakness) {
-      multiplier = event.secondary_multiplier;
+      multiplier = 1.5; // Secondary weakness: 1.5x damage
     } else if (statUsed === event.resistant_stat) {
-      multiplier = event.resistant_multiplier;
+      multiplier = 0.25; // Resistant stat: 0.25x damage
     }
 
     // TODO: Add equipment bonus from rod (future enhancement)
@@ -292,7 +291,7 @@ router.post('/attack', authenticateToken, async (req, res) => {
 
 /**
  * GET /api/anomalies/history
- * Get player's last 5 participated anomaly events
+ * Get player's last 10 participated anomaly events
  */
 router.get('/history', authenticateToken, async (req, res) => {
   try {
@@ -302,7 +301,7 @@ router.get('/history', authenticateToken, async (req, res) => {
       SELECT
         ae.id, ae.spawn_time, ae.defeated_at, ae.status,
         a.name as anomaly_name,
-        ap.damage_dealt, ap.attacks_made, ap.gold_earned, ap.fragments_earned,
+        ap.damage_dealt, ap.attacks_made, ap.gold_earned, ap.fragments_earned, ap.rewards_claimed,
         ROUND((ap.damage_dealt / GREATEST(ae.total_damage_dealt, 1)) * 100, 2) as damage_percentage,
         ae.total_participants
       FROM anomaly_participation ap
@@ -310,7 +309,7 @@ router.get('/history', authenticateToken, async (req, res) => {
       JOIN anomalies a ON ae.anomaly_id = a.id
       WHERE ap.user_id = ?
       ORDER BY ae.spawn_time DESC
-      LIMIT 5
+      LIMIT 10
     `, [userId]);
 
     res.json({ history });
@@ -340,7 +339,7 @@ async function calculateAndDistributeRewards(eventId) {
 
     // Get all participants
     const [participants] = await db.execute(`
-      SELECT ap.user_id, ap.damage_dealt, pd.level
+      SELECT ap.user_id, ap.damage_dealt, ap.attacks_made, pd.level
       FROM anomaly_participation ap
       JOIN player_data pd ON ap.user_id = pd.user_id
       WHERE ap.event_id = ?
@@ -350,16 +349,17 @@ async function calculateAndDistributeRewards(eventId) {
     for (const participant of participants) {
       const damagePercentage = (participant.damage_dealt / total_damage_dealt) * 100;
 
-      // Gold calculation
-      const baseGold = participant.level * (Math.floor(Math.random() * 101) + 100); // level × (100-200)
+      // Gold calculation - NEW FORMULA
+      const baseGold = participant.level * (Math.floor(Math.random() * 76) + 50); // level × (50-125)
       const contributionBonus = Math.floor(damagePercentage * 50);
-      const totalGold = baseGold + contributionBonus;
+      const attackCountBonus = Math.min(participant.attacks_made * 10, participant.level * 50); // 10 gold per attack, capped at level × 50
+      const totalGold = baseGold + contributionBonus + attackCountBonus;
 
-      // Fragment calculation
-      let totalFragments = base_fragment_reward; // Base participation reward
-      totalFragments += Math.floor(damagePercentage / 2); // 10% damage = +5 fragments
-      if (damagePercentage >= 10) totalFragments += 5;
-      if (damagePercentage >= 20) totalFragments += 10;
+      // Fragment calculation - NEW FORMULA
+      let totalFragments = base_fragment_reward; // Base participation reward (3-10 depending on tier)
+      totalFragments += Math.floor(damagePercentage / 3); // 10% damage = +3.33 fragments (rounds down)
+      if (damagePercentage >= 10) totalFragments += 3; // Bonus for 10%+ contribution
+      if (damagePercentage >= 20) totalFragments += 5; // Extra bonus for 20%+ contribution
 
       // Update participation record with rewards
       await db.execute(`
@@ -375,8 +375,38 @@ async function calculateAndDistributeRewards(eventId) {
 }
 
 /**
+ * GET /api/anomalies/event/:eventId/leaderboard
+ * Get damage leaderboard for a specific anomaly event (for history view)
+ */
+router.get('/event/:eventId/leaderboard', authenticateToken, async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    // Get all participants for this event
+    const [leaderboard] = await db.execute(`
+      SELECT
+        u.profile_username,
+        ap.damage_dealt,
+        ap.attacks_made,
+        ROUND((ap.damage_dealt / GREATEST(ae.total_damage_dealt, 1)) * 100, 2) as damage_percentage
+      FROM anomaly_participation ap
+      JOIN users u ON ap.user_id = u.id
+      JOIN anomaly_events ae ON ap.event_id = ae.id
+      WHERE ap.event_id = ?
+      ORDER BY ap.damage_dealt DESC
+    `, [eventId]);
+
+    res.json({ leaderboard });
+
+  } catch (error) {
+    console.error('Error fetching event leaderboard:', error);
+    res.status(500).json({ error: 'Failed to fetch event leaderboard' });
+  }
+});
+
+/**
  * POST /api/anomalies/claim-rewards
- * Claim rewards from defeated anomaly (auto-claimed on new spawn, but manual option available)
+ * Claim rewards from defeated/ended anomaly (manual claiming required)
  */
 router.post('/claim-rewards', authenticateToken, async (req, res) => {
   try {

@@ -9,6 +9,7 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
   const [fragmentShopItems, setFragmentShopItems] = React.useState(null);
   const [globalBoosterQueue, setGlobalBoosterQueue] = React.useState(null);
   const [countdown, setCountdown] = React.useState({ nextSpawn: '', endTime: '' });
+  const [leaderboardPopup, setLeaderboardPopup] = React.useState(null); // { eventId, anomalyName, leaderboard }
 
   // Stat name mappings
   const statNames = {
@@ -95,10 +96,13 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
       // Start cooldown
       setAttackCooldown(6);
 
-      // Check if defeated
+      // Check if defeated - Show special notification directing to History tab
       if (result.anomaly.defeated) {
-        showAlert('🎉 BOSS DEFEATED! Rewards will be distributed!', 'success');
-        setTimeout(fetchCurrentAnomaly, 2000);
+        showAlert(`🎉 ${result.anomaly.name} has been defeated! Claim your reward in the History Tab.`, 'success');
+        setTimeout(() => {
+          fetchCurrentAnomaly();
+          fetchAnomalyHistory(); // Refresh history to show new defeated anomaly
+        }, 2000);
       }
 
     } catch (error) {
@@ -133,6 +137,43 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
     } catch (error) {
       console.error('Purchase failed:', error);
       showAlert(error.message || 'Purchase failed!', 'error');
+    }
+  };
+
+  // Claim rewards from history
+  const handleClaimRewards = async (eventId, anomalyName) => {
+    try {
+      const result = await window.ApiService.claimAnomalyRewards(eventId);
+
+      // Update player data with claimed rewards
+      setPlayer(prev => ({
+        ...prev,
+        gold: (prev.gold || 0) + result.rewards.gold,
+        anomalyFragments: (prev.anomalyFragments || 0) + result.rewards.fragments
+      }));
+
+      showAlert(`Claimed ${result.rewards.gold.toLocaleString()} gold and ${result.rewards.fragments} fragments from ${anomalyName}!`, 'success');
+
+      // Refresh history to update claim status
+      fetchAnomalyHistory();
+    } catch (error) {
+      console.error('Claim failed:', error);
+      showAlert(error.message || 'Failed to claim rewards!', 'error');
+    }
+  };
+
+  // View leaderboard for historical event
+  const handleViewLeaderboard = async (eventId, anomalyName) => {
+    try {
+      const result = await window.ApiService.getEventLeaderboard(eventId);
+      setLeaderboardPopup({
+        eventId,
+        anomalyName,
+        leaderboard: result.leaderboard
+      });
+    } catch (error) {
+      console.error('Failed to fetch leaderboard:', error);
+      showAlert('Failed to load leaderboard!', 'error');
     }
   };
 
@@ -216,7 +257,7 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
     return () => clearInterval(interval);
   }, [fetchCurrentAnomaly]);
 
-  // Calculate damage preview
+  // Calculate damage preview - UPDATED MULTIPLIERS
   const getDamagePreview = (stat) => {
     if (!currentAnomaly?.active || !currentAnomaly?.event) return { damage: 0, multiplier: 1 };
 
@@ -225,19 +266,19 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
 
     let multiplier = 1.0;
     if (stat === anomaly.primaryWeakness) {
-      multiplier = anomaly.multipliers.primary;
+      multiplier = 4.0; // Primary weakness: 4x damage
     } else if (stat === anomaly.secondaryWeakness) {
-      multiplier = anomaly.multipliers.secondary;
+      multiplier = 1.5; // Secondary weakness: 1.5x damage
     } else if (stat === anomaly.resistantStat) {
-      multiplier = anomaly.multipliers.resistant;
+      multiplier = 0.25; // Resistant stat: 0.25x damage
     }
 
     return { damage: Math.floor(statValue * multiplier), multiplier };
   };
 
-  // Get effectiveness label
+  // Get effectiveness label - UPDATED FOR NEW MULTIPLIERS
   const getEffectivenessLabel = (multiplier) => {
-    if (multiplier >= 2.5) return { text: 'SUPER EFFECTIVE!', color: 'text-green-400', icon: '⭐' };
+    if (multiplier >= 4.0) return { text: 'SUPER EFFECTIVE!', color: 'text-green-400', icon: '⭐' };
     if (multiplier >= 1.5) return { text: 'Effective', color: 'text-blue-400', icon: '✨' };
     if (multiplier < 1) return { text: 'Not Effective', color: 'text-red-400', icon: '❄️' };
     return { text: 'Normal', color: 'text-gray-400', icon: '⚔️' };
@@ -357,12 +398,12 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
                   </div>
                 </div>
 
-                {/* Weaknesses */}
+                {/* Weaknesses - UPDATED MULTIPLIERS */}
                 <div className="flex flex-wrap gap-4 mb-4">
                   <div className="flex items-center gap-2 bg-green-900 px-3 py-1 rounded">
                     <span className="text-green-300">Primary Weakness:</span>
                     <span className="font-bold text-white">
-                      {statNames[currentAnomaly.event.anomaly.primaryWeakness]?.icon} {currentAnomaly.event.anomaly.primaryWeakness.toUpperCase()} (2.5x)
+                      {statNames[currentAnomaly.event.anomaly.primaryWeakness]?.icon} {currentAnomaly.event.anomaly.primaryWeakness.toUpperCase()} (4x)
                     </span>
                   </div>
                   {currentAnomaly.event.anomaly.secondaryWeakness && (
@@ -376,7 +417,7 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
                   <div className="flex items-center gap-2 bg-red-900 px-3 py-1 rounded">
                     <span className="text-red-300">Resists:</span>
                     <span className="font-bold text-white">
-                      {statNames[currentAnomaly.event.anomaly.resistantStat]?.icon} {currentAnomaly.event.anomaly.resistantStat.toUpperCase()} (0.5x)
+                      {statNames[currentAnomaly.event.anomaly.resistantStat]?.icon} {currentAnomaly.event.anomaly.resistantStat.toUpperCase()} (0.25x)
                     </span>
                   </div>
                 </div>
@@ -405,7 +446,7 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
                         disabled={attackCooldown > 0 || selectedStat !== null}
                         className={`p-4 rounded-lg border-2 transition-all ${
                           selectedStat === stat ? 'bg-yellow-600 border-yellow-400' :
-                          preview.multiplier >= 2.5 ? 'bg-green-900 border-green-500 hover:bg-green-800' :
+                          preview.multiplier >= 4.0 ? 'bg-green-900 border-green-500 hover:bg-green-800' :
                           preview.multiplier >= 1.5 ? 'bg-blue-900 border-blue-500 hover:bg-blue-800' :
                           preview.multiplier < 1 ? 'bg-red-900 border-red-500 hover:bg-red-800' :
                           'bg-gray-700 border-gray-600 hover:bg-gray-600'
@@ -468,15 +509,17 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
                 </div>
               )}
 
-              {/* Leaderboard */}
+              {/* Leaderboard - ALL PARTICIPANTS */}
               {currentAnomaly.leaderboard && currentAnomaly.leaderboard.length > 0 && (
                 <div className="bg-gray-800 rounded-lg p-6">
-                  <h3 className="text-xl font-bold mb-4">🏆 Top Damage Dealers</h3>
-                  <div className="space-y-2">
+                  <h3 className="text-xl font-bold mb-4">🏆 All Participants ({currentAnomaly.leaderboard.length})</h3>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
                     {currentAnomaly.leaderboard.map((entry, index) => (
                       <div key={index} className="flex items-center justify-between bg-gray-700 p-3 rounded">
                         <div className="flex items-center gap-3">
-                          <span className="text-xl font-bold text-yellow-400">#{index + 1}</span>
+                          <span className={`text-xl font-bold ${index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-300' : index === 2 ? 'text-orange-400' : 'text-gray-500'}`}>
+                            #{index + 1}
+                          </span>
                           <span className="font-bold">{entry.profile_username}</span>
                         </div>
                         <div className="flex items-center gap-4">
@@ -494,54 +537,115 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
         </>
       )}
 
-      {/* History Tab - Will implement next */}
+      {/* History Tab - UPDATED WITH MANUAL CLAIM AND LEADERBOARD */}
       {activeTab === 'history' && (
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h3 className="text-xl font-bold mb-4">📜 Anomaly History (Last 5)</h3>
-          {anomalyHistory.length === 0 ? (
-            <div className="text-center text-gray-400 py-8">No history yet. Participate in battles to see your history!</div>
-          ) : (
-            <div className="space-y-4">
-              {anomalyHistory.map((event, index) => (
-                <div key={event.id} className="bg-gray-700 rounded-lg p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-2xl">🌊</span>
-                        <span className="font-bold text-xl text-blue-400">{event.anomaly_name}</span>
-                        <span className={`px-2 py-1 rounded text-xs font-bold ${event.status === 'defeated' ? 'bg-green-600' : 'bg-gray-600'}`}>
-                          {event.status.toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-400 mb-2">
-                        {new Date(event.spawn_time).toLocaleString()}
-                      </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-                        <div>
-                          <span className="text-gray-400">Your Damage:</span>
-                          <span className="ml-2 font-bold">{parseInt(event.damage_dealt).toLocaleString()}</span>
-                          <span className="ml-1 text-green-400">({event.damage_percentage}%)</span>
+        <>
+          <div className="bg-gray-800 rounded-lg p-6">
+            <h3 className="text-xl font-bold mb-4">📜 Anomaly History (Last 10)</h3>
+            {anomalyHistory.length === 0 ? (
+              <div className="text-center text-gray-400 py-8">No history yet. Participate in battles to see your history!</div>
+            ) : (
+              <div className="space-y-4">
+                {anomalyHistory.map((event, index) => (
+                  <div key={event.id} className="bg-gray-700 rounded-lg p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-2xl">🌊</span>
+                          <span className="font-bold text-xl text-blue-400">{event.anomaly_name}</span>
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${event.status === 'defeated' ? 'bg-green-600' : 'bg-gray-600'}`}>
+                            {event.status.toUpperCase()}
+                          </span>
+                          {event.rewards_claimed ? (
+                            <span className="px-2 py-1 rounded text-xs font-bold bg-blue-600">CLAIMED</span>
+                          ) : (
+                            <span className="px-2 py-1 rounded text-xs font-bold bg-yellow-600 animate-pulse">UNCLAIMED</span>
+                          )}
                         </div>
-                        <div>
-                          <span className="text-gray-400">Attacks:</span>
-                          <span className="ml-2 font-bold">{event.attacks_made}</span>
+                        <div className="text-sm text-gray-400 mb-2">
+                          {new Date(event.spawn_time).toLocaleString()}
                         </div>
-                        <div>
-                          <span className="text-gray-400">Gold:</span>
-                          <span className="ml-2 font-bold text-yellow-400">+{parseInt(event.gold_earned).toLocaleString()}</span>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm mb-3">
+                          <div>
+                            <span className="text-gray-400">Your Damage:</span>
+                            <span className="ml-2 font-bold">{parseInt(event.damage_dealt).toLocaleString()}</span>
+                            <span className="ml-1 text-green-400">({event.damage_percentage}%)</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Attacks:</span>
+                            <span className="ml-2 font-bold">{event.attacks_made}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Gold:</span>
+                            <span className="ml-2 font-bold text-yellow-400">+{parseInt(event.gold_earned).toLocaleString()}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Fragments:</span>
+                            <span className="ml-2 font-bold text-purple-400">+{event.fragments_earned}</span>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-gray-400">Fragments:</span>
-                          <span className="ml-2 font-bold text-purple-400">+{event.fragments_earned}</span>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleViewLeaderboard(event.id, event.anomaly_name)}
+                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-sm font-bold transition-colors"
+                          >
+                            🏆 View Leaderboard
+                          </button>
+                          {!event.rewards_claimed && (
+                            <button
+                              onClick={() => handleClaimRewards(event.id, event.anomaly_name)}
+                              className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-sm font-bold transition-colors animate-pulse"
+                            >
+                              💰 Claim Rewards
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
                   </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Leaderboard Popup Modal */}
+          {leaderboardPopup && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setLeaderboardPopup(null)}>
+              <div className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bold text-blue-400">🏆 {leaderboardPopup.anomalyName} - Leaderboard</h3>
+                  <button
+                    onClick={() => setLeaderboardPopup(null)}
+                    className="text-2xl hover:text-red-400 transition-colors"
+                  >
+                    ✕
+                  </button>
                 </div>
-              ))}
+                {leaderboardPopup.leaderboard.length === 0 ? (
+                  <div className="text-center text-gray-400 py-8">No participants found</div>
+                ) : (
+                  <div className="space-y-2">
+                    {leaderboardPopup.leaderboard.map((entry, index) => (
+                      <div key={index} className="flex items-center justify-between bg-gray-700 p-3 rounded">
+                        <div className="flex items-center gap-3">
+                          <span className={`text-xl font-bold ${index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-300' : index === 2 ? 'text-orange-400' : 'text-gray-500'}`}>
+                            #{index + 1}
+                          </span>
+                          <span className="font-bold">{entry.profile_username}</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm">
+                          <span className="text-gray-300">{parseInt(entry.damage_dealt).toLocaleString()} dmg</span>
+                          <span className="text-green-400 font-bold">{entry.damage_percentage}%</span>
+                          <span className="text-gray-400">{entry.attacks_made} attacks</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
-        </div>
+        </>
       )}
 
       {/* Fragment Shop Tab */}
