@@ -147,6 +147,33 @@ router.post('/purchase', authenticateToken, async (req, res) => {
       }
     }
 
+    // Check if personal XP booster already active (prevent stacking)
+    if (itemType === 'xp_booster_personal') {
+      const [existingBooster] = await db.execute(`
+        SELECT active_xp_booster_personal
+        FROM player_data
+        WHERE user_id = ?
+      `, [userId]);
+
+      if (existingBooster.length > 0 && existingBooster[0].active_xp_booster_personal) {
+        try {
+          const currentBooster = JSON.parse(existingBooster[0].active_xp_booster_personal);
+          // Check if it's still active (not expired)
+          if (currentBooster.expires_at && new Date(currentBooster.expires_at) > new Date()) {
+            const timeRemaining = Math.ceil((new Date(currentBooster.expires_at) - new Date()) / 1000 / 60); // minutes
+            return res.status(400).json({
+              error: 'You already have an active Personal XP Booster',
+              timeRemaining: timeRemaining,
+              expiresAt: currentBooster.expires_at
+            });
+          }
+        } catch (error) {
+          console.error('Error parsing existing personal booster:', error);
+          // If there's a parsing error, allow the purchase to proceed
+        }
+      }
+    }
+
     // Deduct fragments
     await db.execute(`
       UPDATE player_data

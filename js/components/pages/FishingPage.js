@@ -335,6 +335,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                       ⚡ +{Math.round(lastCatch.personalBoost * 100)}% Personal Exp Boost (Fragment)
                     </div>
                   )}
+                  {lastCatch.hasKnowledgeScroll && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      📜 +10% XP Boost (Knowledge Scroll)
+                    </div>
+                  )}
+                  {lastCatch.hasAncientTome && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      📚 +20% XP Boost (Ancient Tome)
+                    </div>
+                  )}
                   {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
                     <div className="text-sm text-red-400 font-bold mt-2">
                       🔥 <button
@@ -370,6 +380,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.personalBoost > 0 && (
                     <div className="text-xs text-purple-300 font-bold">
                       ⚡ +{Math.round(lastCatch.personalBoost * 100)}% Personal Exp Boost (Fragment)
+                    </div>
+                  )}
+                  {lastCatch.hasKnowledgeScroll && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      📜 +10% XP Boost (Knowledge Scroll)
+                    </div>
+                  )}
+                  {lastCatch.hasAncientTome && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      📚 +20% XP Boost (Ancient Tome)
                     </div>
                   )}
                   {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
@@ -418,6 +438,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.personalBoost > 0 && (
                     <div className="text-xs text-purple-300 font-bold">
                       ⚡ +{Math.round(lastCatch.personalBoost * 100)}% Personal Exp Boost (Fragment)
+                    </div>
+                  )}
+                  {lastCatch.hasKnowledgeScroll && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      📜 +10% XP Boost (Knowledge Scroll)
+                    </div>
+                  )}
+                  {lastCatch.hasAncientTome && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      📚 +20% XP Boost (Ancient Tome)
                     </div>
                   )}
                   {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (

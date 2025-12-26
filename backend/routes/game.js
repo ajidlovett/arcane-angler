@@ -101,9 +101,17 @@ router.post('/cast', authenticateToken, async (req, res) => {
     let xpBonusFromBoosters = 0; // Additive bonus (0 = no bonus, will be added to 1 in formula)
     let strengthBonus = 1.0; // Multiplier for strength
     let luckBonus = 1.0; // Multiplier for luck
+    let hasKnowledgeScroll = false;
+    let hasAncientTome = false;
     for (const booster of activeBoosters) {
       if (booster.effect_type === 'xp_bonus') {
         xpBonusFromBoosters += booster.bonus_percentage / 100;
+        // Track specific relic XP boosters
+        if (booster.booster_type === 'knowledge_scroll') {
+          hasKnowledgeScroll = true;
+        } else if (booster.booster_type === 'ancient_tome') {
+          hasAncientTome = true;
+        }
       } else if (booster.effect_type === 'stat_bonus' || booster.effect_type === 'strength_bonus') {
         strengthBonus += booster.bonus_percentage / 100;
       } else if (booster.effect_type === 'luck_bonus') {
@@ -266,6 +274,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.globalBoost = globalBoost;
       result.globalActivatorName = globalActivatorName;
       result.globalActivatorId = globalActivatorId;
+      result.hasKnowledgeScroll = hasKnowledgeScroll;
+      result.hasAncientTome = hasAncientTome;
 
       // Update player stats
       await connection.query(
@@ -304,6 +314,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.globalBoost = globalBoost;
       result.globalActivatorName = globalActivatorName;
       result.globalActivatorId = globalActivatorId;
+      result.hasKnowledgeScroll = hasKnowledgeScroll;
+      result.hasAncientTome = hasAncientTome;
 
       // Update player stats
       await connection.query(
@@ -372,6 +384,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.globalBoost = globalBoost;
       result.globalActivatorName = globalActivatorName;
       result.globalActivatorId = globalActivatorId;
+      result.hasKnowledgeScroll = hasKnowledgeScroll;
+      result.hasAncientTome = hasAncientTome;
 
       // Add to inventory (or update if exists)
       await connection.query(
@@ -770,9 +784,17 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     let xpBonusFromBoosters = 0; // Additive bonus (0 = no bonus, will be added to 1 in formula)
     let strengthBonus = 1.0; // Multiplier for strength
     let luckBonus = 1.0; // Multiplier for luck
+    let hasKnowledgeScroll = false;
+    let hasAncientTome = false;
     for (const booster of activeBoosters) {
       if (booster.effect_type === 'xp_bonus') {
         xpBonusFromBoosters += booster.bonus_percentage / 100;
+        // Track specific relic XP boosters
+        if (booster.booster_type === 'knowledge_scroll') {
+          hasKnowledgeScroll = true;
+        } else if (booster.booster_type === 'ancient_tome') {
+          hasAncientTome = true;
+        }
       } else if (booster.effect_type === 'stat_bonus' || booster.effect_type === 'strength_bonus') {
         strengthBonus += booster.bonus_percentage / 100;
       } else if (booster.effect_type === 'luck_bonus') {
