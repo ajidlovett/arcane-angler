@@ -135,7 +135,10 @@ window.GameHelpers = {
     }
 
     // High-tier rarities affected by luck (Jackpot Mechanic)
-    const highTierRarities = ['Legendary', 'Treasure Chest', 'Mythic', 'Exotic', 'Arcane', 'Relic'];
+    // Note: Treasure Chest and Relic are NOT included:
+    //   - Treasure Chest: only affected by Gilded Rod (treasureWeight)
+    //   - Relic: only affected by Archaeologist's Rod (relicWeight)
+    const highTierRarities = ['Legendary', 'Mythic', 'Exotic', 'Arcane'];
 
     const effectiveWeights = {};
     let poolSize = 0;
@@ -149,7 +152,7 @@ window.GameHelpers = {
         // 1 Luck point = +1% Weight for high-tier rarities
         effectiveWeights[tier] = baseWeight * (1 + (totalLuck / 100));
       } else {
-        // Common, Uncommon, Fine, Rare, Epic: Not affected by luck
+        // Common, Uncommon, Fine, Rare, Relic, Epic, Treasure Chest: Not affected by luck
         effectiveWeights[tier] = baseWeight;
       }
       poolSize += effectiveWeights[tier];

@@ -23,8 +23,15 @@ window.EquipmentPage = ({ player, theme, shopTab, setShopTab, buyRod, upgradeRod
     const statParts = [];
     if (stats.strength > 0) statParts.push(`+${stats.strength} STR`);
     if (stats.luck > 0) statParts.push(`+${stats.luck} LUCK`);
-    if (stats.relicWeight > 0) statParts.push(`+${stats.relicWeight} Relic Weight`);
-    if (stats.treasureWeight > 0) statParts.push(`+${stats.treasureWeight} Treasure Weight`);
+    // Display relic and treasure weights as user-friendly percentages
+    if (stats.relicWeight > 0) {
+      const percentage = (stats.relicWeight / 10).toFixed(1);
+      statParts.push(`Relic Chance +${percentage}%`);
+    }
+    if (stats.treasureWeight > 0) {
+      const percentage = (stats.treasureWeight / 10).toFixed(1);
+      statParts.push(`Treasure Chance +${percentage}%`);
+    }
     if (stats.xpBonus > 0) statParts.push(`+${stats.xpBonus}% XP`);
 
     return statParts.length > 0 ? statParts.join(' | ') : 'No bonuses';
