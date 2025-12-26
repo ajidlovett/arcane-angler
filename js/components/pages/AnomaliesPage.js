@@ -268,7 +268,7 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
     if (stat === anomaly.primaryWeakness) {
       multiplier = 4.0; // Primary weakness: 4x damage
     } else if (stat === anomaly.secondaryWeakness) {
-      multiplier = 1.5; // Secondary weakness: 1.5x damage
+      multiplier = 2.0; // Secondary weakness: 2x damage
     } else if (stat === anomaly.resistantStat) {
       multiplier = 0.25; // Resistant stat: 0.25x damage
     }
@@ -279,7 +279,7 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
   // Get effectiveness label - UPDATED FOR NEW MULTIPLIERS
   const getEffectivenessLabel = (multiplier) => {
     if (multiplier >= 4.0) return { text: 'SUPER EFFECTIVE!', color: 'text-green-400', icon: '⭐' };
-    if (multiplier >= 1.5) return { text: 'Effective', color: 'text-blue-400', icon: '✨' };
+    if (multiplier >= 2.0) return { text: 'Effective', color: 'text-blue-400', icon: '✨' };
     if (multiplier < 1) return { text: 'Not Effective', color: 'text-red-400', icon: '❄️' };
     return { text: 'Normal', color: 'text-gray-400', icon: '⚔️' };
   };
@@ -410,7 +410,7 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
                     <div className="flex items-center gap-2 bg-blue-900 px-3 py-1 rounded">
                       <span className="text-blue-300">Secondary:</span>
                       <span className="font-bold text-white">
-                        {statNames[currentAnomaly.event.anomaly.secondaryWeakness]?.icon} {currentAnomaly.event.anomaly.secondaryWeakness.toUpperCase()} (1.5x)
+                        {statNames[currentAnomaly.event.anomaly.secondaryWeakness]?.icon} {currentAnomaly.event.anomaly.secondaryWeakness.toUpperCase()} (2x)
                       </span>
                     </div>
                   )}
@@ -447,7 +447,7 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
                         className={`p-4 rounded-lg border-2 transition-all ${
                           selectedStat === stat ? 'bg-yellow-600 border-yellow-400' :
                           preview.multiplier >= 4.0 ? 'bg-green-900 border-green-500 hover:bg-green-800' :
-                          preview.multiplier >= 1.5 ? 'bg-blue-900 border-blue-500 hover:bg-blue-800' :
+                          preview.multiplier >= 2.0 ? 'bg-blue-900 border-blue-500 hover:bg-blue-800' :
                           preview.multiplier < 1 ? 'bg-red-900 border-red-500 hover:bg-red-800' :
                           'bg-gray-700 border-gray-600 hover:bg-gray-600'
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
