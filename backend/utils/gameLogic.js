@@ -199,8 +199,10 @@ function calculateRarity(totalLuck, isAutoCast = false, equippedBaitId = null, r
   // Calculate luck power from total luck
   const luckPower = calculateLuckPower(totalLuck);
 
-  // Damping factors for high-tier rarities
-  // Note: Treasure Chest is NOT included - only affected by Gilded Rod (treasureWeight)
+  // Damping factors for high-tier rarities affected by luck
+  // Note: Treasure Chest and Relic are NOT included:
+  //   - Treasure Chest: only affected by Gilded Rod (treasureWeight)
+  //   - Relic: only affected by Archaeologist's Rod (relicWeight)
   const dampingFactors = {
     'Legendary': 0.5,
     'Mythic': 0.2,
@@ -227,7 +229,7 @@ function calculateRarity(totalLuck, isAutoCast = false, equippedBaitId = null, r
       const bonus = Math.floor(luckPower * dampingFactors[tier]);
       effectiveWeights[tier] = baseWeight + bonus;
     } else {
-      // Low-tier (Common, Uncommon, Fine, Rare, Relic, Epic): Not affected by luck
+      // Low-tier (Common, Uncommon, Fine, Rare, Relic, Epic, Treasure Chest): Not affected by luck
       effectiveWeights[tier] = baseWeight;
     }
     poolSize += effectiveWeights[tier];
