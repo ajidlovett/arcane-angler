@@ -101,9 +101,17 @@ router.post('/cast', authenticateToken, async (req, res) => {
     let xpBonusFromBoosters = 0; // Additive bonus (0 = no bonus, will be added to 1 in formula)
     let strengthBonus = 1.0; // Multiplier for strength
     let luckBonus = 1.0; // Multiplier for luck
+    let hasKnowledgeScroll = false;
+    let hasAncientTome = false;
     for (const booster of activeBoosters) {
       if (booster.effect_type === 'xp_bonus') {
         xpBonusFromBoosters += booster.bonus_percentage / 100;
+        // Track specific relic XP boosters
+        if (booster.booster_type === 'knowledge_scroll') {
+          hasKnowledgeScroll = true;
+        } else if (booster.booster_type === 'ancient_tome') {
+          hasAncientTome = true;
+        }
       } else if (booster.effect_type === 'stat_bonus' || booster.effect_type === 'strength_bonus') {
         strengthBonus += booster.bonus_percentage / 100;
       } else if (booster.effect_type === 'luck_bonus') {
@@ -266,6 +274,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.globalBoost = globalBoost;
       result.globalActivatorName = globalActivatorName;
       result.globalActivatorId = globalActivatorId;
+      result.hasKnowledgeScroll = hasKnowledgeScroll;
+      result.hasAncientTome = hasAncientTome;
 
       // Update player stats
       await connection.query(
@@ -304,6 +314,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.globalBoost = globalBoost;
       result.globalActivatorName = globalActivatorName;
       result.globalActivatorId = globalActivatorId;
+      result.hasKnowledgeScroll = hasKnowledgeScroll;
+      result.hasAncientTome = hasAncientTome;
 
       // Update player stats
       await connection.query(
@@ -372,6 +384,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.globalBoost = globalBoost;
       result.globalActivatorName = globalActivatorName;
       result.globalActivatorId = globalActivatorId;
+      result.hasKnowledgeScroll = hasKnowledgeScroll;
+      result.hasAncientTome = hasAncientTome;
 
       // Add to inventory (or update if exists)
       await connection.query(
@@ -770,9 +784,17 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     let xpBonusFromBoosters = 0; // Additive bonus (0 = no bonus, will be added to 1 in formula)
     let strengthBonus = 1.0; // Multiplier for strength
     let luckBonus = 1.0; // Multiplier for luck
+    let hasKnowledgeScroll = false;
+    let hasAncientTome = false;
     for (const booster of activeBoosters) {
       if (booster.effect_type === 'xp_bonus') {
         xpBonusFromBoosters += booster.bonus_percentage / 100;
+        // Track specific relic XP boosters
+        if (booster.booster_type === 'knowledge_scroll') {
+          hasKnowledgeScroll = true;
+        } else if (booster.booster_type === 'ancient_tome') {
+          hasAncientTome = true;
+        }
       } else if (booster.effect_type === 'stat_bonus' || booster.effect_type === 'strength_bonus') {
         strengthBonus += booster.bonus_percentage / 100;
       } else if (booster.effect_type === 'luck_bonus') {
@@ -1850,7 +1872,7 @@ router.get('/active-boosters', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    // Get active boosters (not expired)
+    // Get active relic-based boosters (not expired)
     const [boosters] = await db.query(
       `SELECT * FROM player_boosters
        WHERE user_id = ?
@@ -1858,6 +1880,55 @@ router.get('/active-boosters', authenticateToken, async (req, res) => {
        ORDER BY expires_at ASC`,
       [userId]
     );
+
+    // Get Fragment Shop XP boosters (personal and global)
+    const xpMultipliers = await getXpMultiplier(userId);
+
+    // Add personal XP booster if active
+    if (xpMultipliers.personal > 0) {
+      // Get the actual expiration time from player_data
+      const [playerData] = await db.query(
+        `SELECT active_xp_booster_personal FROM player_data WHERE user_id = ?`,
+        [userId]
+      );
+
+      if (playerData.length > 0 && playerData[0].active_xp_booster_personal) {
+        try {
+          const personalBooster = JSON.parse(playerData[0].active_xp_booster_personal);
+          boosters.push({
+            booster_type: 'xp_booster_personal',
+            effect_type: 'xp_bonus',
+            bonus_percentage: xpMultipliers.personal * 100,
+            expires_at: personalBooster.expires_at,
+            source: 'fragment_shop'
+          });
+        } catch (error) {
+          console.error('Error parsing personal booster:', error);
+        }
+      }
+    }
+
+    // Add global XP booster if active
+    if (xpMultipliers.global > 0) {
+      // Get the actual expiration time from global_xp_booster_queue
+      const [globalBooster] = await db.query(
+        `SELECT expires_at, activated_by_user_id FROM global_xp_booster_queue
+         WHERE status = 'active' AND expires_at > NOW()
+         LIMIT 1`
+      );
+
+      if (globalBooster.length > 0) {
+        boosters.push({
+          booster_type: 'xp_booster_global',
+          effect_type: 'xp_bonus',
+          bonus_percentage: xpMultipliers.global * 100,
+          expires_at: globalBooster[0].expires_at,
+          source: 'fragment_shop',
+          activator_name: xpMultipliers.globalActivatorName,
+          activator_id: xpMultipliers.globalActivatorId
+        });
+      }
+    }
 
     res.json({ boosters });
   } catch (error) {

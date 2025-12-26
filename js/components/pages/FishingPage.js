@@ -335,6 +335,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                       ⚡ +{Math.round(lastCatch.personalBoost * 100)}% Personal Exp Boost (Fragment)
                     </div>
                   )}
+                  {lastCatch.hasKnowledgeScroll && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      📜 +20% XP Boost (Knowledge Scroll)
+                    </div>
+                  )}
+                  {lastCatch.hasAncientTome && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      📚 +20% XP Boost (Ancient Tome)
+                    </div>
+                  )}
                   {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
                     <div className="text-sm text-red-400 font-bold mt-2">
                       🔥 <button
@@ -370,6 +380,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.personalBoost > 0 && (
                     <div className="text-xs text-purple-300 font-bold">
                       ⚡ +{Math.round(lastCatch.personalBoost * 100)}% Personal Exp Boost (Fragment)
+                    </div>
+                  )}
+                  {lastCatch.hasKnowledgeScroll && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      📜 +20% XP Boost (Knowledge Scroll)
+                    </div>
+                  )}
+                  {lastCatch.hasAncientTome && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      📚 +20% XP Boost (Ancient Tome)
                     </div>
                   )}
                   {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
@@ -418,6 +438,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.personalBoost > 0 && (
                     <div className="text-xs text-purple-300 font-bold">
                       ⚡ +{Math.round(lastCatch.personalBoost * 100)}% Personal Exp Boost (Fragment)
+                    </div>
+                  )}
+                  {lastCatch.hasKnowledgeScroll && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      📜 +20% XP Boost (Knowledge Scroll)
+                    </div>
+                  )}
+                  {lastCatch.hasAncientTome && (
+                    <div className="text-xs text-yellow-300 font-bold">
+                      📚 +20% XP Boost (Ancient Tome)
                     </div>
                   )}
                   {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
@@ -605,26 +635,21 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                 'giants_potion': { name: "Giant's Potion", icon: '🧪' },
                 'titans_elixir': { name: "Titan's Elixir", icon: '⚗️' },
                 'fortune_charm': { name: "Fortune Charm", icon: '🍀' },
-                'fate_elixir': { name: "Fate Elixir", icon: '🔮' }
+                'fate_elixir': { name: "Fate Elixir", icon: '🔮' },
+                'xp_booster_personal': { name: 'Personal XP Booster', icon: '⚡' },
+                'xp_booster_global': { name: 'Global XP Booster', icon: '🌟' }
               };
               const boosterInfo = boosterNames[booster.booster_type] || { name: booster.booster_type, icon: '✨' };
 
               return (
-                <div key={idx} className="text-yellow-300">
+                <div key={idx} className={booster.source === 'fragment_shop' ? "text-purple-300" : "text-yellow-300"}>
                   {boosterInfo.icon} {boosterInfo.name}: <span className="font-bold text-green-400">{getBoosterTimeRemaining(booster.expires_at)}</span>
+                  {booster.booster_type === 'xp_booster_global' && booster.activator_name && (
+                    <span className="text-purple-200 text-sm ml-1">(by {booster.activator_name})</span>
+                  )}
                 </div>
               );
             })}
-          </div>
-        )}
-
-        {/* Personal Fragment Booster */}
-        {lastCatch && lastCatch.personalBoost > 0 && (
-          <div className={`mt-2 pt-2 ${activeBoosters.length === 0 ? 'border-t border-yellow-600' : ''}`}>
-            {activeBoosters.length === 0 && <div className="text-yellow-400 font-bold mb-1">Active Boosters:</div>}
-            <div className="text-purple-300">
-              ⚡ Personal XP Booster (Fragment): <span className="font-bold text-green-400">+{Math.round(lastCatch.personalBoost * 100)}%</span>
-            </div>
           </div>
         )}
 
