@@ -413,9 +413,9 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
               : `bg-${theme.surface} bg-opacity-50 rounded p-2`
           }`}>
             <div className="flex items-start gap-2">
-              {/* Avatar - Spans 2 lines (username + first line of message) */}
+              {/* Avatar - Rounded square */}
               {msg.user_id && (
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700 flex-shrink-0">
+                <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-700 flex-shrink-0">
                   <img
                     src={msg.profile_avatar?.startsWith('avatarboss_') ? `/assets/avatar/fragment/${msg.profile_avatar}.png` : `/assets/avatar/default/${msg.profile_avatar || 'avatar_001'}.png`}
                     alt="Avatar"
@@ -450,11 +450,13 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
                       {getDisplayName(msg)}
                     </span>
                   )}
-                  <span className={`text-[10px] text-${theme.textMuted}`}>
+                </div>
+                <div className="relative">
+                  <p className="text-xs text-white break-words pr-16">{msg.message_text}</p>
+                  <span className={`absolute right-0 bottom-0 text-[10px] text-${theme.textMuted}`}>
                     {formatTime(msg.created_at)}
                   </span>
                 </div>
-                <p className="text-xs text-white break-words">{msg.message_text}</p>
               </div>
             </div>
           </div>
