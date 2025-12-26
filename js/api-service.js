@@ -823,6 +823,17 @@ class ApiService {
         });
     }
 
+    /**
+     * Get damage leaderboard for a specific anomaly event (for history view)
+     * @param {number} eventId - Event ID to get leaderboard for
+     * @returns {Promise<Object>} Event leaderboard with all participants
+     */
+    async getEventLeaderboard(eventId) {
+        return await this.request(`/anomalies/event/${eventId}/leaderboard`, {
+            method: 'GET'
+        });
+    }
+
     // ==========================================
     // FRAGMENT SHOP
     // ==========================================
