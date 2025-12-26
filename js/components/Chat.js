@@ -399,7 +399,7 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
               {msg.user_id && (
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700 flex-shrink-0">
                   <img
-                    src={`/assets/avatar/default/${msg.profile_avatar || 'avatar_001'}.png`}
+                    src={msg.profile_avatar?.startsWith('avatarboss_') ? `/assets/avatar/fragment/${msg.profile_avatar}.png` : `/assets/avatar/default/${msg.profile_avatar || 'avatar_001'}.png`}
                     alt="Avatar"
                     className="w-full h-full object-cover"
                     onError={(e) => {

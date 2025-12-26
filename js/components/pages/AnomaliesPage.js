@@ -257,29 +257,36 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
     return () => clearInterval(interval);
   }, [fetchCurrentAnomaly]);
 
-  // Calculate damage preview - UPDATED MULTIPLIERS
+  // Calculate damage preview - RANGE MULTIPLIERS (showing average)
   const getDamagePreview = (stat) => {
-    if (!currentAnomaly?.active || !currentAnomaly?.event) return { damage: 0, multiplier: 1 };
+    if (!currentAnomaly?.active || !currentAnomaly?.event) return { damage: 0, multiplier: 1, range: '' };
 
     const anomaly = currentAnomaly.event.anomaly;
     const statValue = player.stats?.[stat] || 0;
 
     let multiplier = 1.0;
+    let range = '';
     if (stat === anomaly.primaryWeakness) {
-      multiplier = 4.0; // Primary weakness: 4x damage
+      multiplier = 3.75; // Primary weakness: 3.5-4x damage (average)
+      range = '3.5-4x';
     } else if (stat === anomaly.secondaryWeakness) {
-      multiplier = 2.0; // Secondary weakness: 2x damage
+      multiplier = 2.0; // Secondary weakness: 1.75-2.25x damage (average)
+      range = '1.75-2.25x';
     } else if (stat === anomaly.resistantStat) {
-      multiplier = 0.25; // Resistant stat: 0.25x damage
+      multiplier = 0.375; // Resistant stat: 0.25-0.5x damage (average)
+      range = '0.25-0.5x';
+    } else {
+      multiplier = 1.125; // Normal: 1-1.25x damage (average)
+      range = '1-1.25x';
     }
 
-    return { damage: Math.floor(statValue * multiplier), multiplier };
+    return { damage: Math.floor(statValue * multiplier), multiplier, range };
   };
 
-  // Get effectiveness label - UPDATED FOR NEW MULTIPLIERS
+  // Get effectiveness label - UPDATED FOR RANGE MULTIPLIERS
   const getEffectivenessLabel = (multiplier) => {
-    if (multiplier >= 4.0) return { text: 'SUPER EFFECTIVE!', color: 'text-green-400', icon: '⭐' };
-    if (multiplier >= 2.0) return { text: 'Effective', color: 'text-blue-400', icon: '✨' };
+    if (multiplier >= 3.5) return { text: 'SUPER EFFECTIVE!', color: 'text-green-400', icon: '⭐' };
+    if (multiplier >= 1.75) return { text: 'Effective', color: 'text-blue-400', icon: '✨' };
     if (multiplier < 1) return { text: 'Not Effective', color: 'text-red-400', icon: '❄️' };
     return { text: 'Normal', color: 'text-gray-400', icon: '⚔️' };
   };
@@ -398,26 +405,26 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
                   </div>
                 </div>
 
-                {/* Weaknesses - UPDATED MULTIPLIERS */}
+                {/* Weaknesses - RANGE MULTIPLIERS */}
                 <div className="flex flex-wrap gap-4 mb-4">
                   <div className="flex items-center gap-2 bg-green-900 px-3 py-1 rounded">
                     <span className="text-green-300">Primary Weakness:</span>
                     <span className="font-bold text-white">
-                      {statNames[currentAnomaly.event.anomaly.primaryWeakness]?.icon} {currentAnomaly.event.anomaly.primaryWeakness.toUpperCase()} (4x)
+                      {statNames[currentAnomaly.event.anomaly.primaryWeakness]?.icon} {currentAnomaly.event.anomaly.primaryWeakness.toUpperCase()} (3.5-4x)
                     </span>
                   </div>
                   {currentAnomaly.event.anomaly.secondaryWeakness && (
                     <div className="flex items-center gap-2 bg-blue-900 px-3 py-1 rounded">
                       <span className="text-blue-300">Secondary:</span>
                       <span className="font-bold text-white">
-                        {statNames[currentAnomaly.event.anomaly.secondaryWeakness]?.icon} {currentAnomaly.event.anomaly.secondaryWeakness.toUpperCase()} (2x)
+                        {statNames[currentAnomaly.event.anomaly.secondaryWeakness]?.icon} {currentAnomaly.event.anomaly.secondaryWeakness.toUpperCase()} (1.75-2.25x)
                       </span>
                     </div>
                   )}
                   <div className="flex items-center gap-2 bg-red-900 px-3 py-1 rounded">
                     <span className="text-red-300">Resists:</span>
                     <span className="font-bold text-white">
-                      {statNames[currentAnomaly.event.anomaly.resistantStat]?.icon} {currentAnomaly.event.anomaly.resistantStat.toUpperCase()} (0.25x)
+                      {statNames[currentAnomaly.event.anomaly.resistantStat]?.icon} {currentAnomaly.event.anomaly.resistantStat.toUpperCase()} (0.25-0.5x)
                     </span>
                   </div>
                 </div>
@@ -463,7 +470,7 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-300">Your {stat}: {statValue}</span>
-                          <span className="font-bold text-white">→ {preview.damage.toLocaleString()} dmg ({preview.multiplier}x)</span>
+                          <span className="font-bold text-white">→ ~{preview.damage.toLocaleString()} dmg ({preview.range})</span>
                         </div>
                       </button>
                     );

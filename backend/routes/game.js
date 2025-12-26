@@ -174,7 +174,7 @@ router.post('/cast', authenticateToken, async (req, res) => {
 
     // Get XP booster multipliers (personal + global stack additively)
     const xpBoosterData = await getXpMultiplier(userId);
-    const { totalMultiplier: xpBoosterMultiplier, personal: personalBoost, global: globalBoost } = xpBoosterData;
+    const { totalMultiplier: xpBoosterMultiplier, personal: personalBoost, global: globalBoost, globalActivatorName, globalActivatorId } = xpBoosterData;
 
     // Calculate rarity based on luck, equipped bait, rod weights, and weather
     const rarity = calculateRarity(
@@ -262,6 +262,10 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.xpGained = xpGained;
       result.xpBonus = xpBonus;
       result.weatherXpBonus = weatherXpBonus;
+      result.personalBoost = personalBoost;
+      result.globalBoost = globalBoost;
+      result.globalActivatorName = globalActivatorName;
+      result.globalActivatorId = globalActivatorId;
 
       // Update player stats
       await connection.query(
@@ -296,6 +300,10 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.xpGained = xpGained;
       result.xpBonus = xpBonus;
       result.weatherXpBonus = weatherXpBonus;
+      result.personalBoost = personalBoost;
+      result.globalBoost = globalBoost;
+      result.globalActivatorName = globalActivatorName;
+      result.globalActivatorId = globalActivatorId;
 
       // Update player stats
       await connection.query(
@@ -360,6 +368,10 @@ router.post('/cast', authenticateToken, async (req, res) => {
       result.titanBonus = titanBonus;
       result.xpBonus = xpBonus;
       result.weatherXpBonus = weatherXpBonus;
+      result.personalBoost = personalBoost;
+      result.globalBoost = globalBoost;
+      result.globalActivatorName = globalActivatorName;
+      result.globalActivatorId = globalActivatorId;
 
       // Add to inventory (or update if exists)
       await connection.query(
@@ -829,7 +841,7 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
 
     // Get XP booster multipliers (personal + global stack additively)
     const xpBoosterData = await getXpMultiplier(userId);
-    const { totalMultiplier: xpBoosterMultiplier, personal: personalBoost, global: globalBoost } = xpBoosterData;
+    const { totalMultiplier: xpBoosterMultiplier, personal: personalBoost, global: globalBoost, globalActivatorName, globalActivatorId } = xpBoosterData;
 
     // Calculate rarity with auto-cast flag (caps at Epic) and weather effects
     const rarity = calculateRarity(
