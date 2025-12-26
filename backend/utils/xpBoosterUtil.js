@@ -79,7 +79,9 @@ export async function getXpMultiplier(userId) {
     return {
       totalMultiplier: 1,
       personal: 0,
-      global: 0
+      global: 0,
+      globalActivatorName: null,
+      globalActivatorId: null
     };
   }
 }

@@ -1900,7 +1900,14 @@ router.get('/active-boosters', authenticateToken, async (req, res) => {
 
       if (playerData.length > 0 && playerData[0].active_xp_booster_personal) {
         try {
-          const personalBooster = JSON.parse(playerData[0].active_xp_booster_personal);
+          // Handle both string and object (MySQL2 might auto-parse JSON columns)
+          let personalBooster;
+          if (typeof playerData[0].active_xp_booster_personal === 'string') {
+            personalBooster = JSON.parse(playerData[0].active_xp_booster_personal);
+          } else {
+            personalBooster = playerData[0].active_xp_booster_personal;
+          }
+
           boosters.push({
             booster_type: 'xp_booster_personal',
             effect_type: 'xp_bonus',
