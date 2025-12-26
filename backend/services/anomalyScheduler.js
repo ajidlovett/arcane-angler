@@ -160,10 +160,11 @@ class AnomalyScheduler {
   async spawnNewAnomaly() {
     try {
       // Get random anomaly that wasn't spawned in the last 5 events
+      // Fixed: Removed DISTINCT to avoid SQL error with ORDER BY
       const [recentAnomalies] = await db.execute(`
-        SELECT anomaly_id, spawn_time
-        FROM anomaly_events
-        ORDER BY spawn_time DESC
+        SELECT ae.anomaly_id, ae.spawn_time
+        FROM anomaly_events ae
+        ORDER BY ae.spawn_time DESC
         LIMIT 5
       `);
 

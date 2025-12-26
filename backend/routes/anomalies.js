@@ -210,7 +210,7 @@ router.post('/attack', authenticateToken, async (req, res) => {
     if (statUsed === event.primary_weakness) {
       multiplier = 4.0; // Primary weakness: 4x damage
     } else if (statUsed === event.secondary_weakness) {
-      multiplier = 1.5; // Secondary weakness: 1.5x damage
+      multiplier = 2.0; // Secondary weakness: 2x damage
     } else if (statUsed === event.resistant_stat) {
       multiplier = 0.25; // Resistant stat: 0.25x damage
     }
@@ -352,7 +352,7 @@ async function calculateAndDistributeRewards(eventId) {
       // Gold calculation - NEW FORMULA
       const baseGold = participant.level * (Math.floor(Math.random() * 76) + 50); // level × (50-125)
       const contributionBonus = Math.floor(damagePercentage * 50);
-      const attackCountBonus = Math.min(participant.attacks_made * 100, participant.level * 200); // 100 gold per attack, capped at level × 200
+      const attackCountBonus = Math.min(participant.attacks_made * 75, participant.level * 200); // 75 gold per attack, capped at level × 200
       const totalGold = baseGold + contributionBonus + attackCountBonus;
 
       // Fragment calculation - NEW FORMULA
