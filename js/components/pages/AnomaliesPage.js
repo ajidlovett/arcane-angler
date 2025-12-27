@@ -313,7 +313,10 @@ window.AnomaliesPage = ({ player, setPlayer, theme, showAlert }) => {
           🌊 Battle
         </button>
         <button
-          onClick={() => setActiveTab('history')}
+          onClick={() => {
+            setActiveTab('history');
+            fetchAnomalyHistory(); // Refresh history data when tab is clicked
+          }}
           className={`px-4 py-2 rounded-t font-bold ${activeTab === 'history' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
         >
           📜 History
