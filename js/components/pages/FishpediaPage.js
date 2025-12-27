@@ -1,7 +1,7 @@
 // FishpediaPage - Defined as window.FishpediaPage
 window.FishpediaPage = ({ player, theme, rarities, getRarityColor, isGradientRarity, rarityColors, getGradientTextStyle, getGradientBackgroundStyle }) => {
   const { useState } = React;
-    const [selectedBiome, setSelectedBiome] = useState(1);
+    const [selectedBiome, setSelectedBiome] = useState(player.currentBiome || 1);
     const [selectedRarityFilter, setSelectedRarityFilter] = useState('all');
 
     // Show all 40 biomes

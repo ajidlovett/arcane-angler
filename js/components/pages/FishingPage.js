@@ -315,11 +315,27 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                     <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
                   </div>
                   <div className="text-sm sm:text-base text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
-                  {lastCatch.xpBonus > 0 && (
-                    <div className="text-xs text-yellow-300 font-bold">
-                      ✨ +{Math.round(lastCatch.xpBonus * 100)}% XP Boost Active!
-                    </div>
-                  )}
+                  {(() => {
+                    const biomeRodBonus = lastCatch.xpBonus || 0;
+                    const weatherBonus = lastCatch.weatherXpBonus || 0;
+                    const totalBonus = biomeRodBonus + weatherBonus;
+                    const bonusPercent = Math.round(totalBonus * 100);
+
+                    if (totalBonus > 0) {
+                      return (
+                        <div className="text-xs text-yellow-300 font-bold">
+                          ✨ +{bonusPercent}% Bonus XP!
+                        </div>
+                      );
+                    } else if (totalBonus < 0) {
+                      return (
+                        <div className="text-xs text-red-300 font-bold">
+                          ✨ {bonusPercent}% XP Gained!
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
                   {lastCatch.globalBoost > 0 && (
                     <div className="text-xs text-green-300 font-bold">
                       🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
@@ -362,11 +378,27 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                     🔮 +{lastCatch.relics.toLocaleString()} Relic{lastCatch.relics !== 1 ? 's' : ''} Found!
                   </div>
                   <div className="text-sm sm:text-base text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
-                  {lastCatch.xpBonus > 0 && (
-                    <div className="text-xs text-yellow-300 font-bold">
-                      ✨ +{Math.round(lastCatch.xpBonus * 100)}% XP Boost Active!
-                    </div>
-                  )}
+                  {(() => {
+                    const biomeRodBonus = lastCatch.xpBonus || 0;
+                    const weatherBonus = lastCatch.weatherXpBonus || 0;
+                    const totalBonus = biomeRodBonus + weatherBonus;
+                    const bonusPercent = Math.round(totalBonus * 100);
+
+                    if (totalBonus > 0) {
+                      return (
+                        <div className="text-xs text-yellow-300 font-bold">
+                          ✨ +{bonusPercent}% Bonus XP!
+                        </div>
+                      );
+                    } else if (totalBonus < 0) {
+                      return (
+                        <div className="text-xs text-red-300 font-bold">
+                          ✨ {bonusPercent}% XP Gained!
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
                   {lastCatch.globalBoost > 0 && (
                     <div className="text-xs text-green-300 font-bold">
                       🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
@@ -420,11 +452,27 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                       💰 +{lastCatch.gold.toLocaleString()} Gold (Gold Breeze!)
                     </div>
                   )}
-                  {lastCatch.xpBonus > 0 && (
-                    <div className="text-xs text-yellow-300 font-bold">
-                      ✨ +{Math.round(lastCatch.xpBonus * 100)}% XP Boost Active!
-                    </div>
-                  )}
+                  {(() => {
+                    const biomeRodBonus = lastCatch.xpBonus || 0;
+                    const weatherBonus = lastCatch.weatherXpBonus || 0;
+                    const totalBonus = biomeRodBonus + weatherBonus;
+                    const bonusPercent = Math.round(totalBonus * 100);
+
+                    if (totalBonus > 0) {
+                      return (
+                        <div className="text-xs text-yellow-300 font-bold">
+                          ✨ +{bonusPercent}% Bonus XP!
+                        </div>
+                      );
+                    } else if (totalBonus < 0) {
+                      return (
+                        <div className="text-xs text-red-300 font-bold">
+                          ✨ {bonusPercent}% XP Gained!
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
                   {lastCatch.globalBoost > 0 && (
                     <div className="text-xs text-green-300 font-bold">
                       🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
@@ -515,11 +563,27 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   <span className="text-purple-400">+{lastCatch.relics.toLocaleString()} Relics</span>
                 </div>
                 <div className="text-sm sm:text-base text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
-                {lastCatch.xpBonus > 1 && (
-                  <div className="text-xs text-yellow-300 font-bold">
-                    ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
-                  </div>
-                )}
+                {(() => {
+                  const biomeRodBonus = lastCatch.xpBonus || 0;
+                  const weatherBonus = lastCatch.weatherXpBonus || 0;
+                  const totalBonus = biomeRodBonus + weatherBonus;
+                  const bonusPercent = Math.round(totalBonus * 100);
+
+                  if (totalBonus > 0) {
+                    return (
+                      <div className="text-xs text-yellow-300 font-bold">
+                        ✨ +{bonusPercent}% Bonus XP!
+                      </div>
+                    );
+                  } else if (totalBonus < 0) {
+                    return (
+                      <div className="text-xs text-red-300 font-bold">
+                        ✨ {bonusPercent}% XP Gained!
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
                 {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
                   <div className="text-sm text-red-400 font-bold mt-2">
                     🔥 <button
@@ -537,11 +601,27 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   🔮 +{lastCatch.relics.toLocaleString()} Relic{lastCatch.relics !== 1 ? 's' : ''} Found!
                 </div>
                 <div className="text-sm sm:text-base text-green-400">+{Math.floor(lastCatch.xp).toLocaleString()} XP</div>
-                {lastCatch.xpBonus > 1 && (
-                  <div className="text-xs text-yellow-300 font-bold">
-                    ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
-                  </div>
-                )}
+                {(() => {
+                  const biomeRodBonus = lastCatch.xpBonus || 0;
+                  const weatherBonus = lastCatch.weatherXpBonus || 0;
+                  const totalBonus = biomeRodBonus + weatherBonus;
+                  const bonusPercent = Math.round(totalBonus * 100);
+
+                  if (totalBonus > 0) {
+                    return (
+                      <div className="text-xs text-yellow-300 font-bold">
+                        ✨ +{bonusPercent}% Bonus XP!
+                      </div>
+                    );
+                  } else if (totalBonus < 0) {
+                    return (
+                      <div className="text-xs text-red-300 font-bold">
+                        ✨ {bonusPercent}% XP Gained!
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
                 {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
                   <div className="text-sm text-red-400 font-bold mt-2">
                     🔥 <button
@@ -570,9 +650,50 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                     💰 +{lastCatch.gold.toLocaleString()} Gold (Gold Breeze!)
                   </div>
                 )}
-                {lastCatch.xpBonus > 1 && (
+                {(() => {
+                  const biomeRodBonus = lastCatch.xpBonus || 0;
+                  const weatherBonus = lastCatch.weatherXpBonus || 0;
+                  const totalBonus = biomeRodBonus + weatherBonus;
+                  const bonusPercent = Math.round(totalBonus * 100);
+
+                  if (totalBonus > 0) {
+                    return (
+                      <div className="text-xs text-yellow-300 font-bold">
+                        ✨ +{bonusPercent}% Bonus XP!
+                      </div>
+                    );
+                  } else if (totalBonus < 0) {
+                    return (
+                      <div className="text-xs text-red-300 font-bold">
+                        ✨ {bonusPercent}% XP Gained!
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+                {lastCatch.globalBoost > 0 && (
+                  <div className="text-xs text-green-300 font-bold">
+                    🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
+                      onClick={() => window.location.href = `#profile-${lastCatch.globalActivatorId}`}
+                      className="underline hover:text-green-200"
+                    >
+                      {lastCatch.globalActivatorName}
+                    </button>
+                  </div>
+                )}
+                {lastCatch.personalBoost > 0 && (
+                  <div className="text-xs text-purple-300 font-bold">
+                    ⚡ +{Math.round(lastCatch.personalBoost * 100)}% Personal Exp Boost (Fragment)
+                  </div>
+                )}
+                {lastCatch.hasKnowledgeScroll && (
                   <div className="text-xs text-yellow-300 font-bold">
-                    ✨ +{Math.round((lastCatch.xpBonus - 1) * 100)}% XP Boost Active!
+                    📜 +20% XP Boost (Knowledge Scroll)
+                  </div>
+                )}
+                {lastCatch.hasAncientTome && (
+                  <div className="text-xs text-yellow-300 font-bold">
+                    📚 +20% XP Boost (Ancient Tome)
                   </div>
                 )}
                 {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (

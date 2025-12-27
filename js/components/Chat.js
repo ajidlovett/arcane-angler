@@ -304,6 +304,7 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
   // Handle refresh button click
   const handleRefresh = () => {
     loadChatHistory(activeChannel);
+    scrollToBottom(true);
   };
 
   // Render channel tabs
@@ -498,6 +499,10 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
             placeholder="Type a message..."
             maxLength={200}
             disabled={isLoading}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
             className={`flex-1 px-3 py-2 bg-${theme.surface} border-2 border-${theme.border} rounded text-white text-xs placeholder-${theme.textMuted} focus:outline-none focus:border-${theme.accent}`}
           />
           <button
@@ -552,7 +557,7 @@ function Chat({ theme, user, chatOpen, setChatOpen, onProfileClick }) {
           />
 
           {/* Chat Panel - Bottom 60% of screen */}
-          <div className={`relative ml-auto w-80 max-w-full bg-${theme.primarySolid} flex flex-col shadow-xl`} style={{ height: '60vh', marginTop: '40vh' }}>
+          <div className={`relative ml-auto w-full max-w-full bg-${theme.primarySolid} flex flex-col shadow-xl`} style={{ height: '60vh', marginTop: '40vh' }}>
             <div className={`bg-${theme.secondary} p-3 border-b-2 border-${theme.border} flex items-center justify-between flex-shrink-0`}>
               <h2 className="text-sm font-bold text-white">💬 Live Chat</h2>
               <div className="flex items-center gap-2">

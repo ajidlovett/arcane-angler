@@ -119,6 +119,12 @@ class AnomalyScheduler {
       if (event.end_time && now >= new Date(event.end_time)) {
         console.log('⚠️ Current anomaly ending (5 min before next spawn)');
         await this.endCurrentAnomaly(event.id);
+
+        // Check if next_spawn_time has also passed - spawn immediately if so
+        if (event.next_spawn_time && now >= new Date(event.next_spawn_time)) {
+          console.log('🎯 Next spawn time also reached - spawning new anomaly immediately!');
+          await this.spawnNewAnomaly();
+        }
         return;
       }
 
