@@ -1150,6 +1150,41 @@ router.post('/sell', authenticateToken, async (req, res) => {
         'DELETE FROM player_inventory WHERE user_id = ? AND fish_name = ? AND rarity = ? AND titan_bonus = ?',
         [userId, fishName, rarity, titanBonusValue]
       );
+
+      // Remove from fish showcase if it's there
+      const [userShowcase] = await connection.query(
+        'SELECT fish_showcase FROM users WHERE id = ?',
+        [userId]
+      );
+
+      if (userShowcase.length > 0 && userShowcase[0].fish_showcase) {
+        let showcase = [];
+
+        // Parse fish_showcase (handle both MySQL auto-parsed and string formats)
+        if (Array.isArray(userShowcase[0].fish_showcase)) {
+          showcase = userShowcase[0].fish_showcase;
+        } else if (typeof userShowcase[0].fish_showcase === 'string') {
+          try {
+            showcase = JSON.parse(userShowcase[0].fish_showcase);
+          } catch (e) {
+            console.error('Failed to parse fish_showcase:', e);
+            showcase = [];
+          }
+        }
+
+        // Remove the sold fish from showcase
+        const updatedShowcase = showcase.filter(
+          f => !(f.name === fishName && f.rarity === rarity)
+        );
+
+        // Update the showcase if it changed
+        if (updatedShowcase.length !== showcase.length) {
+          await connection.query(
+            'UPDATE users SET fish_showcase = ? WHERE id = ?',
+            [JSON.stringify(updatedShowcase), userId]
+          );
+        }
+      }
     } else {
       // Decrease count
       await connection.query(
@@ -2298,11 +2333,55 @@ router.post('/sell-all', authenticateToken, async (req, res) => {
       [userId]
     );
 
+    // Get list of fish being sold (for showcase cleanup)
+    const [fishBeingSold] = await connection.query(
+      'SELECT DISTINCT fish_name, rarity FROM player_inventory WHERE user_id = ? AND (is_locked IS NULL OR is_locked = FALSE)',
+      [userId]
+    );
+
     // Delete all unlocked fish from inventory
     await connection.query(
       'DELETE FROM player_inventory WHERE user_id = ? AND (is_locked IS NULL OR is_locked = FALSE)',
       [userId]
     );
+
+    // Remove sold fish from showcase
+    if (fishBeingSold.length > 0) {
+      const [userShowcase] = await connection.query(
+        'SELECT fish_showcase FROM users WHERE id = ?',
+        [userId]
+      );
+
+      if (userShowcase.length > 0 && userShowcase[0].fish_showcase) {
+        let showcase = [];
+
+        // Parse fish_showcase (handle both MySQL auto-parsed and string formats)
+        if (Array.isArray(userShowcase[0].fish_showcase)) {
+          showcase = userShowcase[0].fish_showcase;
+        } else if (typeof userShowcase[0].fish_showcase === 'string') {
+          try {
+            showcase = JSON.parse(userShowcase[0].fish_showcase);
+          } catch (e) {
+            console.error('Failed to parse fish_showcase:', e);
+            showcase = [];
+          }
+        }
+
+        // Remove all sold fish from showcase
+        const soldFishSet = new Set(fishBeingSold.map(f => `${f.fish_name}|${f.rarity}`));
+        const updatedShowcase = showcase.filter(
+          f => !soldFishSet.has(`${f.name}|${f.rarity}`)
+        );
+
+        // Update the showcase if it changed
+        if (updatedShowcase.length !== showcase.length) {
+          await connection.query(
+            'UPDATE users SET fish_showcase = ? WHERE id = ?',
+            [JSON.stringify(updatedShowcase), userId]
+          );
+        }
+      }
+    }
 
     // Update player gold
     await connection.query(
@@ -2391,11 +2470,55 @@ router.post('/sell-by-rarity', authenticateToken, async (req, res) => {
       return res.json({ success: true, goldEarned: 0, fishSold: 0, newGold: 0 });
     }
 
+    // Get list of fish being sold (for showcase cleanup)
+    const [fishBeingSold] = await connection.query(
+      'SELECT DISTINCT fish_name, rarity FROM player_inventory WHERE user_id = ? AND rarity = ? AND (is_locked IS NULL OR is_locked = FALSE)',
+      [userId, rarity]
+    );
+
     // Delete all unlocked fish of this rarity from inventory
     await connection.query(
       'DELETE FROM player_inventory WHERE user_id = ? AND rarity = ? AND (is_locked IS NULL OR is_locked = FALSE)',
       [userId, rarity]
     );
+
+    // Remove sold fish from showcase
+    if (fishBeingSold.length > 0) {
+      const [userShowcase] = await connection.query(
+        'SELECT fish_showcase FROM users WHERE id = ?',
+        [userId]
+      );
+
+      if (userShowcase.length > 0 && userShowcase[0].fish_showcase) {
+        let showcase = [];
+
+        // Parse fish_showcase (handle both MySQL auto-parsed and string formats)
+        if (Array.isArray(userShowcase[0].fish_showcase)) {
+          showcase = userShowcase[0].fish_showcase;
+        } else if (typeof userShowcase[0].fish_showcase === 'string') {
+          try {
+            showcase = JSON.parse(userShowcase[0].fish_showcase);
+          } catch (e) {
+            console.error('Failed to parse fish_showcase:', e);
+            showcase = [];
+          }
+        }
+
+        // Remove all sold fish from showcase
+        const soldFishSet = new Set(fishBeingSold.map(f => `${f.fish_name}|${f.rarity}`));
+        const updatedShowcase = showcase.filter(
+          f => !soldFishSet.has(`${f.name}|${f.rarity}`)
+        );
+
+        // Update the showcase if it changed
+        if (updatedShowcase.length !== showcase.length) {
+          await connection.query(
+            'UPDATE users SET fish_showcase = ? WHERE id = ?',
+            [JSON.stringify(updatedShowcase), userId]
+          );
+        }
+      }
+    }
 
     // Update player gold
     await connection.query(
