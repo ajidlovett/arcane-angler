@@ -1,5 +1,5 @@
 // FishingPage - Defined as window.FishingPage
-window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle, getGradientBackgroundStyle, isAutoCasting, toggleAutoCast, autoCastCooldown, autoCastButtonCooldown, currentStamina, currentWeather, equipRod, equipBait, activeAnomaly }) => {
+window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fishing, buttonColors, castButtonColor, lastCatch, funnyLine, getTotalStats, activeBoosters, getBoosterTimeRemaining, rarityColors, getRarityColor, isGradientRarity, getGradientTextStyle, getGradientBackgroundStyle, isAutoCasting, toggleAutoCast, autoCastCooldown, autoCastButtonCooldown, currentStamina, currentWeather, equipRod, equipBait, activeAnomaly, onProfileClick }) => {
   const [showWeatherTooltip, setShowWeatherTooltip] = React.useState(false);
 
   // Get available rods and baits for current biome
@@ -339,7 +339,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.globalBoost > 0 && (
                     <div className="text-xs text-green-300 font-bold">
                       🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
-                        onClick={() => props.onProfileClick && props.onProfileClick(lastCatch.globalActivatorId)}
+                        onClick={() => onProfileClick && onProfileClick(lastCatch.globalActivatorId)}
                         className="underline hover:text-green-200"
                       >
                         {lastCatch.globalActivatorName}
@@ -359,6 +359,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.hasAncientTome && (
                     <div className="text-xs text-yellow-300 font-bold">
                       📚 +20% XP Boost (Ancient Tome)
+                    </div>
+                  )}
+                  {activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir') && (
+                    <div className="text-xs text-purple-300 font-bold mt-1">
+                      💪 +10% STR Boost Active!
+                    </div>
+                  )}
+                  {activeBoosters.some(b => b.booster_type === 'fortune_charm' || b.booster_type === 'fate_elixir') && (
+                    <div className="text-xs text-green-300 font-bold mt-1">
+                      🍀 +10% LUCK Boost Active!
                     </div>
                   )}
                   {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
@@ -402,7 +412,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.globalBoost > 0 && (
                     <div className="text-xs text-green-300 font-bold">
                       🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
-                        onClick={() => props.onProfileClick && props.onProfileClick(lastCatch.globalActivatorId)}
+                        onClick={() => onProfileClick && onProfileClick(lastCatch.globalActivatorId)}
                         className="underline hover:text-green-200"
                       >
                         {lastCatch.globalActivatorName}
@@ -422,6 +432,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.hasAncientTome && (
                     <div className="text-xs text-yellow-300 font-bold">
                       📚 +20% XP Boost (Ancient Tome)
+                    </div>
+                  )}
+                  {activeBoosters.some(b => b.booster_type === 'giants_potion' || b.booster_type === 'titans_elixir') && (
+                    <div className="text-xs text-purple-300 font-bold mt-1">
+                      💪 +10% STR Boost Active!
+                    </div>
+                  )}
+                  {activeBoosters.some(b => b.booster_type === 'fortune_charm' || b.booster_type === 'fate_elixir') && (
+                    <div className="text-xs text-green-300 font-bold mt-1">
+                      🍀 +10% LUCK Boost Active!
                     </div>
                   )}
                   {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
@@ -476,7 +496,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.globalBoost > 0 && (
                     <div className="text-xs text-green-300 font-bold">
                       🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
-                        onClick={() => props.onProfileClick && props.onProfileClick(lastCatch.globalActivatorId)}
+                        onClick={() => onProfileClick && onProfileClick(lastCatch.globalActivatorId)}
                         className="underline hover:text-green-200"
                       >
                         {lastCatch.globalActivatorName}
@@ -498,16 +518,6 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                       📚 +20% XP Boost (Ancient Tome)
                     </div>
                   )}
-                  {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
-                    <div className="text-sm text-red-400 font-bold mt-2">
-                      🔥 <button
-                        onClick={() => setCurrentPage('anomalies')}
-                        className="underline hover:text-red-300 transition-colors"
-                      >
-                        {activeAnomaly.event.anomaly.name}
-                      </button> is currently wreaking havoc. Hit it now!
-                    </div>
-                  )}
                   {lastCatch.titanBonus && lastCatch.titanBonus > 1 && ['Legendary', 'Mythic', 'Exotic', 'Arcane'].includes(lastCatch.rarity) && !lastCatch.isAutoCast && (
                     <div className="text-xs text-orange-400">
                       ⚡ Titan Bonus: {lastCatch.titanBonus.toFixed(2)}x Gold Value!
@@ -521,6 +531,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {activeBoosters.some(b => b.booster_type === 'fortune_charm' || b.booster_type === 'fate_elixir') && (
                     <div className="text-xs text-green-300 font-bold mt-1">
                       🍀 +10% LUCK Boost Active!
+                    </div>
+                  )}
+                  {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
+                    <div className="text-sm text-red-400 font-bold mt-2">
+                      🔥 <button
+                        onClick={() => setCurrentPage('anomalies')}
+                        className="underline hover:text-red-300 transition-colors"
+                      >
+                        {activeAnomaly.event.anomaly.name}
+                      </button> is currently wreaking havoc. Hit it now!
                     </div>
                   )}
                   </div>
@@ -674,7 +694,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                 {lastCatch.globalBoost > 0 && (
                   <div className="text-xs text-green-300 font-bold">
                     🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
-                      onClick={() => window.location.href = `#profile-${lastCatch.globalActivatorId}`}
+                      onClick={() => onProfileClick && onProfileClick(lastCatch.globalActivatorId)}
                       className="underline hover:text-green-200"
                     >
                       {lastCatch.globalActivatorName}
@@ -696,16 +716,6 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                     📚 +20% XP Boost (Ancient Tome)
                   </div>
                 )}
-                {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
-                  <div className="text-sm text-red-400 font-bold mt-2">
-                    🔥 <button
-                      onClick={() => setCurrentPage('anomalies')}
-                      className="underline hover:text-red-300 transition-colors"
-                    >
-                      {activeAnomaly.event.anomaly.name}
-                    </button> is currently wreaking havoc. Hit it now!
-                  </div>
-                )}
                 {lastCatch.titanBonus && lastCatch.titanBonus > 1 && ['Legendary', 'Mythic', 'Exotic', 'Arcane'].includes(lastCatch.rarity) && !lastCatch.isAutoCast && (
                   <div className="text-xs text-orange-400">
                     ⚡ Titan Bonus: {lastCatch.titanBonus.toFixed(2)}x Gold Value!
@@ -719,6 +729,16 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                 {activeBoosters.some(b => b.booster_type === 'fortune_charm' || b.booster_type === 'fate_elixir') && (
                   <div className="text-xs text-green-300 font-bold mt-1">
                     🍀 +10% LUCK Boost Active!
+                  </div>
+                )}
+                {activeAnomaly && activeAnomaly.active && activeAnomaly.event && (
+                  <div className="text-sm text-red-400 font-bold mt-2">
+                    🔥 <button
+                      onClick={() => setCurrentPage('anomalies')}
+                      className="underline hover:text-red-300 transition-colors"
+                    >
+                      {activeAnomaly.event.anomaly.name}
+                    </button> is currently wreaking havoc. Hit it now!
                   </div>
                 )}
                 </div>

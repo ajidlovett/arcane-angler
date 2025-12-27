@@ -150,9 +150,10 @@ router.post('/cast', authenticateToken, async (req, res) => {
       currentBiome
     );
 
-    // Calculate final XP bonus: booster XP bonus + rod XP bonus (additive)
-    // Rod xpBonus is a percentage (e.g., 5 for 5%), convert to multiplier and add
-    const xpBonus = xpBonusFromBoosters + (totalStats.xpBonus / 100);
+    // Calculate final XP bonus: rod XP bonus only (for display in "Bonus XP" line)
+    // Rod xpBonus is a percentage (e.g., 5 for 5%), convert to multiplier
+    // Knowledge Scroll/Ancient Tome bonuses are applied separately in XP calculation
+    const xpBonus = totalStats.xpBonus / 100;
     const biomeData = BIOMES[currentBiome];
 
     if (!biomeData) {
@@ -262,7 +263,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const maxBonus = (player.level - 1) * 20;
       const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
       // Apply weather XP bonus (additive with other bonuses)
-      const totalXpMultiplier = xpBonus + weatherXpBonus;
+      // xpBonus = rod bonus, weatherXpBonus = weather bonus, xpBonusFromBoosters = Knowledge Scroll/Ancient Tome
+      const totalXpMultiplier = xpBonus + weatherXpBonus + xpBonusFromBoosters;
       // Apply XP booster multiplier (from fragment shop personal/global boosters)
       const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier) * xpBoosterMultiplier);
 
@@ -300,7 +302,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const maxBonus = (player.level - 1) * 20;
       const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
       // Apply weather XP bonus (additive with other bonuses)
-      const totalXpMultiplier = xpBonus + weatherXpBonus;
+      // xpBonus = rod bonus, weatherXpBonus = weather bonus, xpBonusFromBoosters = Knowledge Scroll/Ancient Tome
+      const totalXpMultiplier = xpBonus + weatherXpBonus + xpBonusFromBoosters;
       // Apply XP booster multiplier (from fragment shop personal/global boosters)
       const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier) * xpBoosterMultiplier);
 
@@ -360,7 +363,8 @@ router.post('/cast', authenticateToken, async (req, res) => {
       const maxBonus = (player.level - 1) * 20;
       const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
       // Apply weather XP bonus (additive with other bonuses)
-      const totalXpMultiplier = xpBonus + weatherXpBonus;
+      // xpBonus = rod bonus, weatherXpBonus = weather bonus, xpBonusFromBoosters = Knowledge Scroll/Ancient Tome
+      const totalXpMultiplier = xpBonus + weatherXpBonus + xpBonusFromBoosters;
       // Apply XP booster multiplier (from fragment shop personal/global boosters)
       const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier) * xpBoosterMultiplier);
 
@@ -831,9 +835,10 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
       currentBiome
     );
 
-    // Calculate final XP bonus: booster XP bonus + rod XP bonus (additive)
-    // Rod xpBonus is a percentage (e.g., 5 for 5%), convert to multiplier and add
-    const xpBonus = xpBonusFromBoosters + (totalStats.xpBonus / 100);
+    // Calculate final XP bonus: rod XP bonus only (for display in "Bonus XP" line)
+    // Rod xpBonus is a percentage (e.g., 5 for 5%), convert to multiplier
+    // Knowledge Scroll/Ancient Tome bonuses are applied separately in XP calculation
+    const xpBonus = totalStats.xpBonus / 100;
     const biomeData = BIOMES[currentBiome];
 
     if (!biomeData) {
@@ -893,7 +898,8 @@ router.post('/auto-cast', authenticateToken, async (req, res) => {
     const maxBonus = (player.level - 1) * 20;
     const levelBonus = minBonus + Math.random() * (maxBonus - minBonus);
     // Apply weather XP bonus (additive with other bonuses)
-    const totalXpMultiplier = xpBonus + weatherXpBonus;
+    // xpBonus = rod bonus, weatherXpBonus = weather bonus, xpBonusFromBoosters = Knowledge Scroll/Ancient Tome
+    const totalXpMultiplier = xpBonus + weatherXpBonus + xpBonusFromBoosters;
     // Auto-cast gets 50% XP (reduced by 50%), then apply XP booster multiplier
     const xpGained = Math.floor((baseXP + levelBonus) * (1 + totalXpMultiplier) * 0.5 * xpBoosterMultiplier);
 
