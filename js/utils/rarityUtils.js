@@ -66,16 +66,15 @@ window.getGradientTextStyle = (rarity) => {
   // For gradient rarities (Exotic, Arcane)
   const gradient = window.RARITY_COLORS[rarity];
   return {
-    background: gradient,
     backgroundImage: gradient,
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
+    MozBackgroundClip: 'text',
+    MozTextFillColor: 'transparent',
     backgroundClip: 'text',
     color: 'transparent',  // Fallback for browsers that don't support background-clip
     fontWeight: 'bold',
-    display: 'inline-block',
-    boxDecorationBreak: 'clone',
-    WebkitBoxDecorationBreak: 'clone'
+    display: 'inline-block'
   };
 };
 

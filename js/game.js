@@ -1417,6 +1417,7 @@ useEffect(() => {
             equipRod={equipRod}
             equipBait={equipBait}
             activeAnomaly={activeAnomaly}
+            onProfileClick={handleProfileClick}
           />}
           {currentPage === 'equipment' && <EquipmentPage
             player={player}

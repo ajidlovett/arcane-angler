@@ -339,7 +339,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.globalBoost > 0 && (
                     <div className="text-xs text-green-300 font-bold">
                       🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
-                        onClick={() => window.location.href = `#profile-${lastCatch.globalActivatorId}`}
+                        onClick={() => props.onProfileClick && props.onProfileClick(lastCatch.globalActivatorId)}
                         className="underline hover:text-green-200"
                       >
                         {lastCatch.globalActivatorName}
@@ -402,7 +402,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.globalBoost > 0 && (
                     <div className="text-xs text-green-300 font-bold">
                       🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
-                        onClick={() => window.location.href = `#profile-${lastCatch.globalActivatorId}`}
+                        onClick={() => props.onProfileClick && props.onProfileClick(lastCatch.globalActivatorId)}
                         className="underline hover:text-green-200"
                       >
                         {lastCatch.globalActivatorName}
@@ -476,7 +476,7 @@ window.FishingPage = ({ player, theme, setCurrentPage, handleFish, cooldown, fis
                   {lastCatch.globalBoost > 0 && (
                     <div className="text-xs text-green-300 font-bold">
                       🌟 +{Math.round(lastCatch.globalBoost * 100)}% Global Exp Boost Activated by <button
-                        onClick={() => window.location.href = `#profile-${lastCatch.globalActivatorId}`}
+                        onClick={() => props.onProfileClick && props.onProfileClick(lastCatch.globalActivatorId)}
                         className="underline hover:text-green-200"
                       >
                         {lastCatch.globalActivatorName}
