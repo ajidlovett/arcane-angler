@@ -859,6 +859,32 @@ useEffect(() => {
     }
   };
 
+  const sellFishSingle = async (fishItem) => {
+    if (player.lockedFish.includes(fishItem.name)) return;
+
+    try {
+      const response = await window.ApiService.sellFish(
+        fishItem.name,
+        fishItem.rarity,
+        1, // Sell only 1 fish
+        fishItem.titanBonus || 1
+      );
+
+      if (response.success) {
+        setPlayer(prev => ({
+          ...prev,
+          gold: response.newGold
+        }));
+
+        const playerData = await window.ApiService.getPlayerData();
+        setPlayer(playerData);
+      }
+    } catch (error) {
+      console.error('Sell failed:', error);
+      showAlert('Failed to sell fish. Please try again.');
+    }
+  };
+
   const sellAll = async () => {
     const unlockedFish = player.inventory.filter(f => !player.lockedFish.includes(f.name));
 
@@ -1423,6 +1449,7 @@ useEffect(() => {
             sellAll={sellAll}
             sellByRarity={sellByRarity}
             sellFish={sellFish}
+            sellFishSingle={sellFishSingle}
             toggleLock={toggleLock}
             rarities={rarities}
             getRarityColor={getRarityColor}

@@ -1,5 +1,5 @@
 // InventoryPage - Defined as window.InventoryPage
-window.InventoryPage = ({ player, theme, selectedRarity, setSelectedRarity, inventorySortOrder, setInventorySortOrder, getFilteredInventory, getTotalStats, sellAll, sellByRarity, sellFish, toggleLock, rarities, getRarityColor, isGradientRarity, rarityColors, getGradientTextStyle, getGradientBackgroundStyle }) => {
+window.InventoryPage = ({ player, theme, selectedRarity, setSelectedRarity, inventorySortOrder, setInventorySortOrder, getFilteredInventory, getTotalStats, sellAll, sellByRarity, sellFish, sellFishSingle, toggleLock, rarities, getRarityColor, isGradientRarity, rarityColors, getGradientTextStyle, getGradientBackgroundStyle }) => {
   const filteredInventory = getFilteredInventory();
   const unlockedCount = filteredInventory.filter(f => !player.lockedFish.includes(f.name)).reduce((sum, f) => sum + f.count, 0);
   return (
@@ -108,13 +108,32 @@ window.InventoryPage = ({ player, theme, selectedRarity, setSelectedRarity, inve
                   {titanBonus > 1 && (
                     <div className="text-xs text-orange-400 mb-2">⚡ {titanBonus.toFixed(2)}x Value</div>
                   )}
-                  <button
-                    onClick={() => sellFish(fish)}
-                    disabled={isLocked}
-                    className={`w-full py-2 rounded font-bold text-xs sm:text-sm ${isLocked ? 'bg-gray-700 cursor-not-allowed text-gray-400' : 'bg-yellow-600 hover:bg-yellow-500'}`}
-                  >
-                    {isLocked ? '🔒 Locked' : `Sell for ${sellValue.toLocaleString()} Gold`}
-                  </button>
+                  {['Mythic', 'Exotic', 'Arcane'].includes(fish.rarity) && fish.count > 1 ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => sellFishSingle(fish)}
+                        disabled={isLocked}
+                        className={`py-2 rounded font-bold text-xs sm:text-sm ${isLocked ? 'bg-gray-700 cursor-not-allowed text-gray-400' : 'bg-orange-600 hover:bg-orange-500'}`}
+                      >
+                        {isLocked ? '🔒' : `Sell x1`}
+                      </button>
+                      <button
+                        onClick={() => sellFish(fish)}
+                        disabled={isLocked}
+                        className={`py-2 rounded font-bold text-xs sm:text-sm ${isLocked ? 'bg-gray-700 cursor-not-allowed text-gray-400' : 'bg-yellow-600 hover:bg-yellow-500'}`}
+                      >
+                        {isLocked ? '🔒' : `Sell All`}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => sellFish(fish)}
+                      disabled={isLocked}
+                      className={`w-full py-2 rounded font-bold text-xs sm:text-sm ${isLocked ? 'bg-gray-700 cursor-not-allowed text-gray-400' : 'bg-yellow-600 hover:bg-yellow-500'}`}
+                    >
+                      {isLocked ? '🔒 Locked' : `Sell for ${sellValue.toLocaleString()} Gold`}
+                    </button>
+                  )}
                 </div>
               );
             })}
